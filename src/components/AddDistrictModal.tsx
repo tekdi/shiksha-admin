@@ -30,7 +30,7 @@ interface AddDistrictBlockModalProps {
   initialValues?: {
     name?: string;
     value?: string;
-    controllingField?: string;
+    controllingField?: string; 
   };
   districtId?: string;
 }
@@ -54,10 +54,11 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
+    // Set initial values including controllingField (state) for editing mode
     setFormData({
       name: initialValues.name || "",
       value: initialValues.value || "",
-      controllingField: initialValues.controllingField || "",
+      controllingField: initialValues.controllingField || "", // Set initial state value
     });
     setErrors({});
   }, [initialValues]);
@@ -77,7 +78,6 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       } catch (error) {
         console.error("Error fetching states:", error);
         setStates([]);
-      } finally {
       }
     };
 

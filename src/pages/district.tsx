@@ -22,7 +22,7 @@ import Loader from "@/components/Loader";
 import AddDistrictModal from "@/components/AddDistrictModal";
 import { Pagination } from "@mui/material";
 import PageSizeSelector from "@/components/PageSelector";
-import { Numbers } from "@/utils/app.constant";
+import { Numbers, SORT } from "@/utils/app.constant";
 
 type StateDetail = {
   value: string;
@@ -30,21 +30,17 @@ type StateDetail = {
 };
 
 type DistrictDetail = {
+  updatedBy: any;
+  createdBy: any;
   updatedAt: any;
   createdAt: any;
   value: string;
   label: string;
 };
 
-type DistrictsForStateParams = {
-  controllingfieldfk: string;
-  fieldName: string;
-  limit?: number;
-  offset: number;
-};
 const District: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedState, setSelectedState] = useState("ALL"); // Default to "ALL"
   const [stateData, setStateData] = useState<StateDetail[]>([]);
   const [districtData, setDistrictData] = useState<DistrictDetail[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -60,7 +56,9 @@ const District: React.FC = () => {
   const [pageCount, setPageCount] = useState<number>(Numbers.ONE);
   const [pageOffset, setPageOffset] = useState<number>(Numbers.ZERO);
   const [pageLimit, setPageLimit] = useState<number>(Numbers.TEN);
-  const [pageSizeArray, setPageSizeArray] = useState<number[]>([5, 10]);
+  const [pageSizeArray, setPageSizeArray] = useState<number[]>([5, 10, 20, 50]);
+  const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   const handleChangePageSize = (event: SelectChangeEvent<number>) => {
     const newSize = Number(event.target.value);
@@ -68,6 +66,12 @@ const District: React.FC = () => {
       prev.includes(newSize) ? prev : [...prev, newSize]
     );
     setPageLimit(newSize);
+  };
+  const handleSortChange = async (event: SelectChangeEvent) => {
+    const sortOrder =
+      event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
+    setSortBy(["name", sortOrder]);
+    setSelectedSort(event.target.value);
   };
 
   const handlePaginationChange = (
@@ -103,69 +107,81 @@ const District: React.FC = () => {
       try {
         setLoading(true);
         const data = await getStateBlockDistrictList({ fieldName: "states" });
-        if (data?.result?.fieldId) {
+
+        if (data?.result?.values) {
           setStateData(data.result.values);
-          const initialSelectedState = data.result.values[0]?.value || "";
-          setSelectedState(initialSelectedState);
-
-          console.log("intialSelectedState", initialSelectedState);
-
-          fetchDistrictData(initialSelectedState);
+          setSelectedState(data.result.values[0]?.value || "ALL");
+          fetchDistrictData(data.result.values[0]?.value || "ALL");
         } else {
           setStateData([]);
         }
       } catch (error) {
+        console.error("Error fetching state data:", error);
         setStateData([]);
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchDistrictData = async (stateId: any) => {
+    const fetchDistrictData = async (stateId: string) => {
       try {
-        const initialDistrictData = await getDistrictsForState({
+        if (stateId === "ALL") {
+          setDistrictData([]);
+          return;
+        }
+        const limit = pageLimit;
+        const offset = pageOffset * limit;
+
+        const data = {
+          limit: limit,
+          offset: offset,
           controllingfieldfk: stateId,
           fieldName: "districts",
-          limit: pageLimit,
-          offset: pageOffset * pageLimit,
-        } as DistrictsForStateParams);
-        setDistrictFieldId(initialDistrictData?.result?.fieldId || "");
+          sort: sortBy,
+        };
 
-        if (initialDistrictData?.result?.fieldId) {
-          setDistrictData(initialDistrictData.result.values || []);
-          const totalCount = initialDistrictData.result.values.length;
-          console.log("totalCount district", totalCount);
+        const districtData = await getDistrictsForState(data);
+        setDistrictData(districtData.result.values || []);
 
-          setPageSizeArray(
-            totalCount >= 15 ? [5, 10, 15] : totalCount >= 10 ? [5, 10] : [5]
-          );
-          setPageCount(Math.ceil(totalCount / pageLimit));
+        const totalCount = districtData?.result?.totalCount || 0;
+        console.log("totalCount", totalCount);
+
+        if (totalCount >= 15) {
+          setPageSizeArray([5, 10, 15]);
+        } else if (totalCount >= 10) {
+          setPageSizeArray([5, 10]);
         } else {
-          setDistrictData([]);
+          setPageSizeArray([5]);
         }
+
+        const pageCount = Math.ceil(totalCount / limit);
+        setPageCount(pageCount);
       } catch (error) {
+        console.error("Error fetching district data:", error);
         setDistrictData([]);
       }
     };
 
     fetchStateData();
-  }, [pageLimit, pageOffset]);
-
+  }, [sortBy, pageLimit, pageOffset]);
   const handleStateChange = async (event: SelectChangeEvent<string>) => {
     const selectedState = event.target.value;
     setSelectedState(selectedState);
 
+    console.log("selectedState", selectedState);
+
     try {
-      const data = await getDistrictsForState({
-        controllingfieldfk: selectedState,
+      const data = {
+        controllingfieldfk: selectedState === "ALL" ? undefined : selectedState,
         fieldName: "districts",
-      });
-      setDistrictData(data.result.values || []);
+      };
+
+      const districtData = await getDistrictsForState(data);
+      setDistrictData(districtData.result.values || []);
     } catch (error) {
       console.error("Error fetching district data", error);
     }
   };
-
   const handleEdit = (rowData: DistrictDetail) => {
     setModalOpen(true);
     setSelectedStateForEdit(rowData);
@@ -174,6 +190,9 @@ const District: React.FC = () => {
   const handleDelete = (rowData: DistrictDetail) => {
     setSelectedStateForDelete(rowData);
     setConfirmationDialogOpen(true);
+  };
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
   };
 
   const handleConfirmDelete = async () => {
@@ -272,8 +291,10 @@ const District: React.FC = () => {
         districts={districtData.map((district) => district.label)}
         selectedState={selectedState}
         showStateDropdown={false}
-        handleSearch={() => {}}
+        handleSortChange={handleSortChange}
+        showSort={true}
         selectedSort={selectedSort}
+        handleSearch={handleSearch}
         showFilter={false}
         handleAddUserClick={() => {
           setModalOpen(true);
@@ -299,6 +320,7 @@ const District: React.FC = () => {
                   onChange={handleStateChange}
                   label={t("MASTER.STATE")}
                 >
+                  <MenuItem value="ALL">{t("ALL")}</MenuItem>
                   {stateData.map((state) => (
                     <MenuItem key={state.value} value={state.value}>
                       {transformLabel(state.label)}
@@ -319,6 +341,9 @@ const District: React.FC = () => {
                   title: t("MASTER.DISTRICT_CODE"),
                   dataType: DataType.String,
                 },
+                { key: "createdBy", title: t("MASTER.CREATED_BY") },
+                { key: "updatedBy", title: t("MASTER.UPDATED_BY") },
+
                 { key: "createdAt", title: t("MASTER.CREATED_AT") },
                 { key: "updatedAt", title: t("MASTER.UPDATED_AT") },
                 {
@@ -331,6 +356,8 @@ const District: React.FC = () => {
                 label: transformLabel(districtDetail.label),
                 createdAt: districtDetail.createdAt,
                 updatedAt: districtDetail.updatedAt,
+                createdBy: districtDetail.createdBy,
+                updatedBy: districtDetail.updatedBy,
                 value: districtDetail.value,
               }))}
               limit={pageLimit}
@@ -341,6 +368,9 @@ const District: React.FC = () => {
               pageSizes={pageSizeArray}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              noDataMessage={
+                districtData.length === 0 ? t("COMMON.DISTRICT_NOT_FOUND") : ""
+              }
               extraActions={[]}
             />
           </>

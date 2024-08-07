@@ -1,74 +1,74 @@
 import { deleteApi, patch, post } from "./RestClient";
-export interface StateListParam {
-  limit?: number;
-  //  page: number;
-  controllingfieldfk?: any;
-  fieldName?: any;
-  sort?: object;
-  offset?: number;
-}
+
 export interface CenterListParam {
   limit?: number;
 
   filters?: any;
   offset?: number;
 }
+
+// Define the interface to ensure consistency
+export interface StateListParam {
+  limit?: number;
+  offset?: number;
+  controllingfieldfk?: string;
+  fieldName: string;
+  optionName?: string;
+  sort?: [string, string]; //
+}
+
 export const getStateBlockDistrictList = async ({
   controllingfieldfk,
   fieldName,
   limit,
+  offset,
   optionName,
-  sortBy,
-}: {
-  controllingfieldfk?: string;
-  fieldName: string;
-  limit?: number;
-  optionName?: string;
-  sortBy?: any;
-}): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/options/read`;
+  sort,
+}: StateListParam): Promise<any> => {
+  const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/options/read`;
+
+  const requestBody: StateListParam = {
+    fieldName,
+    limit,
+    offset,
+    sort,
+  };
+  if (controllingfieldfk) {
+    requestBody.controllingfieldfk = controllingfieldfk;
+  }
+  if (optionName) {
+    requestBody.optionName = optionName;
+  }
   try {
-    const requestBody: {
-      fieldName: string;
-      controllingfieldfk?: string;
-      optionName?: string;
-      sort?: any;
-    } = {
-      fieldName,
-    };
-
-    if (controllingfieldfk) {
-      requestBody.controllingfieldfk = controllingfieldfk;
-    }
-
-    if (optionName) {
-      requestBody.optionName = optionName; // Use optionName for search
-    }
-    if (sortBy) {
-      requestBody.sort = sortBy; // Use optionName for search
-    }
-
-    console.log("requestBody", requestBody);
     const response = await post(apiUrl, requestBody);
     return response?.data;
   } catch (error) {
-    console.error("error in fetching user details", error);
-    return error;
+    console.error("Error in fetching state, block, and district list", error);
+    throw error;
   }
 };
-
 export const getDistrictsForState = async ({
+  limit,
+  offset,
   controllingfieldfk,
   fieldName,
+  sort,
 }: {
-  controllingfieldfk: string;
+  limit: number;
+  offset: number;
+  controllingfieldfk: string | undefined;
   fieldName: string;
+  optionName?: string;
+  sort?: [string, string];
 }): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/options/read`;
   try {
     const response = await post(apiUrl, {
+      limit,
+      offset,
       controllingfieldfk,
       fieldName,
+      sort,
     });
     return response?.data;
   } catch (error) {
@@ -118,7 +118,7 @@ export const getCenterList = async ({
 
 export const deleteOption = async (
   type: "states" | "districts" | "blocks",
-  option: string,
+  option: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/options/delete/${type}?option=${option}`;
   const requestBody = {};
@@ -136,7 +136,7 @@ export const deleteOption = async (
 export const createOrUpdateOption = async (
   fieldId: string,
   fieldParams: { options: { name: string; value: string }[] },
-  stateId?: string,
+  stateId?: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/update/${fieldId}`;
 

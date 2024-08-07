@@ -53,7 +53,7 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
   }, [initialValues]);
 
   const isAlphabetic = (input: string) =>
-    input === "" || /^[a-zA-Z]+$/.test(input);
+    input === "" || /^[a-zA-Z\s]+$/.test(input);
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -80,9 +80,9 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
     if (!formData.name) {
       newErrors.name = t("COMMON.STATE_NAME_REQUIRED");
     }
-    if (!isAlphabetic(formData.name)) {
-      newErrors.name = t("COMMON.INVALID_TEXT");
-    }
+    // if (!isAlphabetic(formData.name)) {
+    //   newErrors.name = t("COMMON.INVALID_TEXT");
+    // }
     if (!formData.value) {
       newErrors.value = t("COMMON.CODE_REQUIRED");
     }
