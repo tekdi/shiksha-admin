@@ -7,10 +7,10 @@ export default function Document() {
      <Head>
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@project-sunbird/sunbird-questionset-editor-web-component/styles.css"
+          href="https://cdn.jsdelivr.net/npm/@tekdi/sunbird-questionset-editor-web-component@3.0.1/styles.css"
         />
         <script
-          src="https://cdn.jsdelivr.net/npm/@project-sunbird/sunbird-questionset-editor-web-component/sunbird-questionset-editor.js"
+          src="https://cdn.jsdelivr.net/npm/@tekdi/sunbird-questionset-editor-web-component@3.0.1/sunbird-questionset-editor.js"
           async
         ></script>
       </Head>
