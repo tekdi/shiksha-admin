@@ -138,26 +138,19 @@ const LoginPage = () => {
 
         const userInfo = response?.userData;
         //set user info in zustand store
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem('adminInfo', JSON.stringify(userInfo))
-          localStorage.setItem('stateName', userInfo?.customFields[0]?.value);        
+        if (typeof window !== "undefined" && window.localStorage) {
+          localStorage.setItem("adminInfo", JSON.stringify(userInfo));
+          localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
-        if(userInfo.role!==Role.ADMIN)
-        {
+        if (userInfo.role !== Role.ADMIN) {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
-
-  
-        }
-        else
-        {
+        } else {
           setAdminInformation(userInfo);
 
           router.push("/centers");
-
         }
-
       }
     } catch (error) {
       console.log(error);
@@ -397,6 +390,21 @@ const LoginPage = () => {
               >
                 {t("LOGIN_PAGE.LOGIN")}
               </Button>
+            </Box>
+            <Box
+              sx={{
+                fontSize: "14px",
+                fontWeight: "500",
+                color: theme.palette.secondary.main,
+                mt: 1,
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                handleForgotPasswordClick();
+                router.push("/forgot-password");
+              }}
+            >
+              {t("LOGIN_PAGE.FORGOT_PASSWORD")}
             </Box>
           </form>
         </Box>
