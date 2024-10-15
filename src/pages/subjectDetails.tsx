@@ -9,6 +9,8 @@ import {
   IconButton,
   MenuItem,
   Select,
+  Divider,
+  Tooltip,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -81,8 +83,8 @@ const SubjectDetails = () => {
   const setTaxonomySubject = taxonomyStore((state) => state.setTaxonomySubject);
 
   useEffect(() => {
-    const subjects = localStorage.getItem('overallCommonSubjects');
-  
+    const subjects = localStorage.getItem("overallCommonSubjects");
+
     if (subjects) {
       try {
         const parsedData = JSON.parse(subjects);
@@ -95,8 +97,6 @@ const SubjectDetails = () => {
       setSubject([]);
     }
   }, []);
-  
-  
 
   useEffect(() => {
     const fetchFrameworkDetails = async () => {
@@ -172,7 +172,7 @@ const SubjectDetails = () => {
   const handleCopyLink = (subject: any) => {};
 
   const handleCardClick = (subject: any) => {
-    setTaxonomySubject(subject?.name)
+    setTaxonomySubject(subject?.name);
     router.push(`/importCsv?subject=${encodeURIComponent(subject?.name)}`);
 
     setTaxanomySubject(subject?.name);
@@ -188,7 +188,10 @@ const SubjectDetails = () => {
 
     if (medium) {
       const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
-      const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
+      const mediumAssociations = getAssociationsByCodeNew(
+        mediumOptions,
+        medium
+      );
       setMediumAssociations(mediumAssociations);
 
       console.log(getGrades);
@@ -359,9 +362,12 @@ const SubjectDetails = () => {
       ];
 
       const overallCommonSubjects = findOverallCommonSubjects(arrays);
-      
+
       setSubject(overallCommonSubjects);
-      localStorage.setItem("overallCommonSubjects", JSON.stringify(overallCommonSubjects))
+      localStorage.setItem(
+        "overallCommonSubjects",
+        JSON.stringify(overallCommonSubjects)
+      );
     }
   };
 
@@ -421,7 +427,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography >Select Grade</Typography>
+              <Typography>Select Grade</Typography>
             </MenuItem>
             {grade.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -467,7 +473,7 @@ const SubjectDetails = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: "16px",
+
           marginTop: "16px",
           marginBottom: "16px",
         }}
@@ -476,12 +482,15 @@ const SubjectDetails = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">{boardName}</Typography>
-
+        <Typography variant="h2" sx={{ ml: 1 }}>
+          Board
+        </Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
+      <Divider />
       <Box sx={{ marginTop: "16px" }}>
         {subject && subject.length > 1 ? (
-          subject.map((subj: any, index: any) => (
+          subject.map((subj: any, index: number) => (
             <MuiCard
               key={index}
               sx={{
@@ -489,62 +498,40 @@ const SubjectDetails = () => {
                 gridTemplateColumns: "1fr 2fr 1fr",
                 padding: "14px",
                 cursor: "pointer",
-                border: "1px solid #0000001A",
-                boxShadow: "none",
-                transition: "background-color 0.3s",
+                border: "1px solid rgba(0, 0, 0, 0.1)",
+                boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                borderRadius: "8px",
+                transition: "all 0.3s ease",
                 "&:hover": {
                   backgroundColor: "#EAF2FF",
+                  transform: "scale(1.02)",
                 },
-                marginTop: "8px",
+                marginTop: "12px",
               }}
               onClick={() => handleCardClick(subj)}
             >
+              {/* Left Section: Folder Icon and Subject Name */}
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px",
+                  gap: "10px",
                 }}
               >
-                <FolderOutlinedIcon />
-                <Typography variant="h6">{subj?.name}</Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                }}
-              >
-                <CircularProgress
-                  variant="determinate"
-                  sx={{
-                    color: "#06A816",
-                    "& .MuiCircularProgress-circle": {
-                      strokeLinecap: "round",
-                      stroke: "#06A816",
-                    },
-                  }}
-                />
-                <Typography sx={{ fontSize: "14px" }}>
-                  {/* {subj.uploaded} / {subj.total} {"topics uploaded"} */}
+                <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
+                <Typography variant="h6" noWrap>
+                  {subj?.name || "Untitled Subject"}
                 </Typography>
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                  onClick={(e: MouseEvent<HTMLButtonElement>) => {
-                    e.stopPropagation();
-                    handleCopyLink(subj);
-                  }}
-                  sx={{ minWidth: "auto", padding: 0 }}
-                >
-                </Button>
               </Box>
             </MuiCard>
           ))
         ) : (
-          <Typography variant="h2" align="center" sx={{ marginTop: "16px" }}>
-            Select Medium, Grade and Type
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{ marginTop: "24px", color: "#6B7280" }}
+          >
+            Select Medium, Grade, and Type
           </Typography>
         )}
       </Box>

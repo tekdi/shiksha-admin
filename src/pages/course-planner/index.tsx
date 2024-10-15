@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   useTheme,
   Grid,
+  Divider,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -21,7 +22,7 @@ import Loader from "@/components/Loader";
 import { getChannelDetails } from "@/services/coursePlanner";
 import { getOptionsByCategory } from "@/utils/Helper";
 import coursePlannerStore from "@/store/coursePlannerStore";
-import taxonomyStore from "@/store/tanonomyStore"
+import taxonomyStore from "@/store/tanonomyStore";
 
 const Foundation = () => {
   const router = useRouter();
@@ -158,19 +159,15 @@ const Foundation = () => {
           <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
         ) : (
           <Box sx={{ pl: "20px", mt: 5 }}>
-            {/* <Box
+            <Box
               sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr 1fr",
-                gap: isSmallScreen ? "8px" : "16px",
                 mb: 2,
               }}
             >
               <Typography>{t("MASTER.STATE")}</Typography>
-              <Typography>{t("COURSE_PLANNER.ACTIVITY")}</Typography>
-              <Typography>{t("COURSE_PLANNER.COPY_LINK")}</Typography>
-            </Box> */}
-            <Grid container spacing={2}>
+            </Box>
+            <Divider />
+            <Grid container spacing={2} mt={2}>
               {!selectedCardId ? (
                 cardData?.map((card: any) => (
                   <Grid item xs={12} md={4} key={card.id}>
@@ -227,8 +224,7 @@ const Foundation = () => {
                             handleCopyLink(card.state);
                           }}
                           sx={{ minWidth: "auto", padding: 0 }}
-                        >
-                        </Button>
+                        ></Button>
                       </Box>
                     </Box>
                   </Grid>
