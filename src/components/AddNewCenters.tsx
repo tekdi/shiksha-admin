@@ -5,7 +5,7 @@ import {
 } from "@/components/GeneratedSchemas";
 import SimpleModal from "@/components/SimpleModal";
 import { getFormRead } from "@/services/CreateUserService";
-import { CohortTypes, FormContextType } from "@/utils/app.constant";
+import { CohortTypes, FormContext, FormContextType, apiCatchingDuration } from "@/utils/app.constant";
 import { useLocationState } from "@/utils/useLocationState";
 import { Box, Button, Typography } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
@@ -18,6 +18,7 @@ import { showToastMessage } from "./Toastify";
 import { createCohort } from "@/services/CohortService/cohortService";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import FrameworkCategories from "./FrameworkCategories";
+import { useQuery } from "@tanstack/react-query";
 
 interface CustomField {
   fieldId: string;
@@ -84,6 +85,14 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
   const setSubmittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setSubmittedButtonStatus
   );
+
+
+  const { data:cohortFormData ,isLoading: cohortFormDataLoading, error :cohortFormDataError } = useQuery<any[]>({
+    queryKey: ["cohortFormData"],  
+    queryFn: () => Promise.resolve([]), 
+    staleTime: apiCatchingDuration.GETREADFORM,
+    enabled: false, 
+  });
   const [stateDefaultValueForCenter, setStateDefaultValueForCenter] =
     useState<string>("");
     const createCenterStatus = useSubmittedButtonStore(
@@ -121,11 +130,12 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
         }
       }
       try {
-        const response = await getFormRead("cohorts", "cohort");
-        console.log("sortedFields", response);
+    //    const response = await getFormRead("cohorts", "cohort");
+        
 
-        if (response) {
-          const updatedFormResponse = removeHiddenFields(response);
+
+        if (cohortFormData) {
+          const updatedFormResponse = removeHiddenFields(cohortFormData);
           if (updatedFormResponse) {
             let { schema, uiSchema } = GenerateSchemaAndUiSchema(
               updatedFormResponse,
@@ -133,7 +143,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
             );
             setSchema(schema);
             setUiSchema(uiSchema);
-            setCustomFormData(response);
+            setCustomFormData(cohortFormData);
           }
         }
       } catch (error) {
@@ -141,7 +151,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
       }
     };
     getAddLearnerFormData();
-  }, []);
+  }, [cohortFormData]);
 
   const handleDependentFieldsChange = () => {
     setShowForm(true);

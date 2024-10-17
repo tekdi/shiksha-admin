@@ -13,12 +13,15 @@ import {
 } from "@/services/CohortService/cohortService";
 import {
   CohortTypes,
+  FormContext,
+  FormContextType,
   Numbers,
   QueryKeys,
   Role,
   SORT,
   Status,
   Storage,
+  apiCatchingDuration,
 } from "@/utils/app.constant";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -41,7 +44,7 @@ import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import DynamicForm from "@/components/DynamicForm";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 type cohortFilterDetails = {
   type?: string;
@@ -118,6 +121,15 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
+  const {
+    data: cohortFormData,
+    isLoading: cohortFormDataLoading,
+    error: cohortFormDataError,
+  } = useQuery<any>({
+    queryKey: ["cohortFormData"],
+    queryFn: () => getFormRead( FormContext.COHORTS, FormContextType.COHORT),
+    staleTime: apiCatchingDuration.GETREADFORM,
+  });
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
   );
@@ -303,10 +315,10 @@ finalResult?.forEach((item: any, index: number) => {
 
   const getFormData = async () => {
     try {
-      const res = await getFormRead("cohorts", "cohort");
-      if (res && res?.fields) {
-        const formDatas = res?.fields;
-        setFormData(formDatas);
+     // const res = await getFormRead("cohorts", "cohort");
+      if (cohortFormData && cohortFormData?.fields) {
+        const formData = cohortFormData?.fields;
+        setFormData(formData);
       } else {
         console.log("No response Data");
       }
@@ -359,9 +371,9 @@ const response=  await fetchCohortMemberList(data);
 
   const getAddCenterFormData = async () => {
     try {
-      const response = await getFormRead("cohorts", "cohort");
-      if (response) {
-        const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
+      //const response = await getFormRead("cohorts", "cohort");
+      if (cohortFormData) {
+        const { schema, uiSchema } = GenerateSchemaAndUiSchema(cohortFormData, t);
 
         setSchema(schema);
         setUiSchema(uiSchema);
@@ -738,11 +750,11 @@ const response=  await fetchCohortMemberList(data);
         offset: 0,
       };
       const resp = await getCohortList(data);
-      const formFields = await getFormRead("cohorts", "cohort");
+      //const formFields = await getFormRead("cohorts", "cohort");
 
       const cohortDetails = resp?.results?.cohortDetails?.[0] || {};
 
-      setEditFormData(mapFields(formFields, cohortDetails));
+      setEditFormData(mapFields(cohortFormData, cohortDetails));
       setLoading(false);
       setIsEditForm(true);
     }
