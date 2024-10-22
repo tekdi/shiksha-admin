@@ -28,6 +28,8 @@ export enum Storage {
 }
 export enum FormContext {
   USERS = "USERS",
+  COHORTS="cohorts"
+
 }
 
 export enum FormContextType {
@@ -36,6 +38,7 @@ export enum FormContextType {
   TEAM_LEADER = "TEAM LEADER",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
+  COHORT="cohort"
 }
 
 export enum RoleId {
