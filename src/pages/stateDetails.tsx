@@ -8,6 +8,7 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
+  Divider,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -49,7 +50,7 @@ const StateDetails = () => {
 
         const channel = store?.boards;
         setBoards(channel);
-        localStorage.removeItem("overallCommonSubjects")
+        localStorage.removeItem("overallCommonSubjects");
         setLoading(false);
       }, 1000);
     };
@@ -107,16 +108,26 @@ const StateDetails = () => {
 
   return (
     <Box>
-     
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, mt: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }}>
         <IconButton onClick={handleBackClick}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h2">{tStore.state}</Typography>
-                <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
-        </Box>
+
+        <Typography variant="h2">{card.state}</Typography>
+        <Typography variant="h2" sx={{ ml: 1 }}>
+          State
+        </Typography>
+
+        <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}></Box>
+
       </Box>
+      <Divider />
       <Grid spacing={2} container sx={{ marginTop: "16px", ml: 2 }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, mt: 2 }}
+        >
+          <Typography variant="h2">Boards :</Typography>
+        </Box>
         {boards.map((board: any, index: number) => (
           <Grid item xs={12} md={4} key={index}>
             <Box
@@ -151,8 +162,6 @@ const StateDetails = () => {
                     {board?.name}
                   </Typography>
                 </Box>
-              
-                 
               </Box>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Button
@@ -161,9 +170,7 @@ const StateDetails = () => {
                     handleCopyLink(board?.identifier);
                   }}
                   sx={{ minWidth: "auto", padding: 0 }}
-                >
-             
-                </Button>
+                ></Button>
               </Box>
             </Box>
           </Grid>
