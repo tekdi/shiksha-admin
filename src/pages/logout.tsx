@@ -20,11 +20,33 @@ function Logout() {
       }
     };
     userLogout();
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("name");
-    localStorage.removeItem("tenantId");
-    localStorage.removeItem("adminInfo");
+    if (typeof window !== 'undefined' && window.localStorage) {
+      // Specify the keys you want to keep
+      const keysToKeep = [
+        'preferredLanguage',
+        'mui-mode',
+        'mui-color-scheme-dark',
+        'mui-color-scheme-light',
+        'hasSeenTutorial',
+      ];
+      // Retrieve the values of the keys to keep
+      const valuesToKeep: { [key: string]: any } = {};
+      keysToKeep.forEach((key: string) => {
+        valuesToKeep[key] = localStorage.getItem(key);
+      });
+
+      // Clear all local storage
+      localStorage.clear();
+
+      // Re-add the keys to keep with their values
+      keysToKeep.forEach((key: string) => {
+        if (valuesToKeep[key] !== null) {
+          // Check if the key exists and has a value
+          localStorage.setItem(key, valuesToKeep[key]);
+        }
+      });
+    }
+
 
 
 

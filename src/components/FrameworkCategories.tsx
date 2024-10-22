@@ -77,7 +77,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
 
   useEffect(() => {
     const handleBMGS = async () => {
-      const userStateName = localStorage.getItem('userStateName');
+      const userStateName = localStorage.getItem('stateName');
       try {
         const url = `${process.env.NEXT_PUBLIC_SUNBIRDSAAS_API_URL}/api/framework/v1/read/${frameworkId}`;
         const boardData = await fetch(url).then((res) => res.json());

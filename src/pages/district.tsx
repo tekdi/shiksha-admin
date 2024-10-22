@@ -218,19 +218,19 @@ const District: React.FC = () => {
         sort: sortBy,
       };
 
-      const response = await queryClient.fetchQuery({
-        queryKey: [
-          QueryKeys.FIELD_OPTION_READ,
-          reqParams.limit,
-          reqParams.offset,
-          searchKeyword || "",
-          stateCode,
-          CohortTypes.DISTRICT,
-          reqParams.sort.join(","),
-        ],
-        queryFn: () => getCohortList(reqParams),
-      });
-
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     searchKeyword || "",
+      //     stateCode,
+      //     CohortTypes.DISTRICT,
+      //     reqParams.sort.join(","),
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+const response= await  getCohortList(reqParams)
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -302,17 +302,18 @@ const District: React.FC = () => {
         },
         sort: sortBy,
       };
-      const response = await queryClient.fetchQuery({
-        queryKey: [
-          QueryKeys.FIELD_OPTION_READ,
-          reqParams.limit,
-          reqParams.offset,
-          reqParams.filters.districts || "",
-          CohortTypes.BLOCK,
-          reqParams.sort.join(","),
-        ],
-        queryFn: () => getCohortList(reqParams),
-      });
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     reqParams.filters.districts || "",
+      //     CohortTypes.BLOCK,
+      //     reqParams.sort.join(","),
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+      const response= await  getCohortList(reqParams)
 
       const activeBlocks = response?.results?.cohortDetails || [];
 

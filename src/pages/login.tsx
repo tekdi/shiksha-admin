@@ -142,7 +142,7 @@ const LoginPage = () => {
           localStorage.setItem('adminInfo', JSON.stringify(userInfo))
           localStorage.setItem('stateName', userInfo?.customFields[0]?.value);        
         }
-        if(userInfo.role!==Role.ADMIN)
+        if(userInfo?.role!==Role.ADMIN)
         {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");

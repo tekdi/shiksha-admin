@@ -178,6 +178,11 @@ export const mapFields = (formFields: any, Details: any) => {
           return field?.value?.toLowerCase();
         }
       } else if (item?.type === InputTypes.RADIO) {
+        if(field?.value===FormValues?.REGULAR|| field?.value===FormValues?.REMOTE)
+        {
+
+          return field?.code;
+        }
         return field?.value || null;
       } else if (item?.type === InputTypes.NUMERIC) {
         return parseInt(String(field?.value));

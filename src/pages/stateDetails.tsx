@@ -119,6 +119,7 @@ const StateDetails = () => {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}></Box>
+
       </Box>
       <Divider />
       <Grid spacing={2} container sx={{ marginTop: "16px", ml: 2 }}>
