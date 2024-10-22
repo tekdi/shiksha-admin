@@ -47,15 +47,15 @@ const nextConfig = {
     return [
       {
         source: "/action/asset/v1/upload/:identifier*", // Match asset upload routes
-        destination: '/api/fileUpload'                  // Forward asset uploads to fileUpload proxy
+        destination: "/api/fileUpload", // Forward asset uploads to fileUpload proxy
       },
       {
         source: "/action/content/v3/upload/url/:identifier*", // Match content upload with 'url' in the path
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/v3/upload/url/:identifier*`, // Forward to proxy route with path as query param
       },
       {
-        source: '/action/content/v3/upload/:identifier*', // Match content upload routes
-        destination: '/api/fileUpload',                   // Forward asset uploads to fileUpload proxy
+        source: "/action/content/v3/upload/:identifier*", // Match content upload routes
+        destination: "/api/fileUpload", // Forward asset uploads to fileUpload proxy
       },
       {
         source: "/action/asset/:path*", // Match other /action/asset routes
@@ -74,7 +74,7 @@ const nextConfig = {
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
       },
       {
-        source: '/assets/public/:path*',                                       // Match any URL starting with /assets/public/
+        source: "/assets/public/:path*", // Match any URL starting with /assets/public/
         destination: `${process.env.WORKSPACE_BASE_URL}/assets/public/:path*`, // Forward to workspace proxy
       },
       {
