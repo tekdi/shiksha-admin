@@ -3,10 +3,10 @@ import dynamic from "next/dynamic";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 // @ts-ignore
-const CollectionEditor = dynamic(() => import("editor/Collection"), { ssr: false });
+const CourseEditor = dynamic(() => import("editor/Collection"), { ssr: false });
 
 const Collection = () => {
-  return <CollectionEditor />;
+  return <CourseEditor />;
 };
 
 export default Collection;
