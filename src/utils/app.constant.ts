@@ -28,6 +28,7 @@ export enum Storage {
 }
 export enum FormContext {
   USERS = "USERS",
+  COHORTS = "cohorts",
 }
 
 export enum FormContextType {
@@ -36,6 +37,7 @@ export enum FormContextType {
   TEAM_LEADER = "TEAM LEADER",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
+  COHORT = "cohort",
 }
 
 export enum RoleId {
@@ -79,10 +81,8 @@ export enum CohortTypes {
 export enum FormValues {
   FEMALE = "FEMALE",
   MALE = "MALE",
-  REGULAR="REGULAR",
-  REMOTE="REMOTE"
-
-
+  REGULAR = "REGULAR",
+  REMOTE = "REMOTE",
 }
 
 export enum InputTypes {
@@ -95,28 +95,26 @@ export enum apiCatchingDuration {
   GETREADFORM = 36000000,
 }
 
-
 export const QueryKeys = {
   USER_READ: "userRead",
   FIELD_OPTION_READ: "fieldOptionRead",
   MY_COHORTS: "myCohorts",
   GET_COHORT_LIST: "getcohortList",
   GET_COHORT_MEMBER_LIST: "getCohortMemberList",
-}
+};
 
-
-export const monthColors:any = {
-  "Jan": "#99CCFF",
-  "Mar": "#D9B2FF",
-  "Apr": "#FFABAB",
-  "May": "#FFABAB",
-  "Jun": "#FFABAB",
-  "Jul": "#FFABAB",
-  "Aug": "#FFABAB",
-  "Sep": "#FFABAB",
-  "Oct": "#FFD6D6",
-  "Nov": "#FFD6D6",
-  "Dec": "#FFD6D6"
+export const monthColors: any = {
+  Jan: "#99CCFF",
+  Mar: "#D9B2FF",
+  Apr: "#FFABAB",
+  May: "#FFABAB",
+  Jun: "#FFABAB",
+  Jul: "#FFABAB",
+  Aug: "#FFABAB",
+  Sep: "#FFABAB",
+  Oct: "#FFD6D6",
+  Nov: "#FFD6D6",
+  Dec: "#FFD6D6",
 };
 
 export enum ResourceType {

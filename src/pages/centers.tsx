@@ -13,12 +13,15 @@ import {
 } from "@/services/CohortService/cohortService";
 import {
   CohortTypes,
+  FormContext,
+  FormContextType,
   Numbers,
   QueryKeys,
   Role,
   SORT,
   Status,
   Storage,
+  apiCatchingDuration,
 } from "@/utils/app.constant";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -36,15 +39,18 @@ import { showToastMessage } from "@/components/Toastify";
 import AddNewCenters from "@/components/AddNewCenters";
 import { getCenterTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
-import { firstLetterInUpperCase, mapFields , transformLabel} from "@/utils/Helper";
+import {
+  firstLetterInUpperCase,
+  mapFields,
+  transformLabel,
+} from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import DynamicForm from "@/components/DynamicForm";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -120,6 +126,15 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
+  const {
+    data: cohortFormData,
+    isLoading: cohortFormDataLoading,
+    error: cohortFormDataError,
+  } = useQuery<any>({
+    queryKey: ["cohortFormData"],
+    queryFn: () => getFormRead(FormContext.COHORTS, FormContextType.COHORT),
+    staleTime: apiCatchingDuration.GETREADFORM,
+  });
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
   );
@@ -141,7 +156,7 @@ const Center: React.FC = () => {
   const setSubmittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setSubmittedButtonStatus
   );
- 
+
   const createCenterStatus = useSubmittedButtonStore(
     (state: any) => state.createCenterStatus
   );
@@ -230,7 +245,7 @@ const Center: React.FC = () => {
       //   ],
       //   queryFn: () => getCohortList(data),
       // });
-console.log(resp)
+      console.log(resp);
       if (resp) {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
@@ -243,10 +258,11 @@ console.log(resp)
             return await getCohortMemberlistData(cohortId);
           })
         );
-console.log(result)
-const finalResult=  result
-?.filter((cohort: any) => cohort.type === "COHORT")
-finalResult?.forEach((item: any, index: number) => {
+        console.log(result);
+        const finalResult = result?.filter(
+          (cohort: any) => cohort.type === "COHORT"
+        );
+        finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
               (field: any) => field.label === "TYPE_OF_COHORT"
@@ -274,7 +290,7 @@ finalResult?.forEach((item: any, index: number) => {
           };
           resultData?.push(requiredData);
         });
-        console.log(resultData)
+        console.log(resultData);
         setCohortData(resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
@@ -292,13 +308,11 @@ finalResult?.forEach((item: any, index: number) => {
         const pageCount = Math.ceil(totalCount / pageLimit);
         setPageCount(pageCount);
         setLoading(false);
-      }
-      else{
+      } else {
         setCohortData([]);
-
       }
     } catch (error) {
-      console.log("not data found")
+      console.log("not data found");
       setCohortData([]);
       setLoading(false);
       console.error("Error fetching user list:", error);
@@ -307,10 +321,10 @@ finalResult?.forEach((item: any, index: number) => {
 
   const getFormData = async () => {
     try {
-      const res = await getFormRead("cohorts", "cohort");
-      if (res && res?.fields) {
-        const formDatas = res?.fields;
-        setFormData(formDatas);
+      // const res = await getFormRead("cohorts", "cohort");
+      if (cohortFormData && cohortFormData?.fields) {
+        const formData = cohortFormData?.fields;
+        setFormData(formData);
       } else {
         console.log("No response Data");
       }
@@ -328,7 +342,7 @@ finalResult?.forEach((item: any, index: number) => {
         cohortId: cohortId,
       },
     };
-const response=  await fetchCohortMemberList(data);
+    const response = await fetchCohortMemberList(data);
     // const response = await queryClient.fetchQuery({
     //   queryKey: [
     //     QueryKeys.GET_COHORT_MEMBER_LIST,
@@ -342,12 +356,14 @@ const response=  await fetchCohortMemberList(data);
     if (response?.result) {
       const userDetails = response.result.userDetails;
       const getActiveMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ACTIVE && member?.role ===  Role.STUDENT
+        (member: any) =>
+          member?.status === Status.ACTIVE && member?.role === Role.STUDENT
       );
       const totalActiveMembers = getActiveMembers?.length || 0;
 
       const getArchivedMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT
+        (member: any) =>
+          member?.status === Status.ARCHIVED && member?.role === Role.STUDENT
       );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
@@ -365,9 +381,12 @@ const response=  await fetchCohortMemberList(data);
 
   const getAddCenterFormData = async () => {
     try {
-      const response = await getFormRead("cohorts", "cohort");
-      if (response) {
-        const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
+      //const response = await getFormRead("cohorts", "cohort");
+      if (cohortFormData) {
+        const { schema, uiSchema } = GenerateSchemaAndUiSchema(
+          cohortFormData,
+          t
+        );
 
         setSchema(schema);
         setUiSchema(uiSchema);
@@ -381,12 +400,23 @@ const response=  await fetchCohortMemberList(data);
   };
 
   useEffect(() => {
-    if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")  ){
+    if (
+      selectedBlockCode !== "" ||
+      (selectedDistrictCode !== "" && selectedBlockCode === "")
+    ) {
       fetchUserList();
     }
     // fetchUserList();
     getFormData();
-  }, [pageOffset, pageLimit, sortBy, filters, filters.states, filters.status, createCenterStatus]);
+  }, [
+    pageOffset,
+    pageLimit,
+    sortBy,
+    filters,
+    filters.states,
+    filters.status,
+    createCenterStatus,
+  ]);
 
   // handle functions
   const handleChange = (event: SelectChangeEvent<typeof pageSize>) => {
@@ -427,35 +457,32 @@ const response=  await fetchCohortMemberList(data);
   );
 
   const handleStateChange = async (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
- 
+    const newQuery = { ...router.query };
+
     if (newQuery.center) {
-      delete newQuery.center;  
+      delete newQuery.center;
     }
     if (newQuery.district) {
-     delete newQuery.district;
-   }
+      delete newQuery.district;
+    }
     if (newQuery.block) {
       delete newQuery.block;
     }
     router.replace({
       pathname: router.pathname,
-      query: { 
-        ...newQuery, 
-        state: code?.join(","), 
-      }
+      query: {
+        ...newQuery,
+        state: code?.join(","),
+      },
     });
     setSelectedDistrict([]);
     setSelectedBlock([]);
     setSelectedState(selected);
 
+    // setSelectedCenterCode([])
 
-   // setSelectedCenterCode([])
-
-   
     setSelectedBlockCode("");
     setSelectedDistrictCode("");
-  
 
     if (selected[0] === "") {
       if (filters.status)
@@ -475,74 +502,67 @@ const response=  await fetchCohortMemberList(data);
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
-    console.log(selected)
-        if (newQuery.center) {
-          delete newQuery.center;  
-        }
-        if (newQuery.block) {
-          delete newQuery.block;
-        }
+    const newQuery = { ...router.query };
+    console.log(selected);
+    if (newQuery.center) {
+      delete newQuery.center;
+    }
+    if (newQuery.block) {
+      delete newQuery.block;
+    }
     setSelectedBlock([]);
     setSelectedDistrict(selected);
     setSelectedBlockCode("");
-    localStorage.setItem('selectedDistrict', selected[0])
-    
-    setSelectedDistrictStore(selected[0])
-    if (selected[0] === "" ||  selected[0] === t("COMMON.ALL_DISTRICTS")) {
+    localStorage.setItem("selectedDistrict", selected[0]);
+
+    setSelectedDistrictStore(selected[0]);
+    if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
       if (filters.status) {
-        console.log("true...")
+        console.log("true...");
         setFilters({
           states: selectedStateCode,
           status: filters.status,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       } else {
         setFilters({
-
           states: selectedStateCode,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       }
       if (newQuery.district) {
-        delete newQuery.district;  
+        delete newQuery.district;
       }
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-        }
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+        },
       });
     } else {
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: code?.join(",") 
-        }
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: code?.join(","),
+        },
       });
       const districts = code?.join(",");
       setSelectedDistrictCode(districts);
       if (filters.status) {
         setFilters({
-
           states: selectedStateCode,
           districts: districts,
           status: filters.status,
           //type:"COHORT",
-
         });
       } else {
         setFilters({
-
           states: selectedStateCode,
           districts: districts,
-         // type:"COHORT",
-
+          // type:"COHORT",
         });
       }
     }
@@ -551,79 +571,69 @@ const response=  await fetchCohortMemberList(data);
   };
   const handleBlockChange = (selected: string[], code: string[]) => {
     setSelectedBlock(selected);
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     if (newQuery.center) {
-      delete newQuery.center;  
+      delete newQuery.center;
     }
     if (newQuery.block) {
       delete newQuery.block;
     }
-    console.log(code?.join(","))
-    
-    
-   
-    localStorage.setItem('selectedBlock', selected[0])
-    setSelectedBlockStore(selected[0])
+    console.log(code?.join(","));
+
+    localStorage.setItem("selectedBlock", selected[0]);
+    setSelectedBlockStore(selected[0]);
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_BLOCKS")) {
       if (newQuery.block) {
         delete newQuery.block;
       }
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: selectedDistrictCode, 
-        }
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: selectedDistrictCode,
+        },
       });
       if (filters.status) {
         setFilters({
-
           states: selectedStateCode,
           districts: selectedDistrictCode,
           status: filters.status,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       } else {
         setFilters({
-
           states: selectedStateCode,
           districts: selectedDistrictCode,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       }
     } else {
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: selectedDistrictCode, 
-          block: code?.join(",") 
-        }
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: selectedDistrictCode,
+          block: code?.join(","),
+        },
       });
       const blocks = code?.join(",");
       setSelectedBlockCode(blocks);
       if (filters.status) {
         setFilters({
-
           states: selectedStateCode,
           districts: selectedDistrictCode,
           blocks: blocks,
           status: filters.status,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       } else {
         setFilters({
-
           states: selectedStateCode,
           districts: selectedDistrictCode,
           blocks: blocks,
-          type:"COHORT",
-
+          type: "COHORT",
         });
       }
     }
@@ -745,11 +755,11 @@ const response=  await fetchCohortMemberList(data);
         offset: 0,
       };
       const resp = await getCohortList(data);
-      const formFields = await getFormRead("cohorts", "cohort");
+      //const formFields = await getFormRead("cohorts", "cohort");
 
       const cohortDetails = resp?.results?.cohortDetails?.[0] || {};
 
-      setEditFormData(mapFields(formFields, cohortDetails));
+      setEditFormData(mapFields(cohortFormData, cohortDetails));
       setLoading(false);
       setIsEditForm(true);
     }
@@ -898,46 +908,48 @@ const response=  await fetchCohortMemberList(data);
         // const result = response?.result?.values;
         if (typeof window !== "undefined" && window.localStorage) {
           const admin = localStorage.getItem("adminInfo");
-          if(admin)
-          {
-            const stateField = JSON.parse(admin).customFields.find((field: any) => field.label === "STATES");
-              if (!stateField.value.includes(',')) {
+          if (admin) {
+            const stateField = JSON.parse(admin).customFields.find(
+              (field: any) => field.label === "STATES"
+            );
+            if (!stateField.value.includes(",")) {
               setSelectedState([stateField.value]);
-              setSelectedStateCode(stateField.code)
-               if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS"))
-              {
-               
+              setSelectedStateCode(stateField.code);
+              if (
+                selectedDistrictCode &&
+                selectedDistrict.length !== 0 &&
+                selectedDistrict[0] !== t("COMMON.ALL_DISTRICTS")
+              ) {
                 setFilters({
-
                   states: stateField.code,
                   districts: selectedDistrictCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
-
                 });
               }
-              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS"))
-              {
-               setFilters({
+              if (
+                selectedBlockCode &&
+                selectedBlock.length !== 0 &&
+                selectedBlock[0] !== t("COMMON.ALL_BLOCKS")
+              ) {
+                setFilters({
                   states: stateField.code,
-                  districts:selectedDistrictCode,
-                  blocks:selectedBlockCode,
+                  districts: selectedDistrictCode,
+                  blocks: selectedBlockCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
-
-                })
+                });
               }
-           }
-           }
+            }
+          }
         }
       } catch (error) {
         console.log(error);
       }
     };
-  
+
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode]);
-
 
   const handleMemberClick = async (
     type: "active" | "archived",
@@ -999,10 +1011,9 @@ const response=  await fetchCohortMemberList(data);
           "Incomplete location data (state, district, block) for the cohort."
         );
       }
-      
 
       if (urlData) {
-      //  localStorage.setItem("selectedBlock", selectedBlock[0])
+        //  localStorage.setItem("selectedBlock", selectedBlock[0])
         // router.push(
         //   `learners?state=${urlData.stateCode}&district=${urlData.districtCode}&block=${urlData.blockCode}&status=${urlData.type}`
         // );
@@ -1039,14 +1050,12 @@ const response=  await fetchCohortMemberList(data);
     setStatusValue: setStatusValue,
     showSort: true,
     selectedBlockCode: selectedBlockCode,
-    setSelectedBlockCode:setSelectedBlockCode,
+    setSelectedBlockCode: setSelectedBlockCode,
     selectedDistrictCode: selectedDistrictCode,
-    setSelectedDistrictCode:setSelectedDistrictCode,
-     setSelectedStateCode:setSelectedStateCode,
-     setSelectedDistrict:setSelectedDistrict,
-     setSelectedBlock:setSelectedBlock
-
-
+    setSelectedDistrictCode: setSelectedDistrictCode,
+    setSelectedStateCode: setSelectedStateCode,
+    setSelectedDistrict: setSelectedDistrict,
+    setSelectedBlock: setSelectedBlock,
   };
 
   return (

@@ -94,7 +94,9 @@ const Block: React.FC = () => {
   const [editState, setEditState] = useState<StateDetail | null>(null);
   const [selectedStateForEdit, setSelectedStateForEdit] =
     useState<StateDetail | null>(null);
-  const [blocksFieldId, setBlocksFieldId] = useState<string>("4aab68ae-8382-43aa-a45a-e9b239319857");
+  const [blocksFieldId, setBlocksFieldId] = useState<string>(
+    "4aab68ae-8382-43aa-a45a-e9b239319857"
+  );
   const [districtFieldId, setDistrictFieldId] = useState<string>("");
   const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
   const [paginationCount, setPaginationCount] = useState<number>(0);
@@ -220,7 +222,7 @@ const Block: React.FC = () => {
       //   queryFn: () => getCohortList(reqParams),
       // });
 
-      const response= await getCohortList(reqParams)
+      const response = await getCohortList(reqParams);
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -253,8 +255,7 @@ const Block: React.FC = () => {
         .filter((district: { label: any }) =>
           districtNameArr.includes(district.label)
         );
-      if (isFirstVisit) 
-      {
+      if (isFirstVisit) {
         if (
           filteredDistrictData.length > 0 &&
           selectedDistrict !== t("COMMON.ALL")
@@ -277,16 +278,12 @@ const Block: React.FC = () => {
     }
   }, [isFirstVisit, searchKeyword, pageLimit, pageOffset, stateCode]);
 
-
   useEffect(() => {
-    if(districtData[0]?.value && isFirstVisit)
-    {
+    if (districtData[0]?.value && isFirstVisit) {
       setSelectedDistrict(districtData[0]?.value);
-    setIsFirstVisit(false);
+      setIsFirstVisit(false);
     }
-
   }, [districtData]);
-
   const fetchBlocks = async () => {
     try {
       // const response = await queryClient.fetchQuery({
@@ -306,7 +303,7 @@ const Block: React.FC = () => {
         controllingfieldfk:
           selectedDistrict === t("COMMON.ALL") ? "" : selectedDistrict,
         fieldName: "blocks",
-      })
+      });
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
@@ -316,7 +313,8 @@ const Block: React.FC = () => {
       const blockCodeArray = blocks.map((item: any) => item.value);
       setBlockCodeArr(blockCodeArray);
 
-      const blockFieldID = response?.result?.fieldId || "4aab68ae-8382-43aa-a45a-e9b239319857";
+      const blockFieldID =
+        response?.result?.fieldId || "4aab68ae-8382-43aa-a45a-e9b239319857";
       setBlocksFieldId(blockFieldID);
     } catch (error) {
       console.error("Error fetching blocks", error);
@@ -365,7 +363,7 @@ const Block: React.FC = () => {
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-      const response = await getCohortList(reqParams)
+      const response = await getCohortList(reqParams);
 
       const cohortDetails = response?.results?.cohortDetails || [];
       const filteredBlockData = cohortDetails
@@ -409,7 +407,7 @@ const Block: React.FC = () => {
       setPaginationCount(totalCount);
       setPageCount(Math.ceil(totalCount / pageLimit));
 
-      setLoading(false); 
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching and filtering cohort blocks", error);
       setLoading(false);

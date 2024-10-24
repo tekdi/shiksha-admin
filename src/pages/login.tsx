@@ -34,6 +34,8 @@ import { getUserDetailsInfo } from "@/services/UserList";
 import { Storage } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { Role } from "@/utils/app.constant";
+import { AcademicYear } from "@/utils/Interfaces";
+import { getAcademicYear } from "@/services/AcademicYearService";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -142,7 +144,7 @@ const LoginPage = () => {
           localStorage.setItem('adminInfo', JSON.stringify(userInfo))
           localStorage.setItem('stateName', userInfo?.customFields[0]?.value);        
         }
-        if(userInfo.role!==Role.ADMIN)
+        if(userInfo?.role!==Role.ADMIN)
         {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");
@@ -153,8 +155,23 @@ const LoginPage = () => {
         else
         {
           setAdminInformation(userInfo);
-
+          const getAcademicYearList = async () => {
+            const academicYearList: AcademicYear[] = await getAcademicYear();
+            if(academicYearList){
+            localStorage.setItem('academicYearList', JSON.stringify(academicYearList));
+            const extractedAcademicYears = academicYearList?.map(
+              ({ id, session, isActive }) => ({ id, session, isActive })
+            );
+            const activeSession = extractedAcademicYears?.find(
+              (item) => item.isActive
+            );
+            const activeSessionId = activeSession ? activeSession.id : '';
+            localStorage.setItem('academicYearId', activeSessionId);
+          }
+          };
+          getAcademicYearList();
           router.push("/centers");
+
 
         }
 

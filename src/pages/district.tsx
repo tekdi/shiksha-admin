@@ -68,7 +68,9 @@ const District: React.FC = () => {
     useState<DistrictDetail | null>(null);
   const [confirmationDialogOpen, setConfirmationDialogOpen] =
     useState<boolean>(false);
-  const [districtFieldId, setDistrictFieldId] = useState<string>("b61edfc6-3787-4079-86d3-37262bf23a9e");
+  const [districtFieldId, setDistrictFieldId] = useState<string>(
+    "b61edfc6-3787-4079-86d3-37262bf23a9e"
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [pageCount, setPageCount] = useState<number>(Numbers.ONE);
@@ -147,7 +149,8 @@ const District: React.FC = () => {
       const districtCodeArray = districts.map((item: any) => item.value);
       setDistrictCodeArr(districtCodeArray);
 
-      const districtFieldID = data?.result?.fieldId || "b61edfc6-3787-4079-86d3-37262bf23a9e";
+      const districtFieldID =
+        data?.result?.fieldId || "b61edfc6-3787-4079-86d3-37262bf23a9e";
       setDistrictFieldId(districtFieldID);
     } catch (error) {
       console.error("Error fetching districts", error);
@@ -231,7 +234,7 @@ const District: React.FC = () => {
       //   queryFn: () => getCohortList(reqParams),
       // });
 
-      const response = await getCohortList(reqParams)
+      const response = await getCohortList(reqParams);
 
       const cohortDetails = response?.results?.cohortDetails || [];
 
@@ -316,7 +319,7 @@ const District: React.FC = () => {
       //   queryFn: () => getCohortList(reqParams),
       // });
 
-      const response= await getCohortList(reqParams)
+      const response = await getCohortList(reqParams);
       const activeBlocks = response?.results?.cohortDetails || [];
 
       const activeBlocksCount = activeBlocks.filter(
@@ -483,7 +486,7 @@ const District: React.FC = () => {
 
       if (response) {
         setDistrictsOptionRead((prevDistricts: any[]) =>
-          prevDistricts.map((district: { value: string | undefined; }) =>
+          prevDistricts.map((district: { value: string | undefined }) =>
             district.value === DistrictId
               ? { ...district, name, value }
               : district

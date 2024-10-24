@@ -4,7 +4,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 export default function Document() {
   return (
     <Html lang="en">
-     <Head>
+      <Head>
         {/* <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/@tekdi/sunbird-questionset-editor-web-component@3.0.1/styles.css"
