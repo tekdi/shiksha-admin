@@ -140,41 +140,36 @@ const LoginPage = () => {
 
         const userInfo = response?.userData;
         //set user info in zustand store
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem('adminInfo', JSON.stringify(userInfo))
-          localStorage.setItem('stateName', userInfo?.customFields[0]?.value);        
+        if (typeof window !== "undefined" && window.localStorage) {
+          localStorage.setItem("adminInfo", JSON.stringify(userInfo));
+          localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
-        if(userInfo?.role!==Role.ADMIN)
-        {
+        if (userInfo?.role !== Role.ADMIN) {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
-
-  
-        }
-        else
-        {
+        } else {
           setAdminInformation(userInfo);
           const getAcademicYearList = async () => {
             const academicYearList: AcademicYear[] = await getAcademicYear();
-            if(academicYearList){
-            localStorage.setItem('academicYearList', JSON.stringify(academicYearList));
-            const extractedAcademicYears = academicYearList?.map(
-              ({ id, session, isActive }) => ({ id, session, isActive })
-            );
-            const activeSession = extractedAcademicYears?.find(
-              (item) => item.isActive
-            );
-            const activeSessionId = activeSession ? activeSession.id : '';
-            localStorage.setItem('academicYearId', activeSessionId);
-          }
+            if (academicYearList) {
+              localStorage.setItem(
+                "academicYearList",
+                JSON.stringify(academicYearList)
+              );
+              const extractedAcademicYears = academicYearList?.map(
+                ({ id, session, isActive }) => ({ id, session, isActive })
+              );
+              const activeSession = extractedAcademicYears?.find(
+                (item) => item.isActive
+              );
+              const activeSessionId = activeSession ? activeSession.id : "";
+              localStorage.setItem("academicYearId", activeSessionId);
+            }
           };
           getAcademicYearList();
           router.push("/centers");
-
-
         }
-
       }
     } catch (error) {
       console.log(error);
@@ -374,12 +369,28 @@ const LoginPage = () => {
             />
 
             <Box
+              sx={{
+                fontSize: "14px",
+                fontWeight: "500",
+                color: theme.palette.secondary.main,
+                mt: 1,
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                window.open(
+                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`
+                );
+              }}
+            >
+              {t("LOGIN_PAGE.FORGOT_PASSWORD")}
+            </Box>
+            {/*<Box
               display="flex"
               alignItems="center"
               marginTop="1.2rem"
               className="remember-me-checkbox"
             >
-              {/* <Checkbox
+               <Checkbox
                 onChange={(e) => setRememberMe(e.target.checked)}
                 checked={rememberMe}
               />
@@ -402,8 +413,9 @@ const LoginPage = () => {
                 }}
               >
                 {t("LOGIN_PAGE.REMEMBER_ME")}
-              </Typography> */}
-            </Box>
+              </Typography> 
+            </Box>*/}
+
             <Box marginTop="2rem" textAlign="center">
               <Button
                 variant="contained"
