@@ -108,3 +108,8 @@ export interface GetUserProjectTemplateParams {
   role: string;
 }
 
+export interface AcademicYear {
+  id: string;
+  session: string;
+  isActive: string;
+}
