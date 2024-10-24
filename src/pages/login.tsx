@@ -165,10 +165,13 @@ const LoginPage = () => {
               );
               const activeSessionId = activeSession ? activeSession.id : "";
               localStorage.setItem("academicYearId", activeSessionId);
+              if (activeSessionId){
+                router.push("/centers");
+              }
             }
           };
           getAcademicYearList();
-          router.push("/centers");
+         
         }
       }
     } catch (error) {
