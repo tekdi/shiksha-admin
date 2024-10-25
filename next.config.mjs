@@ -2,9 +2,8 @@
 /** @type {import('next').NextConfig} */
 import nextI18nextConfig from "./next-i18next.config.js";
 import { NextFederationPlugin } from "@module-federation/nextjs-mf";
-const url = process.env.WORKSPACE_BASE_URL;
+const url = process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL;
 // const url = "http://localhost:3000";
-
 const remotes = (isServer) => {
   const location = isServer ? "ssr" : "chunks";
   return {
@@ -69,6 +68,10 @@ const nextConfig = {
         source: "/action/:path*", // Match any other routes starting with /action/
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/:path*`, // Forward them to proxy.js
       },
+      // {
+      //   source: "/api/content/:path*", // Match other /action/asset routes
+      //   destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/content/:path*`, // Forward other /action/asset requests to proxy.js
+      // },
       {
         source: "/api/:path*", // Match /api/ routes
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
