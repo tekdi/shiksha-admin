@@ -50,6 +50,10 @@ const nextConfig = {
         destination: "/api/fileUpload", // Forward asset uploads to fileUpload proxy
       },
       {
+        source: "/assets/pdfjs/:path*", // Match any URL starting with /workspace/content/assets/
+        destination: `${process.env.WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
+      },
+      {
         source: "/action/content/v3/upload/url/:identifier*", // Match content upload with 'url' in the path
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/v3/upload/url/:identifier*`, // Forward to proxy route with path as query param
       },
