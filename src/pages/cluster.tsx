@@ -28,6 +28,8 @@ import {
 import { getUserDetailsInfo } from "@/services/UserList";
 import useStore from "@/store/store";
 import { useQueryClient } from "@tanstack/react-query";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 export interface StateDetail {
   updatedAt: any;
   createdAt: any;
@@ -77,7 +79,8 @@ const State: React.FC = () => {
   const [userName, setUserName] = React.useState<string | null>("");
   const [statesProfilesData, setStatesProfilesData] = useState<any>([]);
   const [pagination, setPagination] = useState(true);
-
+  const [confirmationModalOpen, setConfirmationModalOpen] =
+    React.useState<boolean>(false);
   const setPid = useStore((state) => state.setPid);
 
   const columns = [
@@ -87,7 +90,7 @@ const State: React.FC = () => {
     { key: "updatedBy", title: t("MASTER.UPDATED_BY"), width: "160" },
     { key: "createdAt", title: t("MASTER.CREATED_AT"), width: "160" },
     { key: "updatedAt", title: t("MASTER.UPDATED_AT"), width: "160" },
-    // { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
+    { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
   ];
 
   const handleEdit = (rowData: StateDetail) => {
@@ -95,9 +98,25 @@ const State: React.FC = () => {
     setAddStateModalOpen(true);
   };
 
+  // const handleDelete = (rowData: any) => {
+  //   setLoading(true);
+
+  //   const cohortName = rowData?.name;
+  //   // SetDeletedRowData
+  //   setInputName(cohortName);
+  //   setConfirmationModalOpen(true);
+  //   if (rowData) {
+  //     setSelectedRowData(rowData);
+  //     const cohortId = rowData?.cohortId;
+  //     setSelectedCohortId(cohortId);
+  //     setLoading(false);
+  //   }
+  //   setLoading(false);
+  // };
+
   const handleDelete = (rowData: StateDetail) => {
     setSelectedStateForDelete(rowData);
-    setConfirmationDialogOpen(true);
+    setConfirmationModalOpen(true);
   };
 
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -107,21 +126,33 @@ const State: React.FC = () => {
     setSelectedSort(event.target.value);
   };
 
+  const handleCloseModal = () => {
+    setConfirmationModalOpen(false);
+  };
+
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("states", selectedStateForDelete.value);
-        setStateData((prevStateData) =>
-          prevStateData.filter(
-            (state) => state.value !== selectedStateForDelete.value
-          )
+        const response = await deleteOption(
+          "clusters",
+          selectedStateForDelete.value
         );
-        showToastMessage(t("COMMON.STATE_DELETED_SUCCESS"), "success");
+        console.log("response", response?.response?.status);
+        if (response?.status === 200) {
+          setStateData((prevStateData) =>
+            prevStateData.filter(
+              (state) => state.value !== selectedStateForDelete.value
+            )
+          );
+          showToastMessage(t("COMMON.STATE_DELETED_SUCCESS"), "success");
+        } else {
+          showToastMessage(t("COMMON.STATE_DELETED_FAILURE"), "error");
+        }
       } catch (error) {
         console.error("Error deleting state", error);
         showToastMessage(t("COMMON.STATE_DELETED_FAILURE"), "error");
       }
-      setConfirmationDialogOpen(false);
+      handleCloseModal();
     }
   };
 
@@ -195,6 +226,12 @@ const State: React.FC = () => {
     setPageOffset(value - 1);
   };
 
+  const extraActions: any = [
+    { name: t("COMMON.EDIT"), onClick: handleEdit, icon: EditIcon },
+    { name: t("COMMON.DELETE"), onClick: handleDelete, icon: DeleteIcon },
+    //{ name: t("COMMON.ADDFACILITATOR"), onClick: handleAddFacilitator, icon: EditIcon },
+  ];
+
   const PagesSelector = () => (
     <>
       <Box sx={{ display: { xs: "block" } }}>
@@ -225,7 +262,7 @@ const State: React.FC = () => {
     try {
       setLoading(true);
       const limit = pageLimit;
-      const offset = pageOffset * limit;
+      const offset = searchKeyword ? 0 : pageOffset * limit;
 
       const data = {
         limit: limit,
@@ -254,6 +291,7 @@ const State: React.FC = () => {
       if (resp?.result?.fieldId) {
         setFieldId(resp.result.fieldId);
         setStateData(resp.result.values);
+        console.log("response", resp.result);
 
         const totalCount = resp?.result?.totalCount || 0;
 
@@ -288,60 +326,78 @@ const State: React.FC = () => {
   }, [searchKeyword, pageLimit, pageOffset, sortBy]);
 
   return (
-    <HeaderComponent
-      userType={t("MASTER.CLUSTER")}
-      searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLUSTER")}
-      showStateDropdown={false}
-      handleSortChange={handleSortChange}
-      showAddNew={false}
-      showSort={true}
-      selectedSort={selectedSort}
-      showFilter={false}
-      handleSearch={handleSearch}
-      handleAddUserClick={handleAddStateClick}
-    >
-      {stateData.length === 0 && !loading ? (
-        <Box display="flex" marginLeft="40%" gap="20px">
-          <Typography marginTop="10px" variant="h2">
-            {t("COMMON.CLUSTER_NOT_FOUND")}
-          </Typography>
-        </Box>
-      ) : (
-        <div>
-          {loading ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-            >
-              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-            </Box>
-          ) : (
-            <KaTableComponent
-              columns={columns}
-              data={stateData.map((stateDetail) => ({
-                label: stateDetail.label ?? "",
-                value: stateDetail.value ?? "",
-                createdAt: stateDetail.createdAt,
-                updatedAt: stateDetail.updatedAt,
-                createdBy: stateDetail.createdBy,
-                updatedBy: stateDetail.updatedBy,
-              }))}
-              limit={pageLimit}
-              offset={pageOffset}
-              paginationEnable={paginationCount >= Numbers.FIVE}
-              PagesSelector={PagesSelector}
-              pagination={pagination}
-              PageSizeSelector={PageSizeSelectorFunction}
-              pageSizes={pageSizeArray}
-              onEdit={handleEdit}
-              extraActions={[]}
-            />
-          )}
-        </div>
-      )}
-    </HeaderComponent>
+    <>
+      <ConfirmationModal
+        message={t("CENTERS.SURE_DELETE_DATA", {
+          data: `${selectedStateForDelete?.label}`,
+        })}
+        handleAction={handleConfirmDelete}
+        buttonNames={{
+          primary: t("COMMON.YES"),
+          secondary: t("COMMON.CANCEL"),
+        }}
+        handleCloseModal={handleCloseModal}
+        modalOpen={confirmationModalOpen}
+      />
+      <HeaderComponent
+        userType={t("MASTER.CLUSTER")}
+        searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLUSTER")}
+        showStateDropdown={false}
+        handleSortChange={handleSortChange}
+        showAddNew={false}
+        showSort={true}
+        selectedSort={selectedSort}
+        showFilter={false}
+        handleSearch={handleSearch}
+        handleAddUserClick={handleAddStateClick}
+      >
+        {stateData.length === 0 && !loading ? (
+          <Box display="flex" marginLeft="40%" gap="20px">
+            <Typography marginTop="10px" variant="h2">
+              {t("COMMON.CLUSTER_NOT_FOUND")}
+            </Typography>
+          </Box>
+        ) : (
+          <div>
+            {loading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100%"
+              >
+                <Loader
+                  showBackdrop={false}
+                  loadingText={t("COMMON.LOADING")}
+                />
+              </Box>
+            ) : (
+              <KaTableComponent
+                columns={columns}
+                data={stateData?.map((stateDetail) => ({
+                  label: stateDetail.label ?? "",
+                  value: stateDetail.value ?? "",
+                  createdAt: stateDetail.createdAt,
+                  updatedAt: stateDetail.updatedAt,
+                  createdBy: stateDetail.createdBy,
+                  updatedBy: stateDetail.updatedBy,
+                }))}
+                limit={pageLimit}
+                offset={pageOffset}
+                paginationEnable={paginationCount >= Numbers.FIVE}
+                PagesSelector={PagesSelector}
+                pagination={pagination}
+                PageSizeSelector={PageSizeSelectorFunction}
+                pageSizes={pageSizeArray}
+                // onEdit={handleEdit}
+                extraActions={extraActions}
+                onDelete={handleDelete}
+              />
+            )}
+          </div>
+        )}
+      </HeaderComponent>
+    </>
   );
 };
 
