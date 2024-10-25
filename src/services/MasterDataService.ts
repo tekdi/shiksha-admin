@@ -173,7 +173,7 @@ export const getCenterList = async ({
 };
 
 export const deleteOption = async (
-  type: "states" | "districts" | "blocks",
+  type: "clusters" | "schools" | "classes",
   option: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/options/delete/${type}?option=${option}`;
@@ -182,7 +182,7 @@ export const deleteOption = async (
 
   try {
     const response = await deleteApi(apiUrl, requestBody, requestHeaders);
-    return response?.data;
+    return response;
   } catch (error) {
     console.error(`Error deleting ${type}`, error);
     return error;
@@ -215,11 +215,10 @@ export const createOrUpdateOption = async (
   }
 };
 
-
 export const fieldSearch = async (
   filters: any,
   limit?: any,
-  offset?: any,
+  offset?: any
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/fields/search`;
 

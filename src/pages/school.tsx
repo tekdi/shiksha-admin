@@ -89,6 +89,8 @@ const Block: React.FC = () => {
   const [stateFieldId, setStateFieldId] = useState<string>("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [pagination, setPagination] = useState(true);
+  const [confirmationModalOpen, setConfirmationModalOpen] =
+    React.useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserDetail = async () => {
@@ -117,7 +119,6 @@ const Block: React.FC = () => {
       }
     };
     fetchUserDetail();
-   
   }, []);
 
   useEffect(() => {
@@ -273,7 +274,7 @@ const Block: React.FC = () => {
       setLoading(false);
     }
   };
-  console.log("blockData2",blockData)
+  console.log("blockData2", blockData);
   useEffect(() => {
     fetchSchools(selectedCluster);
   }, [searchKeyword, selectedCluster, sortBy, pageOffset, pageLimit]);
@@ -316,12 +317,12 @@ const Block: React.FC = () => {
       dataType: DataType.String,
       width: "130",
     },
-    // {
-    //   key: "actions",
-    //   title: t("MASTER.ACTIONS"),
-    //   dataType: DataType.String,
-    //   width: "130",
-    // },
+    {
+      key: "actions",
+      title: t("MASTER.ACTIONS"),
+      dataType: DataType.String,
+      width: "130",
+    },
   ];
 
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -356,29 +357,42 @@ const Block: React.FC = () => {
   const handleDelete = (rowData: BlockDetail) => {
     console.log("deleted data for row", rowData);
     setSelectedStateForDelete(rowData);
-    setConfirmationDialogOpen(true);
+    setConfirmationModalOpen(true);
+    // setConfirmationDialogOpen(true);
   };
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
   };
 
+  const handleCloseModal = () => {
+    setConfirmationModalOpen(false);
+  };
+
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("blocks", selectedStateForDelete.value);
-        setStateData((prevStateData) =>
-          prevStateData.filter(
-            (state) => state.value !== selectedStateForDelete.value
-          )
+        const response = await deleteOption(
+          "schools",
+          selectedStateForDelete.value
         );
-        showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success");
+        console.log("response", response?.response?.status);
+        if (response?.status === 200) {
+          setBlockData((prevStateData) =>
+            prevStateData.filter(
+              (state) => state.value !== selectedStateForDelete.value
+            )
+          );
+          showToastMessage(t("COMMON.SCHOOL_DELETED_SUCCESS"), "success");
+        } else {
+          showToastMessage(t("COMMON.SCHOOL_DELETED_FAILURE"), "error");
+        }
       } catch (error) {
         console.error("Error deleting state", error);
-        showToastMessage(t("COMMON.BLOCK_DELETED_FAILURE"), "error");
+        showToastMessage(t("COMMON.SCHOOL_DELETED_FAILURE"), "error");
       }
+      handleCloseModal();
     }
-    setConfirmationDialogOpen(false);
   };
 
   const handleChangePageSize = (event: SelectChangeEvent<number>) => {
@@ -559,20 +573,20 @@ const Block: React.FC = () => {
               }
             : {}
         }
-        validateDuplicateData = {blockData}
+        validateDuplicateData={blockData}
       />
 
       <ConfirmationModal
-        modalOpen={confirmationDialogOpen}
-        message={t("COMMON.ARE_YOU_SURE_DELETE", {
-          state: `${selectedStateForDelete?.block} ${t("COMMON.BLOCK")}`,
+        message={t("CENTERS.SURE_DELETE_DATA", {
+          data: `${selectedStateForDelete?.block}`,
         })}
         handleAction={handleConfirmDelete}
         buttonNames={{
-          primary: t("COMMON.DELETE"),
+          primary: t("COMMON.YES"),
           secondary: t("COMMON.CANCEL"),
         }}
-        handleCloseModal={() => setConfirmationDialogOpen(false)}
+        handleCloseModal={handleCloseModal}
+        modalOpen={confirmationModalOpen}
       />
 
       <HeaderComponent
@@ -664,7 +678,7 @@ const Block: React.FC = () => {
                   PagesSelector={PagesSelector}
                   PageSizeSelector={PageSizeSelectorFunction}
                   pageSizes={pageSizeArray}
-                  onEdit={handleEdit}
+                  // onEdit={handleEdit}
                   pagination={pagination}
                   onDelete={handleDelete}
                   extraActions={[]}

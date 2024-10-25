@@ -7,7 +7,7 @@ import {
   getStateBlockDistrictList,
   deleteOption,
   createOrUpdateOption,
-  fieldSearch
+  fieldSearch,
 } from "@/services/MasterDataService";
 import Loader from "@/components/Loader";
 import { AddClassModal } from "@/components/AddClassModal";
@@ -39,7 +39,6 @@ export interface ClassDetail {
   value: string;
 }
 
-
 const State: React.FC = () => {
   const { t } = useTranslation();
   const [classData, setClassData] = useState<ClassDetail[]>([]);
@@ -63,6 +62,8 @@ const State: React.FC = () => {
   const [userName, setUserName] = React.useState<string | null>("");
   const [statesProfilesData, setStatesProfilesData] = useState<any>([]);
   const [pagination, setPagination] = useState(true);
+  const [confirmationModalOpen, setConfirmationModalOpen] =
+    React.useState<boolean>(false);
 
   const setPid = useStore((state) => state.setPid);
 
@@ -73,7 +74,7 @@ const State: React.FC = () => {
     { key: "updatedBy", title: t("MASTER.UPDATED_BY"), width: "160" },
     { key: "createdAt", title: t("MASTER.CREATED_AT"), width: "160" },
     { key: "updatedAt", title: t("MASTER.UPDATED_AT"), width: "160" },
-    // { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
+    { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
   ];
 
   const handleEdit = (rowData: ClassDetail) => {
@@ -81,16 +82,15 @@ const State: React.FC = () => {
     setAddClassModalOpen(true);
   };
 
-
   useEffect(() => {
     getClassFieldId();
   });
 
   const getClassFieldId = async () => {
     try {
-      const response = await fieldSearch({name: "classes"}, 1, 0);
+      const response = await fieldSearch({ name: "classes" }, 1, 0);
       if (response?.result?.length) {
-        const temp = response.result[0]
+        const temp = response.result[0];
         const classFieldId = temp.fieldId || "";
         setFieldId(classFieldId);
       }
@@ -101,8 +101,12 @@ const State: React.FC = () => {
   };
 
   const handleDelete = (rowData: ClassDetail) => {
+    console.log("rowData", rowData);
     setSelectedStateForDelete(rowData);
-    setConfirmationDialogOpen(true);
+    setConfirmationModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setConfirmationModalOpen(false);
   };
 
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -115,18 +119,26 @@ const State: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("states", selectedStateForDelete.value);
-        setClassData((prevStateData) =>
-          prevStateData.filter(
-            (state) => state.value !== selectedStateForDelete.value
-          )
+        const response = await deleteOption(
+          "classes",
+          selectedStateForDelete.value
         );
-        showToastMessage(t("COMMON.STATE_DELETED_SUCCESS"), "success");
+        console.log("responseClass", response);
+        if (response?.status === 200) {
+          setClassData((prevStateData) =>
+            prevStateData.filter(
+              (state) => state.value !== selectedStateForDelete.value
+            )
+          );
+          showToastMessage(t("COMMON.CLASS_DELETED_SUCCESS"), "success");
+        } else {
+          showToastMessage(t("COMMON.CLASS_DELETED_FAILURE"), "error");
+        }
       } catch (error) {
         console.error("Error deleting state", error);
-        showToastMessage(t("COMMON.STATE_DELETED_FAILURE"), "error");
+        showToastMessage(t("COMMON.CLASS_DELETED_FAILURE"), "error");
       }
-      setConfirmationDialogOpen(false);
+      handleCloseModal();
     }
   };
 
@@ -255,11 +267,24 @@ const State: React.FC = () => {
   };
   useEffect(() => {
     fetchClassData();
-  }, [searchKeyword,pageLimit, pageOffset, sortBy]);
+  }, [searchKeyword, pageLimit, pageOffset, sortBy]);
 
   return (
     <React.Fragment>
-    <AddClassModal
+      <ConfirmationModal
+        message={t("CENTERS.SURE_DELETE_DATA", {
+          data: `${selectedStateForDelete?.label}`,
+        })}
+        handleAction={handleConfirmDelete}
+        buttonNames={{
+          primary: t("COMMON.YES"),
+          secondary: t("COMMON.CANCEL"),
+        }}
+        handleCloseModal={handleCloseModal}
+        modalOpen={confirmationModalOpen}
+      />
+
+      <AddClassModal
         open={addClassModalOpen}
         onClose={() => setAddClassModalOpen(false)}
         onSubmit={(name: string, value: string) =>
@@ -267,60 +292,64 @@ const State: React.FC = () => {
         }
         initialValues={{}}
       />
-    <HeaderComponent
-      userType={t("MASTER.CLASSES")}
-      searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLASS")}
-      showStateDropdown={false}
-      handleSortChange={handleSortChange}
-      showAddNew={true}
-      showSort={true}
-      selectedSort={selectedSort}
-      showFilter={false}
-      handleSearch={handleSearch}
-      handleAddUserClick={handleAddClassClick}
-    >
-      {classData.length === 0 && !loading ? (
-        <Box display="flex" marginLeft="40%" gap="20px">
-          <Typography marginTop="10px" variant="h2">
-            {t("COMMON.CLASS_NOT_FOUND")}
-          </Typography>
-        </Box>
-      ) : (
-        <div>
-          {loading ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="100%"
-            >
-              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-            </Box>
-          ) : (
-            <KaTableComponent
-              columns={columns}
-              data={classData.map((stateDetail) => ({
-                label: stateDetail.label ?? "",
-                value: stateDetail.value ?? "",
-                createdAt: stateDetail.createdAt,
-                updatedAt: stateDetail.updatedAt,
-                createdBy: stateDetail.createdBy,
-                updatedBy: stateDetail.updatedBy,
-              }))}
-              limit={pageLimit}
-              offset={pageOffset}
-              paginationEnable={paginationCount >= Numbers.FIVE}
-              PagesSelector={PagesSelector}
-              pagination={pagination}
-              PageSizeSelector={PageSizeSelectorFunction}
-              pageSizes={pageSizeArray}
-              onEdit={handleEdit}
-              extraActions={[]}
-            />
-          )}
-        </div>
-      )}
-    </HeaderComponent>
+      <HeaderComponent
+        userType={t("MASTER.CLASSES")}
+        searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLASS")}
+        showStateDropdown={false}
+        handleSortChange={handleSortChange}
+        showAddNew={true}
+        showSort={true}
+        selectedSort={selectedSort}
+        showFilter={false}
+        handleSearch={handleSearch}
+        handleAddUserClick={handleAddClassClick}
+      >
+        {classData.length === 0 && !loading ? (
+          <Box display="flex" marginLeft="40%" gap="20px">
+            <Typography marginTop="10px" variant="h2">
+              {t("COMMON.CLASS_NOT_FOUND")}
+            </Typography>
+          </Box>
+        ) : (
+          <div>
+            {loading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100%"
+              >
+                <Loader
+                  showBackdrop={false}
+                  loadingText={t("COMMON.LOADING")}
+                />
+              </Box>
+            ) : (
+              <KaTableComponent
+                columns={columns}
+                data={classData.map((stateDetail) => ({
+                  label: stateDetail.label ?? "",
+                  value: stateDetail.value ?? "",
+                  createdAt: stateDetail.createdAt,
+                  updatedAt: stateDetail.updatedAt,
+                  createdBy: stateDetail.createdBy,
+                  updatedBy: stateDetail.updatedBy,
+                }))}
+                limit={pageLimit}
+                offset={pageOffset}
+                paginationEnable={paginationCount >= Numbers.FIVE}
+                PagesSelector={PagesSelector}
+                pagination={pagination}
+                PageSizeSelector={PageSizeSelectorFunction}
+                pageSizes={pageSizeArray}
+                // onEdit={handleEdit}
+                onDelete={handleDelete}
+                extraActions={[]}
+              />
+            )}
+          </div>
+        )}
+      </HeaderComponent>
     </React.Fragment>
   );
 };
