@@ -314,7 +314,7 @@ const District: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("districts", selectedStateForDelete.value);
+        await deleteOption("clusters", selectedStateForDelete.value);
         setDistrictData((prev) =>
           prev.filter(
             (district) => district.value !== selectedStateForDelete.value

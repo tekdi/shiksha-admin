@@ -512,7 +512,7 @@ const Block: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("blocks", selectedStateForDelete.value);
+        await deleteOption("schools", selectedStateForDelete.value);
         setStateData((prevStateData) =>
           prevStateData.filter(
             (state) => state.value !== selectedStateForDelete.value
