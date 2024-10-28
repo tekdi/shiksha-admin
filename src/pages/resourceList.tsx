@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Typography, Box, IconButton } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import the back arrow icon
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Import the back arrow icon
 import ResourceCard from "../components/ResourceCard";
 import taxonomyStore from "@/store/tanonomyStore";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -41,7 +41,9 @@ const ResourceList = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-         <Typography variant="h2" mb={2}>{tstore.taxonomyType}</Typography>
+      <Typography variant="h2" mb={2}>
+        {tstore.taxonomyType}
+      </Typography>
       <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
         <IconButton sx={{ mr: 1 }} onClick={() => window.history.back()}>
           <ArrowBackIcon />
@@ -65,6 +67,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app}
                   resource={item.type}
+                  identifier={item.link}
                 />
               </Grid>
             ))}
@@ -86,6 +89,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app}
                   resource={item.type}
+                  identifier={item.link}
                 />
               </Grid>
             ))}
@@ -107,6 +111,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app || "Facilitator"}
                   resource="Facilitator Requisite"
+                  identifier={item.link}
                 />
               </Grid>
             ))}
