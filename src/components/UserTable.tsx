@@ -427,6 +427,9 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedSort(event.target?.value as string);
   };
   const mapFields = (formFields: any, response: any) => {
+    console.log("formFields", formFields);
+    console.log("response", response);
+
     let initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
@@ -435,58 +438,42 @@ const UserTable: React.FC<UserTableProps> = ({
       );
 
       const getValue = (data: any, field: any) => {
-        console.log(data, field);
-        if (item.default) {
-          return item.default;
-        }
-        if (item?.isMultiSelect) {
-          if (data[item.name] && item?.maxSelections > 1) {
-            return [field?.value];
-          } else if (item?.type === "checkbox") {
-            return String(field?.value).split(",");
-          } else {
-            return field?.value?.toLowerCase();
-          }
+        if (item.default) return item.default;
+        if (!field) return undefined;
+
+        if (item.isMultiSelect) {
+          if (data[item.name] && item.maxSelections > 1) return [field.value];
+          if (item.type === "checkbox") return String(field.value).split(",");
+          return field.value?.toLowerCase();
         } else {
-          if (item?.type === "numeric") {
-            return parseInt(String(field?.value));
-          } else if (item?.type === "text") {
-            return String(field?.value);
-          } else {
-            if (field?.value === "FEMALE" || field?.value === "MALE") {
-              console.log(true);
-              return field?.value?.toLowerCase();
-            }
-            //  console.log()
-            return field?.value?.toLowerCase();
+          if (item.type === "numeric") return parseInt(String(field.value), 10);
+          if (item.type === "text") return String(field.value);
+          if (field.value === "FEMALE" || field.value === "MALE") {
+            return field.value.toLowerCase();
           }
+          return field.value?.toLowerCase();
         }
       };
 
-      if (item.coreField) {
-        if (item?.isMultiSelect) {
-          if (userData[item.name] && item?.maxSelections > 1) {
+      if (item.coreField && userData[item.name] !== undefined) {
+        if (item.isMultiSelect) {
+          if (userData[item.name] && item.maxSelections > 1) {
             initialFormData[item.name] = [userData[item.name]];
-          } else if (item?.type === "checkbox") {
+          } else if (item.type === "checkbox") {
             initialFormData[item.name] = String(userData[item.name]).split(",");
           } else {
             initialFormData[item.name] = userData[item.name];
           }
-        } else if (item?.type === "numeric") {
-          console.log(item?.name);
+        } else if (item.type === "numeric") {
           initialFormData[item.name] = Number(userData[item.name]);
-        } else if (item?.type === "text" && userData[item.name]) {
+        } else if (item.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
         } else {
-          console.log(item.name);
-          if (userData[item.name]) {
-            initialFormData[item.name] = userData[item.name];
-          }
+          initialFormData[item.name] = userData[item.name];
         }
-      } else {
+      } else if (!item.coreField && customFieldValue) {
         const fieldValue = getValue(userData, customFieldValue);
-
-        if (fieldValue) {
+        if (fieldValue !== undefined) {
           initialFormData[item.name] = fieldValue;
         }
       }
@@ -495,6 +482,7 @@ const UserTable: React.FC<UserTableProps> = ({
     console.log("initialFormData", initialFormData);
     return initialFormData;
   };
+ 
   const handleEdit = async (rowData: any) => {
     if (submitValue) {
       setSubmitValue(false);
@@ -619,7 +607,7 @@ const UserTable: React.FC<UserTableProps> = ({
       let limit = pageLimit;
       let offset = pageOffset * limit;
       // const filters = { role: role , status:"active"};
-      const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
+      const sort = sortBy;
       console.log("filters", filters);
       if (filters.name) {
         offset = 0;
@@ -631,10 +619,16 @@ const UserTable: React.FC<UserTableProps> = ({
           filters,
           sort,
           offset,
-          fields,
+          // fields,
         });
       } else {
-        resp = await userList({ limit, filters, sort, offset, fields });
+        resp = await userList({
+          limit,
+          filters,
+          // sort,
+          //  fields
+          offset,
+        });
       }
       console.log(resp?.getUserDetails);
       const result = enableCenterFilter
@@ -800,7 +794,7 @@ const UserTable: React.FC<UserTableProps> = ({
     filters,
     parentState,
     deleteUserState,
-    sortByForCohortMemberList,
+    // sortByForCohortMemberList,
   ]);
 
   useEffect(() => {

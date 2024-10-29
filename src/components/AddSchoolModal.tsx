@@ -97,7 +97,7 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
     requiredMessage: string
   ) => {
     if (!value) return requiredMessage;
-    if (field !== "controllingField" && !/^[a-zA-Z0-9-_]+$/.test(value))
+    if (field !== "controllingField" &&  !/^[a-zA-Z0-9-_ ]+$/.test(value))
       return t("COMMON.INVALID_TEXT");
 
     const isUnique = (fieldName: string, value: string) => {

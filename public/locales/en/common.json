@@ -243,14 +243,14 @@
     "COURSE_NOT_CREATED": "Course not created"
   },
   "MASTER": {
-    "STATE": "State",
-    "STATE_NAMES": "State Name",
+    "STATE": "Class",
+    "STATE_NAMES": "Class Name",
     "SORT": "Sort",
     "DISTRICT_NAMES": "District Name",
     "BLOCK_NAMES": "Block Name",
     "ACTIONS": "Actions",
     "DISTRICTS": "Districts",
-    "SEARCHBAR_PLACEHOLDER_STATE": "Search States",
+    "SEARCHBAR_PLACEHOLDER_STATE": "Search Class",
     "SEARCHBAR_PLACEHOLDER_DISTRICT": "Search Districts",
     "SEARCHBAR_PLACEHOLDER_BLOCK": "Search Blocks",
     "BLOCKS": "Blocks",
