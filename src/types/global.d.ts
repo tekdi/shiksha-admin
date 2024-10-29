@@ -1,7 +1,9 @@
 import { PlayerConfig } from "@/utils/Interfaces";
 
-interface Window {
-  GA_INITIALIZED: boolean;
+declare global {
+  interface Window {
+    GA_INITIALIZED: boolean;
+  }
 }
 
 declare namespace JSX {
