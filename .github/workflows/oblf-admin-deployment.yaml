@@ -1,10 +1,10 @@
-name: Deployment on the OBLF admin Server
+name: PROD Deployment on the OBLF admin Server
 on:
   push:
     branches:
       - lateMarkingForSelfAttendance
 jobs:
-  OBLF-ADMIN-DEPLOYMENT:
+  OBLF-ADMIN-PROD-DEPLOYMENT:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
