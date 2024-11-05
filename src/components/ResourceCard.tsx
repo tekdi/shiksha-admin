@@ -18,12 +18,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   identifier,
 }) => {
   const openPlayers = () => {
-    console.log("open players");
-    console.log("identifier", identifier);
-    router.push({
-      pathname: "/players",
-      query: { identifier: identifier },
-    });
+    router.push(`/play/content/${identifier}`);
   };
 
   return (
