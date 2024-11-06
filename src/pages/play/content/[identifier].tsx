@@ -8,6 +8,7 @@ import {
   getQumlData,
 } from "@/services/PlayerService";
 import { PlayerConfig } from "@/utils/Interfaces";
+import { Box } from "@mui/material";
 import { V1PlayerConfig, V2PlayerConfig } from "./player-config";
 import { QUESTIONSET_MIME_TYPE, INTERACTIVE_MIME_TYPE } from "../../../../config.json"
 
@@ -60,7 +61,13 @@ const players: React.FC<SunbirdPlayerProps> = () => {
     loadContent();
   }, [identifier]);
 
-  return !loading ? <SunbirdPlayers player-config={playerConfig} /> : null;
+  return (
+    <Box>
+      <Box marginTop={"1rem"}>
+        {!loading ? <SunbirdPlayers player-config={playerConfig} /> : null}
+      </Box>
+    </Box>
+  );
 };
 
 export async function getStaticPaths() {
@@ -75,7 +82,6 @@ export async function getStaticProps({ locale, params }: any) {
 
   return {
     props: {
-      noLayout: true,
       identifier,
       ...(await serverSideTranslations(locale, ["common"])),
     },
