@@ -18,6 +18,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   identifier,
 }) => {
   const openPlayers = () => {
+    sessionStorage.setItem("previousPage", window.location.href);
     router.push(`/play/content/${identifier}`);
   };
 
