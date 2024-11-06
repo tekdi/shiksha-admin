@@ -59,8 +59,11 @@ export interface SendCredentialsRequest {
   isQueue: boolean;
   context: string;
   key: string;
-  replacements: object;
-  email: {
+  replacements?: object;
+  email?: {
+    receipients: any[];
+  };
+    push?: {
     receipients: any[];
   };
 }
@@ -195,3 +198,5 @@ export interface PlayerConfig {
   config?: Config;
   metadata: Metadata;
 }
+
+
