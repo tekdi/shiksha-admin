@@ -9,65 +9,15 @@ import {
 } from "@/services/PlayerService";
 import { PlayerConfig } from "@/utils/Interfaces";
 import { Box } from "@mui/material";
+import { V1PlayerConfig, V2PlayerConfig } from "./player-config";
+import { QUESTIONSET_MIME_TYPE, INTERACTIVE_MIME_TYPE } from "../../../../config.json"
 
 // @ts-ignore
 const SunbirdPlayers = dynamic(() => import("editor/SunbirdPlayers"), {
   ssr: false,
 });
 
-const playerConfig = {
-  context: {
-    mode: "play",
-    partner: [],
-    pdata: {
-      id: "dev.sunbird.portal",
-      ver: "5.2.0",
-      pid: "sunbird-portal",
-    },
-    contentId: "do_21374910251798528014586",
-    sid: "6d1898db-d783-4f83-8b92-4a36636e0d2f",
-    uid: "fb6b2e58-0f14-4d4f-90e4-bae092e7a235",
-    timeDiff: -0.089,
-    channel: "01269878797503692810",
-    tags: ["01269878797503692810"],
-    did: "3ca74a4c5fbce6b7b7f5cd12cebb1682",
-    contextRollup: { l1: "01269878797503692810" },
-    objectRollup: {},
-    userData: { firstName: "Guest", lastName: "" },
-
-    //telemetry
-    host: "https://telemetry.prathamdigital.org",
-    endpoint: "/v1/telemetry",
-  },
-  config: {
-    showEndPage: false,
-    endPage: [{ template: "assessment", contentType: ["SelfAssess"] }],
-    showStartPage: true,
-    host: "",
-    overlay: { showUser: false },
-    splash: {
-      text: "",
-      icon: "",
-      bgImage: "assets/icons/splacebackground_1.png",
-      webLink: "",
-    },
-    apislug: "",
-    repos: ["/sunbird-plugins/renderer"],
-    plugins: [
-      { id: "org.sunbird.iframeEvent", ver: 1, type: "plugin" },
-      { id: "org.sunbird.player.endpage", ver: 1.1, type: "plugin" },
-    ],
-    sideMenu: {
-      showShare: false,
-      showDownload: true,
-      showExit: true,
-      showPrint: false,
-      showReplay: true,
-    },
-  },
-  metadata: {},
-  data: {},
-};
+let playerConfig = {config: {}, context: {}, metadata: {}, data: {}};
 
 interface SunbirdPlayerProps {
   playerConfig: PlayerConfig;
@@ -78,8 +28,6 @@ const players: React.FC<SunbirdPlayerProps> = () => {
   const { identifier } = router.query;
   const [loading, setLoading] = useState(true);
 
-  // playerConfig.metadata = pdfMetadata;
-
   useEffect(() => {
     const loadContent = async () => {
       try {
@@ -87,7 +35,8 @@ const players: React.FC<SunbirdPlayerProps> = () => {
           console.log("identifier on players page:", identifier);
           const data = await fetchContent(identifier);
           console.log("data", data);
-          if (data.mimeType === "application/vnd.sunbird.questionset") {
+          if (data.mimeType === QUESTIONSET_MIME_TYPE) {
+            playerConfig = V2PlayerConfig;
             const Q1 = await getHierarchy(identifier);
             console.log("Q1", Q1?.questionset);
             const Q2 = await getQumlData(identifier);
@@ -95,7 +44,11 @@ const players: React.FC<SunbirdPlayerProps> = () => {
             const metadata = { ...Q1?.questionset, ...Q2?.questionset };
             playerConfig.metadata = metadata;
             console.log("playerConfig", playerConfig);
+          } else if(INTERACTIVE_MIME_TYPE.includes(data?.mimeType)) {
+            playerConfig = V1PlayerConfig;
+            playerConfig.metadata = data;
           } else {
+            playerConfig = V2PlayerConfig;
             playerConfig.metadata = data;
           }
           setLoading(false);
