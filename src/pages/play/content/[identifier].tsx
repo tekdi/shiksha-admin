@@ -8,6 +8,7 @@ import {
   getQumlData,
 } from "@/services/PlayerService";
 import { PlayerConfig } from "@/utils/Interfaces";
+import { Box } from "@mui/material";
 
 // @ts-ignore
 const SunbirdPlayers = dynamic(() => import("editor/SunbirdPlayers"), {
@@ -76,6 +77,7 @@ const players: React.FC<SunbirdPlayerProps> = () => {
   const router = useRouter();
   const { identifier } = router.query;
   const [loading, setLoading] = useState(true);
+
   // playerConfig.metadata = pdfMetadata;
 
   useEffect(() => {
@@ -106,7 +108,13 @@ const players: React.FC<SunbirdPlayerProps> = () => {
     loadContent();
   }, [identifier]);
 
-  return !loading ? <SunbirdPlayers player-config={playerConfig} /> : null;
+  return (
+    <Box>
+      <Box marginTop={"1rem"}>
+        {!loading ? <SunbirdPlayers player-config={playerConfig} /> : null}
+      </Box>
+    </Box>
+  );
 };
 
 export async function getStaticPaths() {
@@ -121,7 +129,6 @@ export async function getStaticProps({ locale, params }: any) {
 
   return {
     props: {
-      noLayout: true,
       identifier,
       ...(await serverSideTranslations(locale, ["common"])),
     },
