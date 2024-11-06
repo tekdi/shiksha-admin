@@ -24,6 +24,7 @@ import {
   SORT,
   Status,
   Storage,
+  TelemetryEventType,
 } from "@/utils/app.constant";
 import { transformLabel } from "@/utils/Helper";
 import { Pagination, Typography, useMediaQuery } from "@mui/material";
@@ -38,6 +39,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import React, { useEffect, useState } from "react";
 import KaTableComponent from "../components/KaTableComponent";
+import { telemetryFactory } from "@/utils/telemetry";
 
 type StateDetail = {
   stateCode: string | undefined;
@@ -369,6 +371,23 @@ const response= await  getCohortList(reqParams)
           )
         );
         showToastMessage(t("COMMON.DISTRICT_DELETED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'delete-district-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
       } catch (error) {
         showToastMessage(t("COMMON.DISTRICT_DELETED_FAILURE"), "error");
       }
@@ -447,6 +466,23 @@ const response= await  getCohortList(reqParams)
       if (cohortCreateResponse) {
         filteredCohortOptionData();
         showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'district-created-success',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
       } else if (cohortCreateResponse.responseCode === 409) {
         showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
       }
@@ -511,6 +547,24 @@ const response= await  getCohortList(reqParams)
         });
 
         showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'district-updated-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+
       } else if (cohortCreateResponse.responseCode === 409) {
         showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
       }
@@ -535,6 +589,23 @@ const response= await  getCohortList(reqParams)
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
     setSortBy(["name", sortOrder]);
     setSelectedSort(event.target.value);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handlePaginationChange = (
@@ -542,6 +613,25 @@ const response= await  getCohortList(reqParams)
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   function transformLabels(label: string) {
@@ -651,6 +741,24 @@ const response= await  getCohortList(reqParams)
         handleAddUserClick={() => {
           setModalOpen(true);
           setSelectedStateForEdit(null);
+          const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-add-new',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
         }}
       >
         {loading ? (

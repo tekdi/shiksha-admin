@@ -21,6 +21,7 @@ import {
   SORT,
   Status,
   Storage,
+  TelemetryEventType,
   apiCatchingDuration,
 } from "@/utils/app.constant";
 import EditIcon from "@mui/icons-material/Edit";
@@ -46,6 +47,7 @@ import DynamicForm from "@/components/DynamicForm";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { telemetryFactory } from "@/utils/telemetry";
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -404,6 +406,25 @@ const response=  await fetchCohortMemberList(data);
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const PagesSelector = () => (
@@ -646,6 +667,24 @@ const response=  await fetchCohortMemberList(data);
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
       if (resp?.responseCode === 200) {
         showToastMessage(t("CENTERS.CENTER_DELETE_SUCCESSFULLY"), "success");
+
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'delete-center-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
         const cohort = cohortData?.find(
           (item: any) => item.cohortId == selectedCohortId
         );
@@ -674,6 +713,25 @@ const response=  await fetchCohortMemberList(data);
       }
     }
     setSelectedSort(event.target.value);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleSearch = (keyword: string) => {
@@ -730,6 +788,23 @@ const response=  await fetchCohortMemberList(data);
         };
       });
     }
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleEdit = async (rowData: any) => {
@@ -871,6 +946,25 @@ const response=  await fetchCohortMemberList(data);
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
       if (resp?.responseCode === 200 || resp?.responseCode === 201) {
         showToastMessage(t("CENTERS.CENTER_UPDATE_SUCCESSFULLY"), "success");
+
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'center-updated-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
         setLoading(false);
       } else {
         showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
@@ -888,6 +982,25 @@ const response=  await fetchCohortMemberList(data);
   };
 
   const handleAddUserClick = () => {
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-add-new',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
     setOpenAddNewCohort(true);
   };
 

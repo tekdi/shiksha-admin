@@ -5,7 +5,7 @@ import {
 } from "@/components/GeneratedSchemas";
 import SimpleModal from "@/components/SimpleModal";
 import { getFormRead } from "@/services/CreateUserService";
-import { CohortTypes, FormContext, FormContextType, apiCatchingDuration } from "@/utils/app.constant";
+import { CohortTypes, FormContext, FormContextType, TelemetryEventType, apiCatchingDuration } from "@/utils/app.constant";
 import { useLocationState } from "@/utils/useLocationState";
 import { Box, Button, Typography } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
@@ -19,6 +19,7 @@ import { createCohort } from "@/services/CohortService/cohortService";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import FrameworkCategories from "./FrameworkCategories";
 import { useQuery } from "@tanstack/react-query";
+import { telemetryFactory } from "@/utils/telemetry";
 
 interface CustomField {
   fieldId: string;
@@ -227,6 +228,25 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
         const cohortData = await createCohort(cohortDetails);
         if (cohortData) {
           showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
+          const windowUrl = window.location.pathname;
+          const cleanedUrl = windowUrl.replace(/^\//, '');
+          const env = cleanedUrl.split("/")[0];
+      
+      
+          const telemetryInteract = {
+            context: {
+              env: env,
+              cdata: [],
+            },
+            edata: {
+              id: 'center-created-successfully',
+              type: TelemetryEventType.CLICK,
+              subtype: '',
+              pageid: cleanedUrl,
+            },
+          };
+          telemetryFactory.interact(telemetryInteract);
+      
           createCenterStatus? setCreateCenterStatus(false):setCreateCenterStatus(true)
           setOpenAddNewCohort(false);
           onClose();

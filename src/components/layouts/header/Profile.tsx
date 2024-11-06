@@ -1,5 +1,5 @@
 import CommonUserModal from "@/components/CommonUserModal";
-import { FormContextType, Role } from "@/utils/app.constant";
+import { FormContextType, Role, TelemetryEventType } from "@/utils/app.constant";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FeatherIcon from "feather-icons-react";
 import { useTranslation } from "next-i18next";
@@ -15,6 +15,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { Box, Button, Divider, Menu, Typography } from "@mui/material";
 import { useRouter } from "next/router";
+import { telemetryFactory } from "@/utils/telemetry";
 const Profile = () => {
   const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null);
   const [profileClick, setProfileClick] = React.useState<boolean>(false);
@@ -39,6 +40,24 @@ const Profile = () => {
   const handleClick4 = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl4(event.currentTarget);
     setProfileClick(true);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-profile',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleClose4 = () => {

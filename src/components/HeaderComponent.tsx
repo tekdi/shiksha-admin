@@ -13,7 +13,7 @@ import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react";
-import { QueryKeys, Role, Status } from "@/utils/app.constant";
+import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import {
   getCenterList,
@@ -28,6 +28,7 @@ import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { useRouter } from "next/router";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { userAgent } from "next/server";
+import { telemetryFactory } from "@/utils/telemetry";
 
 interface State {
   value: string;
@@ -189,6 +190,26 @@ const HeaderComponent = ({
       console.log(error);
     }
     handleDistrictChange(selected, selectedCodes);
+
+    const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+
+
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: 'filter-by-district:'+selected[0],
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleBlockChangeWrapper = async (
@@ -233,12 +254,48 @@ const HeaderComponent = ({
     console.log(dataArray);
     setAllCenters(cohortInfo);
     handleBlockChange(selected, selectedCodes);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-block:'+selected[0],
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
   const handleCenterChangeWrapper = (
     selected: string[],
     selectedCodes: string[]
   ) => {
     handleCenterChange(selected, selectedCodes);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-center:'+selected[0],
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   useEffect(() => {

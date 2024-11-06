@@ -4,6 +4,8 @@ import { IconButton, InputBase, Paper, useMediaQuery } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 
 interface SearchBarProps {
   onSearch: (keyword: string) => void;
@@ -40,6 +42,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, placeholder }) => {
     const delayDebounceFn = setTimeout(() => {
       if (keyword.trim().length >= 3 && validateKeyword(keyword)) {
         onSearch(keyword);
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'search-input:'+keyword,
+            type: TelemetryEventType.SEARCH,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
       }
     }, 500); // Debounce delay of 500ms
 
