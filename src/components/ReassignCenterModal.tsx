@@ -462,7 +462,7 @@ console.log(filters)
   value: cohort.value,
 }));
 
-const formattedBlocks = filteredCBlocks.map(location => ({
+const formattedBlocks = filteredCBlocks?.map(location => ({
   ...location,
   label: location.label
     ? location.label.split(' ')

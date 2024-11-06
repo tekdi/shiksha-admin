@@ -30,6 +30,7 @@ import {
   Storage,
   Numbers,
   QueryKeys,
+  TelemetryEventType,
 } from "@/utils/app.constant";
 import { getUserDetailsInfo } from "@/services/UserList";
 import {
@@ -38,6 +39,7 @@ import {
 } from "@/services/CohortService/cohortService";
 import { getBlockTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
+import { telemetryFactory } from "@/utils/telemetry";
 
 type StateDetail = {
   name: string | undefined;
@@ -485,6 +487,24 @@ const Block: React.FC = () => {
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
     setSortBy(["name", sortOrder]);
     setSelectedSort(event.target.value);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleStateChange = async (event: SelectChangeEvent<string>) => {
@@ -510,6 +530,25 @@ const Block: React.FC = () => {
     if (selectedDistrict) {
       await getCohortSearchBlock(selectedDistrict);
     }
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-district:'+event.target.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   useEffect(() => {
@@ -591,6 +630,26 @@ const Block: React.FC = () => {
       queryKey: [QueryKeys.FIELD_OPTION_READ, newValue],
       queryFn: () => getCohortList({ status: newValue }),
     });
+
+
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleConfirmDelete = async () => {
@@ -603,6 +662,24 @@ const Block: React.FC = () => {
           )
         );
         showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'block-deletion-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
       } catch (error) {
         console.error("Error deleting state", error);
         showToastMessage(t("COMMON.BLOCK_DELETED_FAILURE"), "error");
@@ -643,6 +720,25 @@ const Block: React.FC = () => {
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
   const PagesSelector = () => (
     <Box sx={{ display: { xs: "block" } }}>
@@ -672,6 +768,24 @@ const Block: React.FC = () => {
     setEditState(null);
     setSelectedStateForEdit(null);
     setModalOpen(true);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-add-new',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   //create cohort
@@ -776,6 +890,25 @@ const Block: React.FC = () => {
         await fetchBlocks();
         await getCohortSearchBlock(selectedDistrict);
         showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'block-update-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+
       } else if (cohortCreateResponse.responseCode === 409) {
         showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
       }
