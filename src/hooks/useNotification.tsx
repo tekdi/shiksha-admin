@@ -1,4 +1,5 @@
-import { readUserId, sendCredentialService } from "@/services/NotificationService";
+import {  sendCredentialService } from "@/services/NotificationService";
+import { getUserDetailsInfo } from "@/services/UserList";
 import { useCallback } from "react";
 
 const useNotification = () => {
@@ -11,10 +12,10 @@ const useNotification = () => {
         return;
       }
 
-      const userDetails = await readUserId(userId, true);
+      const userDetails = await getUserDetailsInfo(userId, false);
       console.log("API Response:", userDetails);
 
-      const deviceId = userDetails?.result?.userData?.deviceId;
+      const deviceId = userDetails?.userData?.deviceId;
 
       console.log("Device ID from API:", deviceId);
 
