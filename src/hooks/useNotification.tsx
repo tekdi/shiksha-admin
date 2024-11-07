@@ -1,4 +1,4 @@
-import { readUserId, sendNotification } from "@/services/NotificationService";
+import { readUserId, sendCredentialService } from "@/services/NotificationService";
 import { useCallback } from "react";
 
 const useNotification = () => {
@@ -19,7 +19,7 @@ const useNotification = () => {
       console.log("Device ID from API:", deviceId);
 
       if (deviceId) {
-        const result = await sendNotification({
+        const result = await sendCredentialService({
           isQueue: false,
           context: "USER",
           key: key,

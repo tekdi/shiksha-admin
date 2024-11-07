@@ -412,7 +412,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       );
     }
 
-    getNotification(userId, "onReassignTLbyAdmin");
+    getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
   let filteredCohorts = cohorts?.filter((cohort) =>
     cohort?.name?.toLowerCase().includes(searchInput)

@@ -7,6 +7,7 @@ export const sendCredentialService = async ({
   key,
   replacements,
   email,
+  push
 }: SendCredentialsRequest): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/notification/send`;
   try {
@@ -16,6 +17,7 @@ export const sendCredentialService = async ({
       key,
       replacements,
       email,
+      push
     });
     return response?.data;
   } catch (error) {
@@ -41,24 +43,24 @@ export const readUserId = async (
 };
 
 
-export const sendNotification = async ({
-  isQueue,
-  context,
-  key,
-  push
-}: SendCredentialsRequest): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/notification/send`;
-  try {
-    const response = await post(apiUrl, {
-      isQueue,
-      context,
-      key,
-      push
-    });
-    return response?.data?.result;
-  } catch (error) {
-    console.error('Error in sending notification', error);
-    return error;
-  }
-};
+// export const sendNotification = async ({
+//   isQueue,
+//   context,
+//   key,
+//   push
+// }: SendCredentialsRequest): Promise<any> => {
+//   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/notification/send`;
+//   try {
+//     const response = await post(apiUrl, {
+//       isQueue,
+//       context,
+//       key,
+//       push
+//     });
+//     return response?.data?.result;
+//   } catch (error) {
+//     console.error('Error in sending notification', error);
+//     return error;
+//   }
+// };
 
