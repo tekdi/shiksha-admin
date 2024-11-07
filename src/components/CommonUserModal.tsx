@@ -39,8 +39,9 @@ import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
 import { cohortMemberList } from "@/services/UserList";
 import CustomModal from "./CustomModal";
-import { setConfig } from "next/config";
+import { setConfig } from "next/config"; 
 import { telemetryFactory } from "@/utils/telemetry";
+import useNotification from "@/hooks/useNotification";
 
 interface UserModalProps {
   open: boolean;
@@ -245,7 +246,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     };
     getAddUserFormData();
   }, [userType, teacherFormData, studentFormData, teamLeaderFormData]);
-
+ const { getNotification } = useNotification();
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
@@ -374,6 +375,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 : "TEAM_LEADERS.TEAM_LEADER_UPDATED_SUCCESSFULLY";
 
           showToastMessage(t(messageKey), "success");
+          getNotification(userId, "TL_PROFILE_UPDATE");
 
 
           const windowUrl = window.location.pathname;
