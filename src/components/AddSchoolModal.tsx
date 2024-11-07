@@ -97,9 +97,8 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
     requiredMessage: string
   ) => {
     if (!value) return requiredMessage;
-    if (field !== "controllingField" &&  !/^[a-zA-Z0-9-_ ]+$/.test(value))
-      return t("COMMON.INVALID_TEXT");
-
+    // if (field !== "controllingField" && !/^[a-zA-Z0-9-_]+$/.test(value))
+    // return t("COMMON.INVALID_TEXT");
     const isUnique = (fieldName: string, value: string) => {
       const exists = validateDuplicateData?.some(
         (item: any) => item[fieldName] === value
@@ -145,39 +144,38 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
 
   const handleChange =
     (field: keyof typeof formData) =>
-    (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
-      let value = typeof e.target.value === "string" ? e.target.value : "";
+  (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
+    let value = typeof e.target.value === "string" ? e.target.value : "";
 
-      setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-      let errorMessage: string | null = null;
+    let errorMessage: string | null = null;
 
-      if (field === "name" && !/^[a-zA-Z0-9-_]+$/.test(value)) {
-        errorMessage = validateField(
-          field,
-          value,
-          t("COMMON.SCHOOL_NAME_REQUIRED")
-        );
-      } else if (field === "value") {
-        errorMessage = validateField(
-          field,
-          value,
-          t("COMMON.SCHOOL_CODE_REQUIRED")
-        );
+    if (field === "name") { // Removed validation- && !/^[a-zA-Z0-9-_]+$/.test(value)
+      errorMessage = validateField(
+        field,
+        value,
+        t("COMMON.SCHOOL_NAME_REQUIRED")
+      );
+    } else if (field === "value") {
+      errorMessage = validateField(
+        field,
+        value,
+        t("COMMON.SCHOOL_CODE_REQUIRED")
+      );
+    } else if (field === "controllingField") {
+      errorMessage = validateField(
+        field,
+        value,
+        t("COMMON.CLUSTER_NAME_REQUIRED")
+      );
+    }
 
-      } else if (field === "controllingField") {
-        errorMessage = validateField(
-          field,
-          value,
-          t("COMMON.CLUSTER_NAME_REQUIRED")
-        );
-      }
-
-      setErrors((prev) => ({
-        ...prev,
-        [field]: errorMessage,
-      }));
-    };
+    setErrors((prev) => ({
+      ...prev,
+      [field]: errorMessage,
+    }));
+  };
 
   const validateForm = () => {
     const newErrors = {
