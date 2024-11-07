@@ -34,7 +34,7 @@ const telemetryConfig = {
   batchsize: 1,
   mode: "",
   host: hostURL, //TODO: Change this host and endpoint properly
-  endpoint: "/telemetry/v1/telemetry",
+  endpoint: "/v1/telemetry",
   tags: [],
 };
 
