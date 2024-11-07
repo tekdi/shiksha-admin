@@ -170,6 +170,8 @@ const Center: React.FC = () => {
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
+   setSubmittedButtonStatus(false);
+
   };
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
