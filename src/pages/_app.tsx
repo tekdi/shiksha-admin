@@ -30,7 +30,14 @@ function App({ Component, pageProps }: AppProps) {
     telemetryFactory.init();
   }, []);
 
-
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+  if (!token && (router.pathname !== "/login")) {
+      if((router.pathname !== "/logout"))
+      router.push("/logout");
+    }
+   
+  }, [router]);
   useEffect(() => {
     // Initialize GA only once
     if (!window.GA_INITIALIZED) {
