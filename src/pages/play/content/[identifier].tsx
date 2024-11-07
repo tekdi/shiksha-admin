@@ -9,15 +9,18 @@ import {
 } from "@/services/PlayerService";
 import { PlayerConfig } from "@/utils/Interfaces";
 import { Box } from "@mui/material";
-import { V1PlayerConfig, V2PlayerConfig } from "./player-config";
-import { QUESTIONSET_MIME_TYPE, INTERACTIVE_MIME_TYPE } from "../../../../config.json"
+import { V1PlayerConfig, V2PlayerConfig } from "../../../data/player-config";
+import {
+  QUESTIONSET_MIME_TYPE,
+  INTERACTIVE_MIME_TYPE,
+} from "../../../../config.json";
 
 // @ts-ignore
 const SunbirdPlayers = dynamic(() => import("editor/SunbirdPlayers"), {
   ssr: false,
 });
 
-let playerConfig = {config: {}, context: {}, metadata: {}, data: {}};
+let playerConfig = { config: {}, context: {}, metadata: {}, data: {} };
 
 interface SunbirdPlayerProps {
   playerConfig: PlayerConfig;
@@ -44,7 +47,7 @@ const players: React.FC<SunbirdPlayerProps> = () => {
             const metadata = { ...Q1?.questionset, ...Q2?.questionset };
             playerConfig.metadata = metadata;
             console.log("playerConfig", playerConfig);
-          } else if(INTERACTIVE_MIME_TYPE.includes(data?.mimeType)) {
+          } else if (INTERACTIVE_MIME_TYPE.includes(data?.mimeType)) {
             playerConfig = V1PlayerConfig;
             playerConfig.metadata = data;
           } else {
