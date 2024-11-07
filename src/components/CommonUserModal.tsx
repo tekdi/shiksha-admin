@@ -21,6 +21,7 @@ import {
   Role,
   RoleId,
   Status,
+  TelemetryEventType,
   apiCatchingDuration,
 } from "@/utils/app.constant";
 import { useLocationState } from "@/utils/useLocationState";
@@ -38,7 +39,8 @@ import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
 import { cohortMemberList } from "@/services/UserList";
 import CustomModal from "./CustomModal";
-import { setConfig } from "next/config";
+import { setConfig } from "next/config"; 
+import { telemetryFactory } from "@/utils/telemetry";
 import useNotification from "@/hooks/useNotification";
 
 interface UserModalProps {
@@ -373,7 +375,27 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 : "TEAM_LEADERS.TEAM_LEADER_UPDATED_SUCCESSFULLY";
 
           showToastMessage(t(messageKey), "success");
-           getNotification(userId, "TL_PROFILE_UPDATE");
+          getNotification(userId, "TL_PROFILE_UPDATE");
+
+
+          const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: userType+'updated-successfully',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
 
         } else {
           const response = await createUser(apiBody);
@@ -383,6 +405,26 @@ const CommonUserModal: React.FC<UserModalProps> = ({
 
             if (userType === FormContextType.STUDENT) {
               showToastMessage(t(messageKey), "success");
+
+              const windowUrl = window.location.pathname;
+              const cleanedUrl = windowUrl.replace(/^\//, '');
+              const env = cleanedUrl.split("/")[0];
+          
+          
+              const telemetryInteract = {
+                context: {
+                  env: env,
+                  cdata: [],
+                },
+                edata: {
+                  id: userType+'created-successfully',
+                  type: TelemetryEventType.CLICK,
+                  subtype: '',
+                  pageid: cleanedUrl,
+                },
+              };
+              telemetryFactory.interact(telemetryInteract);
+          
             }
           } else {
             showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");

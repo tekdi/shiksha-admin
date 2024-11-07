@@ -440,20 +440,16 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       value: cohort.value,
     }));
 
-  const formattedBlocks = filteredCBlocks?.map((location) => ({
-    ...location,
-    label: location.label
-      ? location.label
-          .split(" ")
-          .map(
-            (word: any) =>
-              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-          )
-          .join(" ")
-      : "",
-  }));
-  console.log(filteredCBlocks);
-  console.log(formattedBlocks);
+const formattedBlocks = filteredCBlocks?.map(location => ({
+  ...location,
+  label: location.label
+    ? location.label.split(' ')
+        .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ')
+    : ''
+}));
+console.log(filteredCBlocks)
+console.log(formattedBlocks)
 
   const handleToggle2 = (centerName: string) => {
     // If the selected center is already checked, uncheck it

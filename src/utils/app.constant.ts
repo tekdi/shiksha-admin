@@ -31,7 +31,13 @@ export enum FormContext {
   COHORTS="cohorts"
 
 }
+export enum TelemetryEventType {
+  CLICK = 'CLICK',
+  SEARCH = 'SEARCH',
+  VIEW = 'VIEW',
+  RADIO="RADIO"
 
+}
 export enum FormContextType {
   STUDENT = "STUDENT",
   TEACHER = "TEACHER",

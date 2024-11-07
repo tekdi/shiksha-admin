@@ -6,6 +6,7 @@ import taxonomyStore from "@/store/tanonomyStore";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ResourceType } from "@/utils/app.constant";
 import { useTranslation } from "next-i18next";
+import router from "next/router";
 
 const ResourceList = () => {
   const [learnersPreReq, setLearnersPreReq] = useState<any[]>([]);
@@ -39,13 +40,17 @@ const ResourceList = () => {
     fetchData();
   }, [tstore.resources]);
 
+  const handleBack = () => {
+    router.push(`/importCsv?subject`);
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h2" mb={2}>
         {tstore.taxonomyType}
       </Typography>
       <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
-        <IconButton sx={{ mr: 1 }} onClick={() => window.history.back()}>
+        <IconButton sx={{ mr: 1 }} onClick={handleBack}>
           <ArrowBackIcon />
         </IconButton>
 

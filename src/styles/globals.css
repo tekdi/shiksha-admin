@@ -98,3 +98,11 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
 .player-grid {
   height: 100vh !important;
 }
+
+#overlay-button[aria-label="Player Menu Open"] {
+  margin-top: 4rem !important;
+}
+
+:has(#overlay-button[aria-label="Player Menu Close"]) header {
+  display: none !important;
+}

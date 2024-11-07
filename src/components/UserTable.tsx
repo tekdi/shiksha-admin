@@ -1,7 +1,7 @@
 import DeleteUserModal from "@/components/DeleteUserModal";
 import HeaderComponent from "@/components/HeaderComponent";
 import PageSizeSelector from "@/components/PageSelector";
-import { FormContextType, SORT, Status } from "@/utils/app.constant";
+import { FormContextType, SORT, Status, TelemetryEventType } from "@/utils/app.constant";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
@@ -33,6 +33,7 @@ import { getCenterList, getStateBlockDistrictList } from "@/services/MasterDataS
 import { updateCohortMemberStatus } from "@/services/CohortService/cohortService";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useRouter } from "next/router";
+import { telemetryFactory } from "@/utils/telemetry";
 type UserDetails = {
   userId: any;
   username: any;
@@ -251,6 +252,25 @@ const UserTable: React.FC<UserTableProps> = ({
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const PagesSelector = () => (
@@ -351,6 +371,26 @@ const UserTable: React.FC<UserTableProps> = ({
       });
     }
     console.log(filters);
+
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
@@ -602,6 +642,26 @@ console.log(code[0])
     }
 
     setSelectedSort(event.target?.value as string);
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
   const mapFields = (formFields: any, response: any) => {
     let initialFormData: any = {};
