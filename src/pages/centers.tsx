@@ -217,7 +217,7 @@ const Center: React.FC = () => {
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, []);
+  }, [cohortFormData]);
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -946,6 +946,7 @@ const response=  await fetchCohortMemberList(data);
       }
       let cohortDetails = {
         name: formData?.name,
+        updatedBy:localStorage.getItem('userId'),
         customFields: customFields,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
