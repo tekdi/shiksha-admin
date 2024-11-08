@@ -192,7 +192,7 @@ export const deleteOption = async (
 export const createOrUpdateOption = async (
   fieldId: string,
   fieldParams: {
-    options: { name: string; value: string; controllingfieldfk?: string }[];
+    options: { name: string; value: string; controllingfieldfk?: string ,updatedBy?:string}[];
   }
   // stateId?: string
 ): Promise<any> => {

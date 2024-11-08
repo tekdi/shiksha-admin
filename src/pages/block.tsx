@@ -858,66 +858,76 @@ const Block: React.FC = () => {
     DistrictId?: string,
     extraArgument?: any
   ) => {
-    const newDistrict = {
-      options: [
-        {
-          controllingfieldfk: controllingField,
-          name,
-          value,
-        },
-      ],
-    };
-    try {
-      const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+    const updatedBy=localStorage.getItem("userId")
+if(updatedBy)
+{
+  const newDistrict = {
 
-      if (response) {
-        filteredCohortOptionData();
-      }
-    } catch (error) {
-      console.error("Error adding district:", error);
+    options: [
+      {
+        controllingfieldfk: controllingField,
+        name,
+        value,
+        updatedBy
+
+      },
+    ],
+  };
+  try {
+    const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+
+    if (response) {
+      filteredCohortOptionData();
     }
+  } catch (error) {
+    console.error("Error adding district:", error);
+  }
 
-    const queryParameters = {
-      name: name,
-    };
+  const queryParameters = {
+    name: name,
+    updatedBy:localStorage.getItem('userId'),
 
-    try {
-      const cohortCreateResponse = await updateCohort(
-        cohortIdForEdit,
-        queryParameters
-      );
-      if (cohortCreateResponse) {
-        await fetchBlocks();
-        await getCohortSearchBlock(selectedDistrict);
-        showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
-        const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
-        const env = cleanedUrl.split("/")[0];
+  };
+
+  try {
+    const cohortCreateResponse = await updateCohort(
+      cohortIdForEdit,
+      queryParameters
+    );
+    if (cohortCreateResponse) {
+      await fetchBlocks();
+      await getCohortSearchBlock(selectedDistrict);
+      showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+      const windowUrl = window.location.pathname;
+      const cleanedUrl = windowUrl.replace(/^\//, '');
+      const env = cleanedUrl.split("/")[0];
 
 
-        const telemetryInteract = {
-          context: {
-            env: env,
-            cdata: [],
-          },
-          edata: {
-            id: 'block-update-success',
-            type: TelemetryEventType.CLICK,
-            subtype: '',
-            pageid: cleanedUrl,
-          },
-        };
-        telemetryFactory.interact(telemetryInteract);
+      const telemetryInteract = {
+        context: {
+          env: env,
+          cdata: [],
+        },
+        edata: {
+          id: 'block-update-success',
+          type: TelemetryEventType.CLICK,
+          subtype: '',
+          pageid: cleanedUrl,
+        },
+      };
+      telemetryFactory.interact(telemetryInteract);
 
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
+    } else if (cohortCreateResponse.responseCode === 409) {
       showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
     }
-    setModalOpen(false);
-    setSelectedStateForEdit(null);
+  } catch (error) {
+    console.error("Error creating cohort:", error);
+    showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+  }
+  setModalOpen(false);
+  setSelectedStateForEdit(null);
+}
+   
   };
 
   const userProps = {
