@@ -2,10 +2,11 @@ import masterIcon from "../../../../public/images/database.svg";
 import centerIcon from "../../../../public/images/centers.svg";
 import dashboardIcon from "../../../../public/images/dashboard.svg";
 import userIcon from "../../../../public/images/group.svg";
-import coursePannerIcon from "../../../../public/images/event_available.svg";
-const ENV = process.env.NEXT_PUBLIC_SHOW_WORKSPACE;
+import coursePlannerIcon from "../../../../public/images/event_available.svg";
+import { store } from "@/store/store";
 
-//
+const ENV = process.env.NEXT_PUBLIC_SHOW_WORKSPACE;
+const isActiveYear = store.getState().isActiveYearSelected;
 
 const Menuitems = [
   // {
@@ -37,7 +38,6 @@ const Menuitems = [
       },
     ],
   },
-
   {
     title: "Master ",
     icon: masterIcon,
@@ -57,12 +57,16 @@ const Menuitems = [
       },
     ],
   },
-  {
-    title: "SIDEBAR.COURSE_PLANNER",
-    icon: coursePannerIcon,
-    href: "/course-planner",
-  },
-  ...(ENV === "true"
+  ...(isActiveYear
+    ? [
+        {
+          title: "SIDEBAR.COURSE_PLANNER",
+          icon: coursePlannerIcon,
+          href: "/course-planner",
+        },
+      ]
+    : []),
+  ...(isActiveYear && ENV === "true"
     ? [
         {
           title: "SIDEBAR.WORKSPACE",

@@ -40,6 +40,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import React, { useEffect, useState } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 
 type StateDetail = {
   stateCode: string | undefined;
@@ -62,6 +63,8 @@ type DistrictDetail = {
 
 const District: React.FC = () => {
   const { t } = useTranslation();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
   const [districtData, setDistrictData] = useState<DistrictDetail[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedStateForEdit, setSelectedStateForEdit] =
@@ -737,7 +740,8 @@ const response= await  getCohortList(reqParams)
         selectedSort={selectedSort}
         shouldFetchDistricts={false}
         handleSearch={handleSearch}
-        showFilter={false}
+        showFilter={false}       
+        showAddNew= {!!isActiveYear}
         handleAddUserClick={() => {
           setModalOpen(true);
           setSelectedStateForEdit(null);

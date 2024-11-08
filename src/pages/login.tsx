@@ -36,6 +36,7 @@ import useSubmittedButtonStore from "@/utils/useSharedState";
 import { Role } from "@/utils/app.constant";
 import { AcademicYear } from "@/utils/Interfaces";
 import { getAcademicYear } from "@/services/AcademicYearService";
+import useStore from '@/store/store';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -49,6 +50,9 @@ const LoginPage = () => {
   const [lang, setLang] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
   const [language, setLanguage] = useState(selectedLanguage);
+  const setIsActiveYearSelected = useStore(
+    (state: { setIsActiveYearSelected: any }) => state.setIsActiveYearSelected
+  );
 
   const theme = useTheme<any>();
   const router = useRouter();
@@ -164,8 +168,9 @@ const LoginPage = () => {
                 (item) => item.isActive
               );
               const activeSessionId = activeSession ? activeSession.id : "";
-              localStorage.setItem("academicYearId", activeSessionId);
+              localStorage.setItem("academicYearId", activeSessionId);             
               if (activeSessionId){
+                setIsActiveYearSelected(true);
                 router.push("/centers");
               }
             }

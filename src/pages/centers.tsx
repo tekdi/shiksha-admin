@@ -48,6 +48,7 @@ import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -73,6 +74,8 @@ const Center: React.FC = () => {
   // use hooks
   const queryClient = useQueryClient();
   const router = useRouter();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   const { t } = useTranslation();
   const adminInformation = useSubmittedButtonStore(
@@ -1152,7 +1155,7 @@ const response=  await fetchCohortMemberList(data);
     handleSortChange: handleSortChange,
     handleFilterChange: handleFilterChange,
     handleSearch: handleSearch,
-    showAddNew: true,
+    showAddNew: !!isActiveYear,
     handleAddUserClick: handleAddUserClick,
     statusValue: statusValue,
     setStatusValue: setStatusValue,
