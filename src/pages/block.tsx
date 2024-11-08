@@ -40,6 +40,7 @@ import {
 import { getBlockTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
 import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 
 type StateDetail = {
   name: string | undefined;
@@ -77,6 +78,8 @@ interface BlockOption {
 
 const Block: React.FC = () => {
   const { t } = useTranslation();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
   const [selectedSort, setSelectedSort] = useState<string>("Sort");
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
@@ -928,6 +931,7 @@ const Block: React.FC = () => {
     searchPlaceHolder: t("MASTER.SEARCHBAR_PLACEHOLDER_BLOCK"),
     showFilter: true,
     showSort: true,
+    showAddNew: !!isActiveYear,
     statusValue: statusValue,
     setStatusValue: setStatusValue,
     handleFilterChange: handleFilterChange,
