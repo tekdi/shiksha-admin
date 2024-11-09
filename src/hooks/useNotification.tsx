@@ -11,7 +11,7 @@ const useNotification = () => {
       //   console.error("User ID is not found in local storage.");
       //   return;
       // }
-      console.log("shreyas dvicce id", userId);
+      console.log("dvicce id", userId);
       
 
       const userDetails = await getUserDetailsInfo(userId, false);
