@@ -135,7 +135,9 @@
     "SINGLE_TEAM_LEADERS_ASSIGNED":"Selected block {{selectedBlockForTL}} already has {{assignedTeamLeader}} Team Leader assigned.",
     "CONTINUE_ASSIGNED_TEAM_LEADER":"Still do you want to continue to assign team leader to {{selectedBlockForTL}}",
     "ASSIGNED_TEAM_LEADERS":"{{assignedTeamLeaderNames}} and more..",
-    "CONTINUE":"Continue"
+    "CONTINUE":"Continue",
+    "DESCRIPTION": "Description",
+    "PAGE_NOT_FOUND": "Page Not Found"
   },
   "LOGIN_PAGE": {
     "USERNAME": "Username",
@@ -160,7 +162,7 @@
     "VIEW_PLANS": "View Plans",
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
-    "WORKSPACE": "Workspace App"
+    "WORKSPACE": "Workspace"
 
   },
   "FACILITATORS": {

@@ -157,6 +157,10 @@ export interface Context {
   host?: string;
   endpoint?: string;
   dispatcher?: object;
+  partner?: any[];
+  contentId: string;
+  dims?: any[];
+  app?: string[];
   userData?: {
     firstName: string;
     lastName: string;
@@ -196,7 +200,8 @@ export interface Metadata {
 export interface PlayerConfig {
   context?: Context;
   config?: Config;
-  metadata: Metadata;
+  metadata?: Metadata;
+  data?: any;
 }
 
 
