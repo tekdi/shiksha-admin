@@ -78,7 +78,7 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
             {t("COURSE_PLANNER.NO_DATA_PRE")}
           </Typography>
         )}
@@ -100,7 +100,7 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2">
+          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
             {t("COURSE_PLANNER.NO_DATA_POST")}
           </Typography>
         )}
@@ -122,7 +122,7 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2">{t("COURSE_PLANNER.NO_DATA")}</Typography>
+          <Typography variant="body2" sx={{fontStyle: 'italic'}}>{t("COURSE_PLANNER.NO_DATA")}</Typography>
         )}
       </Box>
     </Box>

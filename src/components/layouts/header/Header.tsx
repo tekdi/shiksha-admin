@@ -15,6 +15,7 @@ import { useTranslation } from "next-i18next";
 import { createTheme, useTheme } from "@mui/material/styles";
 import Profile from "./Profile";
 import { AcademicYear } from "@/utils/Interfaces";
+import useStore from "@/store/store";
 
 const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const { t } = useTranslation();
@@ -23,6 +24,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const setIsActiveYearSelected = useStore(
+    (state: { setIsActiveYearSelected: any }) => state.setIsActiveYearSelected
+  );
 
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
   const [academicYearList, setAcademicYearList] = useState<AcademicYear[]>([]);
@@ -50,6 +54,13 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     setSelectedSessionId(event.target.value);
     console.log("selected academic year id", event.target.value);
     localStorage.setItem("academicYearId", event.target.value);
+     // Check if the selected academic year is active
+     const selectedYear = academicYearList?.find(
+      (year) => year.id === event.target.value
+    );
+    const isActive = selectedYear ? selectedYear.isActive : false;
+    // localStorage.setItem('isActiveYearSelected', JSON.stringify(isActive));
+    setIsActiveYearSelected(isActive);
     window.location.reload();
   };
 

@@ -48,6 +48,7 @@ import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -73,6 +74,8 @@ const Center: React.FC = () => {
   // use hooks
   const queryClient = useQueryClient();
   const router = useRouter();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   const { t } = useTranslation();
   const adminInformation = useSubmittedButtonStore(
@@ -170,6 +173,8 @@ const Center: React.FC = () => {
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
+   setSubmittedButtonStatus(false);
+
   };
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -212,7 +217,7 @@ const Center: React.FC = () => {
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, []);
+  }, [cohortFormData]);
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -941,6 +946,7 @@ const response=  await fetchCohortMemberList(data);
       }
       let cohortDetails = {
         name: formData?.name,
+        updatedBy:localStorage.getItem('userId'),
         customFields: customFields,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
@@ -1150,7 +1156,7 @@ const response=  await fetchCohortMemberList(data);
     handleSortChange: handleSortChange,
     handleFilterChange: handleFilterChange,
     handleSearch: handleSearch,
-    showAddNew: true,
+    showAddNew: !!isActiveYear,
     handleAddUserClick: handleAddUserClick,
     statusValue: statusValue,
     setStatusValue: setStatusValue,

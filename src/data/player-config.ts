@@ -1,4 +1,6 @@
-export const V2PlayerConfig = {
+import { PlayerConfig } from "@/utils/Interfaces";
+
+export const V2PlayerConfig: PlayerConfig = {
   context: {
     mode: "play",
     partner: [],
@@ -46,10 +48,9 @@ export const V2PlayerConfig = {
       showReplay: true,
     },
   },
-  metadata: {},
   data: {},
 };
-export const V1PlayerConfig = {
+export const V1PlayerConfig: PlayerConfig = {
   config: {
     whiteListUrl: [],
     showEndPage: true,
@@ -80,7 +81,7 @@ export const V1PlayerConfig = {
       bgImage: "assets/icons/splacebackground_1.png",
       webLink: "",
     },
-    apislug: "/action",
+    apislug: "",
     repos: ["/sunbird-plugins/renderer"],
     plugins: [
       {
@@ -103,7 +104,7 @@ export const V1PlayerConfig = {
   },
   context: {
     mode: "play",
-    partner: [],
+    // partner: [],
     pdata: {
       id: "pratham.admin.portal",
       ver: "1.0.0",
@@ -125,6 +126,5 @@ export const V1PlayerConfig = {
       lastName: "User",
     },
   },
-  data: {},
-  metadata: {},
+  data: {}
 };

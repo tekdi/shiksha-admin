@@ -97,6 +97,11 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
 
 .player-grid {
   height: 100vh !important;
+  border: solid 1px #ccc;
+}
+
+.player {
+  
 }
 
 #overlay-button[aria-label="Player Menu Open"] {
@@ -106,3 +111,4 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
 :has(#overlay-button[aria-label="Player Menu Close"]) header {
   display: none !important;
 }
+

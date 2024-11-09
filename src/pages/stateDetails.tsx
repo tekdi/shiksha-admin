@@ -23,6 +23,8 @@ import Loader from "@/components/Loader";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
+import { TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 
 const StateDetails = () => {
   const router = useRouter();
@@ -91,6 +93,24 @@ const StateDetails = () => {
     navigator.clipboard.writeText(link).then(
       () => {
         alert("Link copied to clipboard");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'copy_link',
+
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
       },
       (err) => {
         console.error("Failed to copy link: ", err);

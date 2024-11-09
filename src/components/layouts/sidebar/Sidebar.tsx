@@ -11,16 +11,14 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import FeatherIcon from "feather-icons-react";
 import { useTranslation } from "next-i18next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import LogoIcon from "../logo/LogoIcon";
 import Buynow from "./Buynow";
 import Menuitems from "./MenuItems";
-import Image from "next/image";
-import MasterIcon  from '../../../../public/images/database.svg';
 
 const Sidebar = ({
   isMobileSidebarOpen,
@@ -68,7 +66,7 @@ const Sidebar = ({
                   selected={location === item.href}
                   sx={{
                     mb: 1,
-                    
+
                     ...(location === item.href && {
                       color: "black",
                       backgroundColor: (theme) =>
@@ -76,14 +74,10 @@ const Sidebar = ({
                     }),
                   }}
                 >
-             {/* {  item.icon && (<ListItemIcon>
-  {item.icon}
-</ListItemIcon>) */}
-<ListItemIcon>
-<Image src={item.icon} alt="" />
-
-</ListItemIcon>
-      <ListItemText>
+                  <ListItemIcon>
+                    <Image src={item.icon} alt="" />
+                  </ListItemIcon>
+                  <ListItemText>
                     <Typography variant="h2" sx={{ fontWeight: "700px" }}>
                       {t(item.title)}
                     </Typography>
@@ -102,7 +96,11 @@ const Sidebar = ({
                 <Collapse in={open === index} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item?.subOptions?.map((subItem) => (
-                      <Tooltip title={t(subItem.title)} placement="right-start" key={subItem.title}>
+                      <Tooltip
+                        title={t(subItem.title)}
+                        placement="right-start"
+                        key={subItem.title}
+                      >
                         <ListItem
                           button
                           key={subItem.title}
@@ -113,7 +111,7 @@ const Sidebar = ({
                           selected={location === subItem.href}
                           sx={{
                             pl: 8,
-                           ml: 2,
+                            ml: 2,
                             mb: 1,
                             ...(location === subItem.href && {
                               color: "black",

@@ -359,6 +359,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             mobile: apiBody?.mobile,
             father_name: apiBody?.father_name,
             email: apiBody?.email,
+            updatedBy:localStorage.getItem("userId")
           };
           const customFields = apiBody?.customFields;
           console.log(customFields);

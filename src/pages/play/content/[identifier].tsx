@@ -1,33 +1,37 @@
-import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useRouter } from "next/router";
 import {
   fetchContent,
   getHierarchy,
   getQumlData,
 } from "@/services/PlayerService";
 import { PlayerConfig } from "@/utils/Interfaces";
-import { Box } from "@mui/material";
-import { V1PlayerConfig, V2PlayerConfig } from "../../../data/player-config";
+import { Box, IconButton, Typography } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import {
-  QUESTIONSET_MIME_TYPE,
   INTERACTIVE_MIME_TYPE,
+  QUESTIONSET_MIME_TYPE,
 } from "../../../../config.json";
+import { V1PlayerConfig, V2PlayerConfig } from "../../../data/player-config";
+import Loader from "@/components/Loader";
+import { useTranslation } from "react-i18next";
 
 // @ts-ignore
 const SunbirdPlayers = dynamic(() => import("editor/SunbirdPlayers"), {
   ssr: false,
 });
 
-let playerConfig = { config: {}, context: {}, metadata: {}, data: {} };
+let playerConfig: PlayerConfig;
 
 interface SunbirdPlayerProps {
   playerConfig: PlayerConfig;
 }
 
-const players: React.FC<SunbirdPlayerProps> = () => {
+const Players: React.FC<SunbirdPlayerProps> = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { identifier } = router.query;
   const [loading, setLoading] = useState(true);
 
@@ -66,9 +70,37 @@ const players: React.FC<SunbirdPlayerProps> = () => {
 
   return (
     <Box>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }} onClick={() => router.back()}>
+        <IconButton>
+          <ArrowBackIcon />
+          </IconButton>
+          <Typography
+            variant="h4"
+          >
+            {t("COMMON.BACK")}
+          </Typography>
+      </Box>
+      {loading && (
+        <Box
+          width={"100%"}
+          id="check"
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          mt={"5rem"}
+        >
+          <Loader showBackdrop={false} />
+        </Box>
+      )}
       <Box marginTop={"1rem"}>
+        <Typography color={'#024f9d'} sx={{padding: '0 0 4px 4px', fontWeight: 'bold'}}>{playerConfig?.metadata?.name}</Typography>
         {!loading ? <SunbirdPlayers player-config={playerConfig} /> : null}
       </Box>
+
+      {/* <Box mt={2}>
+        <Typography variant="h4">{t('COMMON.DESCRIPTION')}</Typography>
+      </Box> */}
+
     </Box>
   );
 };
@@ -91,4 +123,4 @@ export async function getStaticProps({ locale, params }: any) {
   };
 }
 
-export default players;
+export default Players;
