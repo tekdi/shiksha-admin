@@ -136,10 +136,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
-    // console.log("selectedDistrict-------------",selectedDistrict);
-    // if(selectedDistrict[0] && selectedDistrict[0] !== districtName){
-    //   console.log("selectedDistrict-------------",selectedDistrict);
-    // }
   const [selectedBlockCohortIdForTL, setSelectedBlockCohortIdForTL] =
     useState("");
   const [selectedTLUserID, setSelectedTLUserID] = useState(userId);
@@ -189,13 +185,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   console.log(centers);
 
   const { getNotification } = useNotification();
-
-  const [selectedDistrictValue ,setSelectedDistrictValue] = useState(selectedDistrict);
-
-  useEffect(() => {
-    setSelectedDistrictValue(selectedDistrict)
-  }, [selectedDistrict]);
-
   const handleReassign = async () => {
     try {
       let selectedData;
@@ -241,7 +230,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         await bulkCreateCohortMembers(payload);
         let customFields;
 
-        console.log(selectedBlock[0] , blockName , "SHREYAS TEKDI");
         
         if (selectedBlock[0] !== blockName) {
           const userDetails = await getUserDetailsInfo(userId);
@@ -260,7 +248,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
             },
           ];
         
-          console.log(selectedDistrictValue[0] , districtName , "AKSHATA");
+
           
           if (selectedDistrict[0] !== districtName) {
             const userDetails = await getUserDetailsInfo(userId);
@@ -552,7 +540,6 @@ console.log(formattedBlocks)
           value: selectedCenterCode,
         },
       ];
-      console.log(selectedDistrictValue[0] , districtName, "AKSHATA");
       if ( selectedDistrict[0] !== districtName) {
         if(userType === Role.TEAM_LEADERS){
 
