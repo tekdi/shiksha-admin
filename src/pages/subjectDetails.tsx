@@ -29,6 +29,8 @@ import {
   getAssociationsByCodeNew,
   getOptionsByCategory,
 } from "@/utils/Helper";
+import { TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 
 // Define Card interface
 interface Card {
@@ -227,6 +229,24 @@ const SubjectDetails = () => {
       setGrade(overAllCommonGrade);
       setGradeOptions(overAllCommonGrade);
     }
+    const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'change-medium',
+
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
   };
 
   const handleGradeChange = (event: any) => {
@@ -281,6 +301,24 @@ const SubjectDetails = () => {
       setTypeOptions(commonType3Data);
       setType(commonType3Data);
     }
+    const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'grade_change',
+
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
   };
 
   const handleTypeChange = (event: any) => {
@@ -369,6 +407,24 @@ const SubjectDetails = () => {
         JSON.stringify(overallCommonSubjects)
       );
     }
+    const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'change_type',
+
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
   };
 
   return (
