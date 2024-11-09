@@ -68,7 +68,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   districtCode,
   centers,
 }) => {
-  console.log(userId + "shreyas");
+  console.log(userId);
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const roleType = userType;
@@ -136,6 +136,10 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
+    // console.log("selectedDistrict-------------",selectedDistrict);
+    // if(selectedDistrict[0] && selectedDistrict[0] !== districtName){
+    //   console.log("selectedDistrict-------------",selectedDistrict);
+    // }
   const [selectedBlockCohortIdForTL, setSelectedBlockCohortIdForTL] =
     useState("");
   const [selectedTLUserID, setSelectedTLUserID] = useState(userId);
@@ -186,6 +190,12 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
   const { getNotification } = useNotification();
 
+  const [selectedDistrictValue ,setSelectedDistrictValue] = useState(selectedDistrict);
+
+  useEffect(() => {
+    setSelectedDistrictValue(selectedDistrict)
+  }, [selectedDistrict]);
+
   const handleReassign = async () => {
     try {
       let selectedData;
@@ -231,8 +241,14 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         await bulkCreateCohortMembers(payload);
         let customFields;
 
+        console.log(selectedBlock[0] , blockName , "SHREYAS TEKDI");
+        
         if (selectedBlock[0] !== blockName) {
           const userDetails = await getUserDetailsInfo(userId);
+          if(userType === Role.FACILITATORS){
+
+          getNotification(selectedTLUserID, "FACILITATOR_BLOCK_UPDATE");
+        }
           const blockField = userDetails?.userData?.customFields.find(
             (field: any) => field.label === "BLOCKS"
           );
@@ -243,9 +259,16 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
               value: selectedBlockCode,
             },
           ];
-
+        
+          console.log(selectedDistrictValue[0] , districtName , "AKSHATA");
+          
           if (selectedDistrict[0] !== districtName) {
             const userDetails = await getUserDetailsInfo(userId);
+             if(userType === Role.TEAM_LEADERS){
+
+          getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
+        }
+          
             const blockField = userDetails?.userData?.customFields.find(
               (field: any) => field.label === "BLOCKS"
             );
@@ -259,6 +282,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                 value: selectedBlockCode,
               },
             ];
+          }
+          else {
+             getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
           }
         }
 
@@ -279,6 +305,14 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           ),
           "success"
         );
+        if( userType === Role.FACILITATORS) {
+          getNotification(selectedTLUserID, "FACILITATOR_CENTER_REASSIGNMENT");
+
+        }
+        // if(userType === Role.LEARNERS) {
+        //   getNotification(selectedTLUserID, "LEARNER_CENTER_REASSIGNMENT");
+        //   // LINE NO 12 OF THIS FILE
+        // }
       } else {
         const reassignBlockObject = {
           limit: 0,
@@ -398,6 +432,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           reassignButtonStatus
             ? setReassignButtonStatus(false)
             : setReassignButtonStatus(true);
+            getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
         }
       }
     } catch (error) {
@@ -412,7 +447,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       );
     }
 
-    getNotification(userId, "TL_BLOCK_REASSIGNMENT");
+    // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
   let filteredCohorts = cohorts?.filter((cohort) =>
     cohort?.name?.toLowerCase().includes(searchInput)
@@ -517,8 +552,12 @@ console.log(formattedBlocks)
           value: selectedCenterCode,
         },
       ];
-      console.log(selectedBlockCode, selectedBlockForTL);
-      if (selectedDistrict[0] !== districtName) {
+      console.log(selectedDistrictValue[0] , districtName, "AKSHATA");
+      if ( selectedDistrict[0] !== districtName) {
+        if(userType === Role.TEAM_LEADERS){
+
+          getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
+        }
         customFields = [
           {
             fieldId: blockField.fieldId,
@@ -528,8 +567,12 @@ console.log(formattedBlocks)
             fieldId: districtFieldId,
             value: selectedDistrictCode,
           },
+          
         ];
-      }
+      } 
+      else {
+             getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
+          }
       const updateObject = {
         userData: {},
         customFields: customFields,

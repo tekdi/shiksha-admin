@@ -7,10 +7,12 @@ const useNotification = () => {
     try {
       //   const userId = localStorage.getItem("userId");
 
-      if (!userId) {
-        console.error("User ID is not found in local storage.");
-        return;
-      }
+      // if (!userId) {
+      //   console.error("User ID is not found in local storage.");
+      //   return;
+      // }
+      console.log("shreyas dvicce id", userId);
+      
 
       const userDetails = await getUserDetailsInfo(userId, false);
       console.log("API Response:", userDetails);
@@ -19,7 +21,7 @@ const useNotification = () => {
 
       console.log("Device ID from API:", deviceId);
 
-      if (deviceId) {
+      if (true) {
         const result = await sendCredentialService({
           isQueue: false,
           context: "USER",

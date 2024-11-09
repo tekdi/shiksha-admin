@@ -375,7 +375,16 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 : "TEAM_LEADERS.TEAM_LEADER_UPDATED_SUCCESSFULLY";
 
           showToastMessage(t(messageKey), "success");
-          getNotification(userId, "TL_PROFILE_UPDATE");
+          if( userType === FormContextType.TEAM_LEADER){
+            getNotification(userId, "TL_PROFILE_UPDATE");
+          }
+           if( userType === FormContextType.TEACHER){
+            getNotification(userId, "FACILITATOR_PROFILE_UPDATE");
+          }
+          //  if( userType === FormContextType.STUDENT){
+          //   getNotification(userId, "pending TO STUDENDT");
+          //   getNotification(userId, "pending TO TEACHER");
+          // }
 
 
           const windowUrl = window.location.pathname;
