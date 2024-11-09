@@ -23,6 +23,8 @@ import { getChannelDetails } from "@/services/coursePlanner";
 import { getOptionsByCategory } from "@/utils/Helper";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
+import { telemetryFactory } from "@/utils/telemetry";
+import { TelemetryEventType } from "@/utils/app.constant";
 
 const Foundation = () => {
   const router = useRouter();
@@ -145,7 +147,27 @@ const Foundation = () => {
     navigator.clipboard.writeText(link).then(
       () => {
         alert("Link copied to clipboard");
-      },
+
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'copy_link',
+
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+      }
+      ,
       (err) => {
         console.error("Failed to copy link: ", err);
       }

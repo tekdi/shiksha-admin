@@ -34,6 +34,7 @@ import { updateCohortMemberStatus } from "@/services/CohortService/cohortService
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 type UserDetails = {
   userId: any;
   username: any;
@@ -99,6 +100,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [blockMembershipIdList, setBlockMembershipIdList] = React.useState<string[]>([]);
   const [centerMembershipIdList, setCenterMembershipIdList] = React.useState<string[]>([]);
   const router = useRouter();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
@@ -1534,7 +1537,8 @@ console.log(selectedBlockStore)
      setSelectedCenter:setSelectedCenter,
      selectedCenterCode:selectedCenterCode,
      setSelectedCenterCode: setSelectedCenterCode,
-     setSelectedStateCode:setSelectedStateCode
+     setSelectedStateCode:setSelectedStateCode,
+     showAddNew: !!isActiveYear
   };
   
 

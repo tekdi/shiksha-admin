@@ -730,7 +730,7 @@ const HeaderComponent = ({
             </Box>
           )}
         </Box>
-        {showAddNew && (
+        {/* {showAddNew && ( */}
           <Box
             sx={{
               display: "flex",
@@ -765,7 +765,7 @@ const HeaderComponent = ({
               </FormControl>
             )}
           </Box>
-        )}
+        {/* )} */}
         {children}
       </Box>
     </Box>
