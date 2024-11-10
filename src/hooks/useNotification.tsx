@@ -21,7 +21,7 @@ const useNotification = () => {
 
       console.log("Device ID from API:", deviceId);
 
-      if (true) {
+      if (deviceId) {
         const result = await sendCredentialService({
           isQueue: false,
           context: "USER",
