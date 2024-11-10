@@ -236,6 +236,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           if(userType === Role.FACILITATORS){
 
           getNotification(selectedTLUserID, "FACILITATOR_BLOCK_UPDATE");
+
+          console.log(selectedTLUserID ,"FACILITATOR_BLOCK_UPDATE");
+          
         }
           const blockField = userDetails?.userData?.customFields.find(
             (field: any) => field.label === "BLOCKS"
@@ -294,13 +297,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           "success"
         );
         if( userType === Role.FACILITATORS) {
-          getNotification(selectedTLUserID, "FACILITATOR_CENTER_REASSIGNMENT");
-
+          getNotification(userId, "FACILITATOR_CENTER_REASSIGNMENT");
         }
-        // if(userType === Role.LEARNERS) {
-        //   getNotification(selectedTLUserID, "LEARNER_CENTER_REASSIGNMENT");
-        //   // LINE NO 12 OF THIS FILE
-        // }
+        if(userType === Role.LEARNERS) {
+          getNotification(selectedTLUserID, "LEARNER_REASSIGNMENT_NOTIFICATION");
+        }
       } else {
         const reassignBlockObject = {
           limit: 0,

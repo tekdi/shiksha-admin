@@ -382,10 +382,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
            if( userType === FormContextType.TEACHER){
             getNotification(userId, "FACILITATOR_PROFILE_UPDATE");
           }
-          //  if( userType === FormContextType.STUDENT){
-          //   getNotification(userId, "pending TO STUDENDT");
-          //   getNotification(userId, "pending TO TEACHER");
-          // }
+           if( userType === FormContextType.STUDENT){
+            getNotification(userId, "LEARNER_PROFILE_UPDATE_ALERT");
+            getNotification(userId, "LEARNER_PROFILE_UPDATE_BY_ADMIN_TL_FC");
+          }
 
 
           const windowUrl = window.location.pathname;
