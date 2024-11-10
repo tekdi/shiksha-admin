@@ -25,11 +25,14 @@ import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
 import { telemetryFactory } from "@/utils/telemetry";
 import { TelemetryEventType } from "@/utils/app.constant";
+import useStore from "@/store/store";
 
 const Foundation = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const theme = useTheme();
+  const userStore = useStore();
+  const isActiveYear = userStore.isActiveYearSelected;
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const store = coursePlannerStore();
@@ -116,7 +119,8 @@ const Foundation = () => {
     if (userStateName) {
       getFrameworkDetails();
     }
-  }, [userStateName]);
+    !isActiveYear && router.push("/centers");
+  }, [userStateName, isActiveYear]);
 
   const handleCardClick = (id: any) => {
     router.push(`/stateDetails?cardId=${id}`);

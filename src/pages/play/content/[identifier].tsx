@@ -17,6 +17,7 @@ import {
 import { V1PlayerConfig, V2PlayerConfig } from "../../../data/player-config";
 import Loader from "@/components/Loader";
 import { useTranslation } from "react-i18next";
+import useStore from "@/store/store";
 
 // @ts-ignore
 const SunbirdPlayers = dynamic(() => import("editor/SunbirdPlayers"), {
@@ -34,6 +35,8 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
   const { t } = useTranslation();
   const { identifier } = router.query;
   const [loading, setLoading] = useState(true);
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   useEffect(() => {
     const loadContent = async () => {
@@ -66,7 +69,8 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
       }
     };
     loadContent();
-  }, [identifier]);
+    !isActiveYear && router.push("/centers");
+  }, [identifier, isActiveYear]);
 
   return (
     <Box>
