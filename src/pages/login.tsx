@@ -177,7 +177,7 @@ const LoginPage = () => {
         const response = await login({ username, password });
         if (response?.result?.access_token) {
           if (typeof window !== "undefined" && window.localStorage) {
-            const token = response?.result?.access_token;
+            const token = response.result.access_token;
             const refreshToken = response?.result?.refresh_token;
             localStorage.setItem("token", token);
             rememberMe
@@ -188,6 +188,11 @@ const LoginPage = () => {
             localStorage.setItem("userId", userResponse?.userId);
             // Update Zustand store
             setUserId(userResponse?.userId || "");
+
+            if (userResponse?.userId) {
+              document.cookie = `authToken=${token}; path=/; secure; SameSite=Strict`;
+              document.cookie = `userId=${userResponse.userId}; path=/; secure; SameSite=Strict`;
+            }
 
             localStorage.setItem("name", userResponse?.name);
             const tenantId = userResponse?.tenantData?.[0]?.tenantId;
