@@ -108,29 +108,6 @@ const LoginPage = () => {
     event.preventDefault();
   };
 
-  // const fetchUserDetail = async () => {
-  //   let userId;
-  //   try {
-  //     if (typeof window !== "undefined" && window.localStorage) {
-  //       userId = localStorage.getItem(Storage.USER_ID);
-  //     }
-  //     const fieldValue = true;
-  //     if (userId) {
-  //       console.log("true");
-  //       const response = await getUserDetailsInfo(userId, fieldValue);
-
-  //       const userInfo = response?.userData;
-  //       //set user info in zustand store
-  //       setAdminInformation(userInfo);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchUserDetail();
-  // }, []);
   const fetchUserDetail = async () => {
     let userId;
     try {
@@ -176,7 +153,6 @@ const LoginPage = () => {
             }
           };
           getAcademicYearList();
-         
         }
       }
     } catch (error) {
@@ -187,6 +163,7 @@ const LoginPage = () => {
   useEffect(() => {
     fetchUserDetail();
   }, []);
+
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     logEvent({
@@ -198,7 +175,7 @@ const LoginPage = () => {
       setLoading(true);
       try {
         const response = await login({ username, password });
-        if (response) {
+        if (response?.result?.access_token) {
           if (typeof window !== "undefined" && window.localStorage) {
             const token = response?.result?.access_token;
             const refreshToken = response?.result?.refresh_token;
@@ -215,7 +192,11 @@ const LoginPage = () => {
             localStorage.setItem("name", userResponse?.name);
             const tenantId = userResponse?.tenantData?.[0]?.tenantId;
             localStorage.setItem("tenantId", tenantId);
+
+            await fetchUserDetail();
           }
+        } else {
+          showToastMessage(t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT"), "error");
         }
         setLoading(false);
         const telemetryInteract = {
@@ -228,7 +209,7 @@ const LoginPage = () => {
           },
         };
         telemetryFactory.interact(telemetryInteract);
-        fetchUserDetail();
+        
       } catch (error: any) {
         setLoading(false);
         const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
