@@ -7,10 +7,12 @@ const useNotification = () => {
     try {
       //   const userId = localStorage.getItem("userId");
 
-      if (!userId) {
-        console.error("User ID is not found in local storage.");
-        return;
-      }
+      // if (!userId) {
+      //   console.error("User ID is not found in local storage.");
+      //   return;
+      // }
+      console.log("dvicce id", userId);
+      
 
       const userDetails = await getUserDetailsInfo(userId, false);
       console.log("API Response:", userDetails);
