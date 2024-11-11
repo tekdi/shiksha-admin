@@ -39,7 +39,14 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
       setLanguage(lang);
       const storedList = localStorage.getItem("academicYearList");
       try {
-        setAcademicYearList(storedList ? JSON.parse(storedList) : []);
+        const parsedList = storedList ? JSON.parse(storedList) : [];
+        const modifiedList = parsedList.map((item: { isActive: any; session: any; }) => {
+          if (item.isActive) {
+            return { ...item, session: `${item.session} (${t('COMMON.ACTIVE')})` };
+          }
+          return item;
+        }); 
+        setAcademicYearList(modifiedList);
         const selectedAcademicYearId = localStorage.getItem("academicYearId");
         setSelectedSessionId(selectedAcademicYearId ?? "");
       } catch (error) {
