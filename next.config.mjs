@@ -78,8 +78,8 @@ const nextConfig = {
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/asset/:path*`, // Forward other /action/asset requests to proxy.js
       },
       {
-        source: "/action/v1/telemetry", // Match any URL starting with /workspace/content/assets/
-        destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`, // Serve the assets from the public folder
+        source: "/action/v1/telemetry",
+        destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`,
       },
       {
         source: "/action/content/:path*", // Match other /action/asset routes
