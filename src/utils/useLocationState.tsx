@@ -321,6 +321,7 @@ export const useLocationState = (
   useEffect(() => {
     if (!open) {
       setSelectedBlock([]);
+    if(!reAssignModal)
       setSelectedDistrict([]);
       setSelectedState([]);
       setSelectedCenter([]);

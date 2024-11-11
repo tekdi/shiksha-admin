@@ -3,7 +3,7 @@ import { getUserDetailsInfo } from "@/services/UserList";
 import { useCallback } from "react";
 
 const useNotification = () => {
-  const getNotification = useCallback(async (userId: any, key: any) => {
+  const getNotification = useCallback(async (userId: any, key: any, replacements?:any) => {
     try {
       //   const userId = localStorage.getItem("userId");
 
@@ -26,6 +26,7 @@ const useNotification = () => {
           isQueue: false,
           context: "USER",
           key: key,
+        replacements: replacements,
           push: {
             receipients: [deviceId],
           },

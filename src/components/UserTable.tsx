@@ -183,6 +183,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
   const [openAddLearnerModal, setOpenAddLearnerModal] = React.useState(false);
   const [userId, setUserId] = useState();
+
   const [submitValue, setSubmitValue] = useState<boolean>(false);
   console.log(selectedBlockCode)
   const reassignButtonStatus = useSubmittedButtonStore(
@@ -738,6 +739,7 @@ console.log(code[0])
   const handleEdit = async (rowData: any) => {
    
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
+    setUserName(rowData?.name)
 
     console.log("Edit row:", rowData);
 
@@ -799,6 +801,8 @@ console.log(code[0])
    // setIsDeleteModalOpen(true);
    console.log(rowData)
     setSelectedUserId(rowData?.userId );
+    setUserName(rowData?.name)
+
     setCohortId(rowData?.cohortIds);
     setBlock(rowData?.blocks)
     console.log(rowData?.districtValue)
@@ -1650,6 +1654,8 @@ console.log(selectedBlockStore)
         districtCode={districtCode}
         cohortId={cohortId}
         centers={assignedCenters}
+        userName={userName}
+
 
       />
 
@@ -1660,6 +1666,7 @@ console.log(selectedBlockStore)
         isEditModal={true}
         userId={userId}
         onSubmit={handleModalSubmit}
+        userName={userName}
         userType={
           userType === Role.LEARNERS
             ? FormContextType.STUDENT
