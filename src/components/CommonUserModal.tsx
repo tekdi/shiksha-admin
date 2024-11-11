@@ -51,6 +51,7 @@ interface UserModalProps {
   userId?: string;
   onSubmit: (submitValue: boolean) => void;
   userType: string;
+ userName?:string;
 }
 
 
@@ -63,8 +64,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   userId,
   onSubmit,
   userType,
+  userName
 }) => {
-  console.log(userType);
+  console.log(userName);
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
   const [openModal, setOpenModal] = React.useState(false);
@@ -383,8 +385,11 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             getNotification(userId, "FACILITATOR_PROFILE_UPDATE");
           }
            if( userType === FormContextType.STUDENT){
-            getNotification(userId, "LEARNER_PROFILE_UPDATE_ALERT");
-            getNotification(userId, "LEARNER_PROFILE_UPDATE_BY_ADMIN_TL_FC");
+               const replacements = {
+                "{learnerName}":userName
+               }
+            getNotification(userId, "LEARNER_PROFILE_UPDATE_ALERT", replacements);
+            getNotification(userId, "LEARNER_PROFILE_UPDATE_BY_ADMIN_TL_FC", replacements);
           }
 
 
