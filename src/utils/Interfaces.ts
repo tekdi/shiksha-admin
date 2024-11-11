@@ -203,5 +203,3 @@ export interface PlayerConfig {
   metadata?: Metadata;
   data?: any;
 }
-
-

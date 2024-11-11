@@ -73,12 +73,12 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
       <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }} onClick={() => router.back()}>
         <IconButton>
           <ArrowBackIcon />
-          </IconButton>
-          <Typography
-            variant="h4"
-          >
-            {t("COMMON.BACK")}
-          </Typography>
+        </IconButton>
+        <Typography
+          variant="h4"
+        >
+          {t("COMMON.BACK")}
+        </Typography>
       </Box>
       {loading && (
         <Box
@@ -92,8 +92,8 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
           <Loader showBackdrop={false} />
         </Box>
       )}
-      <Box marginTop={"1rem"}>
-        <Typography color={'#024f9d'} sx={{padding: '0 0 4px 4px', fontWeight: 'bold'}}>{playerConfig?.metadata?.name}</Typography>
+      <Box margin={"1rem 0"}>
+        <Typography color={'#024f9d'} sx={{ padding: '0 0 4px 4px', fontWeight: 'bold' }}>{playerConfig?.metadata?.name}</Typography>
         {!loading ? <SunbirdPlayers player-config={playerConfig} /> : null}
       </Box>
 
