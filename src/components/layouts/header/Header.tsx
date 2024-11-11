@@ -54,14 +54,15 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     setSelectedSessionId(event.target.value);
     console.log("selected academic year id", event.target.value);
     localStorage.setItem("academicYearId", event.target.value);
-     // Check if the selected academic year is active
-     const selectedYear = academicYearList?.find(
+    // Check if the selected academic year is active
+    const selectedYear = academicYearList?.find(
       (year) => year.id === event.target.value
     );
     const isActive = selectedYear ? selectedYear.isActive : false;
     // localStorage.setItem('isActiveYearSelected', JSON.stringify(isActive));
     setIsActiveYearSelected(isActive);
-    window.location.reload();
+    // window.location.reload();
+    window.location.href = "/centers";
   };
 
   const handleChange = (event: SelectChangeEvent) => {
