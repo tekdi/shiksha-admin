@@ -148,7 +148,8 @@ const LoginPage = () => {
               localStorage.setItem("academicYearId", activeSessionId);             
               if (activeSessionId){
                 setIsActiveYearSelected(true);
-                router.push("/centers");
+                // router.push("/centers");
+                window.location.href = "/centers";
               }
             }
           };

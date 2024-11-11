@@ -8,7 +8,7 @@ const useStore = create(
       // state: "",
       // district: "",
       // block: "",
-      isActiveYearSelected: true,
+      isActiveYearSelected: '',
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
