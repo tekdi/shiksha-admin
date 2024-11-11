@@ -897,8 +897,11 @@ console.log(code[0])
           resp = await userList({ limit, filters, sort, offset, fields });
 
         }
-        console.log(resp?.getUserDetails);
-        const result = enableCenterFilter?resp?.userDetails:resp?.getUserDetails;
+        if (!resp?.getUserDetails) {
+          setData([]);
+          //showToastMessage("No data found", "info");
+        }       
+         const result = enableCenterFilter?resp?.userDetails:resp?.getUserDetails;
         console.log(result)
          console.log(resp?.totalCount)
         if (resp?.totalCount >= 15) {
@@ -1029,7 +1032,7 @@ console.log(code[0])
       }
         console.log(finalResult)
 
-        if (filters?.name) {
+        if (filters?.name && resp?.getUserDetails) {
           const prioritizedResult = finalResult.sort((a: any, b: any) => {
             const aStartsWith = a.name.toLowerCase().startsWith(filters?.name);
             const bStartsWith = b.name.toLowerCase().startsWith(filters?.name);
@@ -1040,8 +1043,13 @@ console.log(code[0])
           });
 
           setData(prioritizedResult);
-        } else {
+        } else if (resp?.getUserDetails){
           setData(finalResult);
+        }
+        else
+        {
+          setData([]);
+
         }
 
         setLoading(false);
@@ -1508,6 +1516,9 @@ console.log(selectedBlockStore)
       </Typography>
     </Box>
   );
+
+
+  console.log("data-----------------------------", data)
   const userProps = {
     userType: userType,
     searchPlaceHolder: searchPlaceholder,
