@@ -30,6 +30,8 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import Loader from "@/components/Loader";
 import { getFormRead } from "@/services/CreateUserService";
+import ProtectedRoute from "../components/ProtectedRoute";
+
 import {
   GenerateSchemaAndUiSchema,
   customFields,
@@ -1174,6 +1176,8 @@ const response=  await fetchCohortMemberList(data);
 
   return (
     <>
+        <ProtectedRoute>
+
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
@@ -1309,6 +1313,8 @@ const response=  await fetchCohortMemberList(data);
           )}
         </SimpleModal>
       </HeaderComponent>
+      </ProtectedRoute>
+
     </>
   );
 };
