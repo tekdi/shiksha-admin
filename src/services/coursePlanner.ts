@@ -6,7 +6,7 @@ import { frameworkId } from "../../app.config";
 
 
 export const getChannelDetails = async (): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_SUNBIRDSAAS_API_URL}/api/framework/v1/read/${frameworkId}`;
+  const apiUrl: string = `/api/framework/v1/read/${frameworkId}`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -18,7 +18,7 @@ export const getChannelDetails = async (): Promise<any> => {
 };
 
 export const getFrameworkDetails = async (frameworkId: string): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_SUNBIRDSAAS_API_URL}/api/framework/v1/read/${frameworkId}?categories=gradeLevel,medium,class,subject`;
+  const apiUrl: string = `/api/framework/v1/read/${frameworkId}?categories=gradeLevel,medium,class,subject`;
 
   try {
     const response = await axios.get(apiUrl);
