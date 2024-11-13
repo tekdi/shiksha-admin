@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import HeaderComponent from "@/components/HeaderComponent";
@@ -81,6 +81,8 @@ const State: React.FC = () => {
   const [pagination, setPagination] = useState(true);
   const [confirmationModalOpen, setConfirmationModalOpen] =
     React.useState<boolean>(false);
+  const [cohortData, setCohortData] = useState<Array<any>>([]);
+  const [dataToDisplay, setDataToDisplay] = useState<Array<any>>([]);
   const setPid = useStore((state) => state.setPid);
 
   const columns = [
@@ -92,6 +94,55 @@ const State: React.FC = () => {
     { key: "updatedAt", title: t("MASTER.UPDATED_AT"), width: "160" },
     { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
   ];
+
+  useEffect(() => {
+    const fetchCohortData = async () => {
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          type: "CLUSTER",
+        },
+        sort: ["name", "asc"],
+      };
+
+      try {
+        const response = await getCohortList(reqParams);
+        setCohortData(response?.results?.cohortDetails);
+        console.log(`setCohortData`, response?.results?.cohortDetails);
+      } catch (error) {
+        console.error("Error fetching cohort data", error);
+      }
+    };
+
+    fetchCohortData();
+  }, []);
+
+  const matchedData = useMemo(() => {
+    return stateData
+    ?.filter((item) =>
+      cohortData?.some((data) => data.name === item.label)
+    );
+  }, [stateData, cohortData]);
+
+  const totalCount = matchedData?.length || 0;
+
+  useEffect(() => {
+    setPaginationCount(totalCount);
+    setPagination(totalCount > 10);
+    setPageSizeArray(
+      totalCount > 15
+        ? [5, 10, 15]
+        : totalCount > 10
+          ? [5, 10]
+          : totalCount > 5
+            ? [5]
+            : []
+    );
+    setPageCount(Math.ceil(totalCount / pageLimit));
+
+    console.log("totalCount@@", totalCount);
+  }, [totalCount, pageLimit]);
 
   const handleEdit = (rowData: StateDetail) => {
     setSelectedStateForEdit(rowData);
@@ -218,13 +269,29 @@ const State: React.FC = () => {
     );
     setPageLimit(newSize);
   };
+  function getPaginatedData<T>(data: T[], page: number, itemsPerPage: number): T[] {
+    // Calculate the start and end indexes based on the current page
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // Return the slice of the data array for the current page
+    return data.slice(startIndex, endIndex);
+  }
 
   const handlePaginationChange = (
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setPageOffset(value - 1);
+    const extractedData = getPaginatedData(matchedData, value, pageLimit);
+    setDataToDisplay(extractedData)
   };
+
+
+  useEffect(() => {
+    setDataToDisplay(matchedData ?? []);
+  }, [matchedData]);
+
 
   const extraActions: any = [
     { name: t("COMMON.EDIT"), onClick: handleEdit, icon: EditIcon },
@@ -233,19 +300,17 @@ const State: React.FC = () => {
   ];
 
   const PagesSelector = () => (
-    <>
-      <Box sx={{ display: { xs: "block" } }}>
-        <Pagination
-          color="primary"
-          count={pageCount}
-          page={pageOffset + 1}
-          onChange={handlePaginationChange}
-          siblingCount={0}
-          boundaryCount={1}
-          sx={{ marginTop: "10px" }}
-        />
-      </Box>
-    </>
+    <Box sx={{ display: { xs: "block" } }}>
+      <Pagination
+        color="primary"
+        count={pageCount}
+        page={pageOffset + 1}
+        onChange={handlePaginationChange}
+        siblingCount={0}
+        boundaryCount={1}
+        sx={{ marginTop: "10px" }}
+      />
+    </Box>
   );
 
   const PageSizeSelectorFunction = () => (
@@ -261,7 +326,7 @@ const State: React.FC = () => {
   const fetchStateData = async () => {
     try {
       setLoading(true);
-      const limit = pageLimit;
+      const limit = 0;
       const offset = searchKeyword ? 0 : pageOffset * limit;
 
       const data = {
@@ -290,27 +355,27 @@ const State: React.FC = () => {
 
       if (resp?.result?.fieldId) {
         setFieldId(resp.result.fieldId);
-        setStateData(resp.result.values);
-        console.log("response", resp.result);
+        setStateData(resp?.result?.values);
+        console.log("setStateData", resp?.result?.values);
 
-        const totalCount = resp?.result?.totalCount || 0;
+        // const totalCount = resp?.result?.totalCount || 0;
 
-        setPaginationCount(totalCount);
+        // setPaginationCount(totalCount);
 
-        console.log("totalCount", totalCount);
+        // console.log("totalCount", totalCount);
 
-        setPagination(totalCount > 10);
-        setPageSizeArray(
-          totalCount > 15
-            ? [5, 10, 15]
-            : totalCount > 10
-              ? [5, 10]
-              : totalCount > 5
-                ? [5]
-                : []
-        );
+        // setPagination(totalCount > 10);
+        // setPageSizeArray(
+        //   totalCount > 15
+        //     ? [5, 10, 15]
+        //     : totalCount > 10
+        //       ? [5, 10]
+        //       : totalCount > 5
+        //         ? [5]
+        //         : []
+        // );
 
-        setPageCount(Math.ceil(totalCount / limit));
+        // setPageCount(Math.ceil(totalCount / limit));
       } else {
         console.error("Unexpected fieldId:", resp?.result?.fieldId);
       }
@@ -351,7 +416,7 @@ const State: React.FC = () => {
         handleSearch={handleSearch}
         handleAddUserClick={handleAddStateClick}
       >
-        {stateData.length === 0 && !loading ? (
+        {matchedData.length === 0 && !loading ? (
           <Box display="flex" marginLeft="40%" gap="20px">
             <Typography marginTop="10px" variant="h2">
               {t("COMMON.CLUSTER_NOT_FOUND")}
@@ -374,7 +439,7 @@ const State: React.FC = () => {
             ) : (
               <KaTableComponent
                 columns={columns}
-                data={stateData?.map((stateDetail) => ({
+                data={(dataToDisplay)?.map((stateDetail) => ({
                   label: stateDetail.label ?? "",
                   value: stateDetail.value ?? "",
                   createdAt: stateDetail.createdAt,
