@@ -278,7 +278,7 @@ const Block: React.FC = () => {
     setLoading(true);
     try {
       const limit = 300;
-      const offset = pageOffset * limit;
+      const offset = searchKeyword? 0: pageOffset * limit;
 
       // const response = await getBlocksForDistricts({
       //   limit: limit,
