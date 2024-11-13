@@ -228,7 +228,7 @@ const State: React.FC = () => {
     try {
       setLoading(true);
       const limit = pageLimit;
-      const offset = pageOffset * limit;
+      const offset = searchKeyword? 0 : pageOffset * limit;
 
       const data = {
         limit: limit,
