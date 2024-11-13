@@ -102,6 +102,7 @@ const State: React.FC = () => {
         offset: 0,
         filters: {
           type: "CLUSTER",
+          status: ["active"]
         },
         sort: ["name", "asc"],
       };

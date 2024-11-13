@@ -13,6 +13,7 @@ export interface cohortListData {
   limit?: Number;
   offset?: Number;
   filter?: any;
+  filters?: any;
 }
 export interface UpdateCohortMemberStatusParams {
   memberStatus: string;
@@ -21,7 +22,11 @@ export interface UpdateCohortMemberStatusParams {
 }
 export const getCohortList = async (data: cohortListData): Promise<any> => {
   let apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohort/search`;
-
+  if (!data.filters) {
+    data.filters = { status: ["active"] };
+  } else if (!data.filters.status) {
+    data.filters.status = ["active"];
+  }
   try {
     const response = await post(apiUrl, data);
     return response?.data?.result;
