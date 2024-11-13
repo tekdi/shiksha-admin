@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import { DataType } from "ka-table/enums";
 import HeaderComponent from "@/components/HeaderComponent";
@@ -64,6 +64,7 @@ const Block: React.FC = () => {
   const [stateData, setStateData] = useState<StateDetail[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [districtData, setClustersData] = useState<DistrictDetail[]>([]);
+  const [matchedClusters, setMatchedClusters] = useState<DistrictDetail[]>([]);
   const [blockData, setBlockData] = useState<BlockDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pageOffset, setPageOffset] = useState<number>(0);
@@ -91,57 +92,122 @@ const Block: React.FC = () => {
   const [pagination, setPagination] = useState(true);
   const [confirmationModalOpen, setConfirmationModalOpen] =
     React.useState<boolean>(false);
+    const [cohortData, setCohortData] = useState<Array<any>>([]);
+    const [dataToDisplay, setDataToDisplay] = useState<Array<any>>([]);
 
-  useEffect(() => {
-    const fetchUserDetail = async () => {
-      let userId: any;
+    const fetchCohortData = async (type: string) => {
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          type: type,
+          status: ["active"]
+        },
+        sort: ["name", "asc"],
+      };
+    
       try {
-        if (typeof window !== "undefined" && window.localStorage) {
-          userId = localStorage.getItem(Storage.USER_ID);
-        }
-        const response = await getUserDetailsInfo(userId);
-
-        console.log("profile api is triggered", response.userData.customFields);
-
-        const statesField = response.userData.customFields.find(
-          (field: { label: string }) => field.label === "STATES"
-        );
-
-        console.log("stateField", statesField);
-
-        if (statesField) {
-          setStateValue(statesField.value);
-          setStateCode(statesField.code);
-          setStateFieldId(statesField?.fieldId);
-        }
+        const response = await getCohortList(reqParams);
+        setCohortData(response?.results?.cohortDetails);
+        console.log(`setCohortData`, response?.results?.cohortDetails);
+        console.log('type', type);
+        return response?.results?.cohortDetails || [];
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching cohort data", error);
+        return [];
       }
     };
-    fetchUserDetail();
-  }, []);
-
-  useEffect(() => {
-    const fetchClusters = async () => {
-      try {
-        const data = await getStateBlockDistrictList({
-          fieldName: "clusters",
-        });
-
-        const clusters = data?.result?.values || [];
-        setClustersData(clusters);
-        const clusterFieldId = data?.result?.fieldId || "";
-        setClusterFieldId(clusterFieldId);
-      } catch (error) {
-        console.error("Error fetching clusters", error);
-      }
-    };
-
-    fetchClusters();
-  }, [stateCode]);
+    
+    useEffect(() => {
+      fetchCohortData("SCHOOL");
+    }, []);
+    
+    const matchedData: any = useMemo(() => {
+      return blockData?.filter((item) =>
+        cohortData?.some((data) => data.name === item.label)
+      );
+    }, [blockData, cohortData]);
+    
+    const totalCount = matchedData?.length || 0;
+    
+    useEffect(() => {
+      setPaginationCount(totalCount);
+      setPagination(totalCount > 10);
+      setPageSizeArray(
+        totalCount > 15
+          ? [5, 10, 15]
+          : totalCount > 10
+          ? [5, 10]
+          : totalCount > 5
+          ? [5]
+          : []
+      );
+      setPageCount(Math.ceil(totalCount / pageLimit));
+    
+      console.log("totalCount", totalCount);
+    }, [totalCount, pageLimit]);
+    
+    useEffect(() => {
+      const fetchUserDetail = async () => {
+        let userId: any;
+        try {
+          if (typeof window !== "undefined" && window.localStorage) {
+            userId = localStorage.getItem(Storage.USER_ID);
+          }
+          const response = await getUserDetailsInfo(userId);
+    
+          console.log("profile api is triggered", response.userData.customFields);
+    
+          const statesField = response.userData.customFields.find(
+            (field: { label: string }) => field.label === "STATES"
+          );
+    
+          console.log("stateField", statesField);
+    
+          if (statesField) {
+            setStateValue(statesField.value);
+            setStateCode(statesField.code);
+            setStateFieldId(statesField?.fieldId);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchUserDetail();
+    }, []);
+    
+    useEffect(() => {
+      const fetchClusters = async () => {
+        try {
+          const data = await getStateBlockDistrictList({
+            fieldName: "clusters",
+          });
+    
+          const clusters = data?.result?.values || [];
+          setClustersData(clusters);
+    
+          const clusterFieldId = data?.result?.fieldId || "";
+          setClusterFieldId(clusterFieldId);
+    
+          if (clusters.length > 0) {
+            const cohortSearchResp = await fetchCohortData("CLUSTER");
+            const matchedClusters = clusters.filter((item: { label: any }) =>
+              cohortSearchResp.some((data: { name: any }) => data.name === item.label)
+            );
+            setMatchedClusters(matchedClusters);
+          }
+        } catch (error) {
+          console.error("Error fetching clusters", error);
+        }
+      };
+    
+      fetchClusters();
+    }, [stateCode]);
+    
+  
 
   const getCohortSearchBlock = async () => {
-    const limit = pageLimit;
+    const limit = 300;
     const offset = pageOffset * limit;
     const reqParams = {
       limit: limit,
@@ -149,6 +215,7 @@ const Block: React.FC = () => {
       filters: {
         name: selectedCluster,
         type: "CLUSTER",
+        status: ["active"]
       },
     };
 
@@ -210,7 +277,7 @@ const Block: React.FC = () => {
     console.log("clusterId", clusterId);
     setLoading(true);
     try {
-      const limit = pageLimit;
+      const limit = 300;
       const offset = pageOffset * limit;
 
       // const response = await getBlocksForDistricts({
@@ -247,26 +314,27 @@ const Block: React.FC = () => {
       console.log("block response", response);
       setBlockData(response?.result?.values || []);
 
+
       //const schoolFieldId = response?.result?.fieldId || "";
 
       //console.log("setSchoolsFieldId", schoolFieldId);
       //setSchoolsFieldId(schoolFieldId);
 
-      const totalCount = response?.result?.totalCount || 0;
-      setPaginationCount(totalCount);
+      // const totalCount = response?.result?.totalCount || 0;
+      // setPaginationCount(totalCount);
 
-      setPagination(totalCount > 10);
-      setPageSizeArray(
-        totalCount > 15
-          ? [5, 10, 15]
-          : totalCount > 10
-            ? [5, 10]
-            : totalCount > 5
-              ? [5]
-              : []
-      );
+      // setPagination(totalCount > 10);
+      // setPageSizeArray(
+      //   totalCount > 15
+      //     ? [5, 10, 15]
+      //     : totalCount > 10
+      //       ? [5, 10]
+      //       : totalCount > 5
+      //         ? [5]
+      //         : []
+      // );
 
-      setPageCount(Math.ceil(totalCount / limit));
+      // setPageCount(Math.ceil(totalCount / limit));
     } catch (error) {
       console.error("Error fetching blocks", error);
       setBlockData([]);
@@ -277,7 +345,7 @@ const Block: React.FC = () => {
   console.log("blockData2", blockData);
   useEffect(() => {
     fetchSchools(selectedCluster);
-  }, [searchKeyword, selectedCluster, sortBy, pageOffset, pageLimit]);
+  }, [searchKeyword, selectedCluster, sortBy, pageLimit]);
 
   const columns = [
     {
@@ -403,14 +471,31 @@ const Block: React.FC = () => {
     setPageLimit(newSize);
   };
 
+  function getPaginatedData<T>(data: T[], page: number, itemsPerPage: number): T[] {
+    // Calculate the start and end indexes based on the current page
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    // Return the slice of the data array for the current page
+    return data.slice(startIndex, endIndex);
+  }
+
   const handlePaginationChange = (
     event: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setPageOffset(value - 1);
+    const extractedData = getPaginatedData(matchedData, value, pageLimit);
+    setDataToDisplay(extractedData)
+    console.log('****', extractedData)
   };
+
+  useEffect(() => {
+    setDataToDisplay(matchedData ?? []);
+    console.log('matchedData!!!!', matchedData.length)
+  }, [matchedData]);
+
   const PagesSelector = () => (
-    <>
       <Box sx={{ display: { xs: "block" } }}>
         <Pagination
           color="primary"
@@ -422,7 +507,6 @@ const Block: React.FC = () => {
           sx={{ marginTop: "10px" }}
         />
       </Box>
-    </>
   );
 
   const PageSizeSelectorFunction = () => (
@@ -639,7 +723,7 @@ const Block: React.FC = () => {
                   value={selectedCluster}
                   onChange={handleClusterChange}
                 >
-                  {districtData.map((districtDetail) => (
+                  {matchedClusters?.map((districtDetail) => (
                     <MenuItem
                       key={districtDetail.value}
                       value={districtDetail.value}
@@ -661,10 +745,10 @@ const Block: React.FC = () => {
                 >
                   <Loader showBackdrop={false} loadingText="Loading..." />
                 </Box>
-              ) : blockData.length > 0 ? (
+              ) : matchedData?.length > 0 ? (
                 <KaTableComponent
                   columns={columns}
-                  data={blockData.map((block) => ({
+                  data={dataToDisplay?.map((block) => ({
                     block: transformLabel(block.label),
                     createdAt: block.createdAt,
                     updatedAt: block.updatedAt,
@@ -683,7 +767,7 @@ const Block: React.FC = () => {
                   onDelete={handleDelete}
                   extraActions={[]}
                   noDataMessage={
-                    blockData.length === 0 ? t("COMMON.SCHOOLS_NOT_FOUND") : ""
+                    matchedData.length === 0 ? t("COMMON.SCHOOLS_NOT_FOUND") : ""
                   }
                 />
               ) : (
