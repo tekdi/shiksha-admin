@@ -22,10 +22,13 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
 import { TelemetryEventType } from "@/utils/app.constant";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
   useEffect(() => {
     telemetryFactory.init();
   }, []);
@@ -36,6 +39,8 @@ function App({ Component, pageProps }: AppProps) {
       if((router.pathname !== "/logout"))
       router.push("/logout");
     }
+    setIsArchived(false)
+
    
   }, [router]);
   useEffect(() => {
@@ -68,7 +73,6 @@ function App({ Component, pageProps }: AppProps) {
 
     // Log initial page load
     handleRouteChange(window.location.pathname);
-
     // Subscribe to route changes and log page views
     router.events.on('routeChangeComplete', handleRouteChange);
 

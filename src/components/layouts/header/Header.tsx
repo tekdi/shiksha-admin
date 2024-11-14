@@ -16,11 +16,14 @@ import { createTheme, useTheme } from "@mui/material/styles";
 import Profile from "./Profile";
 import { AcademicYear } from "@/utils/Interfaces";
 import useStore from "@/store/store";
+import { useQueryClient } from '@tanstack/react-query';
 
 const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [lang, setLang] = useState("");
+  const queryClient = useQueryClient();
+
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -68,7 +71,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     const isActive = selectedYear ? selectedYear.isActive : false;
     // localStorage.setItem('isActiveYearSelected', JSON.stringify(isActive));
     setIsActiveYearSelected(isActive);
-    // window.location.reload();
+
+    queryClient.clear();
+ // window.location.reload();
     window.location.href = "/centers";
   };
 

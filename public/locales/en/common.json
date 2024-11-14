@@ -137,7 +137,8 @@
     "ASSIGNED_TEAM_LEADERS":"{{assignedTeamLeaderNames}} and more..",
     "CONTINUE":"Continue",
     "DESCRIPTION": "Description",
-    "PAGE_NOT_FOUND": "Page Not Found"
+    "PAGE_NOT_FOUND": "Page Not Found",
+    "ALREADY_EXIST":"Cohort name already exist.Please provide another name"
   },
   "LOGIN_PAGE": {
     "USERNAME": "Username",
