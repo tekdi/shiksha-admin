@@ -2,7 +2,6 @@ import { CohortMemberList } from "@/utils/Interfaces";
 import { get, post, put } from "../RestClient";
 import axios from 'axios';
 import { showToastMessage } from "@/components/Toastify";
-import { useTranslation } from "next-i18next";
 
 export interface cohortListFilter {
   type: string;
