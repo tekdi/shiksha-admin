@@ -210,6 +210,9 @@ const State: React.FC = () => {
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
+    if(keyword === ""){
+      setPageOffset(0)
+    }
   };
 
   const handleAddStateClick = () => {
@@ -328,7 +331,7 @@ const State: React.FC = () => {
     try {
       setLoading(true);
       const limit = 0;
-      const offset = searchKeyword ? 0 : pageOffset * limit;
+      const offset = searchKeyword !== undefined  ? 0 : pageOffset * limit;
 
       const data = {
         limit: limit,
