@@ -121,8 +121,12 @@ const UserTable: React.FC<UserTableProps> = ({
   const setSelectedCenterStore = useSubmittedButtonStore(
     (state: any) => state.setSelectedCenterStore
   );
-
-
+  const isArchived = useSubmittedButtonStore(
+        (state: any) => state.isArchived
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
 
  
   const [selectedStateCode, setSelectedStateCode] = useState("");
@@ -361,17 +365,24 @@ const UserTable: React.FC<UserTableProps> = ({
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false);
+
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true);
+
     } else {
+      setIsArchived(false);
+
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
           ...restFilters,
         };
+
       });
     }
     console.log(filters);
@@ -1572,8 +1583,8 @@ console.log(selectedBlockStore)
         <KaTableComponent
           columns={
             role === Role.TEAM_LEADER
-              ? getTLTableColumns(t, isMobile)
-              : getUserTableColumns(t, isMobile)
+              ? getTLTableColumns(t, isMobile, isArchived)
+              : getUserTableColumns(t, isMobile, isArchived)
           }
           reassignCohort={handleReassignCohort}
           data={data}
