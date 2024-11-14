@@ -118,3 +118,40 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
   font-size: 14px !important;
   font-weight: 600 !important;
 }
+
+.table-ka-container .ka-table-wrapper {
+  max-height: calc(100vh - 390px) !important;
+  min-height: 100% !important;
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  max-height: 300px !important;
+  min-height: 100% !important;
+}
+
+/* .css-1latkvx-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #000 !important;
+} */
+
+.Mui-focused {
+  color: #000 !important;
+}
+
+.css-1bxxajt-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #FDBE16 !important;
+}
+
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #FDBE16 !important;
+}
+
+div h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+p .css-1ydl6z0-MuiTypography-root {
+  font-family: Poppins, sans-serif !important;
+}
