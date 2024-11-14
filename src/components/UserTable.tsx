@@ -684,9 +684,9 @@ console.log(code[0])
           if (data[item.name] && item?.maxSelections > 1) {
             return [field?.value];
           } else if (item?.type === "checkbox") {
-            return String(field?.value).split(",");
+            return String(field?.code).split(",");
           } else {
-            return field?.value?.toLowerCase();
+            return field?.code?.toLowerCase();
           }
         } else {
           if (item?.type === "numeric") {
@@ -1522,7 +1522,6 @@ console.log(selectedBlockStore)
   );
 
 
-  console.log("data-----------------------------", data)
   const userProps = {
     userType: userType,
     searchPlaceHolder: searchPlaceholder,
