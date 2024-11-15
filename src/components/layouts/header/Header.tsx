@@ -10,6 +10,7 @@ import TranslateIcon from "@mui/icons-material/Translate";
 import Menu from "@mui/material/Menu";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/router";
+import deleteIcon from '../../../../public/images/Language _icon.png';
 
 import { useTranslation } from "next-i18next";
 import { createTheme, useTheme } from "@mui/material/styles";
@@ -166,11 +167,13 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             alignItems: "center",
             justifyContent: "center",
             height: "20px",
-            width: "30px",
+            width: "45px",
             borderRadius: "10px",
+            cursor: "pointer"
           }}
+          onClick={handleClick}
         >
-          <IconButton
+          {/* <IconButton
             aria-label="more"
             id="long-button"
             aria-controls={open ? "long-menu" : undefined}
@@ -179,7 +182,15 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             onClick={handleClick}
           >
             <TranslateIcon />
-          </IconButton>
+
+          </IconButton> */}
+          <Image src={deleteIcon} alt="" 
+          width={30}
+          />
+
+
+
+
         </Box>
         <Menu
           id="long-menu"
