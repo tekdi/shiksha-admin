@@ -10,7 +10,7 @@ import TranslateIcon from "@mui/icons-material/Translate";
 import Menu from "@mui/material/Menu";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/router";
-import deleteIcon from '../../../../public/images/Language _icon.png';
+import deleteIcon from '../../../../public/images/Language_icon.png';
 
 import { useTranslation } from "next-i18next";
 import { createTheme, useTheme } from "@mui/material/styles";
