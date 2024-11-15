@@ -145,8 +145,8 @@ const LoginPage = () => {
                 (item) => item.isActive
               );
               const activeSessionId = activeSession ? activeSession.id : "";
-              localStorage.setItem("academicYearId", activeSessionId);             
-              if (activeSessionId){
+              localStorage.setItem("academicYearId", activeSessionId);
+              if (activeSessionId) {
                 setIsActiveYearSelected(true);
                 // router.push("/centers");
                 window.location.href = "/centers";
@@ -187,6 +187,7 @@ const LoginPage = () => {
 
             const userResponse = await getUserId();
             localStorage.setItem("userId", userResponse?.userId);
+            localStorage.setItem('userIdName', userResponse?.username);
             // Update Zustand store
             setUserId(userResponse?.userId || "");
 
@@ -215,7 +216,7 @@ const LoginPage = () => {
           },
         };
         telemetryFactory.interact(telemetryInteract);
-        
+
       } catch (error: any) {
         setLoading(false);
         const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");

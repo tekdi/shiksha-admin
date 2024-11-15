@@ -58,3 +58,15 @@ export const getUserId = async (): Promise<any> => {
     throw error;
   }
 };
+
+export const resetPassword = async (
+  newPassword: any): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/reset-password`;
+  try {
+    const response = await post(apiUrl, { newPassword });
+    return response?.data;
+  } catch (error) {
+    console.error('error in reset', error);
+    throw error;
+  }
+};

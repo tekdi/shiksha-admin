@@ -63,7 +63,7 @@ export interface SendCredentialsRequest {
   email?: {
     receipients: any[];
   };
-    push?: {
+  push?: {
     receipients: any[];
   };
 }
@@ -202,4 +202,20 @@ export interface PlayerConfig {
   config?: Config;
   metadata?: Metadata;
   data?: any;
+}
+
+export interface PasswordCreateProps {
+  handleResetPassword: (password: string) => void;
+  editPassword?: boolean;
+}
+
+export interface CentralizedModalProps {
+  title?: string;
+  subTitle?: string;
+  secondary?: string;
+  primary?: string;
+  modalOpen?: boolean;
+  handlePrimaryButton?: () => void;
+  handleSkipButton?: () => void;
+  icon?: boolean;
 }

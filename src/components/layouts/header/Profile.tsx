@@ -16,6 +16,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import { Box, Button, Divider, Menu, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
+import EditIcon from '@mui/icons-material/Edit';
 const Profile = () => {
   const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null);
   const [profileClick, setProfileClick] = React.useState<boolean>(false);
@@ -226,6 +227,12 @@ const Profile = () => {
     }
   })();
 
+  const handleEditPassword = () => {
+    handleClose4(); // Close the menu first
+    router.push('/edit-password'); // Then navigate to the edit password page
+  };
+
+
   return (
     <>
       <Button
@@ -380,7 +387,7 @@ const Profile = () => {
           </Box>
 
           <Divider sx={{ color: "#D0C5B4" }} />
-          <Box sx={{ px: "20px" }}>
+          <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center" }}>
             <Button
               fullWidth
               variant="contained"
@@ -395,6 +402,21 @@ const Profile = () => {
               endIcon={<LogoutIcon />}
             >
               {t("COMMON.LOGOUT")}
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleEditPassword}
+              sx={{
+                fontSize: "16px",
+                backgroundColor: "white",
+                border: "0.6px solid #1E1B16",
+                my: "20px",
+              }}
+              endIcon={<EditIcon />}
+            >
+              {t('LOGIN_PAGE.RESET_PASSWORD')}
             </Button>
           </Box>
         </Box>
