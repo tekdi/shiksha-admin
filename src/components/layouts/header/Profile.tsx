@@ -390,22 +390,7 @@ const Profile = () => {
           <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center" }}>
             <Button
               fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleLogout}
-              sx={{
-                fontSize: "16px",
-                backgroundColor: "white",
-                border: "0.6px solid #1E1B16",
-                my: "20px",
-              }}
-              endIcon={<LogoutIcon />}
-            >
-              {t("COMMON.LOGOUT")}
-            </Button>
-            <Button
-              fullWidth
-              variant="contained"
+              variant="outlined"
               color="primary"
               onClick={handleEditPassword}
               sx={{
@@ -413,11 +398,28 @@ const Profile = () => {
                 backgroundColor: "white",
                 border: "0.6px solid #1E1B16",
                 my: "20px",
+
               }}
               endIcon={<EditIcon />}
             >
               {t('LOGIN_PAGE.RESET_PASSWORD')}
             </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleLogout}
+              sx={{
+                fontSize: "16px",
+                backgroundColor: "#FDBE16",
+                border: "0.6px solid #1E1B16",
+                my: "20px",
+              }}
+              endIcon={<LogoutIcon />}
+            >
+              {t("COMMON.LOGOUT")}
+            </Button>
+
           </Box>
         </Box>
       </Menu>
