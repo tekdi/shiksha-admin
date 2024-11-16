@@ -41,6 +41,7 @@ import { getBlockTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 
 type StateDetail = {
   name: string | undefined;
@@ -127,7 +128,12 @@ const Block: React.FC = () => {
   const [pageSize, setPageSize] = React.useState<string | number>(10);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const queryClient = useQueryClient();
-
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
+const setIsArchived = useSubmittedButtonStore(
+(state: any) => state.setIsArchived
+);
   const [filters, setFilters] = useState({
     name: searchKeyword,
     states: stateCode,
@@ -607,16 +613,21 @@ const Block: React.FC = () => {
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false)
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true)
+
     } else if (newValue === Status.ALL_LABEL) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: "",
       }));
+      setIsArchived(false)
+
     } else {
       setFilters((prevFilters: any) => {
         const { status, ...restFilters } = prevFilters;
@@ -624,6 +635,8 @@ const Block: React.FC = () => {
           ...restFilters,
         };
       });
+      setIsArchived(false)
+
     }
 
     await queryClient.invalidateQueries({
@@ -1102,7 +1115,7 @@ if(updatedBy)
             <Box sx={{ marginTop: 2 }}>
               {filteredCohortOptionData().length > 0 ? (
                 <KaTableComponent
-                  columns={getBlockTableData(t, isMobile)}
+                  columns={getBlockTableData(t, isMobile, isArchived)}
                   data={filteredCohortOptionData()}
                   limit={pageLimit}
                   offset={pageOffset}

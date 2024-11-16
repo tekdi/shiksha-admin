@@ -101,6 +101,9 @@ const HeaderComponent = ({
   const [initialDistrict, setInitialDistrict] = useState<any>("");
   const [initialBlock, setInitialBlock] = useState<string>("");
   const [initialized, setInitialized] = useState(false);
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const selectedBlockStore = useSubmittedButtonStore(
@@ -695,7 +698,7 @@ const HeaderComponent = ({
               placeholder={searchPlaceHolder}
             />
           </Box>
-          {showAddNew && (
+          {showAddNew  && !isArchived && (
             <Box
               display={"flex"}
               gap={1}
