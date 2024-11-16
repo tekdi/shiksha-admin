@@ -9,7 +9,7 @@ import {
   Box,
 } from '@mui/material';
 
-import { frameworkId } from '../../app.config';
+import { FRAMEWORK_ID } from '../../app.config';
 import { findCommonAssociations, getAssociationsByName, getOptionsByCategory } from '@/utils/Helper';
 
 interface FrameworkCategoriesProps {
@@ -79,7 +79,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
     const handleBMGS = async () => {
       const userStateName = localStorage.getItem('stateName');
       try {
-        const url = `/api/framework/v1/read/${frameworkId}`;
+        const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
         setFramework(frameworks);

@@ -32,7 +32,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import React, { useEffect, useState } from "react";
-import { tenantId } from "../../app.config";
+import { TENANT_ID } from "../../app.config";
 import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import SendCredentialModal from "./SendCredentialModal";
@@ -283,7 +283,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         password: password,
         tenantCohortRoleMapping: [
           {
-            tenantId: tenantId,
+            tenantId: TENANT_ID,
             roleId:
               userType === FormContextType.STUDENT
                 ? RoleId.STUDENT

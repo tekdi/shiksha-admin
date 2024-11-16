@@ -1,12 +1,12 @@
 import { CoursePlannerMetaData, GetSolutionDetailsParams, GetTargetedSolutionsParams, GetUserProjectTemplateParams } from "@/utils/Interfaces";
 import { post } from "./RestClient";
 import axios from 'axios';
-import { frameworkId } from "../../app.config";
+import { FRAMEWORK_ID } from "../../app.config";
 
 
 
 export const getChannelDetails = async (): Promise<any> => {
-  const apiUrl: string = `/api/framework/v1/read/${frameworkId}`;
+  const apiUrl: string = `/api/framework/v1/read/${FRAMEWORK_ID}`;
 
   try {
     const response = await axios.get(apiUrl);

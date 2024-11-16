@@ -1,3 +1,10 @@
-export const tenantId = "ef99949b-7f3a-4a5f-806a-e67e683e38f3";
-export const frameworkId = 'dev-scp-framework';
+export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID || "";
+if (!TENANT_ID) {
+  console.warn('NEXT_PUBLIC_TENANT_ID is not set in the environment variables.');
+}
+
+export const FRAMEWORK_ID = process.env.NEXT_PUBLIC_FRAMEWORK_ID || "";
+if (!FRAMEWORK_ID) {
+  console.warn('NEXT_PUBLIC_FRAMEWORK_ID is not set in the environment variables.');
+}
 
