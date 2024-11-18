@@ -19,9 +19,7 @@ const ResourceList = () => {
   useEffect(() => {
     const fetchData = async () => {
       const resources = tstore.resources;
-
       const fetchedLearningResources = resources.learningResources || [];
-
       const preReqs = fetchedLearningResources.filter(
         (item: any) => item.type === ResourceType.PREREQUISITE
       );
@@ -72,7 +70,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app}
                   resource={item.type}
-                  identifier={item.link}
+                  identifier={item.id}
                 />
               </Grid>
             ))}
@@ -94,7 +92,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app}
                   resource={item.type}
-                  identifier={item.link}
+                  identifier={item.id}
                 />
               </Grid>
             ))}
@@ -116,7 +114,7 @@ const ResourceList = () => {
                   title={item.name}
                   type={item.app || "Facilitator"}
                   resource="Facilitator Requisite"
-                  identifier={item.link}
+                  identifier={item.id}
                 />
               </Grid>
             ))}

@@ -30,7 +30,7 @@ export const getFrameworkDetails = async (frameworkId: string): Promise<any> => 
 };
 
 export const uploadCoursePlanner = async (file: File, metaData: CoursePlannerMetaData): Promise<any> => {
-    const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/course-planner/upload`;
+    const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/prathamservice/v1/course-planner/upload`;
     const formData = new FormData();
     formData.append('file', file);
     formData.append('metaData', JSON.stringify(metaData));
