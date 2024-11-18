@@ -152,7 +152,6 @@ h3,
 h4,
 h5,
 h6,
-span,
 p .css-1ydl6z0-MuiTypography-root {
   font-family: Poppins, sans-serif !important;
 }
@@ -177,4 +176,8 @@ p .css-1ydl6z0-MuiTypography-root {
   font-size: 12px !important;
   color: #635E57 !important;
   font-weight: 400 !important;
+}
+
+.create-card{
+  min-height: 118px !important;
 }
