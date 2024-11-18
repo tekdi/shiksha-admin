@@ -115,6 +115,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             display: {
               lg: "none",
               xs: "flex",
+              '@media (max-width: 600px)': {
+                padding: "0px",
+              }
             },
           }}
         >
@@ -167,7 +170,7 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             alignItems: "center",
             justifyContent: "center",
             height: "20px",
-            width: "45px",
+            width: "35px",
             borderRadius: "10px",
             cursor: "pointer"
           }}
@@ -185,7 +188,7 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
 
           </IconButton> */}
           <Image src={deleteIcon} alt="" 
-          width={30}
+          width={22}
           />
 
 
