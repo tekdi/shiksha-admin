@@ -101,6 +101,9 @@ const HeaderComponent = ({
   const [initialDistrict, setInitialDistrict] = useState<any>("");
   const [initialBlock, setInitialBlock] = useState<string>("");
   const [initialized, setInitialized] = useState(false);
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const selectedBlockStore = useSubmittedButtonStore(
@@ -695,7 +698,7 @@ const HeaderComponent = ({
               placeholder={searchPlaceHolder}
             />
           </Box>
-          {showAddNew && (
+          {showAddNew  && !isArchived && (
             <Box
               display={"flex"}
               gap={1}
@@ -705,7 +708,7 @@ const HeaderComponent = ({
                 justifyContent: "center",
                 alignItems: "center",
                 // height: "40px",
-                width: isMobile ? "70%" : "200px",
+                width: isMobile ? "93%" : "200px",
                 borderRadius: "20px",
                 border: "1px solid #1E1B16",
                 //  mt: isMobile ? "10px" : "16px",
@@ -713,6 +716,9 @@ const HeaderComponent = ({
                 mr: "10px",
                 ml: isMobile ? "50px" : isMediumScreen ? "10px" : undefined,
                 mt: isMobile ? "10px" : isMediumScreen ? "10px" : undefined,
+                '@media (max-width: 600px)': {
+                  mx: "16px",
+                }
               }}
             >
               <Button

@@ -225,7 +225,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
           ).values()
         );
 
-        const cohortData = await createCohort(cohortDetails);
+        const cohortData = await createCohort(cohortDetails, t);
         if (cohortData) {
           showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
           const windowUrl = window.location.pathname;

@@ -27,6 +27,9 @@ const useSubmittedButtonStore = create((set) => ({
 
    selectedCenterStore:"",
    setSelectedCenterStore: (status: string) => set({ selectedCenterStore: status }),
+   isArchived:false,
+   setIsArchived: (status: string) => set({ isArchived: status }),
+
 
 
 

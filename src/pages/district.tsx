@@ -284,6 +284,7 @@ const response= await  getCohortList(reqParams)
 
   useEffect(() => {
     if (districtsOptionRead.length && districtNameArr.length) {
+      if(stateCode)
       getFilteredCohortData();
     }
   }, [
