@@ -245,6 +245,9 @@ const Profile = () => {
           border: "none",
           paddingLeft: "0px !important",
           paddingRight: "0px !important",
+          '@media (max-width: 600px)': {
+            minWidth: "0px !important",
+          }
         }}
       >
         <Box display="flex" alignItems="center" color="white">
@@ -254,6 +257,9 @@ const Profile = () => {
               display: "flex",
               alignItems: "center",
               // ml: 1,
+              '@media (max-width: 600px)': {
+                display: 'none'
+              }
             }}
           >
             <Typography
@@ -286,20 +292,21 @@ const Profile = () => {
         }}
         PaperProps={{
           sx: {
-            width: "500px",
+            // width: "500px",
+            minWidth: "320px",
             borderRadius: "12px",
           },
         }}
         MenuListProps={{
           sx: {
-            paddingTop: "0px !important",
+            paddingTop: "50px !important",
             paddingBottom: "0px !important",
           },
         }}
       >
-        <Box
+        {/* <Box
           sx={{ backgroundColor: "#F8EFE7", height: "56px", width: "100%" }}
-        ></Box>
+        ></Box> */}
         <Box
           sx={{ display: "flex", justifyContent: "center", marginTop: "-25px" }}
         >
@@ -316,14 +323,14 @@ const Profile = () => {
           >
             <Typography
               variant="h6"
-              color={"white"}
+              color="white"
               sx={{ fontWeight: "bold", fontSize: "18px" }}
             >
-              {adminInfo?.name
-                ?.split(" ")
-                .map((word: any) => word[0])
-                .join("")}
+              {adminInfo?.name &&
+                `${adminInfo.name.split(" ")[0][0]}${adminInfo.name.split(" ").slice(-1)[0][0]}`}
             </Typography>
+
+
           </Box>
         </Box>
 
@@ -387,7 +394,7 @@ const Profile = () => {
           </Box>
 
           <Divider sx={{ color: "#D0C5B4" }} />
-          <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center" }}>
+          <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center", '@media (max-width: 434px)': { flexDirection: 'column', justifyContent: 'center', alignItems: 'center'   }  }}>
             <Button
               fullWidth
               variant="outlined"
@@ -398,6 +405,8 @@ const Profile = () => {
                 backgroundColor: "white",
                 border: "0.6px solid #1E1B16",
                 my: "20px",
+                width: "408px",
+                '@media (max-width: 434px)': { width: '100%' }
 
               }}
               endIcon={<EditIcon />}
@@ -414,6 +423,7 @@ const Profile = () => {
                 backgroundColor: "#FDBE16",
                 border: "0.6px solid #1E1B16",
                 my: "20px",
+                '@media (max-width: 434px)': { my: '0px', mb:'20px' }
               }}
               endIcon={<LogoutIcon />}
             >
