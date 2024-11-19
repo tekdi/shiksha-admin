@@ -191,6 +191,10 @@
     "VIEW_PLANS": "View Plans",
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
+    "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
+    "SCTA":"State Content Team Associate",
+
+
     "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
@@ -438,5 +442,13 @@
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
     "COURSE": "Course"
+
+  },
+
+  "CONTENT_CREATOR_REVIEWER": {
+    "CONTENT_CREATOR": "Content Creator",
+    "CONTENT_REVIEWER": "Content Reviewer",
+    "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
+    "SEARCH_CONTENT_CREATOR":"Search content creator..."
   }
 }

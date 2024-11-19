@@ -7,6 +7,9 @@ export enum Role {
   ADMIN = "Admin",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
+  CONTENT_CREATOR= "Content Creator",
+  CONTENT_REVIEWER = "Content Reviewer",
+
 }
 
 export enum Status {
@@ -44,7 +47,8 @@ export enum FormContextType {
   TEAM_LEADER = "TEAM LEADER",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
-  COHORT="cohort"
+  COHORT="cohort",
+  CONTENT_CREATOR="CONTENT CREATOR"
 }
 
 export enum RoleId {
@@ -52,6 +56,7 @@ export enum RoleId {
   TEACHER = "3bde0028-6900-4900-9d05-eeb608843718",
   TEAM_LEADER = "9dd9328f-1bc7-444f-96e3-c5e1daa3514a",
   ADMIN = "ee482faf-8a41-45fe-9656-5533dd6a787c",
+   SCTA="f972a14e-afdb-4502-8ede-cf1fcf171e46"
 }
 
 export enum DataKey {

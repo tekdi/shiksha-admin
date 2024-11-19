@@ -53,6 +53,8 @@ export const useLocationState = (
   const [selectedBlockCode, setSelectedBlockCode] = useState("");
   const [selectedCenterCode, setSelectedCenterCode] = useState("");
   const [selectedBlockCohortId, setSelectedBlockCohortId] = useState("");
+  const [selectedStateCohortId, setSelectedStateCohortId] = useState("");
+
   const [blockFieldId, setBlockFieldId] = useState("");
   const [stateFieldId, setStateFieldId] = useState("");
   const [districtFieldId, setDistrictFieldId] = useState("");
@@ -392,7 +394,27 @@ export const useLocationState = (
               localStorage.setItem('userStateName',stateField?.value )
 
                 setSelectedState([stateField.value]);
+                const StateObject = {
+                  limit: 0,
+                  offset: 0,
+                  filters: {
+                    status: ["active"],
+                  
+                    name: stateField.value,
+                  },
+                };
                 setSelectedStateCode(stateField.code)
+
+                const stateResponse = await getCenterList(StateObject);
+                const getCohortDetails = stateResponse?.result?.results?.cohortDetails;
+                console.log(getCohortDetails)
+                const stateId = getCohortDetails?.map((item: any) => {
+                  if (item?.type === "STATE") {
+                    return item?.cohortId;
+                  }
+                })
+                setSelectedStateCohortId(stateId)
+
                 const object = {
                   controllingfieldfk: stateField.code,
           
@@ -630,7 +652,8 @@ export const useLocationState = (
     setSelectedDistrictCode,
     setSelectedBlockCode,
     assignedTeamLeaderNames,
-    assignedTeamLeader
+    assignedTeamLeader,
+    selectedStateCohortId
 
   };
 };
