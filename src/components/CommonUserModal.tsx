@@ -159,12 +159,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       ? t("LEARNERS.NEW_LEARNER")
       : userType === FormContextType.TEACHER
         ? t("FACILITATORS.NEW_FACILITATOR")
-        : t("TEAM_LEADERS.NEW_TEAM_LEADER")
+        :userType === FormContextType.CONTENT_CREATOR?t("CONTENT_CREATOR_REVIEWER.CREATE_CONTENT_CREATOR") :t("TEAM_LEADERS.NEW_TEAM_LEADER")
     : userType === FormContextType.STUDENT
       ? t("LEARNERS.EDIT_LEARNER")
       : userType === FormContextType.TEACHER
         ? t("FACILITATORS.EDIT_FACILITATOR")
-        : t("TEAM_LEADERS.EDIT_TEAM_LEADER");
+        :userType === FormContextType.CONTENT_CREATOR?t("CONTENT_CREATOR_REVIEWER.EDIT_CONTENT_REVIEWER"): t("TEAM_LEADERS.EDIT_TEAM_LEADER");
   const theme = useTheme<any>();
   const {
     states,
