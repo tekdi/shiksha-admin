@@ -17,7 +17,7 @@ const SearchBox = styled(Paper)<{ isSmallScreen: boolean }>(({ theme, isSmallScr
   display: "flex",
   alignItems: "center",
   width: "100%",
-  maxWidth: isSmallScreen ? 300 : 900,
+  maxWidth: isSmallScreen ? "100%" : 900,
   borderRadius: "8px",
   backgroundColor:"#F0F0F0",
 }));

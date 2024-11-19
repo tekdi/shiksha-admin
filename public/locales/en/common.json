@@ -126,19 +126,19 @@
     "DELETE_FROM_BLOCK_WARNING": "Do you want to delete user from block?",
     "DELETE_FROM_CENTER_WARNING": "Do you want to delete user from center?",
     "DELETE_FROM_CENTERS_WARNING": "Do you want to delete user from centers?",
-   "NO_CENTER_AVAILABLE": "No centers available",
+    "NO_CENTER_AVAILABLE": "No centers available",
     "NO_BLOCK_AVAILABLE": "No blocks available",
     "PLEASE_SELECT_BLOCK_LIST": "Please select block from block list",
     "ALL_CENTERS": "All centers",
     "NO_CENTERS": "No centers",
     "MULTIPLE_TEAM_LEADERS_ASSIGNED": "Selected block {{selectedBlockForTL}} already has {{assignedTeamLeader}} Team Leaders assigned.",
-    "SINGLE_TEAM_LEADERS_ASSIGNED":"Selected block {{selectedBlockForTL}} already has {{assignedTeamLeader}} Team Leader assigned.",
-    "CONTINUE_ASSIGNED_TEAM_LEADER":"Still do you want to continue to assign team leader to {{selectedBlockForTL}}",
-    "ASSIGNED_TEAM_LEADERS":"{{assignedTeamLeaderNames}} and more..",
-    "CONTINUE":"Continue",
+    "SINGLE_TEAM_LEADERS_ASSIGNED": "Selected block {{selectedBlockForTL}} already has {{assignedTeamLeader}} Team Leader assigned.",
+    "CONTINUE_ASSIGNED_TEAM_LEADER": "Still do you want to continue to assign team leader to {{selectedBlockForTL}}",
+    "ASSIGNED_TEAM_LEADERS": "{{assignedTeamLeaderNames}} and more..",
+    "CONTINUE": "Continue",
     "DESCRIPTION": "Description",
     "PAGE_NOT_FOUND": "Page Not Found",
-    "ALREADY_EXIST":"Cohort name already exist.Please provide another name"
+    "ALREADY_EXIST": "Cohort name already exist.Please provide another name"
   },
   "LOGIN_PAGE": {
     "USERNAME": "Username",
@@ -148,7 +148,35 @@
     "PASSWORD_PLACEHOLDER": "Enter password",
     "USERNAME_PASSWORD_NOT_CORRECT": "The username or password you entered is incorrect",
     "FORGOT_PASSWORD": "Forgot Password?",
-    "REMEMBER_ME": "Remember Me"
+    "REMEMBER_ME": "Remember Me",
+    "CONFIRM_PASSWORD": "Confirm password",
+    "RESET_PASSWORD": "Reset Password",
+    "CREATE_NEW": "Create a new, strong password that you don't use for other websites",
+    "NOT_MATCH": "Passwords do not match",
+    "CHARACTERS_LONG": "Passwords must be at least 8 characters long",
+    "OLD_PASSWORD": "Old Password",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_NEW_PASSWORD": "Confirm New Password",
+    "TROUBLE_LOGIN": "Trouble with logging in?",
+    "ENTER_USERNAME_TO_GET_LINK": "Enter your username, we’ll send you a link to get back into your account.",
+    "ENTER_USERNAME": "Enter Username",
+    "BACK_TO_LOGIN": "Back to Login",
+    "CREATE_STRONG_PASSWORD": "Create a strong password",
+    "YOUR_PASSWORD_NEED": "Your password needs to:",
+    "INCLUDE_BOTH": "Include both upper case and lower case",
+    "INCLUDE_NUMBER": "Include at least one number",
+    "INCLUDE_SPECIAL": "Include at least one special character",
+    "MUST_BE_AT": "Must be at least 8 characters long",
+    "OTHER_SETTING": "Other settings",
+    "WELCOME": "Welcome!",
+    "PLEASE_RESET_YOUR_PASSWORD": "Please reset your password to ensure your account is secure",
+    "DO_IT_LATER": "I’ll do it later",
+    "SUCCESSFULLY_RESET": "Your password has been successfully reset",
+    "LINK_EXPIRED": "Link has been expired",
+    "WE_SEND_AN_EMAIL": "We sent an email to {{maskEmail}} with a link to reset your password",
+    "CURRENT_PASSWORD_NOT": "Current Password Not Matched",
+    "NO_USERNAME": "Username not found",
+    "PASSWORD_SAME_AS_OLD": "Password same as old"
   },
   "SIDEBAR": {
     "HI": "hi",
@@ -163,11 +191,11 @@
     "VIEW_PLANS": "View Plans",
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
-    "WORKSPACE": "Workspace",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SCTA":"State Content Team Associate"
+    "SCTA":"State Content Team Associate",
 
 
+    "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
     "STATE": "State",
@@ -230,13 +258,13 @@
     "RESOURCES": "Resources",
     "TOPIC": "Topic",
     "DURATION/MONTH": "Duration/Month",
-    "LEARNERS_PREREQISITE":"Learners Pre-requisites",
-    "NO_DATA_PRE":"No data available for Learners Pre-requisites",
-    "LEARNERS_POSTREQISITE":"Learners Post-requisites",
-    "NO_DATA_POST":"No data available for Learners Post-requisites",
-    "FACILITATORS":"Facilitators Requisites",
-    "NO_DATA":"No data available for Facilitators Requisites",
-    "DOWNLOAD_SAMPLE_CSV":"Download Sample CSV"
+    "LEARNERS_PREREQISITE": "Learners Pre-requisites",
+    "NO_DATA_PRE": "No data available for Learners Pre-requisites",
+    "LEARNERS_POSTREQISITE": "Learners Post-requisites",
+    "NO_DATA_POST": "No data available for Learners Post-requisites",
+    "FACILITATORS": "Facilitators Requisites",
+    "NO_DATA": "No data available for Facilitators Requisites",
+    "DOWNLOAD_SAMPLE_CSV": "Download Sample CSV"
   },
   "MASTER": {
     "STATE": "States",
@@ -365,9 +393,9 @@
     "SCIENCE": "Science",
     "SOCIAL_SCIENCE": "Social Science",
     "LIFE_SKILLS": "Life Skills",
-    "BOARD":"Board",
-    "MEDIUM":"Medium",
-    "GRADE":"Grade"
+    "BOARD": "Board",
+    "MEDIUM": "Medium",
+    "GRADE": "Grade"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
