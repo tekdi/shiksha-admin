@@ -385,7 +385,7 @@ const HeaderComponent = ({
                   }
               }
             
-              if (!hasBlock && !hasDistrict) {
+              if (!hasBlock && !hasDistrict && userType!==Role.CONTENT_CREATOR) {
                 if (userType === Role.TEAM_LEADERS || userType==="Centers") {
                 //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
                   //setSelectedBlockCode("")
@@ -421,6 +421,17 @@ const HeaderComponent = ({
                     },
                   });
                 }
+              }
+              else if(userType===Role.CONTENT_CREATOR)
+              {
+                router.replace({
+                  pathname: router.pathname,
+                  query: {
+                    ...router.query,
+                    state: stateField.code,
+                   
+                  },
+                });
               }
 
               const getCentersObject = {
@@ -467,7 +478,7 @@ const HeaderComponent = ({
                 !hasCenter &&
                 !hasBlock &&
                 !hasDistrict &&
-                userType !== Role.TEAM_LEADERS
+                userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
               ) {
                 console.log(hasCenter);
                 setSelectedCenter([t("COMMON.ALL_CENTERS")]);
@@ -608,7 +619,7 @@ const HeaderComponent = ({
         </Typography>
       )}
 
-      {showStateDropdown && (
+      {showStateDropdown &&  (
         <AreaSelection
           states={transformArray(states)}
           districts={transformArray(districts)}

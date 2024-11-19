@@ -23,7 +23,7 @@ import { Role, apiCatchingDuration } from "@/utils/app.constant";
 import { getFormRead } from "@/services/CreateUserService";
 import { showToastMessage } from "./Toastify";
 import { capitalizeFirstLetterOfEachWordInArray , firstLetterInUpperCase} from "../utils/Helper";
-import { getUserTableColumns, getTLTableColumns } from "@/data/tableColumns";
+import { getUserTableColumns, getTLTableColumns, getContentCreatorTableColumns } from "@/data/tableColumns";
 import { TablePagination, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/system";
 import CommonUserModal from "./CommonUserModal";
@@ -207,6 +207,12 @@ const UserTable: React.FC<UserTableProps> = ({
   });
   const { data:teamLeaderFormData ,isLoading: teamLeaderFormDataLoading, error :teamLeaderFormDataErrror } = useQuery<any[]>({
     queryKey: ["teamLeaderFormData"],  
+    queryFn: () => Promise.resolve([]), 
+    staleTime: apiCatchingDuration.GETREADFORM,
+    enabled: false, 
+  });
+  const { data:contentCreatorFormData ,isLoading: contentCreatorFormDataFormDataLoading, error :contentCreatorFormDataErrror } = useQuery<any[]>({
+    queryKey: ["contentCreatorFormData"],  
     queryFn: () => Promise.resolve([]), 
     staleTime: apiCatchingDuration.GETREADFORM,
     enabled: false, 
@@ -776,6 +782,11 @@ console.log(code[0])
         setFormData(mapFields(teamLeaderFormData, response));
         // handleOpenAddTeamLeaderModal();
       }
+      else if(Role.CONTENT_CREATOR === role)
+      {
+        formFields = await getFormRead("USERS", Role.CONTENT_CREATOR);
+        setFormData(mapFields(contentCreatorFormData, response));
+      }
       handleOpenAddLearnerModal();
 
       console.log("response", response);
@@ -1155,7 +1166,7 @@ console.log(selectedBlockStore)
     fetchData();
   }, [data, cohortsFetched]);
 
-
+console.log(userType)
   useEffect(() => {
     const fetchData =  () => {
       try {
@@ -1235,11 +1246,19 @@ console.log(selectedBlockStore)
               //   });
 
               // }
-
-
-              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS"))
+              if(userType===Role.CONTENT_CREATOR)
               {
-                console.log("true---")
+                setFilters({
+                  states: stateField.code,
+                  role: role,
+                  status:[statusValue],
+                })
+
+              }
+              else{
+
+              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS") &&userType!==Role.CONTENT_CREATOR)
+              {
                setFilters({
                   states: stateField.code,
                   districts:selectedDistrictCode,
@@ -1248,7 +1267,7 @@ console.log(selectedBlockStore)
                   status:[statusValue],
                 })
               }
-              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS"))
+              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS") && userType!==Role.CONTENT_CREATOR)
               {
                setFilters({
                   states: stateField.code,
@@ -1261,6 +1280,7 @@ console.log(selectedBlockStore)
              
              
               }
+            }
               
             
             // setStates(object);
@@ -1274,11 +1294,11 @@ console.log(selectedBlockStore)
     };
   
     fetchData();
-  }, [selectedBlockCode, selectedDistrictCode]);
+  }, [selectedBlockCode, selectedDistrictCode, userType]);
   useEffect(() => {
     const fetchData =  () => {
      // console.log(selectedCenter.length)
-      if(userType===Role.TEAM_LEADERS)
+      if(userType===Role.TEAM_LEADERS || userType===Role.CONTENT_CREATOR)
       {
         setEnableCenterFilter(false);
 
@@ -1582,9 +1602,9 @@ console.log(selectedBlockStore)
       ) : data?.length !== 0 && loading === false ? (
         <KaTableComponent
           columns={
-            role === Role.TEAM_LEADER
+            role === Role.TEAM_LEADER 
               ? getTLTableColumns(t, isMobile, isArchived)
-              : getUserTableColumns(t, isMobile, isArchived)
+              :role === Role.CONTENT_CREATOR?getContentCreatorTableColumns(t, isMobile, isArchived): getUserTableColumns(t, isMobile, isArchived)
           }
           reassignCohort={handleReassignCohort}
           data={data}
@@ -1600,7 +1620,7 @@ console.log(selectedBlockStore)
           pagination={pagination}
          // reassignCohort={reassignCohort}
           noDataMessage={data?.length === 0 ? t("COMMON.NO_USER_FOUND") : ""}
-          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"):  t("COMMON.REASSIGN_CENTERS")}
+          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"): userType===Role.CONTENT_CREATOR?undefined: t("COMMON.REASSIGN_CENTERS")}
         />
       ) : (
         loading === false &&
@@ -1682,7 +1702,7 @@ console.log(selectedBlockStore)
             ? FormContextType.STUDENT
             : userType === Role.FACILITATORS
               ? FormContextType.TEACHER
-              : FormContextType.TEAM_LEADER
+              : userType === Role.CONTENT_CREATOR?FormContextType.CONTENT_CREATOR: FormContextType.TEAM_LEADER
         }
       />
     </HeaderComponent>

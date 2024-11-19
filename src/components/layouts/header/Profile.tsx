@@ -206,7 +206,7 @@ const Profile = () => {
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const admin = localStorage.getItem("adminInfo");
-      if (admin) setAdminInfo(JSON.parse(admin));
+      if (admin) setAdminInfo(JSON?.parse(admin)||{});
     }
   }, []);
 

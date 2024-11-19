@@ -121,7 +121,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const {
     data: studentFormData,
     isLoading: studentFormDataLoading,
-    error: studentFormDataErrror,
+    error: studentFormDataError,
   } = useQuery<any>({
     queryKey: ["studentFormData"],
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.STUDENT),
@@ -130,10 +130,20 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const {
     data: teamLeaderFormData,
     isLoading: teamLeaderFormDataLoading,
-    error: teamLeaderFormDataErrror,
+    error: teamLeaderFormDataError,
   } = useQuery<any>({
     queryKey: ["teamLeaderFormData"],
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEAM_LEADER),
+    staleTime: apiCatchingDuration.GETREADFORM,
+  });
+
+  const {
+    data: contentCreatorFormData,
+    isLoading: contentCreatorFormDataLoading,
+    error: contentCreatorFormDataError,
+  } = useQuery<any>({
+    queryKey: ["contentCreatorFormData"],
+    queryFn: () => getFormRead(FormContext.USERS, FormContextType.CONTENT_CREATOR),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
   // const { data:adminFormData ,isLoading: adminFormDataLoading, error :adminFormDataErrror} = useQuery<FormData>({
@@ -183,7 +193,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     dynamicFormForBlock,
     stateDefaultValue,
     assignedTeamLeader,
-    assignedTeamLeaderNames
+    assignedTeamLeaderNames,
+    selectedStateCohortId
   } = useLocationState(open, onClose, roleType);
   console.log(assignedTeamLeaderNames)
 
@@ -199,15 +210,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         //   userType
         // );
         // console.log("sortedFields", response);
-
+console.log("userType",userType, FormContextType.CONTENT_CREATOR)
         const response: FormData =
           userType === FormContextType.TEACHER
             ? teacherFormData
             : userType === FormContextType.STUDENT
               ? studentFormData
-              : teamLeaderFormData;
+              :userType === FormContextType.CONTENT_CREATOR?contentCreatorFormData: teamLeaderFormData;
         //    console.log(studentFormData)
-        console.log(response);
+        console.log("object",response);
 
         if (response) {
           if (userType === FormContextType.TEACHER) {
@@ -247,7 +258,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       }
     };
     getAddUserFormData();
-  }, [userType, teacherFormData, studentFormData, teamLeaderFormData]);
+  }, [userType, teacherFormData, studentFormData, teamLeaderFormData, contentCreatorFormData]);
  const { getNotification } = useNotification();
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
@@ -289,17 +300,18 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 ? RoleId.STUDENT
                 : userType === FormContextType.TEACHER
                   ? RoleId.TEACHER
-                  : RoleId.TEAM_LEADER,
+                  :userType === FormContextType.CONTENT_CREATOR?RoleId.SCTA: RoleId.TEAM_LEADER,
             cohortIds:
               userType === FormContextType.TEAM_LEADER
                 ? [selectedBlockCohortId]
-                : [selectedCenterCode],
+                :userType === FormContextType.CONTENT_CREATOR? selectedStateCohortId: [selectedCenterCode],
           },
         ],
         customFields: [],
       };
 
       Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
+        console.log(fieldKey, fieldValue);
         const fieldSchema = schemaProperties[fieldKey];
         const fieldId = fieldSchema?.fieldId;
         console.log(
@@ -338,7 +350,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           }
         }
       });
-      if (!isEditModal) {
+      if(userType === FormContextType.CONTENT_CREATOR && !isEditModal){
+        apiBody.customFields.push({
+          fieldId: stateFieldId,
+          value: [selectedStateCode],
+        });
+      }
+      else if (!isEditModal) {
         apiBody.customFields.push({
           fieldId: blockFieldId,
           value: [selectedBlockCode],
@@ -441,6 +459,86 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               telemetryFactory.interact(telemetryInteract);
           
             }
+          
+            if (!isEditModal) {
+              const isQueue = false;
+              const context = "USER";
+              let creatorName;
+              const key =
+                userType === FormContextType.STUDENT
+                  ? "onLearnerCreated"
+                  : userType === FormContextType.TEACHER
+                    ? "onFacilitatorCreated"
+                    : "onTeamLeaderCreated";
+    
+              if (typeof window !== "undefined" && window.localStorage) {
+                creatorName = localStorage.getItem("name");
+              }
+              let replacements: { [key: string]: string };
+              replacements = {};
+              console.log(Object.keys(replacements).length === 0);
+              if (creatorName) {
+                if (userType === FormContextType.STUDENT) {
+                  replacements = {
+                    "{FirstName}": firstLetterInUpperCase(creatorName),
+                    "{UserName}": username,
+                    "{LearnerName}": firstLetterInUpperCase(apiBody["name"]),
+                    "{Password}": password,
+                  };
+                } else {
+                  replacements = {
+                    "{FirstName}": firstLetterInUpperCase(apiBody["name"]),
+                    "{UserName}": username,
+                    "{Password}": password,
+                  };
+                }
+              }
+              const sendTo = {
+                //  receipients: [userEmail],
+                receipients:
+                  userType === FormContextType.STUDENT
+                    ? [adminInfo?.email]
+                    : [formData?.email],
+              };
+              if (Object.keys(replacements).length !== 0 && sendTo) {
+                const response = await sendCredentialService({
+                  isQueue,
+                  context,
+                  key,
+                  replacements,
+                  email: sendTo,
+                });
+                if (userType !== FormContextType.STUDENT) {
+                  const messageKey = messageKeyMap[userType];
+    
+                  if (response?.result[0]?.data[0]?.status === "success") {
+                    showToastMessage(t(messageKey), "success");
+                  } else {
+                    const messageKey =
+                      delayCredentialsMessageMap[userType] ||
+                      "TEAM_LEADERS.USER_CREDENTIALS_WILL_BE_SEND_SOON";
+    
+                    showToastMessage(t(messageKey), "success");
+                  }
+                }
+                if (userType === FormContextType.STUDENT) {
+                  if (
+                    response?.result[0]?.data[0]?.status === "success" &&
+                    !isEditModal
+                  ) {
+                    setOpenModal(true);
+                  } else {
+                    showToastMessage(
+                      t("LEARNERS.USER_CREDENTIALS_WILL_BE_SEND_SOON"),
+                      "success"
+                    );
+                  }
+                }
+              } else {
+                showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+              }
+            }
+          
           } else {
             showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
           }
@@ -449,84 +547,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         onClose();
         onCloseModal();
 
-        if (!isEditModal) {
-          const isQueue = false;
-          const context = "USER";
-          let creatorName;
-          const key =
-            userType === FormContextType.STUDENT
-              ? "onLearnerCreated"
-              : userType === FormContextType.TEACHER
-                ? "onFacilitatorCreated"
-                : "onTeamLeaderCreated";
-
-          if (typeof window !== "undefined" && window.localStorage) {
-            creatorName = localStorage.getItem("name");
-          }
-          let replacements: { [key: string]: string };
-          replacements = {};
-          console.log(Object.keys(replacements).length === 0);
-          if (creatorName) {
-            if (userType === FormContextType.STUDENT) {
-              replacements = {
-                "{FirstName}": firstLetterInUpperCase(creatorName),
-                "{UserName}": username,
-                "{LearnerName}": firstLetterInUpperCase(apiBody["name"]),
-                "{Password}": password,
-              };
-            } else {
-              replacements = {
-                "{FirstName}": firstLetterInUpperCase(apiBody["name"]),
-                "{UserName}": username,
-                "{Password}": password,
-              };
-            }
-          }
-          const sendTo = {
-            //  receipients: [userEmail],
-            receipients:
-              userType === FormContextType.STUDENT
-                ? [adminInfo?.email]
-                : [formData?.email],
-          };
-          if (Object.keys(replacements).length !== 0 && sendTo) {
-            const response = await sendCredentialService({
-              isQueue,
-              context,
-              key,
-              replacements,
-              email: sendTo,
-            });
-            if (userType !== FormContextType.STUDENT) {
-              const messageKey = messageKeyMap[userType];
-
-              if (response?.result[0]?.data[0]?.status === "success") {
-                showToastMessage(t(messageKey), "success");
-              } else {
-                const messageKey =
-                  delayCredentialsMessageMap[userType] ||
-                  "TEAM_LEADERS.USER_CREDENTIALS_WILL_BE_SEND_SOON";
-
-                showToastMessage(t(messageKey), "success");
-              }
-            }
-            if (userType === FormContextType.STUDENT) {
-              if (
-                response?.result[0]?.data[0]?.status === "success" &&
-                !isEditModal
-              ) {
-                setOpenModal(true);
-              } else {
-                showToastMessage(
-                  t("LEARNERS.USER_CREDENTIALS_WILL_BE_SEND_SOON"),
-                  "success"
-                );
-              }
-            }
-          } else {
-            showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
-          }
-        }
+       
       } catch (error) {
         onClose();
         console.log(error);
@@ -704,11 +725,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               handleBlockChangeWrapper={handleBlockChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
-              isCenterSelection={userType !== "TEAM LEADER"}
+              isCenterSelection={userType !== "TEAM LEADER" && userType !== FormContextType.CONTENT_CREATOR}
               allCenters={allCenters}
               selectedCenter={selectedCenter}
               handleCenterChangeWrapper={handleCenterChangeWrapper}
               inModal={true}
+              userType= {userType}
               stateDefaultValue={stateDefaultValue}
             />
           </Box>
