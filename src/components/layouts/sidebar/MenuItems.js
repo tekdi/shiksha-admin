@@ -36,10 +36,10 @@ const Menuitems = [
         title: "SIDEBAR.LEARNERS",
         href: "/learners",
       },
-      {
-        title: "SIDEBAR.SCTA", 
-        href: "/content-users",
-      },
+      // {
+      //   title: "SIDEBAR.SCTA", 
+      //   href: "/content-users",
+      // },
     ],
   },
   {
