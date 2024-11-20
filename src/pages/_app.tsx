@@ -23,6 +23,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
 import { TelemetryEventType } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import RouteGuard from "@/components/RouteGuard";
 
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -111,7 +112,7 @@ function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
         <CssVarsProvider theme={customTheme}>
 
-          {renderComponent()}
+        <RouteGuard>{renderComponent()}</RouteGuard>
 
           <ToastContainer
             position="bottom-left"

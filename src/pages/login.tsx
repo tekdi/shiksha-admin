@@ -125,7 +125,7 @@ const LoginPage = () => {
           localStorage.setItem("adminInfo", JSON.stringify(userInfo));
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
-        if (userInfo?.role !== Role.ADMIN) {
+        if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
@@ -149,7 +149,13 @@ const LoginPage = () => {
               if (activeSessionId) {
                 setIsActiveYearSelected(true);
                 // router.push("/centers");
-                window.location.href = "/centers";
+                if(userInfo?.role === Role.SCTA|| userInfo?.role === Role.CCTA)
+             
+                window.location.href = "/course-planner";
+
+              else
+                              window.location.href = "/centers";
+
               }
             }
           };

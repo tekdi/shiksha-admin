@@ -9,6 +9,8 @@ export enum Role {
   FACILITATORS = "Facilitators",
   CONTENT_CREATOR= "Content Creator",
   CONTENT_REVIEWER = "Content Reviewer",
+ SCTA ="State Admin SCTA",
+ CCTA="Central Admin CCTA"
 
 }
 

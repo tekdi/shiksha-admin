@@ -197,8 +197,8 @@ const setIsArchived = useSubmittedButtonStore(
         );
         const object = [
           {
-            value: stateField.code,
-            label: stateField.value,
+            value: stateField?.code,
+            label: stateField?.value,
           },
         ];
 

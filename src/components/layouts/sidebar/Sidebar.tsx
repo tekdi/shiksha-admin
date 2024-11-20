@@ -19,13 +19,14 @@ import { useState } from "react";
 import LogoIcon from "../logo/LogoIcon";
 import Buynow from "./Buynow";
 import Menuitems from "./MenuItems";
-
+import {getFilteredMenuItems} from "./MenuItems";
 const Sidebar = ({
   isMobileSidebarOpen,
   onSidebarClose,
   isSidebarOpen,
 }: any) => {
   const [open, setOpen] = useState<number | null>(null);
+  const filteredMenuItems = getFilteredMenuItems();
 
   const { t } = useTranslation();
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
@@ -50,7 +51,7 @@ const Sidebar = ({
 
       <Box mt={2}>
         <List>
-          {Menuitems?.map((item, index) => (
+          {filteredMenuItems?.map((item, index) => (
             <List component="li" disablePadding key={item.title}>
               <Tooltip placement="right-start" title={t(item.title)}>
                 <ListItem

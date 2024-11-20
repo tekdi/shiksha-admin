@@ -449,6 +449,9 @@
     "CONTENT_CREATOR": "Content Creator",
     "CONTENT_REVIEWER": "Content Reviewer",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SEARCH_CONTENT_CREATOR":"Search content creator..."
+    "SEARCH_CONTENT_CREATOR":"Search content creator...",
+    "EDIT_CONTENT_CREATOR":"Edit content creator",
+    "CREATE_CONTENT_CREATOR":"Create content creator",
+    "EDIT_CONTENT_REVIEWER":"Edit content reviewer"
   }
 }
