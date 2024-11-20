@@ -49,7 +49,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const isCoursePlannerContent = router.pathname.startsWith("/course-planner");
 
 
-    if (user.role === Role.SCTA ||user.role === Role.CCTA&& !(allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
+    if ((user.role === Role.SCTA ||user.role === Role.CCTA)&& !(allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
       if (router.pathname !== "/login" && router.pathname !== "/logout") {
         if (typeof window !== 'undefined' && window.localStorage) {
           // Specify the keys you want to keep
