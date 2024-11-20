@@ -72,7 +72,7 @@ const Menuitems = [
 
 export const getFilteredMenuItems = () => {
   if (typeof window !== "undefined" && window.localStorage) {
-    const userInfo = JSON.parse(localStorage.getItem("adminInfo") || "{}");
+    const userInfo = JSON?.parse(localStorage.getItem("adminInfo") || "{}");
     console.log("userInfo", userInfo);
     if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace

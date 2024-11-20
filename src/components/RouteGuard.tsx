@@ -44,9 +44,9 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const user = JSON.parse(adminInfo);
 
-    const allowedPaths = ["/workspace/content/create","/course-planner"];
+    const allowedPaths = ["/workspace/content/create","/course-planner", "/subjectDetails","/stateDetails"];
     const isWorkspaceContent = router.pathname.startsWith("/workspace/content");
-    const isCoursePlannerContent = router.pathname.startsWith("/course-planner");
+    const isCoursePlannerContent = router.pathname.startsWith("/course-planner")||router.pathname.startsWith("/subjectDetails")||router.pathname.startsWith("/stateDetails");
 
 
     if ((user.role === Role.SCTA ||user.role === Role.CCTA)&& !(allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
