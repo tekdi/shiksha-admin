@@ -1,5 +1,10 @@
-name,externalId,description,type,hasAParentTask,parentTaskOperator,parentTaskValue,parentTaskId,isDeletable,learningResources1-name,learningResources1-link,learningResources1-app,learningResources1-type,learningResources1-id,learningResources2-name,learningResources2-link,learningResources2-app,learningResources2-type,learningResources2-id,minNoOfSubmissionsRequired,sequenceNumber,startDate,endDate,solutionType,solutionSubType,solutionId
-Chapter 1: Real Numbers,1,,content,NO,,,,FALSE,,,,,,,,,,,,1,09-01-2024,10/31/24,,,
-1.1 Introduction to Real Numbers,2,,content,YES,EQUALS,started,1,FALSE,Real Numbers – Video,,self,prerequisite,do_2141830551647928321130,Real Numbers – Assessment,,self,postrequisite,do_2141829595245281281142,subTask1,2,09-01-2024,10/31/24,,,
-1.2 Euclid’s Division Lemma,3,,content,YES,EQUALS,started,1,FALSE,Euclids Formula – Youtube,,self,prerequisite,do_2141830572373852161134,Euclids Formula – EPUB,,self,postrequisite,do_2141830562205204481132,subTask1,3,09-01-2024,10/31/24,,,
-1.3 The Fundamental Theorem of Arithmetic,4,,content,YES,EQUALS,started,1,FALSE,Fundamental Therom – PDF,,self,,do_2141830485434695681127,,,,,,,4,09-01-2024,10/31/24,,,
+name,externalId,description,type,hasAParentTask,parentTaskOperator,parentTaskValue,parentTaskId,isDeletable,learningResources1-name,learningResources1-link,learningResources1-app,learningResources1-type,learningResources1-id,learningResources2-name,learningResources2-link,learningResources2-app,learningResources2-type,minNoOfSubmissionsRequired,sequenceNumber,startDate,endDate,solutionType,solutionSubType,solutionId
+Maths-Chapter 1,1,,content,NO,,,,FALSE,,,,,,,,,,,1,09-01-2024,10/31/24,,,
+Arithmetic,2,,content,YES,EQUALS,started,1,FALSE,Chemical reaction,https://www.youtube.com/watch?v=TStjgUmL1RQ,Youtube,postrequisite,,,https://www.youtube.com/watch?v=CqN-XIPhMpo,,,subTask1,2,09-01-2024,10/31/24,,,
+Polynomials,3,,content,YES,EQUALS,started,1,FALSE,Acid and Base,https://www.youtube.com/watch?v=ja7p_tzTTEA,Youtube,postrequisite,,,https://www.youtube.com/watch?v=rDjWrNRKfvg,,,subTask1,4,09-01-2024,10/31/24,,,
+Coordinate geometry,4,,content,YES,EQUALS,started,1,FALSE,Equation of Motion,https://www.youtube.com/watch?v=80gApHJd3iY,Youtube,prerequisite,,,,,,subTask1,3,09-01-2024,10/31/24,,,
+Maths-Chapter 2,5,,content,NO,,,,FALSE,,,,,,,,,,,5,09-01-2024,10/31/24,,,
+Circles,6,,content,YES,EQUALS,started,5,FALSE,Human Organs,https://www.youtube.com/watch?v=YE2peDF4Zqg,Youtube,prerequisite,,,,,,subTask1,6,09-01-2024,10/31/24,,,
+Trigonometry,7,,content,YES,EQUALS,started,5,FALSE,CardioVascular,https://www.youtube.com/watch?v=Vi1JK6IYVt8,Youtube,prerequisite,,,,,,subTask1,7,09-01-2024,10/31/24,,,
+Statistics,8,,content,YES,EQUALS,started,5,FALSE,Liver and Kidney,https://www.youtube.com/watch?v=rDjWrNRKfvg,Youtube,postrequisite,,,,,,subTask1,8,09-01-2024,10/31/24,,,
+Quadratic Equation,9,,content,YES,EQUALS,started,5,FALSE,Kaade Kess Resource,https://www.youtube.com/watch?v=CqN-XIPhMpo,Youtube,postrequisite,,,https://www.youtube.com/watch?v=CqN-XIPhMpo,,,subTask1,9,09-01-2024,10/31/24,,,
