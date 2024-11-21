@@ -116,7 +116,6 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
       const districtCodeArray = districts.map((item: any) => item.value);
       setDistrictCodeArr(districtCodeArray);
-
     } catch (error) {
       console.error("Error fetching districts", error);
     }
@@ -296,7 +295,14 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     : t("COMMON.ADD_BLOCK");
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={(event, reason) => {
+        if (reason !== "backdropClick") {
+          onClose();
+        }
+      }}
+    >
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
