@@ -152,9 +152,10 @@ h3,
 h4,
 h5,
 h6,
-p .css-1ydl6z0-MuiTypography-root {
+p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-content{
   font-family: Poppins, sans-serif !important;
 }
+
 
 .two-line-text {
   display: -webkit-box;
