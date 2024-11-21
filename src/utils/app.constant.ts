@@ -5,6 +5,7 @@ export enum Role {
   TEAM_LEADERS = "Team Leaders",
 
   ADMIN = "State Admin MME",
+  CENTRAL_ADMIN = "Central Admin MME",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
   CONTENT_CREATOR= "Content Creator",

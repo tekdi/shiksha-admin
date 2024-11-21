@@ -74,6 +74,7 @@ export const getFilteredMenuItems = () => {
   if (typeof window !== "undefined" && window.localStorage) {
     const userInfo = JSON?.parse(localStorage.getItem("adminInfo") || "{}");
     console.log("userInfo", userInfo);
+
     if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace
       return Menuitems.filter(
@@ -83,8 +84,21 @@ export const getFilteredMenuItems = () => {
       );
     }
 
+    if (
+      userInfo?.role === Role.ADMIN ||
+      userInfo?.role === Role.CENTRAL_ADMIN
+    ) {
+      // Exclude Course Planner and Workspace for Admin and Central Admin
+      return Menuitems.filter(
+        (item) =>
+          item.title !== "SIDEBAR.COURSE_PLANNER" &&
+          item.title !== "SIDEBAR.WORKSPACE"
+      );
+    }
+
     return Menuitems;
   }
 };
+
 
 export default Menuitems;

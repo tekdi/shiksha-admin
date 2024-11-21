@@ -67,17 +67,24 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           });
     
           // Clear all local storage
-          localStorage.clear();
+          // localStorage.clear();
     
-          // Re-add the keys to keep with their values
-          keysToKeep.forEach((key: string) => {
-            if (valuesToKeep[key] !== null) {
-              // Check if the key exists and has a value
-              localStorage.setItem(key, valuesToKeep[key]);
-            }
-          });
+          // // Re-add the keys to keep with their values
+          // keysToKeep.forEach((key: string) => {
+          //   if (valuesToKeep[key] !== null) {
+          //     // Check if the key exists and has a value
+          //     localStorage.setItem(key, valuesToKeep[key]);
+          //   }
+          // });
         }
-        router.push("/logout");
+        router.push("/unauthorized");
+      }
+    }
+
+    if ((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN )&& (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
+      if (router.pathname !== "/login" && router.pathname !== "/logout") {
+        
+        router.push("/unauthorized");
       }
     }
   }, [router.pathname]);

@@ -121,11 +121,11 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     const getAddLearnerFormData = async () => {
       const admin = localStorage.getItem("adminInfo");
       if (admin) {
-        const stateField = JSON.parse(admin).customFields.find(
+        const stateField = JSON.parse(admin).customFields?.find(
           (field: any) => field.label === "STATES"
         );
-        if (!stateField.value.includes(",")) {
-          setStateDefaultValueForCenter(stateField.value);
+        if (!stateField?.value.includes(",")) {
+          setStateDefaultValueForCenter(stateField?.value);
         } else {
           setStateDefaultValueForCenter(t("COMMON.ALL_STATES"));
         }
@@ -164,7 +164,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
   ) => {
     const formData = data?.formData;
     console.log("selectedBlockCohortId", selectedBlockCohortId);
-    const bmgsData = JSON.parse(localStorage.getItem("BMGSData") ?? "");
+    const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
     if (selectedBlockCohortId) {
       const parentId = selectedBlockCohortId;
       const cohortDetails: CohortDetails = {
@@ -188,20 +188,20 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
       };
 
       Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
-        const fieldSchema = schema.properties[fieldKey];
+        const fieldSchema = schema?.properties[fieldKey];
         const fieldId = fieldSchema?.fieldId;
 
         if (fieldId !== null) {
           cohortDetails?.customFields?.push({
             fieldId: fieldId,
-            value: formData.cohort_type,
+            value: formData?.cohort_type,
           });
         }
 
         if (bmgsData) {
           cohortDetails?.customFields?.push({
-            fieldId: bmgsData.board.fieldId,
-            value: bmgsData.board.boardName,
+            fieldId: bmgsData?.board.fieldId,
+            value: bmgsData?.board.boardName,
           });
           cohortDetails?.customFields?.push({
             fieldId: bmgsData.medium.fieldId,
