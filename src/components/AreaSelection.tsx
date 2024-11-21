@@ -158,7 +158,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
             </Grid>
 
 
-          {userType!== FormContextType.CONTENT_CREATOR && inModal &&
+          {
             (
             <><Grid
             item
