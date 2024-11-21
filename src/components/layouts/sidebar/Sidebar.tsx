@@ -46,7 +46,9 @@ const Sidebar = ({
         background: "linear-gradient(to bottom, white, #F8EFDA)",
       }}
     >
-      <LogoIcon />
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <LogoIcon />
+      </Box>
 
       <Box mt={2}>
         <List>
@@ -71,6 +73,7 @@ const Sidebar = ({
                       color: "black",
                       backgroundColor: (theme) =>
                         `${theme.palette.primary.main}!important`,
+                      borderRadius: "100px",
                     }),
                   }}
                 >
@@ -117,6 +120,7 @@ const Sidebar = ({
                               color: "black",
                               backgroundColor: (theme) =>
                                 `${theme.palette.primary.main}!important`,
+                              borderRadius: "100px",
                             }),
                           }}
                         >
@@ -143,7 +147,7 @@ const Sidebar = ({
         variant="persistent"
         PaperProps={{
           sx: {
-            width: "265px",
+            width: "275px",
             border: "0 !important",
             boxShadow: "0px 7px 30px 0px rgb(113 122 131 / 11%)",
           },
@@ -160,7 +164,7 @@ const Sidebar = ({
       onClose={onSidebarClose}
       PaperProps={{
         sx: {
-          width: "265px",
+          width: "275px",
           border: "0 !important",
         },
       }}
