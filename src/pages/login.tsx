@@ -125,7 +125,7 @@ const LoginPage = () => {
           localStorage.setItem("adminInfo", JSON.stringify(userInfo));
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
-        if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
+        if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
           const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
