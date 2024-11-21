@@ -80,6 +80,13 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         router.push("/unauthorized");
       }
     }
+
+    if ((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN )&& (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
+      if (router.pathname !== "/login" && router.pathname !== "/logout") {
+        
+        router.push("/unauthorized");
+      }
+    }
   }, [router.pathname]);
 
   return <>{children}</>;
