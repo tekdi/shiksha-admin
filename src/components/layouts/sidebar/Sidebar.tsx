@@ -29,7 +29,7 @@ const Sidebar = ({
   const filteredMenuItems = getFilteredMenuItems();
 
   const { t } = useTranslation();
-  const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
+  const lgUp = useMediaQuery((theme: any) => theme?.breakpoints?.up("lg"));
   const router = useRouter();
   const location = router.pathname;
 
