@@ -255,7 +255,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Grid container sx={{}}>
+    <Grid container sx={{ width: "100%", '@media (max-width: 900px)': { marginLeft: 'unset !important' }}} spacing={2}>
       {!(isMobile || isMedium) && ( // Render only on desktop view
         <Grid
           item
@@ -266,7 +266,8 @@ const LoginPage = () => {
             backgroundSize: "cover",
             height: "100vh",
           }}
-        />
+        >
+          </Grid>
       )}
       <Grid
         item
@@ -281,13 +282,12 @@ const LoginPage = () => {
         <Box
           sx={{
             width: "100%",
-            maxWidth: 500,
+            // maxWidth: 500,
             margin: "auto",
             padding: 4,
             boxShadow: isMedium || isMobile ? null : 3,
           }}
         >
-          <form onSubmit={handleFormSubmit}>
             <Box
               display="flex"
               flexDirection="column"
@@ -299,8 +299,9 @@ const LoginPage = () => {
               {loading && (
                 <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
               )}
-              <Image src={appLogo} alt="App Logo" height={100} />
+              <Image src={appLogo} alt="App Logo" className="img-fluid" />
             </Box>
+          <form onSubmit={handleFormSubmit}>
             {/* <Typography
               variant="h4"
               gutterBottom
