@@ -18,9 +18,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: Poppins, sans-serif !important;
-  background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+background: #fff !important;
 }
 
 @layer utilities {
@@ -181,4 +179,9 @@ p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-con
 
 .create-card{
   min-height: 118px !important;
+}
+
+.img-fluid{    width: 100%;
+    height: auto;
+    max-width: 300px;
 }
