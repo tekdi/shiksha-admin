@@ -39,7 +39,7 @@ const ResourceList = () => {
   }, [tstore.resources]);
 
   const handleBack = () => {
-    router.push(`/importCsv?subject`);
+    router.back();
   };
 
   return (
@@ -76,7 +76,7 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
             {t("COURSE_PLANNER.NO_DATA_PRE")}
           </Typography>
         )}
@@ -98,7 +98,7 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
             {t("COURSE_PLANNER.NO_DATA_POST")}
           </Typography>
         )}
@@ -120,7 +120,9 @@ const ResourceList = () => {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>{t("COURSE_PLANNER.NO_DATA")}</Typography>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+            {t("COURSE_PLANNER.NO_DATA")}
+          </Typography>
         )}
       </Box>
     </Box>

@@ -94,7 +94,7 @@ const StateDetails = () => {
       () => {
         alert("Link copied to clipboard");
         const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
 
         const telemetryInteract = {
@@ -103,10 +103,10 @@ const StateDetails = () => {
             cdata: [],
           },
           edata: {
-            id: 'copy_link',
+            id: "copy_link",
 
             type: TelemetryEventType.CLICK,
-            subtype: '',
+            subtype: "",
             pageid: cleanedUrl,
           },
         };
@@ -133,13 +133,12 @@ const StateDetails = () => {
           <ArrowBackIcon />
         </IconButton>
 
-        <Typography variant="h2">{card.state}</Typography>
+        {/* <Typography variant="h2">{card.state}</Typography> */}
         <Typography variant="h2" sx={{ ml: 1 }}>
-          State
+          States
         </Typography>
 
         <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}></Box>
-
       </Box>
       <Divider />
       <Grid spacing={2} container sx={{ marginTop: "16px", ml: 2 }}>

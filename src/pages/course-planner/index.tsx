@@ -61,25 +61,21 @@ const Foundation = () => {
     const fetchStateName = () => {
       if (typeof window !== "undefined") {
         const stateName = localStorage.getItem("stateName");
-        setUserStateName(stateName || "");
+        setUserStateName(stateName || "undefined");
       }
     };
 
-    const getFrameworkDetails = async () => {
-      if (!userStateName) return;
-
+    const fetchFrameworkDetails = async (stateName?: string) => {
       try {
         const data = await getChannelDetails();
-        setFramework(data?.result?.framework);
-        setFramedata(data?.result?.framework);
+        const framework = data?.result?.framework;
+        setFramework(framework);
+        setFramedata(framework);
 
-        const getStates = await getOptionsByCategory(
-          data?.result?.framework,
-          "state"
-        );
+        const states = await getOptionsByCategory(framework, "state");
 
-        const matchingState = getStates?.find(
-          (state: any) => state?.name === userStateName
+        const matchingState = states?.find(
+          (state: any) => !stateName || state?.name === stateName
         );
 
         if (matchingState) {
@@ -87,22 +83,19 @@ const Foundation = () => {
           setMatchingstate(matchingState);
           setStateassociations(matchingState?.associations);
 
-          const getBoards = await getOptionsByCategory(
-            data?.result?.framework,
-            "board"
-          );
-          if (getBoards && matchingState) {
-            const commonBoards = getBoards
-              .filter((item1: { code: any }) =>
+          const boards = await getOptionsByCategory(framework, "board");
+          if (boards) {
+            const commonBoards = boards
+              .filter((board: { code: any }) =>
                 matchingState.associations.some(
-                  (item2: { code: any; category: string }) =>
-                    item2.code === item1.code && item2.category === "board"
+                  (assoc: { code: any; category: string }) =>
+                    assoc.code === board.code && assoc.category === "board"
                 )
               )
-              .map((item1: { name: any; code: any; associations: any }) => ({
-                name: item1.name,
-                code: item1.code,
-                associations: item1.associations,
+              .map((board: { name: any; code: any; associations: any }) => ({
+                name: board.name,
+                code: board.code,
+                associations: board.associations,
               }));
             setBoards(commonBoards);
           }
@@ -116,10 +109,15 @@ const Foundation = () => {
 
     fetchStateName();
 
-    if (userStateName) {
-      getFrameworkDetails();
+    if (userStateName === undefined) {
+      fetchFrameworkDetails();
+    } else if (userStateName) {
+      fetchFrameworkDetails(userStateName);
     }
-    !isActiveYear && router.push("/centers");
+
+    if (!isActiveYear) {
+      router.push("/centers");
+    }
   }, [userStateName, isActiveYear]);
 
   const handleCardClick = (id: any) => {
@@ -153,7 +151,7 @@ const Foundation = () => {
         alert("Link copied to clipboard");
 
         const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
 
         const telemetryInteract = {
@@ -162,16 +160,15 @@ const Foundation = () => {
             cdata: [],
           },
           edata: {
-            id: 'copy_link',
+            id: "copy_link",
 
             type: TelemetryEventType.CLICK,
-            subtype: '',
+            subtype: "",
             pageid: cleanedUrl,
           },
         };
         telemetryFactory.interact(telemetryInteract);
-      }
-      ,
+      },
       (err) => {
         console.error("Failed to copy link: ", err);
       }
