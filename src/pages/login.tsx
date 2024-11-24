@@ -394,9 +394,7 @@ const LoginPage = () => {
               className="remember-me-checkbox"
             >
                <Checkbox
-                onChange={(e) => setRememberMe(e.target.checked)}
-                
-                iconStyle={{fill: 'white'}}
+                onChange={(e) => setRememberMe(e.target.checked)}                
                 checked={rememberMe}
               />
               <Typography
