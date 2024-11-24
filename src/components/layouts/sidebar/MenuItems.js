@@ -72,7 +72,12 @@ const Menuitems = [
 
 export const getFilteredMenuItems = () => {
   if (typeof window !== "undefined" && window.localStorage) {
-    const userInfo = JSON?.parse(localStorage.getItem("adminInfo") || "{}");
+    const adminInfo = localStorage.getItem("adminInfo");
+    let userInfo;
+
+    if (adminInfo && adminInfo !== "undefined") {
+      userInfo = JSON.parse(adminInfo || "{}");
+    }
     console.log("userInfo", userInfo);
 
     if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
