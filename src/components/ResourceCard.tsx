@@ -3,56 +3,46 @@ import { Card, CardContent, Typography, Box } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import placeholderImage from "../../public/placeholderImage.png";
 import router from "next/router";
-import { getYouTubeThumbnail } from "@/utils/Helper";
 import { fetchContent } from "@/services/PlayerService";
 
 interface ResourceCardProps {
   title: string;
-  type: string;
-  resource: string;
+  // type: string;
+  // resource: string;
   identifier: string;
+  appIcon?: string;
 }
 
 const ResourceCard: React.FC<ResourceCardProps> = ({
   title,
-  type,
-  resource,
+  // type,
+  // resource,
   identifier,
+  appIcon
 }) => {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | StaticImageData>(placeholderImage);
+  // const [thumbnailUrl, setThumbnailUrl] = useState<string | StaticImageData>(placeholderImage);
+  const thumbnailUrl = appIcon || placeholderImage;
 
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        if (identifier) {
-          if (type === 'self') {
-            const data = await fetchContent(identifier);
-            if (data?.appIcon) {
-              setThumbnailUrl(data.appIcon);
-            }
-            console.log("vivek", data);
-          } else if (type.toLowerCase() === 'youtube') {
-            const img = getYouTubeThumbnail(identifier);
-            if (img) {
-              setThumbnailUrl(img);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Unable to fetch content", error);
-      }
-    }
-    loadContent();
+  // useEffect(() => {
+  //   const loadContent = async () => {
+  //     try {
+  //       if (identifier) {
+  //         const data = await fetchContent(identifier);
+  //         if (data?.appIcon) {
+  //           setThumbnailUrl(data.appIcon);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Unable to fetch content", error);
+  //     }
+  //   }
+  //   loadContent();
 
-  }, [identifier, type])
+  // }, [identifier])
 
   const openPlayers = () => {
     sessionStorage.setItem("previousPage", window.location.href);
-    if (type === 'self') {
-      router.push(`/play/content/${identifier}`);
-    } else if (type.toLowerCase() === 'youtube') {
-      window.open(identifier);
-    }
+    router.push(`/play/content/${identifier}`);
   };
 
   return (
@@ -81,7 +71,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
           {title}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          {type}
+          {/* {type} */}
         </Typography>
       </CardContent>
     </Card>
