@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { Role } from "@/utils/app.constant";
 
 // const Login = dynamic(() => import('./Login'), { ssr: false });
 // const Dashboard = dynamic(() => import('./Dashboard'), { ssr: false });
@@ -17,6 +18,13 @@ const Home: React.FC = () => {
       const token = localStorage.getItem("token");
       setLoading(false);
       if (token) {
+        const storedUserData = JSON.parse(
+          localStorage.getItem("adminInfo") || "{}"
+        );
+        if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA){
+          push("/course-planner");
+        }
+        else
         push("/centers");
       } else {
         push("/login", undefined, { locale: "en" });
