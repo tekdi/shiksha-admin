@@ -8,11 +8,10 @@ export enum Role {
   CENTRAL_ADMIN = "Central Admin MME",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
-  CONTENT_CREATOR= "Content Creator",
+  CONTENT_CREATOR = "Content Creator",
   CONTENT_REVIEWER = "Content Reviewer",
- SCTA ="State Admin SCTA",
- CCTA="Central Admin CCTA"
-
+  SCTA = "State Admin SCTA",
+  CCTA = "Central Admin CCTA",
 }
 
 export enum Status {
@@ -34,15 +33,13 @@ export enum Storage {
 }
 export enum FormContext {
   USERS = "USERS",
-  COHORTS="cohorts"
-
+  COHORTS = "cohorts",
 }
 export enum TelemetryEventType {
-  CLICK = 'CLICK',
-  SEARCH = 'SEARCH',
-  VIEW = 'VIEW',
-  RADIO="RADIO"
-
+  CLICK = "CLICK",
+  SEARCH = "SEARCH",
+  VIEW = "VIEW",
+  RADIO = "RADIO",
 }
 export enum FormContextType {
   STUDENT = "STUDENT",
@@ -50,8 +47,8 @@ export enum FormContextType {
   TEAM_LEADER = "TEAM LEADER",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
-  COHORT="cohort",
-  CONTENT_CREATOR="CONTENT CREATOR"
+  COHORT = "cohort",
+  CONTENT_CREATOR = "CONTENT CREATOR",
 }
 
 export enum RoleId {
@@ -59,7 +56,7 @@ export enum RoleId {
   TEACHER = "3bde0028-6900-4900-9d05-eeb608843718",
   TEAM_LEADER = "9dd9328f-1bc7-444f-96e3-c5e1daa3514a",
   ADMIN = "ee482faf-8a41-45fe-9656-5533dd6a787c",
-   SCTA="f972a14e-afdb-4502-8ede-cf1fcf171e46"
+  SCTA = "f972a14e-afdb-4502-8ede-cf1fcf171e46",
 }
 
 export enum DataKey {
@@ -96,8 +93,8 @@ export enum CohortTypes {
 export enum FormValues {
   FEMALE = "FEMALE",
   MALE = "MALE",
-  REGULAR="REGULAR",
-  REMOTE="REMOTE"
+  REGULAR = "REGULAR",
+  REMOTE = "REMOTE",
 }
 
 export enum InputTypes {
@@ -110,31 +107,30 @@ export enum apiCatchingDuration {
   GETREADFORM = 36000000,
 }
 
-
 export const QueryKeys = {
   USER_READ: "userRead",
   FIELD_OPTION_READ: "fieldOptionRead",
   MY_COHORTS: "myCohorts",
   GET_COHORT_LIST: "getcohortList",
   GET_COHORT_MEMBER_LIST: "getCohortMemberList",
-}
+};
 
-
-export const monthColors:any = {
-  "Jan": "#99CCFF",
-  "Mar": "#D9B2FF",
-  "Apr": "#FFABAB",
-  "May": "#FFABAB",
-  "Jun": "#FFABAB",
-  "Jul": "#FFABAB",
-  "Aug": "#FFABAB",
-  "Sep": "#FFABAB",
-  "Oct": "#FFD6D6",
-  "Nov": "#FFD6D6",
-  "Dec": "#FFD6D6"
+export const monthColors: any = {
+  Jan: "#99CCFF",
+  Mar: "#D9B2FF",
+  Apr: "#FFABAB",
+  May: "#FFABAB",
+  Jun: "#FFABAB",
+  Jul: "#FFABAB",
+  Aug: "#FFABAB",
+  Sep: "#FFABAB",
+  Oct: "#FFD6D6",
+  Nov: "#FFD6D6",
+  Dec: "#FFD6D6",
 };
 
 export enum ResourceType {
   PREREQUISITE = "prerequisite",
   POSTREQUISITE = "postrequisite",
+  FACILITATOR_REQUISITE = "facilitator-requisite",
 }
