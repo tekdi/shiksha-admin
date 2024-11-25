@@ -22,7 +22,7 @@ const Home: React.FC = () => {
           localStorage.getItem("adminInfo") || "{}"
         );
         if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA){
-          push("/course-planner");
+          window.location.href = "/course-planner"; 
         }
         else
         push("/centers");

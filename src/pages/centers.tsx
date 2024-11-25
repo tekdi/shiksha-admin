@@ -51,6 +51,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
+import axios from 'axios';
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -962,7 +963,7 @@ const response=  await fetchCohortMemberList(data);
         return;
       }
       let cohortDetails = {
-        name: formData?.name,
+        name: (formData?.name).toLowerCase(),
         updatedBy:localStorage.getItem('userId'),
         customFields: customFields,
       };
@@ -994,7 +995,13 @@ const response=  await fetchCohortMemberList(data);
       }
     } catch (error) {
       console.error("Error updating cohort:", error);
-      showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 409) {
+          showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
+        } 
+      }
+      else
+       showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);

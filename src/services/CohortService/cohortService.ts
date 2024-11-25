@@ -95,7 +95,7 @@ export const createCohort = async (userData: any, t?:any): Promise<any> => {
 
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 409) {
-        showToastMessage(t("COMMON.ALREADY_EXIST"), "info");
+        showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
 
    
      } 
