@@ -646,7 +646,10 @@ const HeaderComponent = ({
 
       <Box
         sx={{
-          backgroundColor: "white",
+          background: "#fff",
+          borderRadius: "8px",
+          boxShadow: "0px 2px 6px 2px #00000026",
+          paddingBottom: "0px",
           paddingTop: "20px",
         }}
       >
