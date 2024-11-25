@@ -116,7 +116,7 @@ const Foundation = () => {
     }
 
     if (!isActiveYear) {
-      router.push("/centers");
+      router.push("/course-planner");
     }
   }, [userStateName, isActiveYear]);
 
