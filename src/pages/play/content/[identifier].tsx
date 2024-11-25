@@ -69,7 +69,7 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
       }
     };
     loadContent();
-    !isActiveYear && router.push("/centers");
+    !isActiveYear && router.push("/course-planner");
   }, [identifier, isActiveYear]);
 
   return (

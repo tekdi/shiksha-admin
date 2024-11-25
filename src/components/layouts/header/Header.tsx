@@ -18,6 +18,7 @@ import Profile from "./Profile";
 import { AcademicYear } from "@/utils/Interfaces";
 import useStore from "@/store/store";
 import { useQueryClient } from '@tanstack/react-query';
+import { Role } from "@/utils/app.constant";
 
 const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const { t } = useTranslation();
@@ -75,7 +76,10 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
 
     queryClient.clear();
  // window.location.reload();
-    window.location.href = "/centers";
+ const storedUserData = JSON.parse(
+  localStorage.getItem("adminInfo") || "{}"
+);
+    window.location.href = (storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)?"/course-planner":"/centers";
   };
 
   const handleChange = (event: SelectChangeEvent) => {
