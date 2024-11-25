@@ -163,6 +163,204 @@ const SubjectDetails = () => {
     fetchFrameworkDetails();
   }, [boardName]);
 
+  useEffect(() => {
+    const savedMedium = localStorage.getItem("selectedMedium") || "";
+    const savedGrade = localStorage.getItem("selectedGrade") || "";
+    const savedType = localStorage.getItem("selectedType") || "";
+
+    setSelectedmedium(savedMedium);
+    setSelectedgrade(savedGrade);
+    setSelectedtype(savedType);
+  }, []);
+
+  const fetchAndSetGradeData = (medium: any) => {
+    const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
+    const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
+    setMediumAssociations(mediumAssociations);
+
+    console.log(getGrades);
+
+    const commonGradeInState = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      store?.stateassociations,
+      "code"
+    );
+    const commonGradeInBoard = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      boardAssociations,
+      "code"
+    );
+    const commonGradeInMedium = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      mediumAssociations,
+      "code"
+    );
+
+    const commonGradeInStateBoard = findCommonAssociations(
+      commonGradeInState,
+      commonGradeInBoard
+    );
+    const overAllCommonGrade = findCommonAssociations(
+      commonGradeInStateBoard,
+      commonGradeInMedium
+    );
+
+    setGrade(overAllCommonGrade);
+    setGradeOptions(overAllCommonGrade);
+  };
+
+  const fetchAndSetTypeData = (grade: any) => {
+    const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
+    setGradeAssociations(gradeAssociations);
+    const type = getOptionsByCategory(store?.framedata, "courseType");
+    console.log(type);
+
+    const commonTypeInState = filterAndMapAssociations(
+      "courseType",
+      type,
+      store?.stateassociations,
+      "code"
+    );
+    const commonTypeInBoard = filterAndMapAssociations(
+      "courseType",
+      type,
+      boardAssociations,
+      "code"
+    );
+    const commonTypeInMedium = filterAndMapAssociations(
+      "courseType",
+      type,
+      mediumAssociations,
+      "code"
+    );
+    const commonTypeInGrade = filterAndMapAssociations(
+      "courseType",
+      type,
+      gradeAssociations,
+      "code"
+    );
+
+    const commonTypeData = findCommonAssociations(
+      commonTypeInState,
+      commonTypeInBoard
+    );
+    const commonType2Data = findCommonAssociations(
+      commonTypeInMedium,
+      commonTypeInGrade
+    );
+    const commonType3Data = findCommonAssociations(
+      commonTypeData,
+      commonType2Data
+    );
+
+    console.log(`commonTypeOverall`, commonType3Data);
+    setTypeOptions(commonType3Data);
+    setType(commonType3Data);
+  };
+
+  const fetchAndSetSubData = (type: any) => {
+    const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
+    setTypeAssociations(typeAssociations);
+    const subject = getOptionsByCategory(store?.framedata, "subject");
+
+    console.log(subject);
+
+    const commonTypeInState = filterAndMapAssociations(
+      "subject",
+      subject,
+      store?.stateassociations,
+      "code"
+    );
+    const commonTypeInBoard = filterAndMapAssociations(
+      "subject",
+      type,
+      boardAssociations,
+      "code"
+    );
+    const commonTypeInMedium = filterAndMapAssociations(
+      "subject",
+      subject,
+      mediumAssociations,
+      "code"
+    );
+    const commonTypeInGrade = filterAndMapAssociations(
+      "subject",
+      subject,
+      gradeAssociations,
+      "code"
+    );
+    const commonTypeInType = filterAndMapAssociations(
+      "subject",
+      subject,
+      typeAssociations,
+      "code"
+    );
+
+    const findCommonAssociations = (array1: any[], array2: any[]) => {
+      return array1.filter((item1: { code: any }) =>
+        array2.some((item2: { code: any }) => item1.code === item2.code)
+      );
+    };
+
+    const findOverallCommonSubjects = (arrays: any[]) => {
+      const nonEmptyArrays = arrays.filter(
+        (array: string | any[]) => array && array.length > 0
+      );
+
+      if (nonEmptyArrays.length === 0) return [];
+
+      let commonSubjects = nonEmptyArrays[0];
+
+      for (let i = 1; i < nonEmptyArrays.length; i++) {
+        commonSubjects = findCommonAssociations(
+          commonSubjects,
+          nonEmptyArrays[i]
+        );
+
+        if (commonSubjects.length === 0) return [];
+      }
+
+      return commonSubjects;
+    };
+
+    const arrays = [
+      commonTypeInState,
+      commonTypeInBoard,
+      commonTypeInMedium,
+      commonTypeInGrade,
+      commonTypeInType,
+    ];
+
+    const overallCommonSubjects = findOverallCommonSubjects(arrays);
+
+    setSubject(overallCommonSubjects);
+    localStorage.setItem(
+      "overallCommonSubjects",
+      JSON.stringify(overallCommonSubjects)
+    );
+  };
+
+  useEffect(() => {
+    if (selectedmedium) {
+      fetchAndSetGradeData(selectedmedium);
+    }
+  }, [selectedmedium]);
+
+  useEffect(() => {
+    if (selectedgrade) {
+      fetchAndSetTypeData(selectedgrade);
+    }
+  }, [selectedgrade]);
+
+  useEffect(() => {
+    if (selectedtype) {
+      fetchAndSetSubData(selectedtype);
+    }
+  }, [selectedtype]);
+
   if (loading) {
     return <Loader showBackdrop={true} loadingText="Loading..." />;
   }
@@ -181,6 +379,7 @@ const SubjectDetails = () => {
   };
 
   const handleMediumChange = (event: any) => {
+    localStorage.setItem("selectedMedium", event.target.value);
     const medium = event.target.value;
     setSelectedmedium(medium);
     setTaxonomyMedium(medium);
@@ -188,243 +387,76 @@ const SubjectDetails = () => {
     setSelectedtype([null]);
     setSubject([null]);
 
-    if (medium) {
-      const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
-      const mediumAssociations = getAssociationsByCodeNew(
-        mediumOptions,
-        medium
-      );
-      setMediumAssociations(mediumAssociations);
-
-      console.log(getGrades);
-
-      const commonGradeInState = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        store?.stateassociations,
-        "code"
-      );
-      const commonGradeInBoard = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        boardAssociations,
-        "code"
-      );
-      const commonGradeInMedium = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        mediumAssociations,
-        "code"
-      );
-
-      const commonGradeInStateBoard = findCommonAssociations(
-        commonGradeInState,
-        commonGradeInBoard
-      );
-      const overAllCommonGrade = findCommonAssociations(
-        commonGradeInStateBoard,
-        commonGradeInMedium
-      );
-
-      setGrade(overAllCommonGrade);
-      setGradeOptions(overAllCommonGrade);
-    }
     const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
-        const env = cleanedUrl.split("/")[0];
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-        const telemetryInteract = {
-          context: {
-            env: env,
-            cdata: [],
-          },
-          edata: {
-            id: 'change-medium',
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "change-medium",
 
-            type: TelemetryEventType.CLICK,
-            subtype: '',
-            pageid: cleanedUrl,
-          },
-        };
-        telemetryFactory.interact(telemetryInteract);
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleGradeChange = (event: any) => {
+    localStorage.setItem("selectedGrade", event.target.value);
     const grade = event.target.value;
     setTaxonomyGrade(grade);
     setSelectedgrade(grade);
-    if (grade) {
-      const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
-      setGradeAssociations(gradeAssociations);
-      const type = getOptionsByCategory(store?.framedata, "courseType");
-      console.log(type);
 
-      const commonTypeInState = filterAndMapAssociations(
-        "courseType",
-        type,
-        store?.stateassociations,
-        "code"
-      );
-      const commonTypeInBoard = filterAndMapAssociations(
-        "courseType",
-        type,
-        boardAssociations,
-        "code"
-      );
-      const commonTypeInMedium = filterAndMapAssociations(
-        "courseType",
-        type,
-        mediumAssociations,
-        "code"
-      );
-      const commonTypeInGrade = filterAndMapAssociations(
-        "courseType",
-        type,
-        gradeAssociations,
-        "code"
-      );
-
-      const commonTypeData = findCommonAssociations(
-        commonTypeInState,
-        commonTypeInBoard
-      );
-      const commonType2Data = findCommonAssociations(
-        commonTypeInMedium,
-        commonTypeInGrade
-      );
-      const commonType3Data = findCommonAssociations(
-        commonTypeData,
-        commonType2Data
-      );
-
-      console.log(`commonTypeOverall`, commonType3Data);
-      setTypeOptions(commonType3Data);
-      setType(commonType3Data);
-    }
     const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
-        const env = cleanedUrl.split("/")[0];
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-        const telemetryInteract = {
-          context: {
-            env: env,
-            cdata: [],
-          },
-          edata: {
-            id: 'grade_change',
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "grade_change",
 
-            type: TelemetryEventType.CLICK,
-            subtype: '',
-            pageid: cleanedUrl,
-          },
-        };
-        telemetryFactory.interact(telemetryInteract);
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleTypeChange = (event: any) => {
+    localStorage.setItem("selectedType", event.target.value);
     const type = event.target.value;
     setTaxonomyType(type);
     setSelectedtype(type);
 
-    if (type) {
-      const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
-      setTypeAssociations(typeAssociations);
-      const subject = getOptionsByCategory(store?.framedata, "subject");
-
-      console.log(subject);
-
-      const commonTypeInState = filterAndMapAssociations(
-        "subject",
-        subject,
-        store?.stateassociations,
-        "code"
-      );
-      const commonTypeInBoard = filterAndMapAssociations(
-        "subject",
-        type,
-        boardAssociations,
-        "code"
-      );
-      const commonTypeInMedium = filterAndMapAssociations(
-        "subject",
-        subject,
-        mediumAssociations,
-        "code"
-      );
-      const commonTypeInGrade = filterAndMapAssociations(
-        "subject",
-        subject,
-        gradeAssociations,
-        "code"
-      );
-      const commonTypeInType = filterAndMapAssociations(
-        "subject",
-        subject,
-        typeAssociations,
-        "code"
-      );
-
-      const findCommonAssociations = (array1: any[], array2: any[]) => {
-        return array1.filter((item1: { code: any }) =>
-          array2.some((item2: { code: any }) => item1.code === item2.code)
-        );
-      };
-
-      const findOverallCommonSubjects = (arrays: any[]) => {
-        const nonEmptyArrays = arrays.filter(
-          (array: string | any[]) => array && array.length > 0
-        );
-
-        if (nonEmptyArrays.length === 0) return [];
-
-        let commonSubjects = nonEmptyArrays[0];
-
-        for (let i = 1; i < nonEmptyArrays.length; i++) {
-          commonSubjects = findCommonAssociations(
-            commonSubjects,
-            nonEmptyArrays[i]
-          );
-
-          if (commonSubjects.length === 0) return [];
-        }
-
-        return commonSubjects;
-      };
-
-      const arrays = [
-        commonTypeInState,
-        commonTypeInBoard,
-        commonTypeInMedium,
-        commonTypeInGrade,
-        commonTypeInType,
-      ];
-
-      const overallCommonSubjects = findOverallCommonSubjects(arrays);
-
-      setSubject(overallCommonSubjects);
-      localStorage.setItem(
-        "overallCommonSubjects",
-        JSON.stringify(overallCommonSubjects)
-      );
-    }
     const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
-        const env = cleanedUrl.split("/")[0];
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-        const telemetryInteract = {
-          context: {
-            env: env,
-            cdata: [],
-          },
-          edata: {
-            id: 'change_type',
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "change_type",
 
-            type: TelemetryEventType.CLICK,
-            subtype: '',
-            pageid: cleanedUrl,
-          },
-        };
-        telemetryFactory.interact(telemetryInteract);
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   return (
