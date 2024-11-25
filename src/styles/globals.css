@@ -87,9 +87,9 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
   background-color: white;
 }
 
-.add-to-library {
+/* .add-to-library {
   overflow-y: auto;
-}
+} */
 
 .player-grid {
   height: 100vh !important;

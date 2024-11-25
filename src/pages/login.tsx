@@ -37,6 +37,7 @@ import { Role } from "@/utils/app.constant";
 import { AcademicYear } from "@/utils/Interfaces";
 import { getAcademicYear } from "@/services/AcademicYearService";
 import useStore from '@/store/store';
+import loginImg from '../../public/images/login-image.jpg';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -255,19 +256,61 @@ const LoginPage = () => {
   };
 
   return (
-    <Grid container sx={{ width: "100%", '@media (max-width: 900px)': { marginLeft: 'unset !important' } }} spacing={2}>
-      {!(isMobile || isMedium) && ( // Render only on desktop view
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            background: `url(${loginImage.src}) no-repeat center center`,
-            backgroundSize: "cover",
-            height: "100vh",
-          }}
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        bgcolor={theme.palette.warning.A200}
+        borderRadius={'10px'}
+        sx={{
+          '@media (min-width: 900px)': {
+            display: 'none',
+          }
+        }}
+      >
+        {loading && (
+          <Loader showBackdrop={true} loadingText={t('COMMON.LOADING')} />
+        )}
+        <Box
+          display={'flex'}
+          overflow="auto"
+          alignItems={'center'}
+          justifyContent={'center'}
+          zIndex={99}
+          sx={{ margin: '5px 10px 25px', }}
         >
-        </Grid>
+          <Box sx={{ width: '55%', '@media (max-width: 400px)': { width: '95%' } }}>
+            <Image src={appLogo} alt="App Logo" height={80}
+              layout='responsive'
+            />
+          </Box>
+        </Box>
+      </Box>
+      <Grid container
+        spacing={2}
+        justifyContent={'center'}
+        px={'30px'}
+        alignItems={'center'}
+        width={'100% !important'}>
+      {!(isMobile || isMedium) && ( // Render only on desktop view
+          <Grid
+            sx={{
+              '@media (max-width: 900px)': {
+                display: 'none',
+              },
+            }}
+            item
+            xs={12}
+            sm={12}
+            md={6}
+          >
+            <Image
+              className="login-img"
+              src={loginImg}
+              alt="Login Image"
+              layout="responsive"
+            />
+          </Grid>
       )}
       <Grid
         item
@@ -275,32 +318,60 @@ const LoginPage = () => {
         md={6}
         display="flex"
         alignItems="center"
-        sx={{
-          backgroundColor: "white",
-        }}
+        
       >
         <Box
-          sx={{
-            width: "100%",
-            // maxWidth: 500,
-            margin: "auto",
-            padding: 4,
-            boxShadow: isMedium || isMobile ? null : 3,
-          }}
+            flexGrow={1}
+            // display={'flex'}
+            bgcolor={theme.palette.warning['A400']}
+            height="auto"
+            zIndex={99}
+            justifyContent={'center'}
+            p={'2rem'}
+            borderRadius={'2rem 2rem 0 0'}
+
+            sx={{
+              '@media (min-width: 900px)': {
+                width: '100%',
+                borderRadius: '16px',
+                boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+                marginTop: '50px',
+              },
+              '@media (max-width: 900px)': {
+                marginTop: '-25px',
+              }
+
+            }}
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            bgcolor={theme.palette.warning.A200}
-            p={2}
-            borderRadius={2}
-          >
-            {loading && (
-              <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
-            )}
-            <Image src={appLogo} alt="App Logo" className="img-fluid" />
-          </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              bgcolor={theme.palette.warning.A200}
+              borderRadius={'10px'}
+              sx={{
+                '@media (max-width: 900px)': {
+                  display: 'none',
+                }
+              }}
+            >
+              {loading && (
+                <Loader showBackdrop={true} loadingText={t('COMMON.LOADING')} />
+              )}
+              <Box
+                display={'flex'}
+                overflow="auto"
+                alignItems={'center'}
+                justifyContent={'center'}
+                zIndex={99}
+              // sx={{ margin: '5px 10px 25px', }}
+              >
+                <Box sx={{ width: '60%', '@media (max-width: 700px)': { width: '95%' } }}>
+                  <Image src={appLogo} alt="App Logo" height={80}
+                    layout='responsive'
+                  />
+                </Box>
+              </Box>
+            </Box>
           <form onSubmit={handleFormSubmit}>
             {/* <Typography
               variant="h4"
@@ -434,6 +505,7 @@ const LoginPage = () => {
         </Box>
       </Grid>
     </Grid>
+    </>
   );
 };
 
