@@ -151,6 +151,7 @@
     "USERNAME_PLACEHOLDER": "Enter username",
     "PASSWORD_PLACEHOLDER": "Enter password",
     "USERNAME_PASSWORD_NOT_CORRECT": "The username or password you entered is incorrect",
+    "YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS": "You don't have appropriate privileges to access this app",
     "FORGOT_PASSWORD": "Forgot Password?",
     "REMEMBER_ME": "Remember Me",
     "CONFIRM_PASSWORD": "Confirm password",

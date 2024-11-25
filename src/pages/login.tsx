@@ -127,7 +127,7 @@ const LoginPage = () => {
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
         if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
-          const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
+          const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
         } else {
@@ -150,12 +150,12 @@ const LoginPage = () => {
               if (activeSessionId) {
                 setIsActiveYearSelected(true);
                 // router.push("/centers");
-                if(userInfo?.role === Role.SCTA|| userInfo?.role === Role.CCTA)
-             
-                window.location.href = "/course-planner";
-
-              else
-                              window.location.href = "/centers";
+                if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
+                  window.location.href = "/course-planner";
+                }
+                else {
+                  window.location.href = "/centers";
+                }
 
               }
             }
@@ -452,20 +452,20 @@ const LoginPage = () => {
               }}
               onClick={() => {
                 window.open(
-                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`
+                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`, "_self"
                 );
               }}
             >
               {t("LOGIN_PAGE.FORGOT_PASSWORD")}
             </Box>
-            {/*<Box
+            {<Box
               display="flex"
               alignItems="center"
               marginTop="1.2rem"
               className="remember-me-checkbox"
             >
                <Checkbox
-                onChange={(e) => setRememberMe(e.target.checked)}
+                onChange={(e) => setRememberMe(e.target.checked)}                
                 checked={rememberMe}
               />
               <Typography
@@ -488,7 +488,7 @@ const LoginPage = () => {
               >
                 {t("LOGIN_PAGE.REMEMBER_ME")}
               </Typography> 
-            </Box>*/}
+            </Box>}
 
             <Box marginTop="2rem" textAlign="center">
               <Button
