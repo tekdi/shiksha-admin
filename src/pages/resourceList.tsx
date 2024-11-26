@@ -27,7 +27,7 @@ const ResourceList = () => {
         (item: any) => item.type === ResourceType.POSTREQUISITE
       );
       const facilitatorsReqs = fetchedLearningResources.filter(
-        (item: any) => !item.type
+        (item: any) => item.type === ResourceType.FACILITATOR_REQUISITE
       );
 
       setLearnersPreReq(preReqs);
