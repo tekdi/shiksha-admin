@@ -86,6 +86,15 @@ const SubjectDetails = () => {
   const setTaxonomySubject = taxonomyStore((state) => state.setTaxonomySubject);
 
   useEffect(() => {
+    const savedMedium = localStorage.getItem("selectedMedium") || "";
+    const savedGrade = localStorage.getItem("selectedGrade") || "";
+    const savedType = localStorage.getItem("selectedType") || "";
+    setSelectedmedium(savedMedium);
+    setSelectedgrade(savedGrade);
+    // setSelectedtype(savedType);
+  }, []);
+
+  useEffect(() => {
     const subjects = localStorage.getItem("overallCommonSubjects");
 
     if (subjects) {
@@ -163,16 +172,6 @@ const SubjectDetails = () => {
 
     fetchFrameworkDetails();
   }, [boardName]);
-
-  useEffect(() => {
-    const savedMedium = localStorage.getItem("selectedMedium") || "";
-    const savedGrade = localStorage.getItem("selectedGrade") || "";
-    const savedType = localStorage.getItem("selectedType") || "";
-
-    setSelectedmedium(savedMedium);
-    setSelectedgrade(savedGrade);
-    setSelectedtype(savedType);
-  }, []);
 
   const fetchAndSetGradeData = (medium: any) => {
     const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");

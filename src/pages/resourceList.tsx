@@ -20,22 +20,23 @@ const ResourceList = () => {
   useEffect(() => {
     const fetchData = async () => {
       const resources = tstore.resources;
-      const fetchedLearningResources = resources.learningResources || [];
+      const fetchedLearningResources = resources?.learningResources || [];
 
-      
-      if  (fetchedLearningResources?.length) {
-        let contents = await fetchBulkContents(fetchedLearningResources.map((item: any) => item.id));
+      if (fetchedLearningResources?.length) {
+        let contents = await fetchBulkContents(
+          fetchedLearningResources?.map((item: any) => item.id)
+        );
 
         contents = contents.map((item: any) => {
-          const contentType = fetchedLearningResources.find(
+          const contentType = fetchedLearningResources?.find(
             (resource: any) => resource.id === item.identifier
-          ).type;
+          )?.type;
 
           return {
             ...item,
-            type: contentType
-          }
-        })
+            type: contentType,
+          };
+        });
         console.log("contents", contents);
 
         const preRequisite = contents.filter(
@@ -45,13 +46,13 @@ const ResourceList = () => {
           (item: any) => item.type === ResourceType.LEARNER_POST_REQUISITE
         );
         const facilitatorsRequisite = contents.filter(
-        (item: any) => item.type === ResourceType.FACILITATOR_REQUISITE
-      );
-      
-      setLearnersPreReq(preRequisite);
-      setLearnersPostReq(postRequisite);
-      setFacilitatorsPreReq(facilitatorsRequisite);
-    }
+          (item: any) => item.type === ResourceType.FACILITATOR_REQUISITE
+        );
+
+        setLearnersPreReq(preRequisite);
+        setLearnersPostReq(postRequisite);
+        setFacilitatorsPreReq(facilitatorsRequisite);
+      }
     };
 
     fetchData();
