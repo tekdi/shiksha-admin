@@ -82,6 +82,9 @@ const StateDetails = () => {
 
   const handleBoardClick = (board: string, boardName: string) => {
     setBoard(boardName);
+    localStorage.removeItem("selectedGrade");
+    localStorage.removeItem("selectedMedium");
+    localStorage.removeItem("selectedType");
     router.push({
       pathname: "/subjectDetails",
       query: { boardDetails: board, boardName: boardName },
