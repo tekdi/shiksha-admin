@@ -7,6 +7,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ResourceType } from "@/utils/app.constant";
 import { useTranslation } from "next-i18next";
 import router from "next/router";
+import { fetchBulkContents } from "@/services/PlayerService";
 
 const ResourceList = () => {
   const [learnersPreReq, setLearnersPreReq] = useState<any[]>([]);
@@ -20,19 +21,37 @@ const ResourceList = () => {
     const fetchData = async () => {
       const resources = tstore.resources;
       const fetchedLearningResources = resources.learningResources || [];
-      const preReqs = fetchedLearningResources.filter(
-        (item: any) => item.type === ResourceType.PREREQUISITE
-      );
-      const postReqs = fetchedLearningResources.filter(
-        (item: any) => item.type === ResourceType.POSTREQUISITE
-      );
-      const facilitatorsReqs = fetchedLearningResources.filter(
-        (item: any) => !item.type
-      );
 
-      setLearnersPreReq(preReqs);
-      setLearnersPostReq(postReqs);
-      setFacilitatorsPreReq(facilitatorsReqs);
+      
+      if  (fetchedLearningResources?.length) {
+        let contents = await fetchBulkContents(fetchedLearningResources.map((item: any) => item.id));
+
+        contents = contents.map((item: any) => {
+          const contentType = fetchedLearningResources.find(
+            (resource: any) => resource.id === item.identifier
+          ).type;
+
+          return {
+            ...item,
+            type: contentType
+          }
+        })
+        console.log("contents", contents);
+
+        const preRequisite = contents.filter(
+          (item: any) => item.type === ResourceType.LEARNER_PRE_REQUISITE
+        );
+        const postRequisite = contents.filter(
+          (item: any) => item.type === ResourceType.LEARNER_POST_REQUISITE
+        );
+        const facilitatorsRequisite = contents.filter(
+        (item: any) => item.type === ResourceType.FACILITATOR_REQUISITE
+      );
+      
+      setLearnersPreReq(preRequisite);
+      setLearnersPostReq(postRequisite);
+      setFacilitatorsPreReq(facilitatorsRequisite);
+    }
     };
 
     fetchData();
@@ -68,9 +87,10 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app}
-                  resource={item.type}
-                  identifier={item.id}
+                  // type={item.app}
+                  // resource={item.type}
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}
@@ -90,9 +110,10 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app}
-                  resource={item.type}
-                  identifier={item.id}
+                  // type={item.app}
+                  // resource={item.type}
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}
@@ -112,9 +133,10 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app || "Facilitator"}
-                  resource="Facilitator Requisite"
-                  identifier={item.id}
+                  // type={item.app || "Facilitator"}
+                  // resource="Facilitator Requisite"
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}

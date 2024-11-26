@@ -168,7 +168,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     if (selectedBlockCohortId) {
       const parentId = selectedBlockCohortId;
       const cohortDetails: CohortDetails = {
-        name: formData.name,
+        name: (formData.name).toLowerCase(),
         type: CohortTypes.COHORT,
         parentId: parentId,
         customFields: [
@@ -258,6 +258,8 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     } else {
       showToastMessage(t("CENTER.NOT_ABLE_CREATE_CENTER"), "error");
     }
+    onClose();
+
   };
 
   const handleChangeForm = (event: IChangeEvent<any>) => {

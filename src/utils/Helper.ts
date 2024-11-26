@@ -353,7 +353,7 @@ export const filterAndMapAssociations = (
   }
 
   return options
-    .filter((option) => {
+    ?.filter((option) => {
       const optionCode = option[codeKey];
 
       return associationsList.some(
