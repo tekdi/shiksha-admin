@@ -31,6 +31,7 @@ import {
 } from "@/utils/Helper";
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
+import theme from "@/components/theme/theme";
 
 // Define Card interface
 interface Card {
@@ -261,6 +262,88 @@ const SubjectDetails = () => {
     setType(commonType3Data);
   };
 
+  const fetchAndSetSubData = (type: any) => {
+    const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
+    setTypeAssociations(typeAssociations);
+    const subject = getOptionsByCategory(store?.framedata, "subject");
+
+    console.log(subject);
+
+    const commonTypeInState = filterAndMapAssociations(
+      "subject",
+      subject,
+      store?.stateassociations,
+      "code"
+    );
+    const commonTypeInBoard = filterAndMapAssociations(
+      "subject",
+      type,
+      boardAssociations,
+      "code"
+    );
+    const commonTypeInMedium = filterAndMapAssociations(
+      "subject",
+      subject,
+      mediumAssociations,
+      "code"
+    );
+    const commonTypeInGrade = filterAndMapAssociations(
+      "subject",
+      subject,
+      gradeAssociations,
+      "code"
+    );
+    const commonTypeInType = filterAndMapAssociations(
+      "subject",
+      subject,
+      typeAssociations,
+      "code"
+    );
+
+    const findCommonAssociations = (array1: any[], array2: any[]) => {
+      return array1.filter((item1: { code: any }) =>
+        array2.some((item2: { code: any }) => item1.code === item2.code)
+      );
+    };
+
+    const findOverallCommonSubjects = (arrays: any[]) => {
+      const nonEmptyArrays = arrays.filter(
+        (array: string | any[]) => array && array.length > 0
+      );
+
+      if (nonEmptyArrays.length === 0) return [];
+
+      let commonSubjects = nonEmptyArrays[0];
+
+      for (let i = 1; i < nonEmptyArrays.length; i++) {
+        commonSubjects = findCommonAssociations(
+          commonSubjects,
+          nonEmptyArrays[i]
+        );
+
+        if (commonSubjects.length === 0) return [];
+      }
+
+      return commonSubjects;
+    };
+
+    const arrays = [
+      commonTypeInState,
+      commonTypeInBoard,
+      commonTypeInMedium,
+      commonTypeInGrade,
+      commonTypeInType,
+    ];
+
+    const overallCommonSubjects = findOverallCommonSubjects(arrays);
+
+    setSubject(overallCommonSubjects);
+    localStorage.setItem(
+      "overallCommonSubjects",
+      JSON.stringify(overallCommonSubjects)
+    );
+  };
+
   useEffect(() => {
     if (selectedmedium) {
       fetchAndSetGradeData(selectedmedium);
@@ -273,17 +356,20 @@ const SubjectDetails = () => {
     }
   }, [selectedgrade]);
 
-  // useEffect(() => {
-  //   if (selectedtype) {
-  //     fetchAndSetSubData(selectedtype);
-  //   }
-  // }, [selectedtype]);
+  useEffect(() => {
+    if (selectedtype) {
+      fetchAndSetSubData(selectedtype);
+    }
+  }, [selectedtype]);
 
   if (loading) {
     return <Loader showBackdrop={true} loadingText="Loading..." />;
   }
 
   const handleBackClick = () => {
+    localStorage.removeItem("selectedGrade");
+    localStorage.removeItem("selectedMedium");
+    localStorage.removeItem("selectedType");
     router.back();
   };
 
@@ -301,9 +387,9 @@ const SubjectDetails = () => {
     const medium = event.target.value;
     setSelectedmedium(medium);
     setTaxonomyMedium(medium);
-    setSelectedgrade([null]);
-    setSelectedtype([null]);
-    setSubject([null]);
+    // setSelectedgrade([null]);
+    // setSelectedtype([null]);
+    // setSubject([null]);
 
     const windowUrl = window.location.pathname;
     const cleanedUrl = windowUrl.replace(/^\//, "");
@@ -357,87 +443,6 @@ const SubjectDetails = () => {
     setTaxonomyType(type);
     setSelectedtype(type);
 
-    if (type) {
-      const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
-      setTypeAssociations(typeAssociations);
-      const subject = getOptionsByCategory(store?.framedata, "subject");
-
-      console.log(subject);
-
-      const commonTypeInState = filterAndMapAssociations(
-        "subject",
-        subject,
-        store?.stateassociations,
-        "code"
-      );
-      const commonTypeInBoard = filterAndMapAssociations(
-        "subject",
-        type,
-        boardAssociations,
-        "code"
-      );
-      const commonTypeInMedium = filterAndMapAssociations(
-        "subject",
-        subject,
-        mediumAssociations,
-        "code"
-      );
-      const commonTypeInGrade = filterAndMapAssociations(
-        "subject",
-        subject,
-        gradeAssociations,
-        "code"
-      );
-      const commonTypeInType = filterAndMapAssociations(
-        "subject",
-        subject,
-        typeAssociations,
-        "code"
-      );
-
-      const findCommonAssociations = (array1: any[], array2: any[]) => {
-        return array1.filter((item1: { code: any }) =>
-          array2.some((item2: { code: any }) => item1.code === item2.code)
-        );
-      };
-
-      const findOverallCommonSubjects = (arrays: any[]) => {
-        const nonEmptyArrays = arrays.filter(
-          (array: string | any[]) => array && array.length > 0
-        );
-
-        if (nonEmptyArrays.length === 0) return [];
-
-        let commonSubjects = nonEmptyArrays[0];
-
-        for (let i = 1; i < nonEmptyArrays.length; i++) {
-          commonSubjects = findCommonAssociations(
-            commonSubjects,
-            nonEmptyArrays[i]
-          );
-
-          if (commonSubjects.length === 0) return [];
-        }
-
-        return commonSubjects;
-      };
-
-      const arrays = [
-        commonTypeInState,
-        commonTypeInBoard,
-        commonTypeInMedium,
-        commonTypeInGrade,
-        commonTypeInType,
-      ];
-
-      const overallCommonSubjects = findOverallCommonSubjects(arrays);
-
-      setSubject(overallCommonSubjects);
-      localStorage.setItem(
-        "overallCommonSubjects",
-        JSON.stringify(overallCommonSubjects)
-      );
-    }
     const windowUrl = window.location.pathname;
     const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
@@ -456,6 +461,13 @@ const SubjectDetails = () => {
       },
     };
     telemetryFactory.interact(telemetryInteract);
+  };
+
+  const handleReset = () => {
+    setSelectedmedium("");
+    setSelectedgrade("");
+    setSelectedtype("");
+    setSubject("");
   };
 
   return (
@@ -553,6 +565,24 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
+        </Box>
+        <Box>
+          <Button
+            onClick={handleReset}
+            sx={{
+              height: 40,
+              width: "80px",
+              backgroundColor: "#4D4639",
+              color: "#FFFFFF",
+              borderRadius: "8px",
+              marginLeft: "16px",
+              "&:hover": {
+                backgroundColor: "black",
+              },
+            }}
+          >
+            Reset
+          </Button>
         </Box>
       </Box>
 
