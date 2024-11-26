@@ -118,7 +118,7 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
 }
 
 .table-ka-container .ka-table-wrapper {
-  max-height: calc(100vh - 390px) !important;
+  /* max-height: calc(100vh - 390px) !important; */
   min-height: 100% !important;
 }
 
