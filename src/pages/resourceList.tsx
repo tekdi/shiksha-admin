@@ -24,9 +24,7 @@ const ResourceList = () => {
       const fetchedLearningResources = resources?.learningResources || [];
       if (fetchedLearningResources?.length) {
         fetchedLearningResources.forEach((resource: { id: string }) => {
-          if (resource.id.charAt(0) === "D") {
-            resource.id = "d" + resource.id.slice(1);
-          }
+          resource.id = resource.id.toLowerCase();
         });
 
         console.log(fetchedLearningResources);
