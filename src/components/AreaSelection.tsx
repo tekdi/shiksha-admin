@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
 import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
 import { useMediaQuery } from "@mui/material";
-import { Role } from "@/utils/app.constant";
+import { FormContextType, Role } from "@/utils/app.constant";
 
 interface State {
   value: string;
@@ -78,7 +78,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   isMediumScreen,
   isCenterSelection = false,
   inModal = false,
-  handleCenterChangeWrapper = () => {},
+  handleCenterChangeWrapper = () => { },
   stateDefaultValue,
   blockDefaultValue,
   districtDefaultValue,
@@ -117,15 +117,15 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
           },
         }}
       >
-        {userType && !reAssignModal && (
+        {userType && !reAssignModal && inModal === false && (
           <Box>
             <Typography marginTop="20px" variant="h1">
-              {userType}
+              {userType === Role.CONTENT_CREATOR ? t("SIDEBAR.SCTA") : userType}
             </Typography>
           </Box>
         )}
 
-        <Box
+        {(<Box
           sx={{
             width: inModal ? "100%" : "62%",
             "@media (max-width: 900px)": {
@@ -156,6 +156,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                 defaultValue={stateDefaultValue}
               />
             </Grid>
+
             <Grid
               item
               xs={12}
@@ -191,7 +192,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
               md={inModal ? 12 : 4}
               lg={inModal ? 12 : isCenterSelection ? 3 : 4}
             >
-              {shouldRenderSelectCheckmarks &&(
+              {shouldRenderSelectCheckmarks && (
                 <MultipleSelectCheckmarks
                   names={capitalizeFirstLetterOfEachWordInArray(
                     blocks?.length > 0 ? blocks.map((block) => block.label) : []
@@ -199,7 +200,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
 
                   )}
                   codes={
-                    
+
                     blocks?.length > 0 ? blocks?.map((block) => block.value) : []
                     // blocks?.map((block) => block.value)
                   }
@@ -222,6 +223,8 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                 />
               )}
             </Grid>
+
+
             {isCenterSelection && (
               <Grid
                 item
@@ -252,8 +255,9 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                 />
               </Grid>
             )}
+
           </Grid>
-        </Box>
+        </Box>)}
       </Box>
     </Box>
   );

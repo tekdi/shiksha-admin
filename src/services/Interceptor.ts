@@ -1,5 +1,6 @@
 import axios from "axios";
 import { refresh } from "./LoginService";
+import { TENANT_ID } from "../../app.config";
 
 const instance = axios.create();
 
@@ -26,13 +27,17 @@ instance.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined" && window.localStorage) {
       const token = localStorage.getItem("token");
-      if (token) {
+      if (token && config.url && !config.url.endsWith("user/v1/auth/login")) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+      const academicYearId = localStorage.getItem('academicYearId')
+      if (academicYearId) {
+        config.headers.academicyearid = academicYearId;
       }
     }
     // config.headers.tenantid = '4783a636-1191-487a-8b09-55eca51b5036';
     // config.headers.tenantid = 'fbe108db-e236-48a7-8230-80d34c370800';
-    config.headers.tenantid = "ef99949b-7f3a-4a5f-806a-e67e683e38f3";
+    config.headers.tenantid = TENANT_ID;
     return config;
   },
   (error) => {

@@ -9,6 +9,9 @@ import {
   IconButton,
   MenuItem,
   Select,
+  Divider,
+  Tooltip,
+  Grid,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -27,6 +30,9 @@ import {
   getAssociationsByCodeNew,
   getOptionsByCategory,
 } from "@/utils/Helper";
+import { TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
+import theme from "@/components/theme/theme";
 
 // Define Card interface
 interface Card {
@@ -81,8 +87,17 @@ const SubjectDetails = () => {
   const setTaxonomySubject = taxonomyStore((state) => state.setTaxonomySubject);
 
   useEffect(() => {
-    const subjects = localStorage.getItem('overallCommonSubjects');
-  
+    const savedMedium = localStorage.getItem("selectedMedium") || "";
+    const savedGrade = localStorage.getItem("selectedGrade") || "";
+    const savedType = localStorage.getItem("selectedType") || "";
+    setSelectedmedium(savedMedium);
+    setSelectedgrade(savedGrade);
+    // setSelectedtype(savedType);
+  }, []);
+
+  useEffect(() => {
+    const subjects = localStorage.getItem("overallCommonSubjects");
+
     if (subjects) {
       try {
         const parsedData = JSON.parse(subjects);
@@ -95,8 +110,6 @@ const SubjectDetails = () => {
       setSubject([]);
     }
   }, []);
-  
-  
 
   useEffect(() => {
     const fetchFrameworkDetails = async () => {
@@ -161,208 +174,300 @@ const SubjectDetails = () => {
     fetchFrameworkDetails();
   }, [boardName]);
 
+  const fetchAndSetGradeData = (medium: any) => {
+    const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
+    const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
+    setMediumAssociations(mediumAssociations);
+
+    console.log(getGrades);
+
+    const commonGradeInState = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      store?.stateassociations,
+      "code"
+    );
+    const commonGradeInBoard = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      boardAssociations,
+      "code"
+    );
+    const commonGradeInMedium = filterAndMapAssociations(
+      "gradeLevel",
+      getGrades,
+      mediumAssociations,
+      "code"
+    );
+
+    const commonGradeInStateBoard = findCommonAssociations(
+      commonGradeInState,
+      commonGradeInBoard
+    );
+    const overAllCommonGrade = findCommonAssociations(
+      commonGradeInStateBoard,
+      commonGradeInMedium
+    );
+
+    setGrade(overAllCommonGrade);
+    setGradeOptions(overAllCommonGrade);
+  };
+
+  const fetchAndSetTypeData = (grade: any) => {
+    const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
+    setGradeAssociations(gradeAssociations);
+    const type = getOptionsByCategory(store?.framedata, "courseType");
+    console.log(type);
+
+    const commonTypeInState = filterAndMapAssociations(
+      "courseType",
+      type,
+      store?.stateassociations,
+      "code"
+    );
+    const commonTypeInBoard = filterAndMapAssociations(
+      "courseType",
+      type,
+      boardAssociations,
+      "code"
+    );
+    const commonTypeInMedium = filterAndMapAssociations(
+      "courseType",
+      type,
+      mediumAssociations,
+      "code"
+    );
+    const commonTypeInGrade = filterAndMapAssociations(
+      "courseType",
+      type,
+      gradeAssociations,
+      "code"
+    );
+
+    const commonTypeData = findCommonAssociations(
+      commonTypeInState,
+      commonTypeInBoard
+    );
+    const commonType2Data = findCommonAssociations(
+      commonTypeInMedium,
+      commonTypeInGrade
+    );
+    const commonType3Data = findCommonAssociations(
+      commonTypeData,
+      commonType2Data
+    );
+
+    console.log(`commonTypeOverall`, commonType3Data);
+    setTypeOptions(commonType3Data);
+    setType(commonType3Data);
+  };
+
+  const fetchAndSetSubData = (type: any) => {
+    const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
+    setTypeAssociations(typeAssociations);
+    const subject = getOptionsByCategory(store?.framedata, "subject");
+
+    console.log(subject);
+
+    const commonTypeInState = filterAndMapAssociations(
+      "subject",
+      subject,
+      store?.stateassociations,
+      "code"
+    );
+    const commonTypeInBoard = filterAndMapAssociations(
+      "subject",
+      type,
+      boardAssociations,
+      "code"
+    );
+    const commonTypeInMedium = filterAndMapAssociations(
+      "subject",
+      subject,
+      mediumAssociations,
+      "code"
+    );
+    const commonTypeInGrade = filterAndMapAssociations(
+      "subject",
+      subject,
+      gradeAssociations,
+      "code"
+    );
+    const commonTypeInType = filterAndMapAssociations(
+      "subject",
+      subject,
+      typeAssociations,
+      "code"
+    );
+
+    const findCommonAssociations = (array1: any[], array2: any[]) => {
+      return array1.filter((item1: { code: any }) =>
+        array2.some((item2: { code: any }) => item1.code === item2.code)
+      );
+    };
+
+    const findOverallCommonSubjects = (arrays: any[]) => {
+      const nonEmptyArrays = arrays.filter(
+        (array: string | any[]) => array && array.length > 0
+      );
+
+      if (nonEmptyArrays.length === 0) return [];
+
+      let commonSubjects = nonEmptyArrays[0];
+
+      for (let i = 1; i < nonEmptyArrays.length; i++) {
+        commonSubjects = findCommonAssociations(
+          commonSubjects,
+          nonEmptyArrays[i]
+        );
+
+        if (commonSubjects.length === 0) return [];
+      }
+
+      return commonSubjects;
+    };
+
+    const arrays = [
+      commonTypeInState,
+      commonTypeInBoard,
+      commonTypeInMedium,
+      commonTypeInGrade,
+      commonTypeInType,
+    ];
+
+    const overallCommonSubjects = findOverallCommonSubjects(arrays);
+
+    setSubject(overallCommonSubjects);
+    localStorage.setItem(
+      "overallCommonSubjects",
+      JSON.stringify(overallCommonSubjects)
+    );
+  };
+
+  useEffect(() => {
+    if (selectedmedium) {
+      fetchAndSetGradeData(selectedmedium);
+    }
+  }, [selectedmedium]);
+
+  useEffect(() => {
+    if (selectedgrade) {
+      fetchAndSetTypeData(selectedgrade);
+    }
+  }, [selectedgrade]);
+
+  useEffect(() => {
+    if (selectedtype) {
+      fetchAndSetSubData(selectedtype);
+    }
+  }, [selectedtype]);
+
   if (loading) {
     return <Loader showBackdrop={true} loadingText="Loading..." />;
   }
 
   const handleBackClick = () => {
+    localStorage.removeItem("selectedGrade");
+    localStorage.removeItem("selectedMedium");
+    localStorage.removeItem("selectedType");
     router.back();
   };
 
   const handleCopyLink = (subject: any) => {};
 
   const handleCardClick = (subject: any) => {
-    setTaxonomySubject(subject?.name)
+    setTaxonomySubject(subject?.name);
     router.push(`/importCsv?subject=${encodeURIComponent(subject?.name)}`);
 
     setTaxanomySubject(subject?.name);
   };
 
   const handleMediumChange = (event: any) => {
+    localStorage.setItem("selectedMedium", event.target.value);
     const medium = event.target.value;
     setSelectedmedium(medium);
     setTaxonomyMedium(medium);
-    setSelectedgrade([null]);
-    setSelectedtype([null]);
-    setSubject([null]);
+    // setSelectedgrade([null]);
+    // setSelectedtype([null]);
+    // setSubject([null]);
 
-    if (medium) {
-      const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
-      const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
-      setMediumAssociations(mediumAssociations);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-      console.log(getGrades);
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "change-medium",
 
-      const commonGradeInState = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        store?.stateassociations,
-        "code"
-      );
-      const commonGradeInBoard = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        boardAssociations,
-        "code"
-      );
-      const commonGradeInMedium = filterAndMapAssociations(
-        "gradeLevel",
-        getGrades,
-        mediumAssociations,
-        "code"
-      );
-
-      const commonGradeInStateBoard = findCommonAssociations(
-        commonGradeInState,
-        commonGradeInBoard
-      );
-      const overAllCommonGrade = findCommonAssociations(
-        commonGradeInStateBoard,
-        commonGradeInMedium
-      );
-
-      setGrade(overAllCommonGrade);
-      setGradeOptions(overAllCommonGrade);
-    }
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleGradeChange = (event: any) => {
+    localStorage.setItem("selectedGrade", event.target.value);
     const grade = event.target.value;
     setTaxonomyGrade(grade);
     setSelectedgrade(grade);
-    if (grade) {
-      const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
-      setGradeAssociations(gradeAssociations);
-      const type = getOptionsByCategory(store?.framedata, "courseType");
-      console.log(type);
 
-      const commonTypeInState = filterAndMapAssociations(
-        "courseType",
-        type,
-        store?.stateassociations,
-        "code"
-      );
-      const commonTypeInBoard = filterAndMapAssociations(
-        "courseType",
-        type,
-        boardAssociations,
-        "code"
-      );
-      const commonTypeInMedium = filterAndMapAssociations(
-        "courseType",
-        type,
-        mediumAssociations,
-        "code"
-      );
-      const commonTypeInGrade = filterAndMapAssociations(
-        "courseType",
-        type,
-        gradeAssociations,
-        "code"
-      );
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-      const commonTypeData = findCommonAssociations(
-        commonTypeInState,
-        commonTypeInBoard
-      );
-      const commonType2Data = findCommonAssociations(
-        commonTypeInMedium,
-        commonTypeInGrade
-      );
-      const commonType3Data = findCommonAssociations(
-        commonTypeData,
-        commonType2Data
-      );
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "grade_change",
 
-      console.log(`commonTypeOverall`, commonType3Data);
-      setTypeOptions(commonType3Data);
-      setType(commonType3Data);
-    }
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleTypeChange = (event: any) => {
+    localStorage.setItem("selectedType", event.target.value);
     const type = event.target.value;
     setTaxonomyType(type);
     setSelectedtype(type);
 
-    if (type) {
-      const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
-      setTypeAssociations(typeAssociations);
-      const subject = getOptionsByCategory(store?.framedata, "subject");
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, "");
+    const env = cleanedUrl.split("/")[0];
 
-      console.log(subject);
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: "change_type",
 
-      const commonTypeInState = filterAndMapAssociations(
-        "subject",
-        subject,
-        store?.stateassociations,
-        "code"
-      );
-      const commonTypeInBoard = filterAndMapAssociations(
-        "subject",
-        type,
-        boardAssociations,
-        "code"
-      );
-      const commonTypeInMedium = filterAndMapAssociations(
-        "subject",
-        subject,
-        mediumAssociations,
-        "code"
-      );
-      const commonTypeInGrade = filterAndMapAssociations(
-        "subject",
-        subject,
-        gradeAssociations,
-        "code"
-      );
-      const commonTypeInType = filterAndMapAssociations(
-        "subject",
-        subject,
-        typeAssociations,
-        "code"
-      );
+        type: TelemetryEventType.CLICK,
+        subtype: "",
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+  };
 
-      const findCommonAssociations = (array1: any[], array2: any[]) => {
-        return array1.filter((item1: { code: any }) =>
-          array2.some((item2: { code: any }) => item1.code === item2.code)
-        );
-      };
-
-      const findOverallCommonSubjects = (arrays: any[]) => {
-        const nonEmptyArrays = arrays.filter(
-          (array: string | any[]) => array && array.length > 0
-        );
-
-        if (nonEmptyArrays.length === 0) return [];
-
-        let commonSubjects = nonEmptyArrays[0];
-
-        for (let i = 1; i < nonEmptyArrays.length; i++) {
-          commonSubjects = findCommonAssociations(
-            commonSubjects,
-            nonEmptyArrays[i]
-          );
-
-          if (commonSubjects.length === 0) return [];
-        }
-
-        return commonSubjects;
-      };
-
-      const arrays = [
-        commonTypeInState,
-        commonTypeInBoard,
-        commonTypeInMedium,
-        commonTypeInGrade,
-        commonTypeInType,
-      ];
-
-      const overallCommonSubjects = findOverallCommonSubjects(arrays);
-      
-      setSubject(overallCommonSubjects);
-      localStorage.setItem("overallCommonSubjects", JSON.stringify(overallCommonSubjects))
-    }
+  const handleReset = () => {
+    setSelectedmedium("");
+    setSelectedgrade("");
+    setSelectedtype("");
+    setSubject("");
   };
 
   return (
@@ -421,7 +526,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography >Select Grade</Typography>
+              <Typography>Select Grade</Typography>
             </MenuItem>
             {grade.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -461,13 +566,31 @@ const SubjectDetails = () => {
             ))}
           </Select>
         </Box>
+        <Box>
+          <Button
+            onClick={handleReset}
+            sx={{
+              height: 40,
+              width: "80px",
+              backgroundColor: "#4D4639",
+              color: "#FFFFFF",
+              borderRadius: "8px",
+              marginLeft: "16px",
+              "&:hover": {
+                backgroundColor: "black",
+              },
+            }}
+          >
+            Reset
+          </Button>
+        </Box>
       </Box>
 
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: "16px",
+
           marginTop: "16px",
           marginBottom: "16px",
         }}
@@ -476,77 +599,54 @@ const SubjectDetails = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">{boardName}</Typography>
-
+        <Typography variant="h2" sx={{ ml: 1 }}>
+          Board
+        </Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
+      <Divider />
+
       <Box sx={{ marginTop: "16px" }}>
-        {subject && subject.length > 1 ? (
-          subject.map((subj: any, index: any) => (
-            <MuiCard
-              key={index}
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr 1fr",
-                padding: "14px",
-                cursor: "pointer",
-                border: "1px solid #0000001A",
-                boxShadow: "none",
-                transition: "background-color 0.3s",
-                "&:hover": {
-                  backgroundColor: "#EAF2FF",
-                },
-                marginTop: "8px",
-              }}
-              onClick={() => handleCardClick(subj)}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
-              >
-                <FolderOutlinedIcon />
-                <Typography variant="h6">{subj?.name}</Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                }}
-              >
-                <CircularProgress
-                  variant="determinate"
+        <Grid container spacing={2}>
+          {subject && subject.length > 1 ? (
+            subject.map((subj: any, index: number) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Box
+                  onClick={() => handleCardClick(subj)}
                   sx={{
-                    color: "#06A816",
-                    "& .MuiCircularProgress-circle": {
-                      strokeLinecap: "round",
-                      stroke: "#06A816",
+                    padding: "14px",
+                    cursor: "pointer",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                    borderRadius: "8px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "#EAF2FF",
+                      transform: "scale(1.02)",
                     },
+                    marginTop: "12px",
                   }}
-                />
-                <Typography sx={{ fontSize: "14px" }}>
-                  {/* {subj.uploaded} / {subj.total} {"topics uploaded"} */}
-                </Typography>
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                  onClick={(e: MouseEvent<HTMLButtonElement>) => {
-                    e.stopPropagation();
-                    handleCopyLink(subj);
-                  }}
-                  sx={{ minWidth: "auto", padding: 0 }}
                 >
-                </Button>
-              </Box>
-            </MuiCard>
-          ))
-        ) : (
-          <Typography variant="h2" align="center" sx={{ marginTop: "16px" }}>
-            Select Medium, Grade and Type
-          </Typography>
-        )}
+                  <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
+                    <Typography variant="h6" noWrap>
+                      {subj?.name || "Untitled Subject"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            ))
+          ) : (
+            <Typography
+              variant="h4"
+              align="center"
+              sx={{ marginTop: "24px", color: "#6B7280" }}
+            >
+              Select Medium, Grade, and Type
+            </Typography>
+          )}
+        </Grid>
+
       </Box>
     </Box>
   );

@@ -1,7 +1,7 @@
 import DeleteUserModal from "@/components/DeleteUserModal";
 import HeaderComponent from "@/components/HeaderComponent";
 import PageSizeSelector from "@/components/PageSelector";
-import { FormContextType, SORT, Status } from "@/utils/app.constant";
+import { FormContextType, SORT, Status, TelemetryEventType } from "@/utils/app.constant";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Box from "@mui/material/Box";
@@ -23,7 +23,7 @@ import { Role, apiCatchingDuration } from "@/utils/app.constant";
 import { getFormRead } from "@/services/CreateUserService";
 import { showToastMessage } from "./Toastify";
 import { capitalizeFirstLetterOfEachWordInArray , firstLetterInUpperCase} from "../utils/Helper";
-import { getUserTableColumns, getTLTableColumns } from "@/data/tableColumns";
+import { getUserTableColumns, getTLTableColumns, getContentCreatorTableColumns } from "@/data/tableColumns";
 import { TablePagination, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/system";
 import CommonUserModal from "./CommonUserModal";
@@ -33,6 +33,8 @@ import { getCenterList, getStateBlockDistrictList } from "@/services/MasterDataS
 import { updateCohortMemberStatus } from "@/services/CohortService/cohortService";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { useRouter } from "next/router";
+import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
 type UserDetails = {
   userId: any;
   username: any;
@@ -98,6 +100,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [blockMembershipIdList, setBlockMembershipIdList] = React.useState<string[]>([]);
   const [centerMembershipIdList, setCenterMembershipIdList] = React.useState<string[]>([]);
   const router = useRouter();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
@@ -117,8 +121,12 @@ const UserTable: React.FC<UserTableProps> = ({
   const setSelectedCenterStore = useSubmittedButtonStore(
     (state: any) => state.setSelectedCenterStore
   );
-
-
+  const isArchived = useSubmittedButtonStore(
+        (state: any) => state.isArchived
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
 
  
   const [selectedStateCode, setSelectedStateCode] = useState("");
@@ -179,6 +187,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
   const [openAddLearnerModal, setOpenAddLearnerModal] = React.useState(false);
   const [userId, setUserId] = useState();
+
   const [submitValue, setSubmitValue] = useState<boolean>(false);
   console.log(selectedBlockCode)
   const reassignButtonStatus = useSubmittedButtonStore(
@@ -198,6 +207,12 @@ const UserTable: React.FC<UserTableProps> = ({
   });
   const { data:teamLeaderFormData ,isLoading: teamLeaderFormDataLoading, error :teamLeaderFormDataErrror } = useQuery<any[]>({
     queryKey: ["teamLeaderFormData"],  
+    queryFn: () => Promise.resolve([]), 
+    staleTime: apiCatchingDuration.GETREADFORM,
+    enabled: false, 
+  });
+  const { data:contentCreatorFormData ,isLoading: contentCreatorFormDataFormDataLoading, error :contentCreatorFormDataErrror } = useQuery<any[]>({
+    queryKey: ["contentCreatorFormData"],  
     queryFn: () => Promise.resolve([]), 
     staleTime: apiCatchingDuration.GETREADFORM,
     enabled: false, 
@@ -251,6 +266,25 @@ const UserTable: React.FC<UserTableProps> = ({
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const PagesSelector = () => (
@@ -337,20 +371,47 @@ const UserTable: React.FC<UserTableProps> = ({
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false);
+
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true);
+
     } else {
+      setIsArchived(false);
+
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
           ...restFilters,
         };
+
       });
     }
     console.log(filters);
+
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
@@ -602,6 +663,26 @@ console.log(code[0])
     }
 
     setSelectedSort(event.target?.value as string);
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
   const mapFields = (formFields: any, response: any) => {
     let initialFormData: any = {};
@@ -620,9 +701,9 @@ console.log(code[0])
           if (data[item.name] && item?.maxSelections > 1) {
             return [field?.value];
           } else if (item?.type === "checkbox") {
-            return String(field?.value).split(",");
+            return String(field?.code).split(",");
           } else {
-            return field?.value?.toLowerCase();
+            return field?.code?.toLowerCase();
           }
         } else {
           if (item?.type === "numeric") {
@@ -675,6 +756,7 @@ console.log(code[0])
   const handleEdit = async (rowData: any) => {
    
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
+    setUserName(rowData?.name)
 
     console.log("Edit row:", rowData);
 
@@ -699,6 +781,11 @@ console.log(code[0])
         formFields = await getFormRead("USERS", "TEAM LEADER");
         setFormData(mapFields(teamLeaderFormData, response));
         // handleOpenAddTeamLeaderModal();
+      }
+      else if(Role.CONTENT_CREATOR === role)
+      {
+        formFields = await getFormRead("USERS", Role.CONTENT_CREATOR);
+        setFormData(mapFields(contentCreatorFormData, response));
       }
       handleOpenAddLearnerModal();
 
@@ -736,6 +823,8 @@ console.log(code[0])
    // setIsDeleteModalOpen(true);
    console.log(rowData)
     setSelectedUserId(rowData?.userId );
+    setUserName(rowData?.name)
+
     setCohortId(rowData?.cohortIds);
     setBlock(rowData?.blocks)
     console.log(rowData?.districtValue)
@@ -834,8 +923,11 @@ console.log(code[0])
           resp = await userList({ limit, filters, sort, offset, fields });
 
         }
-        console.log(resp?.getUserDetails);
-        const result = enableCenterFilter?resp?.userDetails:resp?.getUserDetails;
+        if (!resp?.getUserDetails) {
+          setData([]);
+          //showToastMessage("No data found", "info");
+        }       
+         const result = enableCenterFilter?resp?.userDetails:resp?.getUserDetails;
         console.log(result)
          console.log(resp?.totalCount)
         if (resp?.totalCount >= 15) {
@@ -966,7 +1058,7 @@ console.log(code[0])
       }
         console.log(finalResult)
 
-        if (filters?.name) {
+        if (filters?.name && resp?.getUserDetails) {
           const prioritizedResult = finalResult.sort((a: any, b: any) => {
             const aStartsWith = a.name.toLowerCase().startsWith(filters?.name);
             const bStartsWith = b.name.toLowerCase().startsWith(filters?.name);
@@ -977,8 +1069,13 @@ console.log(code[0])
           });
 
           setData(prioritizedResult);
-        } else {
+        } else if (resp?.getUserDetails){
           setData(finalResult);
+        }
+        else
+        {
+          setData([]);
+
         }
 
         setLoading(false);
@@ -1069,7 +1166,7 @@ console.log(selectedBlockStore)
     fetchData();
   }, [data, cohortsFetched]);
 
-
+console.log(userType)
   useEffect(() => {
     const fetchData =  () => {
       try {
@@ -1149,11 +1246,19 @@ console.log(selectedBlockStore)
               //   });
 
               // }
-
-
-              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS"))
+              if(userType===Role.CONTENT_CREATOR)
               {
-                console.log("true---")
+                setFilters({
+                  states: stateField.code,
+                  role: role,
+                  status:[statusValue],
+                })
+
+              }
+              else{
+
+              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS") &&userType!==Role.CONTENT_CREATOR)
+              {
                setFilters({
                   states: stateField.code,
                   districts:selectedDistrictCode,
@@ -1162,7 +1267,7 @@ console.log(selectedBlockStore)
                   status:[statusValue],
                 })
               }
-              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS"))
+              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS") && userType!==Role.CONTENT_CREATOR)
               {
                setFilters({
                   states: stateField.code,
@@ -1175,6 +1280,7 @@ console.log(selectedBlockStore)
              
              
               }
+            }
               
             
             // setStates(object);
@@ -1188,11 +1294,11 @@ console.log(selectedBlockStore)
     };
   
     fetchData();
-  }, [selectedBlockCode, selectedDistrictCode]);
+  }, [selectedBlockCode, selectedDistrictCode, userType]);
   useEffect(() => {
     const fetchData =  () => {
      // console.log(selectedCenter.length)
-      if(userType===Role.TEAM_LEADERS)
+      if(userType===Role.TEAM_LEADERS || userType===Role.CONTENT_CREATOR)
       {
         setEnableCenterFilter(false);
 
@@ -1445,6 +1551,8 @@ console.log(selectedBlockStore)
       </Typography>
     </Box>
   );
+
+
   const userProps = {
     userType: userType,
     searchPlaceHolder: searchPlaceholder,
@@ -1474,7 +1582,8 @@ console.log(selectedBlockStore)
      setSelectedCenter:setSelectedCenter,
      selectedCenterCode:selectedCenterCode,
      setSelectedCenterCode: setSelectedCenterCode,
-     setSelectedStateCode:setSelectedStateCode
+     setSelectedStateCode:setSelectedStateCode,
+     showAddNew: !!isActiveYear
   };
   
 
@@ -1493,9 +1602,9 @@ console.log(selectedBlockStore)
       ) : data?.length !== 0 && loading === false ? (
         <KaTableComponent
           columns={
-            role === Role.TEAM_LEADER
-              ? getTLTableColumns(t, isMobile)
-              : getUserTableColumns(t, isMobile)
+            role === Role.TEAM_LEADER 
+              ? getTLTableColumns(t, isMobile, isArchived)
+              :role === Role.CONTENT_CREATOR?getContentCreatorTableColumns(t, isMobile, isArchived): getUserTableColumns(t, isMobile, isArchived)
           }
           reassignCohort={handleReassignCohort}
           data={data}
@@ -1511,7 +1620,7 @@ console.log(selectedBlockStore)
           pagination={pagination}
          // reassignCohort={reassignCohort}
           noDataMessage={data?.length === 0 ? t("COMMON.NO_USER_FOUND") : ""}
-          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"):  t("COMMON.REASSIGN_CENTERS")}
+          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"): userType===Role.CONTENT_CREATOR?undefined: t("COMMON.REASSIGN_CENTERS")}
         />
       ) : (
         loading === false &&
@@ -1575,6 +1684,8 @@ console.log(selectedBlockStore)
         districtCode={districtCode}
         cohortId={cohortId}
         centers={assignedCenters}
+        userName={userName}
+
 
       />
 
@@ -1585,12 +1696,13 @@ console.log(selectedBlockStore)
         isEditModal={true}
         userId={userId}
         onSubmit={handleModalSubmit}
+        userName={userName}
         userType={
           userType === Role.LEARNERS
             ? FormContextType.STUDENT
             : userType === Role.FACILITATORS
               ? FormContextType.TEACHER
-              : FormContextType.TEAM_LEADER
+              : userType === Role.CONTENT_CREATOR?FormContextType.CONTENT_CREATOR: FormContextType.TEAM_LEADER
         }
       />
     </HeaderComponent>

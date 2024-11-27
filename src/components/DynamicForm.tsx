@@ -251,7 +251,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     // setSubmittedButtonStatus(false);
   }, []);
   return (
-    <div className="shreyas shinde">
+    <div>
       <FormWithMaterialUI
         schema={schema}
         uiSchema={uiSchema}

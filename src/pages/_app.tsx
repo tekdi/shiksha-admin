@@ -3,7 +3,8 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { appWithTranslation } from "next-i18next";
-import { initGA } from "../utils/googleAnalytics";
+import { initGA, logPageView } from '../utils/googleAnalytics';
+
 import { useEffect, useState } from "react";
 import { AuthProvider } from "../context/AuthContext";
 import { ToastContainer } from "react-toastify";
@@ -19,17 +20,68 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import "react-circular-progressbar/dist/styles.css";
+import { useRouter } from "next/router";
+import { TelemetryEventType } from "@/utils/app.constant";
+import useSubmittedButtonStore from "@/utils/useSharedState";
+import RouteGuard from "@/components/RouteGuard";
 
 function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
   useEffect(() => {
     telemetryFactory.init();
   }, []);
+
   useEffect(() => {
-    if (!window.GA_INITIALIZED) {
-      initGA(`G-6NVMB20J4Z`);
-      window.GA_INITIALIZED = true;
+    const token = localStorage.getItem("token");
+  if (!token && (router.pathname !== "/login")) {
+      if((router.pathname !== "/logout"))
+      router.push("/logout");
     }
-  });
+    setIsArchived(false)
+
+   
+  }, [router]);
+  useEffect(() => {
+    // Initialize GA only once
+    if (!window.GA_INITIALIZED) {
+      initGA(`${process.env.NEXT_PUBLIC_MEASUREMENT_ID}`)
+            window.GA_INITIALIZED = true;
+    }
+
+    const handleRouteChange = (url: string) => {
+      const windowUrl = url;
+      const cleanedUrl = windowUrl.replace(/^\//, '');
+
+      const telemetryImpression = {
+        context: {
+          env: cleanedUrl,
+          cdata: [],
+        },
+        edata: {
+          type: TelemetryEventType.VIEW,
+          subtype: '',
+          pageid: cleanedUrl,
+          uri: '',
+        },
+      };
+      telemetryFactory.impression(telemetryImpression);
+
+      logPageView(url);
+    };
+
+    // Log initial page load
+    handleRouteChange(window.location.pathname);
+    // Subscribe to route changes and log page views
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // Clean up the subscription on unmount
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
 
   const renderComponent = () => {
     if (pageProps.noLayout) {
@@ -60,7 +112,7 @@ function App({ Component, pageProps }: AppProps) {
     <AuthProvider>
         <CssVarsProvider theme={customTheme}>
 
-          {renderComponent()}
+        <RouteGuard>{renderComponent()}</RouteGuard>
 
           <ToastContainer
             position="bottom-left"

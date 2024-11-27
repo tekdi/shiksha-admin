@@ -4,10 +4,13 @@ import { logout } from "../services/LoginService";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Loader from "@/components/Loader";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from '@tanstack/react-query';
 
 function Logout() {
   const router = useRouter();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const userLogout = async () => {
       try {
@@ -20,14 +23,14 @@ function Logout() {
       }
     };
     userLogout();
-    if (typeof window !== "undefined" && window.localStorage) {
+    if (typeof window !== 'undefined' && window.localStorage) {
       // Specify the keys you want to keep
       const keysToKeep = [
-        "preferredLanguage",
-        "mui-mode",
-        "mui-color-scheme-dark",
-        "mui-color-scheme-light",
-        "hasSeenTutorial",
+        'preferredLanguage',
+        'mui-mode',
+        'mui-color-scheme-dark',
+        'mui-color-scheme-light',
+        'hasSeenTutorial',
       ];
       // Retrieve the values of the keys to keep
       const valuesToKeep: { [key: string]: any } = {};
@@ -46,7 +49,8 @@ function Logout() {
         }
       });
     }
-    router.replace("/login");
+    queryClient.clear();
+   router.replace("/login");
   }, []);
 
   return <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />;

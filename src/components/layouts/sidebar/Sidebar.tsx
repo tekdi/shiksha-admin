@@ -11,26 +11,25 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import FeatherIcon from "feather-icons-react";
 import { useTranslation } from "next-i18next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import LogoIcon from "../logo/LogoIcon";
 import Buynow from "./Buynow";
 import Menuitems from "./MenuItems";
-import Image from "next/image";
-import MasterIcon  from '../../../../public/images/database.svg';
-
+import {getFilteredMenuItems} from "./MenuItems";
 const Sidebar = ({
   isMobileSidebarOpen,
   onSidebarClose,
   isSidebarOpen,
 }: any) => {
   const [open, setOpen] = useState<number | null>(null);
+  const filteredMenuItems = getFilteredMenuItems();
 
   const { t } = useTranslation();
-  const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
+  const lgUp = useMediaQuery((theme: any) => theme?.breakpoints?.up("lg"));
   const router = useRouter();
   const location = router.pathname;
 
@@ -48,11 +47,13 @@ const Sidebar = ({
         background: "linear-gradient(to bottom, white, #F8EFDA)",
       }}
     >
-      <LogoIcon />
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <LogoIcon />
+      </Box>
 
       <Box mt={2}>
         <List>
-          {Menuitems?.map((item, index) => (
+          {filteredMenuItems?.map((item, index) => (
             <List component="li" disablePadding key={item.title}>
               <Tooltip placement="right-start" title={t(item.title)}>
                 <ListItem
@@ -68,22 +69,19 @@ const Sidebar = ({
                   selected={location === item.href}
                   sx={{
                     mb: 1,
-                    
+
                     ...(location === item.href && {
                       color: "black",
                       backgroundColor: (theme) =>
                         `${theme.palette.primary.main}!important`,
+                      borderRadius: "100px",
                     }),
                   }}
                 >
-             {/* {  item.icon && (<ListItemIcon>
-  {item.icon}
-</ListItemIcon>) */}
-<ListItemIcon>
-<Image src={item.icon} alt="" />
-
-</ListItemIcon>
-      <ListItemText>
+                  <ListItemIcon>
+                    <Image src={item.icon} alt="" />
+                  </ListItemIcon>
+                  <ListItemText>
                     <Typography variant="h2" sx={{ fontWeight: "700px" }}>
                       {t(item.title)}
                     </Typography>
@@ -102,7 +100,11 @@ const Sidebar = ({
                 <Collapse in={open === index} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     {item?.subOptions?.map((subItem) => (
-                      <Tooltip title={t(subItem.title)} placement="right-start" key={subItem.title}>
+                      <Tooltip
+                        title={t(subItem.title)}
+                        placement="right-start"
+                        key={subItem.title}
+                      >
                         <ListItem
                           button
                           key={subItem.title}
@@ -113,12 +115,13 @@ const Sidebar = ({
                           selected={location === subItem.href}
                           sx={{
                             pl: 8,
-                           ml: 2,
+                            ml: 2,
                             mb: 1,
                             ...(location === subItem.href && {
                               color: "black",
                               backgroundColor: (theme) =>
                                 `${theme.palette.primary.main}!important`,
+                              borderRadius: "100px",
                             }),
                           }}
                         >
@@ -145,7 +148,7 @@ const Sidebar = ({
         variant="persistent"
         PaperProps={{
           sx: {
-            width: "265px",
+            width: "284px",
             border: "0 !important",
             boxShadow: "0px 7px 30px 0px rgb(113 122 131 / 11%)",
           },
@@ -162,7 +165,7 @@ const Sidebar = ({
       onClose={onSidebarClose}
       PaperProps={{
         sx: {
-          width: "265px",
+          width: "284px",
           border: "0 !important",
         },
       }}

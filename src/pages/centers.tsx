@@ -13,12 +13,16 @@ import {
 } from "@/services/CohortService/cohortService";
 import {
   CohortTypes,
+  FormContext,
+  FormContextType,
   Numbers,
   QueryKeys,
   Role,
   SORT,
   Status,
   Storage,
+  TelemetryEventType,
+  apiCatchingDuration,
 } from "@/utils/app.constant";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -27,6 +31,8 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import Loader from "@/components/Loader";
 import { getFormRead } from "@/services/CreateUserService";
+import ProtectedRoute from "../components/ProtectedRoute";
+
 import {
   GenerateSchemaAndUiSchema,
   customFields,
@@ -42,9 +48,11 @@ import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import DynamicForm from "@/components/DynamicForm";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-
+import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
+import axios from 'axios';
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -70,6 +78,8 @@ const Center: React.FC = () => {
   // use hooks
   const queryClient = useQueryClient();
   const router = useRouter();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
 
   const { t } = useTranslation();
   const adminInformation = useSubmittedButtonStore(
@@ -120,6 +130,21 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
+const setIsArchived = useSubmittedButtonStore(
+(state: any) => state.setIsArchived
+);
+  const {
+    data: cohortFormData,
+    isLoading: cohortFormDataLoading,
+    error: cohortFormDataError,
+  } = useQuery<any>({
+    queryKey: ["cohortFormData"],
+    queryFn: () => getFormRead( FormContext.COHORTS, FormContextType.COHORT),
+    staleTime: apiCatchingDuration.GETREADFORM,
+  });
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
   );
@@ -151,7 +176,12 @@ const Center: React.FC = () => {
   const setAdminInformation = useSubmittedButtonStore(
     (state: any) => state.setAdminInformation
   );
-
+  const createCenterStatus = useSubmittedButtonStore(
+    (state: any) => state.createCenterStatus
+  );
+  const setCreateCenterStatus = useSubmittedButtonStore(
+    (state: any) => state.setCreateCenterStatus
+  );
   const [filters, setFilters] = useState<cohortFilterDetails>({
     type: CohortTypes.COHORT,
     states: selectedStateCode,
@@ -160,6 +190,8 @@ const Center: React.FC = () => {
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
+   setSubmittedButtonStatus(false);
+
   };
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -174,8 +206,8 @@ const Center: React.FC = () => {
         );
         const object = [
           {
-            value: stateField.code,
-            label: stateField.value,
+            value: stateField?.code,
+            label: stateField?.value,
           },
         ];
 
@@ -202,7 +234,7 @@ const Center: React.FC = () => {
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, []);
+  }, [cohortFormData]);
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -268,8 +300,8 @@ finalResult?.forEach((item: any, index: number) => {
             createdAt: item?.createdAt,
             updatedAt: item?.updatedAt,
             cohortId: item?.cohortId,
-            customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",
-            totalActiveMembers: counts?.totalActiveMembers,
+            customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",   
+           totalActiveMembers: counts?.totalActiveMembers,
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
@@ -307,10 +339,10 @@ finalResult?.forEach((item: any, index: number) => {
 
   const getFormData = async () => {
     try {
-      const res = await getFormRead("cohorts", "cohort");
-      if (res && res?.fields) {
-        const formDatas = res?.fields;
-        setFormData(formDatas);
+     // const res = await getFormRead("cohorts", "cohort");
+      if (cohortFormData && cohortFormData?.fields) {
+        const formData = cohortFormData?.fields;
+        setFormData(formData);
       } else {
         console.log("No response Data");
       }
@@ -342,13 +374,11 @@ const response=  await fetchCohortMemberList(data);
     if (response?.result) {
       const userDetails = response.result.userDetails;
       const getActiveMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ACTIVE && member?.role ===  Role.STUDENT
-      );
+        (member: any) => member?.status === Status.ACTIVE && member?.role ===  Role.STUDENT      );
       const totalActiveMembers = getActiveMembers?.length || 0;
 
       const getArchivedMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT
-      );
+        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT      );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
       return {
@@ -365,9 +395,9 @@ const response=  await fetchCohortMemberList(data);
 
   const getAddCenterFormData = async () => {
     try {
-      const response = await getFormRead("cohorts", "cohort");
-      if (response) {
-        const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
+      //const response = await getFormRead("cohorts", "cohort");
+      if (cohortFormData) {
+        const { schema, uiSchema } = GenerateSchemaAndUiSchema(cohortFormData, t);
 
         setSchema(schema);
         setUiSchema(uiSchema);
@@ -384,7 +414,6 @@ const response=  await fetchCohortMemberList(data);
     if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")  ){
       fetchUserList();
     }
-    // fetchUserList();
     getFormData();
   }, [pageOffset, pageLimit, sortBy, filters, filters.states, filters.status, createCenterStatus]);
 
@@ -399,6 +428,25 @@ const response=  await fetchCohortMemberList(data);
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const PagesSelector = () => (
@@ -641,6 +689,24 @@ const response=  await fetchCohortMemberList(data);
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
       if (resp?.responseCode === 200) {
         showToastMessage(t("CENTERS.CENTER_DELETE_SUCCESSFULLY"), "success");
+
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'delete-center-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
         const cohort = cohortData?.find(
           (item: any) => item.cohortId == selectedCohortId
         );
@@ -669,6 +735,25 @@ const response=  await fetchCohortMemberList(data);
       }
     }
     setSelectedSort(event.target.value);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleSearch = (keyword: string) => {
@@ -707,24 +792,50 @@ const response=  await fetchCohortMemberList(data);
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false);
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true);
+
     } else if (newValue === Status.ALL_LABEL) {
+
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: "",
       }));
+      setIsArchived(false);
+
     } else {
+
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
           ...restFilters,
         };
       });
+      setIsArchived(false);
+
     }
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleEdit = async (rowData: any) => {
@@ -745,11 +856,11 @@ const response=  await fetchCohortMemberList(data);
         offset: 0,
       };
       const resp = await getCohortList(data);
-      const formFields = await getFormRead("cohorts", "cohort");
+      //const formFields = await getFormRead("cohorts", "cohort");
 
       const cohortDetails = resp?.results?.cohortDetails?.[0] || {};
 
-      setEditFormData(mapFields(formFields, cohortDetails));
+      setEditFormData(mapFields(cohortFormData, cohortDetails));
       setLoading(false);
       setIsEditForm(true);
     }
@@ -860,19 +971,45 @@ const response=  await fetchCohortMemberList(data);
         return;
       }
       let cohortDetails = {
-        name: formData?.name,
+        name: (formData?.name).toLowerCase(),
+        updatedBy:localStorage.getItem('userId'),
         customFields: customFields,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
       if (resp?.responseCode === 200 || resp?.responseCode === 201) {
         showToastMessage(t("CENTERS.CENTER_UPDATE_SUCCESSFULLY"), "success");
+
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'center-updated-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
         setLoading(false);
       } else {
         showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
       }
     } catch (error) {
       console.error("Error updating cohort:", error);
-      showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 409) {
+          showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
+        } 
+      }
+      else
+       showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);
@@ -883,6 +1020,25 @@ const response=  await fetchCohortMemberList(data);
   };
 
   const handleAddUserClick = () => {
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-add-new',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
     setOpenAddNewCohort(true);
   };
 
@@ -1002,7 +1158,6 @@ const response=  await fetchCohortMemberList(data);
       
 
       if (urlData) {
-      //  localStorage.setItem("selectedBlock", selectedBlock[0])
         // router.push(
         //   `learners?state=${urlData.stateCode}&district=${urlData.districtCode}&block=${urlData.blockCode}&status=${urlData.type}`
         // );
@@ -1033,7 +1188,7 @@ const response=  await fetchCohortMemberList(data);
     handleSortChange: handleSortChange,
     handleFilterChange: handleFilterChange,
     handleSearch: handleSearch,
-    showAddNew: true,
+    showAddNew: !!isActiveYear,
     handleAddUserClick: handleAddUserClick,
     statusValue: statusValue,
     setStatusValue: setStatusValue,
@@ -1051,6 +1206,8 @@ const response=  await fetchCohortMemberList(data);
 
   return (
     <>
+        <ProtectedRoute>
+
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
@@ -1086,7 +1243,7 @@ const response=  await fetchCohortMemberList(data);
           </Box>
         ) : cohortData?.length > 0 ? (
           <KaTableComponent
-            columns={getCenterTableData(t, isMobile)}
+            columns={getCenterTableData(t, isMobile, isArchived)}
             data={cohortData}
             limit={pageLimit}
             offset={pageOffset}
@@ -1186,6 +1343,8 @@ const response=  await fetchCohortMemberList(data);
           )}
         </SimpleModal>
       </HeaderComponent>
+      </ProtectedRoute>
+
     </>
   );
 };

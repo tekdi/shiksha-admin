@@ -9,6 +9,8 @@ import cohortIcon from '../../public/images/apartment.svg';
 
 
 import Image from "next/image";
+import { TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 
 interface ActionCellProps {
   onEdit: (rowData: any) => void;
@@ -45,6 +47,24 @@ const ActionIcon: React.FC<ActionCellProps> = ({
         <Box
           onClick={() => {
             onEdit(rowData);
+            const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+        
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: rowData?.cohortId?'click-edit-delete-action:'+rowData?.cohortId:rowData?.userId? 'edit-on-delete-action:'+rowData?.userId:'edit-on-delete-action',
+
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
           }}
           sx={{
             display: "flex",
@@ -67,7 +87,27 @@ const ActionIcon: React.FC<ActionCellProps> = ({
       <Tooltip title={t("COMMON.DELETE")}>
         <Box
           onClick={() => {
+          
+            console.log(rowData)
+
             onDelete(rowData);
+            const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+        
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: rowData?.cohortId?'click-on-delete-action:'+rowData?.cohortId:rowData?.userId? 'click-on-delete-action:'+rowData?.userId:'click-on-delete-action',
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
           }}
           sx={{
             display: "flex",
@@ -87,11 +127,31 @@ const ActionIcon: React.FC<ActionCellProps> = ({
         </Box>
       </Tooltip>
 
-     { userAction && ( <Tooltip title={reassignType}>
+     { userAction && reassignType && ( <Tooltip title={reassignType}>
         <Box
           onClick={() => {
             if(reassignCohort)
-            reassignCohort(rowData);
+            {
+              reassignCohort(rowData);
+              const windowUrl = window.location.pathname;
+              const cleanedUrl = windowUrl.replace(/^\//, '');
+              const env = cleanedUrl.split("/")[0];
+          
+              const telemetryInteract = {
+                context: {
+                  env: env,
+                  cdata: [],
+                },
+                edata: {
+                  id: 'click-on-reassign-action:'+rowData?.userId,
+                  type: TelemetryEventType.CLICK,
+                  subtype: '',
+                  pageid: cleanedUrl,
+                },
+              };
+              telemetryFactory.interact(telemetryInteract);
+            }
+
           }}
           sx={{
             display: "flex",

@@ -34,7 +34,7 @@ const telemetryConfig = {
   batchsize: 1,
   mode: "",
   host: hostURL, //TODO: Change this host and endpoint properly
-  endpoint: "/telemetry/v1/telemetry",
+  endpoint: "/v1/telemetry",
   tags: [],
 };
 
@@ -48,13 +48,13 @@ export const telemetryFactory = {
   init: () => {
     if (typeof window !== "undefined") {
       console.log("EkTelemetry", EkTelemetry);
-      // if (!CsTelemetryModule.instance.isInitialised) {
-      //   CsTelemetryModule.instance.init({});
-      //   CsTelemetryModule.instance.telemetryService.initTelemetry({
-      //     config: telemetryConfig,
-      //     userOrgDetails: {},
-      //   });
-      // }
+      if (!CsTelemetryModule.instance.isInitialised) {
+        CsTelemetryModule.instance.init({});
+        CsTelemetryModule.instance.telemetryService.initTelemetry({
+          config: telemetryConfig,
+          userOrgDetails: {},
+        });
+      }
     }
   },
 

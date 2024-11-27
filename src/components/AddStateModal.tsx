@@ -94,7 +94,7 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
       newErrors.name = t("COMMON.STATE_NAME_REQUIRED");
     } else if (!isValidName(formData.name.trim())) {
       newErrors.name = t("COMMON.INVALID_TEXT");
-    } 
+    }
 
     if (!formData.value) {
       newErrors.value = t("COMMON.CODE_REQUIRED");
@@ -113,7 +113,14 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={(event, reason) => {
+        if (reason !== "backdropClick") {
+          onClose();
+        }
+      }}
+    >
       <DialogTitle sx={{ fontSize: "14px" }}>
         {stateId ? t("COMMON.UPDATE_STATE") : t("COMMON.ADD_STATE")}
       </DialogTitle>

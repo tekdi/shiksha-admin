@@ -51,7 +51,7 @@ const ImportCsv = () => {
   const tstore = taxonomyStore();
   const { subject } = router.query;
   const { t } = useTranslation();
-  const [subjectDetails, setSubjectDetails] = useState<any | null>(null);
+
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,26 +68,6 @@ const ImportCsv = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const setResources = taxonomyStore((state) => state.setResources);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      // Simulate data fetching
-      setTimeout(() => {
-        if (typeof subject === "string") {
-          const card = cardData.find((card) => card.subjects.includes(subject));
-          if (card) {
-            setSubjectDetails({
-              ...card,
-              subject,
-            });
-          }
-        }
-        setLoading(false);
-      }, 1000); // Simulated loading time
-    };
-
-    fetchData();
-  }, [subject]);
 
   const fetchCourseDetails = useCallback(async () => {
     try {
@@ -156,7 +136,6 @@ const ImportCsv = () => {
       });
       setUserProjectDetails(userProjectDetailsResponse?.result?.tasks);
       if (userProjectDetails?.length) {
-       
       }
       setLoading(false);
     } catch (error) {
@@ -177,6 +156,7 @@ const ImportCsv = () => {
   };
 
   const handleClose = () => {
+    setSelectedFile(null);
     setOpen(false);
   };
 
@@ -193,13 +173,12 @@ const ImportCsv = () => {
 
   const handleDownloadCSV = () => {
     const link = document.createElement("a");
-    link.href = "/Sample.csv"; 
+    link.href = "/Sample.csv";
     link.download = "Sample.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  
 
   const handleUpload = async () => {
     if (selectedFile) {
@@ -266,8 +245,10 @@ const ImportCsv = () => {
                 t("COURSE_PLANNER.COURSE_CREATED_SUCCESSFULLY"),
                 "success"
               );
+              setSelectedFile(null);
               setOpen(false);
             } else {
+              setSelectedFile(null);
               showToastMessage(t("COURSE_PLANNER.COURSE_NOT_CREATED"), "error");
             }
           } catch (error) {

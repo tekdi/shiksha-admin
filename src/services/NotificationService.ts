@@ -1,5 +1,5 @@
 import { SendCredentialsRequest } from '@/utils/Interfaces';
-import { post } from './RestClient';
+import { post, get } from './RestClient';
 
 export const sendCredentialService = async ({
   isQueue,
@@ -7,8 +7,9 @@ export const sendCredentialService = async ({
   key,
   replacements,
   email,
+  push
 }: SendCredentialsRequest): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_NOTIFICATION_BASE_URL}/notification/send`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/notification/send`;
   try {
     const response = await post(apiUrl, {
       isQueue,
@@ -16,6 +17,7 @@ export const sendCredentialService = async ({
       key,
       replacements,
       email,
+      push
     });
     return response?.data;
   } catch (error) {
@@ -24,3 +26,5 @@ export const sendCredentialService = async ({
     return error;
   }
 };
+
+

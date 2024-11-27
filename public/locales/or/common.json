@@ -27,6 +27,7 @@
     "NO_DATA_FOUND": "ତଥ୍ୟ ମିଳିଲା ନାହିଁ",
     "SUBMIT": "ଦାଖଲ କରନ୍ତୁ",
     "BACK": "ପଛକୁ ଯାଆନ୍ତୁ"
+    
   },
   "LOGIN_PAGE": {
     "USERNAME": "ଉପଭୋକ୍ତା ନାମ",
@@ -49,12 +50,14 @@
     "TEAM_LEADERS": "ଦଳ ନେତାମାନେ",
     "CREATE_PLAN": "ଯୋଜନା ସୃଷ୍ଟି କରନ୍ତୁ",
     "VIEW_PLANS": "ଯୋଜନାଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ"
+   
   },
   "FACILITATORS": {
     "ALL_STATES": "ସମସ୍ତ ରାଜ୍ୟ",
     "ALL_DISTRICTS": "ସମସ୍ତ ଜିଲ୍ଲା",
     "ALL_BLOCKS": "ସମସ୍ତ ବ୍ଲକ୍",
     "SEARCHBAR_PLACEHOLDER": "ସହଜକାରୀମାନଙ୍କୁ ଖୋଜନ୍ତୁ.."
+   
   },
   "NAVBAR": {
     "SEARCHBAR_PLACEHOLDER": "ପାଠ୍ୟକ୍ରମ, ବିଷୟ, ଛାତ୍ର, ପିଡ଼ଏଫ୍ ଇତ୍ୟାଦି ଖୋଜନ୍ତୁ.."
@@ -63,9 +66,11 @@
     "SEARCHBAR_PLACEHOLDER": "ଶିକ୍ଷାର୍ଥୀମାନଙ୍କୁ ଖୋଜନ୍ତୁ..",
     "NEW_LEARNER": "ନୂତନ ଶିକ୍ଷାର୍ଥୀ",
     "FIRST_SELECT_REQUIRED_FIELDS": "ପ୍ରଥମେ ଆବଶ୍ୟକ ତଥ୍ୟଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ"
+   
   },
   "TEAM_LEADERS": {
     "SEARCHBAR_PLACEHOLDER": "ଦଳ ନେତାମାନଙ୍କୁ ଖୋଜନ୍ତୁ.."
+    
   },
   "COHORTS": {
     "SEARCHBAR_PLACEHOLDER": "ଗୋଷ୍ଠୀମାନଙ୍କୁ ଖୋଜନ୍ତୁ.."
@@ -82,6 +87,7 @@
     "SEARCHBAR_PLACEHOLDER_DISTRICT": "ଜିଲ୍ଲାମାନଙ୍କୁ ଖୋଜନ୍ତୁ",
     "SEARCHBAR_PLACEHOLDER_BLOCK": "ବ୍ଲକ୍ ଗୁଡ଼ିକୁ ଖୋଜନ୍ତୁ",
     "BLOCKS": "ବ୍ଲକ୍ମାନେ"
+    
   },
   "CENTERS": {
     "CENTERS": "କେନ୍ଦ୍ରଗୁଡ଼ିକ",
@@ -103,6 +109,7 @@
     "CENTER_RENAMED": "କେନ୍ଦ୍ର ଶୁଭକାମନାର ସହିତ ପୁନର୍ନାମ କରାଯାଇଛି!",
     "SEND_REQUEST": "ଅନୁରୋଧ ପଠାନ୍ତୁ",
     "REQUEST_TO_DELETE_HAS_BEEN_SENT": "ମିଟିବା ପାଇଁ ଅନୁରୋଧ ପଠାଇ ଦିଆଯାଇଛି"
+    
   },
   "FORM": {
     "FULL_NAME": "ପୂର୍ଣ୍ଣ ନାମ",
@@ -158,5 +165,9 @@
     "EMAIL": "ଇମେଲ୍",
     "YEAR_OF_ JOINING_SCP": "SCP ମଧ୍ୟରେ ସାମିଲ ହେବାର ବର୍ଷ",
     "ASSIGN_CENTERS": "କେନ୍ଦ୍ର ସୁପର୍ଦ୍ଦ କରନ୍ତୁ"
+   
   }
+ 
+  
+  
 }
