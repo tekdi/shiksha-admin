@@ -156,6 +156,7 @@ const ImportCsv = () => {
   };
 
   const handleClose = () => {
+    setSelectedFile(null);
     setOpen(false);
   };
 
@@ -244,8 +245,10 @@ const ImportCsv = () => {
                 t("COURSE_PLANNER.COURSE_CREATED_SUCCESSFULLY"),
                 "success"
               );
+              setSelectedFile(null);
               setOpen(false);
             } else {
+              setSelectedFile(null);
               showToastMessage(t("COURSE_PLANNER.COURSE_NOT_CREATED"), "error");
             }
           } catch (error) {
