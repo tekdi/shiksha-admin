@@ -431,6 +431,8 @@ const response= await  getCohortList(reqParams)
     extraArgument?: any
   ) => {
     const newDistrict = {
+      isCreate:true,
+
       options: [
         {
           controllingfieldfk: controllingField,
@@ -510,6 +512,8 @@ const response= await  getCohortList(reqParams)
 if(updatedBy)
 {
   const newDistrict = {
+    isCreate:false,
+
     options: [
       {
         controllingfieldfk: controllingField,

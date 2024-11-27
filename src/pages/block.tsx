@@ -814,6 +814,7 @@ const setIsArchived = useSubmittedButtonStore(
     extraArgument?: any
   ) => {
     const newDistrict = {
+      isCreate:true,
       options: [
         {
           controllingfieldfk: controllingField,
@@ -878,7 +879,7 @@ const setIsArchived = useSubmittedButtonStore(
 if(updatedBy)
 {
   const newDistrict = {
-
+    isCreate:false,
     options: [
       {
         controllingfieldfk: controllingField,
