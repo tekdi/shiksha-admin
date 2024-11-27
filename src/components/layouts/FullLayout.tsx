@@ -46,7 +46,7 @@ const FullLayout = ({ children }: any) => {
         <Container
           maxWidth={false}
           sx={{
-            paddingLeft: isSidebarOpen && lgUp ? "280px!important" : "",
+            paddingLeft: isSidebarOpen && lgUp ? "308px!important" : "",
             backgroundColor: "#F3F5F8",
           }}
         >
