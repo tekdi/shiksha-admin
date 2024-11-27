@@ -192,6 +192,7 @@ export const deleteOption = async (
 export const createOrUpdateOption = async (
   fieldId: string,
   fieldParams: {
+    isCreate?: boolean;
     options: { name: string; value: string; controllingfieldfk?: string ,updatedBy?:string}[];
   }
   // stateId?: string
