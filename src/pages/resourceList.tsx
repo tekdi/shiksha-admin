@@ -20,9 +20,17 @@ const ResourceList = () => {
   useEffect(() => {
     const fetchData = async () => {
       const resources = tstore.resources;
-      const fetchedLearningResources = resources?.learningResources || [];
 
+      const fetchedLearningResources = resources?.learningResources || [];
       if (fetchedLearningResources?.length) {
+        fetchedLearningResources.forEach((resource: { id: string }) => {
+          if (resource.id.charAt(0) === "D") {
+            resource.id = "d" + resource.id.slice(1);
+          }
+        });
+
+        console.log(fetchedLearningResources);
+
         let contents = await fetchBulkContents(
           fetchedLearningResources?.map((item: any) => item.id)
         );

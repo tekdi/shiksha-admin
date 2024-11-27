@@ -18,7 +18,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   // type,
   // resource,
   identifier,
-  appIcon
+  appIcon,
 }) => {
   // const [thumbnailUrl, setThumbnailUrl] = useState<string | StaticImageData>(placeholderImage);
   const thumbnailUrl = appIcon || placeholderImage;
@@ -46,13 +46,18 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   return (
-    <Card sx={{ width: 150, height: 180, borderRadius: 2 }}>
+    <Card sx={{ width: 150, height: 180, borderRadius: 2, cursor: "pointer" }}>
       <CardContent>
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
-          sx={{ height: 100, backgroundColor: "#f5f5f5", borderRadius: "10px" }}
+          sx={{
+            height: 100,
+            backgroundColor: "#f5f5f5",
+            borderRadius: "10px",
+            cursor: "pointer",
+          }}
           onClick={openPlayers}
         >
           <Image
@@ -63,11 +68,15 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
             style={{ borderRadius: "10px" }}
           />
         </Box>
-        <Typography variant="subtitle1" sx={{
-          mt: 1, whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            mt: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {title}
         </Typography>
         <Typography variant="body2" color="textSecondary">
