@@ -13,7 +13,7 @@ import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
 import { useEffect, useState } from "react";
-import { QueryKeys, Role, Status } from "@/utils/app.constant";
+import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import {
   getCenterList,
@@ -28,6 +28,7 @@ import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { useRouter } from "next/router";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { userAgent } from "next/server";
+import { telemetryFactory } from "@/utils/telemetry";
 
 interface State {
   value: string;
@@ -100,6 +101,9 @@ const HeaderComponent = ({
   const [initialDistrict, setInitialDistrict] = useState<any>("");
   const [initialBlock, setInitialBlock] = useState<string>("");
   const [initialized, setInitialized] = useState(false);
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const selectedBlockStore = useSubmittedButtonStore(
@@ -189,6 +193,26 @@ const HeaderComponent = ({
       console.log(error);
     }
     handleDistrictChange(selected, selectedCodes);
+
+    const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+
+
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: 'filter-by-district:'+selected[0],
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleBlockChangeWrapper = async (
@@ -233,12 +257,48 @@ const HeaderComponent = ({
     console.log(dataArray);
     setAllCenters(cohortInfo);
     handleBlockChange(selected, selectedCodes);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-block:'+selected[0],
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
   const handleCenterChangeWrapper = (
     selected: string[],
     selectedCodes: string[]
   ) => {
     handleCenterChange(selected, selectedCodes);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-center:'+selected[0],
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   useEffect(() => {
@@ -325,7 +385,7 @@ const HeaderComponent = ({
                   }
               }
             
-              if (!hasBlock && !hasDistrict) {
+              if (!hasBlock && !hasDistrict && userType!==Role.CONTENT_CREATOR) {
                 if (userType === Role.TEAM_LEADERS || userType==="Centers") {
                 //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
                   //setSelectedBlockCode("")
@@ -361,6 +421,17 @@ const HeaderComponent = ({
                     },
                   });
                 }
+              }
+              else if(userType===Role.CONTENT_CREATOR)
+              {
+                router.replace({
+                  pathname: router.pathname,
+                  query: {
+                    ...router.query,
+                    state: stateField.code,
+                   
+                  },
+                });
               }
 
               const getCentersObject = {
@@ -407,7 +478,7 @@ const HeaderComponent = ({
                 !hasCenter &&
                 !hasBlock &&
                 !hasDistrict &&
-                userType !== Role.TEAM_LEADERS
+                userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
               ) {
                 console.log(hasCenter);
                 setSelectedCenter([t("COMMON.ALL_CENTERS")]);
@@ -548,7 +619,7 @@ const HeaderComponent = ({
         </Typography>
       )}
 
-      {showStateDropdown && (
+      {showStateDropdown &&  (
         <AreaSelection
           states={transformArray(states)}
           districts={transformArray(districts)}
@@ -575,7 +646,10 @@ const HeaderComponent = ({
 
       <Box
         sx={{
-          backgroundColor: "white",
+          background: "#fff",
+          borderRadius: "8px",
+          boxShadow: "0px 2px 6px 2px #00000026",
+          paddingBottom: "0px",
           paddingTop: "20px",
         }}
       >
@@ -638,7 +712,7 @@ const HeaderComponent = ({
               placeholder={searchPlaceHolder}
             />
           </Box>
-          {showAddNew && (
+          {showAddNew  && !isArchived && (
             <Box
               display={"flex"}
               gap={1}
@@ -648,7 +722,7 @@ const HeaderComponent = ({
                 justifyContent: "center",
                 alignItems: "center",
                 // height: "40px",
-                width: isMobile ? "70%" : "200px",
+                width: isMobile ? "93%" : "200px",
                 borderRadius: "20px",
                 border: "1px solid #1E1B16",
                 //  mt: isMobile ? "10px" : "16px",
@@ -656,6 +730,9 @@ const HeaderComponent = ({
                 mr: "10px",
                 ml: isMobile ? "50px" : isMediumScreen ? "10px" : undefined,
                 mt: isMobile ? "10px" : isMediumScreen ? "10px" : undefined,
+                '@media (max-width: 600px)': {
+                  mx: "16px",
+                }
               }}
             >
               <Button
@@ -673,7 +750,7 @@ const HeaderComponent = ({
             </Box>
           )}
         </Box>
-        {showAddNew && (
+        {/* {showAddNew && ( */}
           <Box
             sx={{
               display: "flex",
@@ -708,7 +785,7 @@ const HeaderComponent = ({
               </FormControl>
             )}
           </Box>
-        )}
+        {/* )} */}
         {children}
       </Box>
     </Box>

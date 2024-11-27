@@ -2,17 +2,13 @@ import masterIcon from "../../../../public/images/database.svg";
 import centerIcon from "../../../../public/images/centers.svg";
 import dashboardIcon from "../../../../public/images/dashboard.svg";
 import userIcon from "../../../../public/images/group.svg";
-import coursePannerIcon from "../../../../public/images/event_available.svg";
+import coursePlannerIcon from "../../../../public/images/event_available.svg";
+import { store } from "@/store/store";
+import { Role } from "@/utils/app.constant";
 const ENV = process.env.NEXT_PUBLIC_SHOW_WORKSPACE;
-
-//
+const isActiveYear = store.getState().isActiveYearSelected;
 
 const Menuitems = [
-  // {
-  //   title: "SIDEBAR.DASHBOARD",
-  //   icon: dashboardIcon,
-  //   href: "/dashboard",
-  // },
   {
     title: "SIDEBAR.CENTERS",
     icon: centerIcon,
@@ -21,7 +17,6 @@ const Menuitems = [
   {
     title: "SIDEBAR.MANAGE_USERS",
     icon: userIcon,
-    //  href: "/",
     subOptions: [
       {
         title: "SIDEBAR.TEAM_LEADERS",
@@ -37,11 +32,9 @@ const Menuitems = [
       },
     ],
   },
-
   {
-    title: "Master ",
+    title: "Master",
     icon: masterIcon,
-    // href: "/",
     subOptions: [
       {
         title: "MASTER.STATE",
@@ -57,12 +50,16 @@ const Menuitems = [
       },
     ],
   },
-  {
-    title: "SIDEBAR.COURSE_PLANNER",
-    icon: coursePannerIcon,
-    href: "/course-planner",
-  },
-  ...(ENV === "true"
+  ...(isActiveYear
+    ? [
+        {
+          title: "SIDEBAR.COURSE_PLANNER",
+          icon: coursePlannerIcon,
+          href: "/course-planner",
+        },
+      ]
+    : []),
+  ...(isActiveYear && ENV === "true"
     ? [
         {
           title: "SIDEBAR.WORKSPACE",
@@ -72,5 +69,41 @@ const Menuitems = [
       ]
     : []),
 ];
+
+export const getFilteredMenuItems = () => {
+  if (typeof window !== "undefined" && window.localStorage) {
+    const adminInfo = localStorage.getItem("adminInfo");
+    let userInfo;
+
+    if (adminInfo && adminInfo !== "undefined") {
+      userInfo = JSON.parse(adminInfo || "{}");
+    }
+    console.log("userInfo", userInfo);
+
+    if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
+      // For SCTA and CCTA, show only Course Planner and Workspace
+      return Menuitems.filter(
+        (item) =>
+          item.title === "SIDEBAR.COURSE_PLANNER" ||
+          item.title === "SIDEBAR.WORKSPACE"
+      );
+    }
+
+    if (
+      userInfo?.role === Role.ADMIN ||
+      userInfo?.role === Role.CENTRAL_ADMIN
+    ) {
+      // Exclude Course Planner and Workspace for Admin and Central Admin
+      return Menuitems.filter(
+        (item) =>
+          item.title !== "SIDEBAR.COURSE_PLANNER" &&
+          item.title !== "SIDEBAR.WORKSPACE"
+      );
+    }
+
+    return Menuitems;
+  }
+};
+
 
 export default Menuitems;

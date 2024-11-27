@@ -77,6 +77,7 @@ export const generateUsernameAndPassword = (
     [FormContextType.TEACHER]: "FSC",
     [FormContextType.STUDENT]: "SC",
     [FormContextType.TEAM_LEADER]: "TLSC",
+    [FormContextType.CONTENT_CREATOR]: "SCTA",//prefix is not fix till now assume this SCTA(State Content Team Associate)
   };
 
   if (!(role in rolePrefixes)) {
@@ -183,8 +184,6 @@ export const mapFields = (formFields: any, Details: any) => {
 
           return field?.code;
         }
-        
-        
         return field?.value || null;
       } else if (item?.type === InputTypes.NUMERIC) {
         return parseInt(String(field?.value));
@@ -326,6 +325,17 @@ export const getAssociationsByCodeNew = (data: DataItem[], code: string): Associ
   return foundItem ? foundItem.associations : [];
 };
 
+export const getYouTubeThumbnail = (url: string): string => {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+
+  if (match && match[1]) {
+    const videoId = match[1];
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  } else {
+    return '';
+  }
+}
 
 export const filterAndMapAssociations = (
   category: string,
@@ -343,7 +353,7 @@ export const filterAndMapAssociations = (
   }
 
   return options
-    .filter((option) => {
+    ?.filter((option) => {
       const optionCode = option[codeKey];
 
       return associationsList.some(

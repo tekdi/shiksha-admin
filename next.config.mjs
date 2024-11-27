@@ -2,7 +2,7 @@
 /** @type {import('next').NextConfig} */
 import nextI18nextConfig from "./next-i18next.config.js";
 import { NextFederationPlugin } from "@module-federation/nextjs-mf";
-const url = process.env.WORKSPACE_BASE_URL;
+const url = process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL;
 // const url = "http://localhost:3000";
 
 const remotes = (isServer) => {
@@ -47,19 +47,39 @@ const nextConfig = {
     return [
       {
         source: "/action/asset/v1/upload/:identifier*", // Match asset upload routes
-        destination: '/api/fileUpload'                  // Forward asset uploads to fileUpload proxy
+        destination: "/api/fileUpload", // Forward asset uploads to fileUpload proxy
+      },
+      {
+        source: "/assets/pdfjs/:path*", // Match any URL starting with /workspace/content/assets/
+        destination: `${process.env.WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
+      },
+      {
+        source: "/play/content/assets/pdfjs/:path*", // Match any URL starting with /workspace/content/assets/
+        destination: `${process.env.WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
+      },
+      {
+        source: "/play/content/assets/:path*", // Match any URL starting with /workspace/content/assets/
+        destination: `${process.env.WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/action/content/v3/upload/url/:identifier*", // Match content upload with 'url' in the path
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/v3/upload/url/:identifier*`, // Forward to proxy route with path as query param
       },
       {
-        source: '/action/content/v3/upload/:identifier*', // Match content upload routes
-        destination: '/api/fileUpload',                   // Forward asset uploads to fileUpload proxy
+        source: "/action/content/v3/upload/:identifier*", // Match content upload routes
+        destination: "/api/fileUpload", // Forward asset uploads to fileUpload proxy
+      },
+      {
+        source: "/workspace/content/assets/:path*", // Match any URL starting with /workspace/content/assets/
+        destination: `${process.env.WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/action/asset/:path*", // Match other /action/asset routes
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/asset/:path*`, // Forward other /action/asset requests to proxy.js
+      },
+      {
+        source: "/action/v1/telemetry",
+        destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`,
       },
       {
         source: "/action/content/:path*", // Match other /action/asset routes
@@ -74,8 +94,8 @@ const nextConfig = {
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
       },
       {
-        source: '/assets/public/:path*',                                       // Match any URL starting with /assets/public/
-        destination: `${process.env.WORKSPACE_BASE_URL}/assets/public/:path*`, // Forward to workspace proxy
+        source: "/assets/public/:path*", // Match any URL starting with /assets/public/
+        destination: `${process.env.CLOUD_STORAGE_URL}/:path*`, // Forward to workspace proxy
       },
       {
         source: routes.API.GENERAL.CONTENT_PREVIEW,

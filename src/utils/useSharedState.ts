@@ -4,11 +4,9 @@ const useSubmittedButtonStore = create((set) => ({
   submittedButtonStatus: false,
   setSubmittedButtonStatus: (status: boolean) =>
     set({ submittedButtonStatus: status }),
-
     createCenterStatus: false,
     setCreateCenterStatus: (status: boolean) =>
       set({ createCenterStatus: status }),
-  
     reassignButtonStatus: false,
     setReassignButtonStatus: (status: boolean) =>
       set({ reassignButtonStatus: status }),
@@ -29,6 +27,9 @@ const useSubmittedButtonStore = create((set) => ({
 
    selectedCenterStore:"",
    setSelectedCenterStore: (status: string) => set({ selectedCenterStore: status }),
+   isArchived:false,
+   setIsArchived: (status: string) => set({ isArchived: status }),
+
 
 
 

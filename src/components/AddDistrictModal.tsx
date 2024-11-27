@@ -163,7 +163,14 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     : t("COMMON.ADD_DISTRICT");
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={(event, reason) => {
+        if (reason !== "backdropClick") {
+          onClose();
+        }
+      }}
+    >
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>

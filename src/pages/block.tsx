@@ -30,6 +30,7 @@ import {
   Storage,
   Numbers,
   QueryKeys,
+  TelemetryEventType,
 } from "@/utils/app.constant";
 import { getUserDetailsInfo } from "@/services/UserList";
 import {
@@ -38,6 +39,9 @@ import {
 } from "@/services/CohortService/cohortService";
 import { getBlockTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
+import { telemetryFactory } from "@/utils/telemetry";
+import useStore from "@/store/store";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 
 type StateDetail = {
   name: string | undefined;
@@ -75,6 +79,8 @@ interface BlockOption {
 
 const Block: React.FC = () => {
   const { t } = useTranslation();
+  const store = useStore();
+  const isActiveYear = store.isActiveYearSelected;
   const [selectedSort, setSelectedSort] = useState<string>("Sort");
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
@@ -122,7 +128,12 @@ const Block: React.FC = () => {
   const [pageSize, setPageSize] = React.useState<string | number>(10);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const queryClient = useQueryClient();
-
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
+const setIsArchived = useSubmittedButtonStore(
+(state: any) => state.setIsArchived
+);
   const [filters, setFilters] = useState({
     name: searchKeyword,
     states: stateCode,
@@ -286,7 +297,6 @@ const Block: React.FC = () => {
     }
 
   }, [districtData]);
-
   const fetchBlocks = async () => {
     try {
       // const response = await queryClient.fetchQuery({
@@ -302,7 +312,9 @@ const Block: React.FC = () => {
       //       fieldName: "blocks",
       //     }),
       // });
-      const response = await getBlocksForDistricts({
+
+
+      const response=await   getBlocksForDistricts({
         controllingfieldfk:
           selectedDistrict === t("COMMON.ALL") ? "" : selectedDistrict,
         fieldName: "blocks",
@@ -365,7 +377,8 @@ const Block: React.FC = () => {
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-      const response = await getCohortList(reqParams)
+      const response= await  getCohortList(reqParams)
+
 
       const cohortDetails = response?.results?.cohortDetails || [];
       const filteredBlockData = cohortDetails
@@ -484,6 +497,24 @@ const Block: React.FC = () => {
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
     setSortBy(["name", sortOrder]);
     setSelectedSort(event.target.value);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'sort-by:'+event.target?.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
 
   const handleStateChange = async (event: SelectChangeEvent<string>) => {
@@ -509,6 +540,25 @@ const Block: React.FC = () => {
     if (selectedDistrict) {
       await getCohortSearchBlock(selectedDistrict);
     }
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-district:'+event.target.value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   useEffect(() => {
@@ -564,16 +614,21 @@ const Block: React.FC = () => {
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false)
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true)
+
     } else if (newValue === Status.ALL_LABEL) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: "",
       }));
+      setIsArchived(false)
+
     } else {
       setFilters((prevFilters: any) => {
         const { status, ...restFilters } = prevFilters;
@@ -581,6 +636,8 @@ const Block: React.FC = () => {
           ...restFilters,
         };
       });
+      setIsArchived(false)
+
     }
 
     await queryClient.invalidateQueries({
@@ -590,6 +647,26 @@ const Block: React.FC = () => {
       queryKey: [QueryKeys.FIELD_OPTION_READ, newValue],
       queryFn: () => getCohortList({ status: newValue }),
     });
+
+
+
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'changed-tab-to:'+newValue,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   const handleConfirmDelete = async () => {
@@ -602,6 +679,24 @@ const Block: React.FC = () => {
           )
         );
         showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'block-deletion-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
       } catch (error) {
         console.error("Error deleting state", error);
         showToastMessage(t("COMMON.BLOCK_DELETED_FAILURE"), "error");
@@ -642,6 +737,25 @@ const Block: React.FC = () => {
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
   const PagesSelector = () => (
     <Box sx={{ display: { xs: "block" } }}>
@@ -671,6 +785,24 @@ const Block: React.FC = () => {
     setEditState(null);
     setSelectedStateForEdit(null);
     setModalOpen(true);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'click-on-add-new',
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
   };
 
   //create cohort
@@ -683,6 +815,7 @@ const Block: React.FC = () => {
     extraArgument?: any
   ) => {
     const newDistrict = {
+      isCreate:true,
       options: [
         {
           controllingfieldfk: controllingField,
@@ -743,47 +876,76 @@ const Block: React.FC = () => {
     DistrictId?: string,
     extraArgument?: any
   ) => {
-    const newDistrict = {
-      options: [
-        {
-          controllingfieldfk: controllingField,
-          name,
-          value,
-        },
-      ],
-    };
-    try {
-      const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+    const updatedBy=localStorage.getItem("userId")
+if(updatedBy)
+{
+  const newDistrict = {
+    isCreate:false,
+    options: [
+      {
+        controllingfieldfk: controllingField,
+        name,
+        value,
+        updatedBy
 
-      if (response) {
-        filteredCohortOptionData();
-      }
-    } catch (error) {
-      console.error("Error adding district:", error);
+      },
+    ],
+  };
+  try {
+    const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+
+    if (response) {
+      filteredCohortOptionData();
     }
+  } catch (error) {
+    console.error("Error adding district:", error);
+  }
 
-    const queryParameters = {
-      name: name,
-    };
+  const queryParameters = {
+    name: name,
+    updatedBy:localStorage.getItem('userId'),
 
-    try {
-      const cohortCreateResponse = await updateCohort(
-        cohortIdForEdit,
-        queryParameters
-      );
-      if (cohortCreateResponse) {
-        await fetchBlocks();
-        await getCohortSearchBlock(selectedDistrict);
-        showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
+  };
+
+  try {
+    const cohortCreateResponse = await updateCohort(
+      cohortIdForEdit,
+      queryParameters
+    );
+    if (cohortCreateResponse) {
+      await fetchBlocks();
+      await getCohortSearchBlock(selectedDistrict);
+      showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+      const windowUrl = window.location.pathname;
+      const cleanedUrl = windowUrl.replace(/^\//, '');
+      const env = cleanedUrl.split("/")[0];
+
+
+      const telemetryInteract = {
+        context: {
+          env: env,
+          cdata: [],
+        },
+        edata: {
+          id: 'block-update-success',
+          type: TelemetryEventType.CLICK,
+          subtype: '',
+          pageid: cleanedUrl,
+        },
+      };
+      telemetryFactory.interact(telemetryInteract);
+
+    } else if (cohortCreateResponse.responseCode === 409) {
       showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
     }
-    setModalOpen(false);
-    setSelectedStateForEdit(null);
+  } catch (error) {
+    console.error("Error creating cohort:", error);
+    showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+  }
+  setModalOpen(false);
+  setSelectedStateForEdit(null);
+}
+   
   };
 
   const userProps = {
@@ -794,6 +956,7 @@ const Block: React.FC = () => {
     searchPlaceHolder: t("MASTER.SEARCHBAR_PLACEHOLDER_BLOCK"),
     showFilter: true,
     showSort: true,
+    showAddNew: !!isActiveYear,
     statusValue: statusValue,
     setStatusValue: setStatusValue,
     handleFilterChange: handleFilterChange,
@@ -954,7 +1117,7 @@ const Block: React.FC = () => {
             <Box sx={{ marginTop: 2 }}>
               {filteredCohortOptionData().length > 0 ? (
                 <KaTableComponent
-                  columns={getBlockTableData(t, isMobile)}
+                  columns={getBlockTableData(t, isMobile, isArchived)}
                   data={filteredCohortOptionData()}
                   limit={pageLimit}
                   offset={pageOffset}

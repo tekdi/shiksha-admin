@@ -4,9 +4,15 @@ export enum Role {
   TEAM_LEADER = "Team Leader",
   TEAM_LEADERS = "Team Leaders",
 
-  ADMIN = "Admin",
+  ADMIN = "State Admin MME",
+  CENTRAL_ADMIN = "Central Admin MME",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
+  CONTENT_CREATOR = "Content Creator",
+  CONTENT_REVIEWER = "Content Reviewer",
+  SCTA = "State Admin SCTA",
+  CCTA = "Central Admin CCTA"
+
 }
 
 export enum Status {
@@ -28,14 +34,24 @@ export enum Storage {
 }
 export enum FormContext {
   USERS = "USERS",
-}
+  COHORTS = "cohorts"
 
+}
+export enum TelemetryEventType {
+  CLICK = 'CLICK',
+  SEARCH = 'SEARCH',
+  VIEW = 'VIEW',
+  RADIO = "RADIO"
+
+}
 export enum FormContextType {
   STUDENT = "STUDENT",
   TEACHER = "TEACHER",
   TEAM_LEADER = "TEAM LEADER",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
+  COHORT = "cohort",
+  CONTENT_CREATOR = "CONTENT CREATOR"
 }
 
 export enum RoleId {
@@ -43,6 +59,7 @@ export enum RoleId {
   TEACHER = "3bde0028-6900-4900-9d05-eeb608843718",
   TEAM_LEADER = "9dd9328f-1bc7-444f-96e3-c5e1daa3514a",
   ADMIN = "ee482faf-8a41-45fe-9656-5533dd6a787c",
+  SCTA = "f972a14e-afdb-4502-8ede-cf1fcf171e46"
 }
 
 export enum DataKey {
@@ -79,10 +96,8 @@ export enum CohortTypes {
 export enum FormValues {
   FEMALE = "FEMALE",
   MALE = "MALE",
-  REGULAR="REGULAR",
-  REMOTE="REMOTE"
-
-
+  REGULAR = "REGULAR",
+  REMOTE = "REMOTE"
 }
 
 export enum InputTypes {
@@ -105,7 +120,7 @@ export const QueryKeys = {
 }
 
 
-export const monthColors:any = {
+export const monthColors: any = {
   "Jan": "#99CCFF",
   "Mar": "#D9B2FF",
   "Apr": "#FFABAB",
@@ -120,6 +135,7 @@ export const monthColors:any = {
 };
 
 export enum ResourceType {
-  PREREQUISITE = "prerequisite",
-  POSTREQUISITE = "postrequisite",
+  LEARNER_PRE_REQUISITE = "prerequisite",
+  LEARNER_POST_REQUISITE = "postrequisite",
+  FACILITATOR_REQUISITE = "facilitator-requisite",
 }

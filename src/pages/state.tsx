@@ -10,7 +10,7 @@ import {
   deleteOption,
   getStateBlockDistrictList,
 } from "@/services/MasterDataService";
-import { Numbers, QueryKeys, SORT } from "@/utils/app.constant";
+import { Numbers, QueryKeys, SORT, TelemetryEventType } from "@/utils/app.constant";
 import { transformLabel } from "@/utils/Helper";
 import {
   Box,
@@ -27,6 +27,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getStateDataMaster } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
 import Loader from "@/components/Loader";
+import { telemetryFactory } from "@/utils/telemetry";
 
 export interface StateDetail {
   updatedAt: any;
@@ -267,6 +268,25 @@ const State: React.FC = () => {
     value: number
   ) => {
     setPageOffset(value - 1);
+    const windowUrl = window.location.pathname;
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
+
+
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'change-page-number:'+value,
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
+
   };
   const PagesSelector = () => (
     <Box sx={{ display: { xs: "block" } }}>
