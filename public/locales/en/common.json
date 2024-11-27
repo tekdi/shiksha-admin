@@ -258,6 +258,7 @@
     "UPLOAD": "Upload",
     "COURSE_CREATED_SUCCESSFULLY": "Course created successfully",
     "COURSE_NOT_CREATED": "Course not created",
+    "UPLOAD_FAILED": "Upload Failed",
     "SUB-TOPIC": "Sub-topic",
     "SUBTOPICS": "Sub-Topics",
     "RESOURCES": "Resources",
