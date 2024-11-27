@@ -24,7 +24,6 @@ import {
   TelemetryEventType,
   apiCatchingDuration,
 } from "@/utils/app.constant";
-
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmationModal from "@/components/ConfirmationModal";
@@ -165,13 +164,6 @@ const setIsArchived = useSubmittedButtonStore(
   );
   const setSubmittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setSubmittedButtonStatus
-  );
- 
-  const createCenterStatus = useSubmittedButtonStore(
-    (state: any) => state.createCenterStatus
-  );
-  const setCreateCenterStatus = useSubmittedButtonStore(
-    (state: any) => state.setCreateCenterStatus
   );
   const setAdminInformation = useSubmittedButtonStore(
     (state: any) => state.setAdminInformation
