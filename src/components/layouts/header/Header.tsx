@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import FeatherIcon from "feather-icons-react";
 import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -34,6 +34,8 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   );
 
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
+  const [userRole, setUserRole] = useState("");
+
   const [academicYearList, setAcademicYearList] = useState<AcademicYear[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>("");
 
@@ -62,6 +64,15 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     }
   }, [setLanguage]);
 
+
+
+  useEffect(() => {
+    const storedUserData=localStorage.getItem("adminInfo")
+    if(storedUserData){
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
   const handleSelectChange = (event: SelectChangeEvent) => {
     setSelectedSessionId(event.target.value);
     console.log("selected academic year id", event.target.value);
@@ -137,7 +148,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
         {/* ------------ End Menu icon ------------- */}
 
         <Box flexGrow={1} />
-        <Box sx={{ flexBasis: "20%" }}>
+
+        
+       {userRole !== Role.CCTA && userRole !== Role.SCTA && userRole!=="" &&(<Box sx={{ flexBasis: "20%" }}>
           {/* <FormControl className="drawer-select" sx={{ width: '100%' }}> */}
           <Select
             onChange={handleSelectChange}
@@ -164,7 +177,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             ))}
           </Select>
           {/* </FormControl> */}
-        </Box>
+        </Box>)}
+
+
         <Box
           sx={{
             display: "flex",
