@@ -442,7 +442,7 @@ const response= await  getCohortList(reqParams)
       ],
     };
     try {
-      const response = await createOrUpdateOption(districtFieldId, newDistrict);
+      const response = await createOrUpdateOption(districtFieldId, newDistrict, t);
 
       if (response) {
         queryClient.invalidateQueries({
@@ -450,52 +450,53 @@ const response= await  getCohortList(reqParams)
         });
         await fetchDistricts();
       }
+      const queryParameters = {
+        name: name,
+        type: CohortTypes.DISTRICT,
+        status: Status.ACTIVE,
+        parentId: cohortIdofState,
+        customFields: [
+          {
+            fieldId: stateFieldId,
+            value: [stateCode],
+          },
+        ],
+      };
+  
+      try {
+        const cohortCreateResponse = await createCohort(queryParameters);
+        if (cohortCreateResponse) {
+          filteredCohortOptionData();
+          showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
+          const windowUrl = window.location.pathname;
+      const cleanedUrl = windowUrl.replace(/^\//, '');
+      const env = cleanedUrl.split("/")[0];
+  
+      const telemetryInteract = {
+        context: {
+          env: env,
+          cdata: [],
+        },
+        edata: {
+          id: 'district-created-success',
+          type: TelemetryEventType.CLICK,
+          subtype: '',
+          pageid: cleanedUrl,
+        },
+      };
+      telemetryFactory.interact(telemetryInteract);
+        } else if (cohortCreateResponse.responseCode === 409) {
+          showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+        }
+      } catch (error) {
+        console.error("Error creating cohort:", error);
+        showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+      }
     } catch (error) {
       console.error("Error adding district:", error);
     }
 
-    const queryParameters = {
-      name: name,
-      type: CohortTypes.DISTRICT,
-      status: Status.ACTIVE,
-      parentId: cohortIdofState,
-      customFields: [
-        {
-          fieldId: stateFieldId,
-          value: [stateCode],
-        },
-      ],
-    };
-
-    try {
-      const cohortCreateResponse = await createCohort(queryParameters);
-      if (cohortCreateResponse) {
-        filteredCohortOptionData();
-        showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
-        const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
-    const env = cleanedUrl.split("/")[0];
-
-    const telemetryInteract = {
-      context: {
-        env: env,
-        cdata: [],
-      },
-      edata: {
-        id: 'district-created-success',
-        type: TelemetryEventType.CLICK,
-        subtype: '',
-        pageid: cleanedUrl,
-      },
-    };
-    telemetryFactory.interact(telemetryInteract);
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
-      showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
-    }
+    
     setModalOpen(false);
     setSelectedStateForEdit(null);
   };
@@ -525,7 +526,7 @@ if(updatedBy)
   };
 
   try {
-    const response = await createOrUpdateOption(districtFieldId, newDistrict);
+    const response = await createOrUpdateOption(districtFieldId, newDistrict, t);
 
     if (response) {
       setDistrictsOptionRead((prevDistricts: any[]) =>
@@ -539,53 +540,56 @@ if(updatedBy)
         queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
       });
     }
+    const queryParameters = {
+      name: name,
+      updatedBy:localStorage.getItem('userId'),
+  
+    };
+  
+    try {
+      const cohortCreateResponse = await updateCohort(
+        cohortIdForEdit,
+        queryParameters
+      );
+  
+      if (cohortCreateResponse) {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+        });
+  
+        showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+    
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'district-updated-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+  
+      } else if (cohortCreateResponse.responseCode === 409) {
+        showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+      }
+    } catch (error) {
+      console.error("Error creating cohort:", error);
+      showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+    }
+
+    
   } catch (error) {
     console.error("Error adding district:", error);
   }
 
-  const queryParameters = {
-    name: name,
-    updatedBy:localStorage.getItem('userId'),
-
-  };
-
-  try {
-    const cohortCreateResponse = await updateCohort(
-      cohortIdForEdit,
-      queryParameters
-    );
-
-    if (cohortCreateResponse) {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
-      });
-
-      showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
-      const windowUrl = window.location.pathname;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
-      const env = cleanedUrl.split("/")[0];
   
-      const telemetryInteract = {
-        context: {
-          env: env,
-          cdata: [],
-        },
-        edata: {
-          id: 'district-updated-success',
-          type: TelemetryEventType.CLICK,
-          subtype: '',
-          pageid: cleanedUrl,
-        },
-      };
-      telemetryFactory.interact(telemetryInteract);
-
-    } else if (cohortCreateResponse.responseCode === 409) {
-      showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
-    }
-  } catch (error) {
-    console.error("Error creating cohort:", error);
-    showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
-  }
 
   setModalOpen(false);
   setSelectedStateForEdit(null);
