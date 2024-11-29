@@ -51,8 +51,10 @@ const StateDetails = () => {
         setCard(foundCard);
 
         const channel = store?.boards;
+        console.log(channel);
+
         setBoards(channel);
-        localStorage.removeItem("overallCommonSubjects");
+
         setLoading(false);
       }, 1000);
     };
@@ -64,24 +66,9 @@ const StateDetails = () => {
     router.back();
   };
 
-  const handleGradeChange = (event: any) => {
-    setGrade(event.target.value);
-  };
-
-  const handleMediumChange = (event: any) => {
-    setMedium(event.target.value);
-  };
-
-  const handleSearchChange = (event: any) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleDropdownChange = (event: any) => {
-    setSelectedOption(event.target.value);
-  };
-
   const handleBoardClick = (board: string, boardName: string) => {
     setBoard(boardName);
+    localStorage.removeItem("overallCommonSubjects");
     localStorage.removeItem("selectedGrade");
     localStorage.removeItem("selectedMedium");
     localStorage.removeItem("selectedType");
@@ -123,10 +110,6 @@ const StateDetails = () => {
 
   if (loading) {
     return <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />;
-  }
-
-  if (!card) {
-    return <Typography>{t("COURSE_PLANNER.DATA_NOT_FOUND")}</Typography>;
   }
 
   return (
