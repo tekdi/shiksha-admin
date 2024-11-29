@@ -19,6 +19,8 @@ body {
   padding: 0;
   font-family: Poppins, sans-serif !important;
 background: #fff !important;
+overflow-y: auto !important;
+height: 100vh !important;
 }
 
 @layer utilities {
@@ -184,4 +186,8 @@ p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-con
 .img-fluid{    width: 100%;
     height: auto;
     max-width: 300px;
+}
+
+lib-editor .h-100vh{
+  overflow-y: auto !important;
 }

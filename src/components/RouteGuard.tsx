@@ -59,7 +59,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       "/csvDetails",
       "/csvList",
       "/play",
-      "/edit-password"
+      "/edit-password",
     ];
     
     const isCoursePlannerContent = coursePlannerPaths.some((path) =>
