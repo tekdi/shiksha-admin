@@ -95,7 +95,7 @@ const ResourceList = () => {
                 <ResourceCard
                   title={item.name}
                   // type={item.app}
-                  // resource={item.type}
+                  resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
                 />
@@ -118,7 +118,7 @@ const ResourceList = () => {
                 <ResourceCard
                   title={item.name}
                   // type={item.app}
-                  // resource={item.type}
+                  resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
                 />
@@ -141,7 +141,7 @@ const ResourceList = () => {
                 <ResourceCard
                   title={item.name}
                   // type={item.app || "Facilitator"}
-                  // resource="Facilitator Requisite"
+                   resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
                 />
