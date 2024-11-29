@@ -146,7 +146,7 @@ const District: React.FC = () => {
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item.label);
+      const districtNameArray = districts.map((item: any) => item.label.toLowerCase());
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
@@ -235,7 +235,7 @@ const District: React.FC = () => {
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-const response= await  getCohortList(reqParams)
+      const response = await getCohortList(reqParams)
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -252,7 +252,7 @@ const response= await  getCohortList(reqParams)
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district.label === transformedName
+                district.label.toLowerCase() === transformedName.toLowerCase()
             );
 
             return {
@@ -284,8 +284,8 @@ const response= await  getCohortList(reqParams)
 
   useEffect(() => {
     if (districtsOptionRead.length && districtNameArr.length) {
-      if(stateCode)
-      getFilteredCohortData();
+      if (stateCode)
+        getFilteredCohortData();
     }
   }, [
     searchKeyword,
@@ -319,7 +319,7 @@ const response= await  getCohortList(reqParams)
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-      const response= await  getCohortList(reqParams)
+      const response = await getCohortList(reqParams)
 
       const activeBlocks = response?.results?.cohortDetails || [];
 
@@ -378,7 +378,7 @@ const response= await  getCohortList(reqParams)
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, '');
         const env = cleanedUrl.split("/")[0];
-    
+
         const telemetryInteract = {
           context: {
             env: env,
@@ -431,7 +431,7 @@ const response= await  getCohortList(reqParams)
     extraArgument?: any
   ) => {
     const newDistrict = {
-      isCreate:true,
+      isCreate: true,
 
       options: [
         {
@@ -462,29 +462,29 @@ const response= await  getCohortList(reqParams)
           },
         ],
       };
-  
+
       try {
         const cohortCreateResponse = await createCohort(queryParameters);
         if (cohortCreateResponse) {
           filteredCohortOptionData();
           showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
           const windowUrl = window.location.pathname;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
-      const env = cleanedUrl.split("/")[0];
-  
-      const telemetryInteract = {
-        context: {
-          env: env,
-          cdata: [],
-        },
-        edata: {
-          id: 'district-created-success',
-          type: TelemetryEventType.CLICK,
-          subtype: '',
-          pageid: cleanedUrl,
-        },
-      };
-      telemetryFactory.interact(telemetryInteract);
+          const cleanedUrl = windowUrl.replace(/^\//, '');
+          const env = cleanedUrl.split("/")[0];
+
+          const telemetryInteract = {
+            context: {
+              env: env,
+              cdata: [],
+            },
+            edata: {
+              id: 'district-created-success',
+              type: TelemetryEventType.CLICK,
+              subtype: '',
+              pageid: cleanedUrl,
+            },
+          };
+          telemetryFactory.interact(telemetryInteract);
         } else if (cohortCreateResponse.responseCode === 409) {
           showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
         }
@@ -496,7 +496,7 @@ const response= await  getCohortList(reqParams)
       console.error("Error adding district:", error);
     }
 
-    
+
     setModalOpen(false);
     setSelectedStateForEdit(null);
   };
@@ -509,92 +509,91 @@ const response= await  getCohortList(reqParams)
     DistrictId?: string,
     extraArgument?: any
   ) => {
-    const updatedBy=localStorage.getItem("userId")
-if(updatedBy)
-{
-  const newDistrict = {
-    isCreate:false,
+    const updatedBy = localStorage.getItem("userId")
+    if (updatedBy) {
+      const newDistrict = {
+        isCreate: false,
 
-    options: [
-      {
-        controllingfieldfk: controllingField,
-        name,
-        value,
-        updatedBy
-      },
-    ],
-  };
-
-  try {
-    const response = await createOrUpdateOption(districtFieldId, newDistrict, t);
-
-    if (response) {
-      setDistrictsOptionRead((prevDistricts: any[]) =>
-        prevDistricts.map((district: { value: string | undefined; }) =>
-          district.value === DistrictId
-            ? { ...district, name, value }
-            : district
-        )
-      );
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
-      });
-    }
-    const queryParameters = {
-      name: name,
-      updatedBy:localStorage.getItem('userId'),
-  
-    };
-  
-    try {
-      const cohortCreateResponse = await updateCohort(
-        cohortIdForEdit,
-        queryParameters
-      );
-  
-      if (cohortCreateResponse) {
-        queryClient.invalidateQueries({
-          queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
-        });
-  
-        showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
-        const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
-        const env = cleanedUrl.split("/")[0];
-    
-        const telemetryInteract = {
-          context: {
-            env: env,
-            cdata: [],
+        options: [
+          {
+            controllingfieldfk: controllingField,
+            name,
+            value,
+            updatedBy
           },
-          edata: {
-            id: 'district-updated-success',
-            type: TelemetryEventType.CLICK,
-            subtype: '',
-            pageid: cleanedUrl,
-          },
+        ],
+      };
+
+      try {
+        const response = await createOrUpdateOption(districtFieldId, newDistrict, t);
+
+        if (response) {
+          setDistrictsOptionRead((prevDistricts: any[]) =>
+            prevDistricts.map((district: { value: string | undefined; }) =>
+              district.value === DistrictId
+                ? { ...district, name, value }
+                : district
+            )
+          );
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+          });
+        }
+        const queryParameters = {
+          name: name,
+          updatedBy: localStorage.getItem('userId'),
+
         };
-        telemetryFactory.interact(telemetryInteract);
-  
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+
+        try {
+          const cohortCreateResponse = await updateCohort(
+            cohortIdForEdit,
+            queryParameters
+          );
+
+          if (cohortCreateResponse) {
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+            });
+
+            showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
+            const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: 'district-updated-success',
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
+
+          } else if (cohortCreateResponse.responseCode === 409) {
+            showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+          }
+        } catch (error) {
+          console.error("Error creating cohort:", error);
+          showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+        }
+
+
+      } catch (error) {
+        console.error("Error adding district:", error);
       }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
-      showToastMessage(t("COMMON.DISTRICT_DUPLICATION_FAILURE"), "error");
+
+
+
+      setModalOpen(false);
+      setSelectedStateForEdit(null);
     }
 
-    
-  } catch (error) {
-    console.error("Error adding district:", error);
-  }
-
-  
-
-  setModalOpen(false);
-  setSelectedStateForEdit(null);
-}
-   
   };
 
   const handleChangePageSize = (event: SelectChangeEvent<number>) => {
@@ -619,7 +618,7 @@ if(updatedBy)
         cdata: [],
       },
       edata: {
-        id: 'sort-by:'+event.target?.value,
+        id: 'sort-by:' + event.target?.value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -644,7 +643,7 @@ if(updatedBy)
         cdata: [],
       },
       edata: {
-        id: 'change-page-number:'+value,
+        id: 'change-page-number:' + value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -724,10 +723,10 @@ if(updatedBy)
         initialValues={
           selectedStateForEdit
             ? {
-                name: selectedStateForEdit.label,
-                value: selectedStateForEdit.value,
-                controllingField: selectedStateForEdit.stateCode,
-              }
+              name: selectedStateForEdit.label,
+              value: selectedStateForEdit.value,
+              controllingField: selectedStateForEdit.stateCode,
+            }
             : {}
         }
       />
@@ -736,8 +735,8 @@ if(updatedBy)
         message={
           countOfBlocks > 0
             ? t("COMMON.ARE_YOU_SURE_DELETE", {
-                block: `${countOfBlocks}`,
-              })
+              block: `${countOfBlocks}`,
+            })
             : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
         }
         handleAction={handleConfirmDelete}
@@ -757,29 +756,29 @@ if(updatedBy)
         selectedSort={selectedSort}
         shouldFetchDistricts={false}
         handleSearch={handleSearch}
-        showFilter={false}       
-        showAddNew= {!!isActiveYear}
+        showFilter={false}
+        showAddNew={!!isActiveYear}
         handleAddUserClick={() => {
           setModalOpen(true);
           setSelectedStateForEdit(null);
           const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
-    const env = cleanedUrl.split("/")[0];
+          const cleanedUrl = windowUrl.replace(/^\//, '');
+          const env = cleanedUrl.split("/")[0];
 
 
-    const telemetryInteract = {
-      context: {
-        env: env,
-        cdata: [],
-      },
-      edata: {
-        id: 'click-on-add-new',
-        type: TelemetryEventType.CLICK,
-        subtype: '',
-        pageid: cleanedUrl,
-      },
-    };
-    telemetryFactory.interact(telemetryInteract);
+          const telemetryInteract = {
+            context: {
+              env: env,
+              cdata: [],
+            },
+            edata: {
+              id: 'click-on-add-new',
+              type: TelemetryEventType.CLICK,
+              subtype: '',
+              pageid: cleanedUrl,
+            },
+          };
+          telemetryFactory.interact(telemetryInteract);
         }}
       >
         {loading ? (
