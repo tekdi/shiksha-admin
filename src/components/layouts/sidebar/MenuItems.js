@@ -55,7 +55,7 @@ const Menuitems = [
         {
           title: "SIDEBAR.COURSE_PLANNER",
           icon: coursePlannerIcon,
-          href: ["/course-planner", "/stateDetails", "/subjectDetails", "/importCsv", "/resourceList"],
+          href: ["/course-planner", "/stateDetails", "/subjectDetails", "/importCsv", "/resourceList", "/play/content/[identifier]"],
         },
       ]
     : []),
