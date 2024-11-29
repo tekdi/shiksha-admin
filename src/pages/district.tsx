@@ -267,7 +267,7 @@ const District: React.FC = () => {
           }
         )
         .filter((district: { label: any }) =>
-          districtNameArr.includes(district.label)
+          districtNameArr.includes(district?.label?.toLowerCase())
         );
 
       setDistrictData(filteredDistrictData);
