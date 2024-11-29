@@ -65,48 +65,44 @@ const Foundation = () => {
         setFramedata(framework);
 
         const states = await getOptionsByCategory(framework, "state");
+
         if (role === "Central Admin CCTA") {
-          // If the role is "Central Admin CCTA", get all states and their associations
+          // Get all states and their names
           const stateNames = states.map((state: any) => state.name);
           setStateNames(stateNames);
-          setState(stateNames); // Set all states to the store
+          setState(stateNames);
 
-          // Combine all associations from all states
-          const allAssociations = states.reduce((acc: any[], state: any) => {
-            if (state.associations) {
-              acc.push(...state.associations);
-            }
-            return acc;
-          }, []);
+          const stateBoardMapping = states.map((state: any) => {
+            const stateAssociations = state.associations || [];
+            const boards = getOptionsByCategory(framework, "board");
 
-          setStateassociations(allAssociations); // Store all associations in the store
-
-          const boards = await getOptionsByCategory(framework, "board");
-          if (boards) {
-            // Filter boards based on the combined associations
-            const commonBoards = boards
+            const associatedBoards = boards
               .filter((board: { code: any }) =>
-                allAssociations.some(
+                stateAssociations.some(
                   (assoc: { code: any; category: string }) =>
                     assoc.code === board.code && assoc.category === "board"
                 )
               )
-              .map((board: { name: any; code: any; associations: any }) => ({
+              .map((board: { name: any; code: any }) => ({
                 name: board.name,
                 code: board.code,
-                associations: board.associations,
               }));
 
-            // Remove duplicates from commonBoards
-            const uniqueBoards = commonBoards.filter(
-              (value: { code: any }, index: any, self: any[]) =>
-                index ===
-                self.findIndex((t: { code: any }) => t.code === value.code)
-            );
-            console.log(uniqueBoards);
+            return {
+              stateName: state.name,
+              boards: associatedBoards,
+              associations: stateAssociations,
+            };
+          });
 
-            setBoards(uniqueBoards);
-          }
+          console.log("State-Board Mapping:", stateBoardMapping);
+
+          setBoards(stateBoardMapping);
+
+          const allAssociations = stateBoardMapping.flatMap(
+            (mapping: any) => mapping.associations
+          );
+          setStateassociations(allAssociations);
         } else {
           const matchingState = states?.find(
             (state: any) => !stateName || state?.name === stateName
@@ -199,7 +195,6 @@ const Foundation = () => {
             </Box>
             <Divider />
             <Grid container spacing={2} mt={2}>
-              {/* Show either all states for Central Admin CCTA or just the matched one */}
               <Box
                 sx={{
                   display: "flex",
@@ -214,11 +209,12 @@ const Foundation = () => {
                         cursor: "pointer",
                         border: "1px solid #D0C5B4",
                         padding: "10px",
-                        borderRadius: "8px",
                         display: "flex",
                         justifyContent: "space-between",
+                        marginLeft: "15px",
                         marginBottom: "10px",
                         marginRight: "10px",
+                        width: "250px",
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
@@ -259,6 +255,7 @@ const Foundation = () => {
                       justifyContent: "space-between",
                       marginBottom: "10px",
                       marginRight: "10px",
+                      width: "250px",
                       "&:hover": {
                         backgroundColor: "#D0C5B4",
                       },
