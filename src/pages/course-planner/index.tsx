@@ -70,14 +70,12 @@ const Foundation = () => {
           // Get all states and their names
           const stateNames = states.map((state: any) => state.name);
           setStateNames(stateNames);
-          setState(stateNames); // Store all states in the store
+          setState(stateNames);
 
-          // Map state-to-board associations
           const stateBoardMapping = states.map((state: any) => {
             const stateAssociations = state.associations || [];
             const boards = getOptionsByCategory(framework, "board");
 
-            // Filter boards linked to the current state
             const associatedBoards = boards
               .filter((board: { code: any }) =>
                 stateAssociations.some(
@@ -93,7 +91,7 @@ const Foundation = () => {
             return {
               stateName: state.name,
               boards: associatedBoards,
-              associations: stateAssociations, // Include associations for each state
+              associations: stateAssociations,
             };
           });
 
@@ -101,11 +99,10 @@ const Foundation = () => {
 
           setBoards(stateBoardMapping);
 
-          // Optionally store associations for CCTA (can also be all states' associations)
           const allAssociations = stateBoardMapping.flatMap(
             (mapping: any) => mapping.associations
           );
-          setStateassociations(allAssociations); // Set all state associations
+          setStateassociations(allAssociations);
         } else {
           const matchingState = states?.find(
             (state: any) => !stateName || state?.name === stateName
@@ -198,7 +195,6 @@ const Foundation = () => {
             </Box>
             <Divider />
             <Grid container spacing={2} mt={2}>
-              {/* Show either all states for Central Admin CCTA or just the matched one */}
               <Box
                 sx={{
                   display: "flex",

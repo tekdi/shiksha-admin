@@ -10,7 +10,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const StateDetails = () => {
   const router = useRouter();
-  const { state } = router.query; // Extract state name from the query params
+  const { state } = router.query;
   const store = coursePlannerStore();
   const setBoard = taxonomyStore((state) => state.setBoard);
 
@@ -20,8 +20,6 @@ const StateDetails = () => {
   useEffect(() => {
     const fetchBoards = () => {
       let boardsData = [];
-
-      // Check if the data corresponds to CCTA format (multiple states with boards)
       if (
         Array.isArray(store?.boards) &&
         store.boards.some((item: any) => item.stateName)
