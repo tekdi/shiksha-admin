@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Card,
   Typography,
+  Grid,
+  Divider,
   Button,
   useMediaQuery,
   useTheme,
-  Grid,
-  Divider,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
-import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
-import CustomStepper from "@/components/Steper";
-import FilterSearchBar from "@/components/FilterSearchBar";
 import { useRouter } from "next/router";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
-import ProtectedRoute from "../../components/ProtectedRoute";
-import cardData from "@/data/cardData";
-import Loader from "@/components/Loader";
 import { getChannelDetails } from "@/services/coursePlanner";
 import { getOptionsByCategory } from "@/utils/Helper";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
+import Loader from "@/components/Loader";
+import { useTranslation } from "next-i18next";
+import ProtectedRoute from "../../components/ProtectedRoute";
 import { telemetryFactory } from "@/utils/telemetry";
 import { TelemetryEventType } from "@/utils/app.constant";
 import useStore from "@/store/store";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Foundation = () => {
   const router = useRouter();
@@ -34,18 +29,13 @@ const Foundation = () => {
   const userStore = useStore();
   const isActiveYear = userStore.isActiveYearSelected;
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const store = coursePlannerStore();
-  const tStore = taxonomyStore();
-  // State management
-  const [selectedCardId, setSelectedCardId] = useState(null);
-  const [grade, setGrade] = useState("");
-  const [medium, setMedium] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOption, setSelectedOption] = useState("");
-  const [selectFilter, setSelectFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [framework, setFramework] = useState<any[]>([]);
+  const [userStateName, setUserStateName] = useState<any>();
+  const [role, setRole] = useState<any>();
+  const [stateNames, setStateNames] = useState<any[]>([]);
+
   const setState = taxonomyStore((state) => state.setState);
   const setMatchingstate = coursePlannerStore(
     (state) => state.setMatchingstate
@@ -55,12 +45,14 @@ const Foundation = () => {
   );
   const setFramedata = coursePlannerStore((state) => state.setFramedata);
   const setBoards = coursePlannerStore((state) => state.setBoards);
-  const [userStateName, setUserStateName] = useState<any>();
 
   useEffect(() => {
     const fetchStateName = () => {
       if (typeof window !== "undefined") {
         const stateName = localStorage.getItem("stateName");
+        const adminInfo = JSON.parse(localStorage.getItem("adminInfo") || "{}");
+        const userRole = adminInfo?.role;
+        setRole(userRole);
         setUserStateName(stateName || "undefined");
       }
     };
@@ -74,30 +66,67 @@ const Foundation = () => {
 
         const states = await getOptionsByCategory(framework, "state");
 
-        const matchingState = states?.find(
-          (state: any) => !stateName || state?.name === stateName
-        );
+        if (role === "Central Admin CCTA") {
+          // Get all states and their names
+          const stateNames = states.map((state: any) => state.name);
+          setStateNames(stateNames);
+          setState(stateNames);
 
-        if (matchingState) {
-          setState(matchingState?.name);
-          setMatchingstate(matchingState);
-          setStateassociations(matchingState?.associations);
+          const stateBoardMapping = states.map((state: any) => {
+            const stateAssociations = state.associations || [];
+            const boards = getOptionsByCategory(framework, "board");
 
-          const boards = await getOptionsByCategory(framework, "board");
-          if (boards) {
-            const commonBoards = boards
+            const associatedBoards = boards
               .filter((board: { code: any }) =>
-                matchingState.associations.some(
+                stateAssociations.some(
                   (assoc: { code: any; category: string }) =>
                     assoc.code === board.code && assoc.category === "board"
                 )
               )
-              .map((board: { name: any; code: any; associations: any }) => ({
+              .map((board: { name: any; code: any }) => ({
                 name: board.name,
                 code: board.code,
-                associations: board.associations,
               }));
-            setBoards(commonBoards);
+
+            return {
+              stateName: state.name,
+              boards: associatedBoards,
+              associations: stateAssociations,
+            };
+          });
+
+          console.log("State-Board Mapping:", stateBoardMapping);
+
+          setBoards(stateBoardMapping);
+
+          const allAssociations = stateBoardMapping.flatMap(
+            (mapping: any) => mapping.associations
+          );
+          setStateassociations(allAssociations);
+        } else {
+          const matchingState = states?.find(
+            (state: any) => !stateName || state?.name === stateName
+          );
+          if (matchingState) {
+            setState(matchingState?.name);
+            setMatchingstate(matchingState);
+            setStateassociations(matchingState?.associations);
+            const boards = await getOptionsByCategory(framework, "board");
+            if (boards) {
+              const commonBoards = boards
+                .filter((board: { code: any }) =>
+                  matchingState.associations.some(
+                    (assoc: { code: any; category: string }) =>
+                      assoc.code === board.code && assoc.category === "board"
+                  )
+                )
+                .map((board: { name: any; code: any; associations: any }) => ({
+                  name: board.name,
+                  code: board.code,
+                  associations: board.associations,
+                }));
+              setBoards(commonBoards);
+            }
           }
         }
       } catch (err) {
@@ -120,28 +149,9 @@ const Foundation = () => {
     }
   }, [userStateName, isActiveYear]);
 
-  const handleCardClick = (id: any) => {
-    router.push(`/stateDetails?cardId=${id}`);
-  };
-
-  const handleGradeChange = (event: any) => {
-    setGrade(event.target.value);
-  };
-
-  const handleMediumChange = (event: any) => {
-    setMedium(event.target.value);
-  };
-
-  const handleSearchChange = (event: any) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleDropdownChange = (event: any) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleFilter = (value: string) => {
-    setSelectFilter(value);
+  const handleCardClick = (state: string) => {
+    // Navigate to the state details page
+    router.push(`/stateDetails?state=${state}`);
   };
 
   const handleCopyLink = (state: string) => {
@@ -149,7 +159,6 @@ const Foundation = () => {
     navigator.clipboard.writeText(link).then(
       () => {
         alert("Link copied to clipboard");
-
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
@@ -161,7 +170,6 @@ const Foundation = () => {
           },
           edata: {
             id: "copy_link",
-
             type: TelemetryEventType.CLICK,
             subtype: "",
             pageid: cleanedUrl,
@@ -182,79 +190,102 @@ const Foundation = () => {
           <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
         ) : (
           <Box sx={{ pl: "20px", mt: 5 }}>
-            <Box
-              sx={{
-                mb: 2,
-              }}
-            >
+            <Box sx={{ mb: 2 }}>
               <Typography>{t("MASTER.STATE")}</Typography>
             </Box>
             <Divider />
             <Grid container spacing={2} mt={2}>
-              {!selectedCardId ? (
-                cardData?.map((card: any) => (
-                  <Grid item xs={12} md={4} key={card.id}>
-                    {" "}
-                    {/* Added item prop and key here */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {role === "Central Admin CCTA" ? (
+                  stateNames.map((stateName) => (
                     <Box
+                      key={stateName}
                       sx={{
                         cursor: "pointer",
                         border: "1px solid #D0C5B4",
                         padding: "10px",
-                        borderRadius: "8px",
                         display: "flex",
                         justifyContent: "space-between",
+                        marginLeft: "15px",
+                        marginBottom: "10px",
+                        marginRight: "10px",
+                        width: "250px",
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
                       }}
-                      onClick={() => handleCardClick(card.id)}
+                      onClick={() => handleCardClick(stateName)}
                     >
-                      <Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "18px",
-                          }}
-                        >
-                          <FolderOutlinedIcon />
-                          <Typography>{store?.matchingstate?.name}</Typography>
-                        </Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "8px",
-                          }}
-                        >
-                          {/* <CustomStepper completedSteps={card.boardsUploaded} />
-                          <Typography
-                            sx={{
-                              fontSize: isSmallScreen ? "12px" : "14px",
-                              color: "#7C766F",
-                            }}
-                          >
-                            ({card.boardsUploaded}/{card.totalBoards}{" "}
-                            {t("COURSE_PLANNER.BOARDS_FULLY_UPLOADED")})
-                          </Typography> */}
-                        </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "18px",
+                        }}
+                      >
+                        <FolderOutlinedIcon />
+                        <Typography>{stateName}</Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleCopyLink(card.state);
+                            handleCopyLink(stateName);
                           }}
                           sx={{ minWidth: "auto", padding: 0 }}
-                        ></Button>
+                        >
+                          {/* Add any icon or text for the copy link button */}
+                        </Button>
                       </Box>
                     </Box>
-                  </Grid>
-                ))
-              ) : (
-                <Typography>{""}</Typography>
-              )}
+                  ))
+                ) : (
+                  <Box
+                    sx={{
+                      cursor: "pointer",
+                      border: "1px solid #D0C5B4",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: "10px",
+                      marginRight: "10px",
+                      width: "250px",
+                      "&:hover": {
+                        backgroundColor: "#D0C5B4",
+                      },
+                    }}
+                    onClick={() => handleCardClick(store?.matchingstate?.name)}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "18px",
+                      }}
+                    >
+                      <FolderOutlinedIcon />
+                      <Typography>{store?.matchingstate?.name}</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCopyLink(store?.matchingstate?.name);
+                        }}
+                        sx={{ minWidth: "auto", padding: 0 }}
+                      >
+                        {/* Add any icon or text for the copy link button */}
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
             </Grid>
           </Box>
         )}

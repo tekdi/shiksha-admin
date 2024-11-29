@@ -307,6 +307,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           ),
           "success"
         );
+        reassignButtonStatus
+            ? setReassignButtonStatus(false)
+            : setReassignButtonStatus(true);
         if( userType === Role.FACILITATORS) {
           if (selectedDistrict[0] !== districtName) 
           {
@@ -369,7 +372,8 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           setReassignAlertModal(true);
           setAssignedTeamLeader(resp?.userDetails?.length);
           setSelectedBlockForTL(checkedCenters[0]);
-          const userNames = resp?.userDetails?.map((user: any) => user.name);
+          const userNames = resp?.userDetails?.map((user: any) => firstLetterInUpperCase(user.name));
+
           setSelectedTLUserID(userId);
           setAssignedTeamLeaderNames(userNames);
         } else {

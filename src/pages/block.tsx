@@ -321,7 +321,7 @@ const setIsArchived = useSubmittedButtonStore(
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
-      const blockNameArray = blocks.map((item: any) => item.label);
+      const blockNameArray = blocks.map((item: any) => item.label.toLowerCase());
       setBlockNameArr(blockNameArray);
 
       const blockCodeArray = blocks.map((item: any) => item.value);
@@ -396,7 +396,7 @@ const setIsArchived = useSubmittedButtonStore(
             const transformedName = blockDetail.name;
 
             const matchingBlock = blocksOptionRead.find(
-              (block: BlockOption) => block.label === transformedName
+              (block: BlockOption) => block?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
 
             return {
@@ -825,45 +825,46 @@ const setIsArchived = useSubmittedButtonStore(
     };
 
     try {
-      const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+      const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
       if (response) {
         await fetchBlocks();
+      }
+      const queryParameters = {
+        name: name,
+        type: CohortTypes.BLOCK,
+        status: Status.ACTIVE,
+        parentId: cohortId || "",
+        customFields: [
+          {
+            fieldId: stateFieldId, // state fieldId
+            value: [stateCode], // state code
+          },
+  
+          {
+            fieldId: districtFieldId, // district fieldId
+            value: [controllingField], // district code
+          },
+        ],
+      };
+  
+      try {
+        const cohortCreateResponse = await createCohort(queryParameters);
+        if (cohortCreateResponse) {
+          filteredCohortOptionData();
+          showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
+        } else if (cohortCreateResponse.responseCode === 409) {
+          showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+        }
+      } catch (error) {
+        console.error("Error creating cohort:", error);
+        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
       }
     } catch (error) {
       console.error("Error adding district:", error);
     }
 
-    const queryParameters = {
-      name: name,
-      type: CohortTypes.BLOCK,
-      status: Status.ACTIVE,
-      parentId: cohortId || "",
-      customFields: [
-        {
-          fieldId: stateFieldId, // state fieldId
-          value: [stateCode], // state code
-        },
-
-        {
-          fieldId: districtFieldId, // district fieldId
-          value: [controllingField], // district code
-        },
-      ],
-    };
-
-    try {
-      const cohortCreateResponse = await createCohort(queryParameters);
-      if (cohortCreateResponse) {
-        filteredCohortOptionData();
-        showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-    }
+    
     setModalOpen(false);
     setSelectedStateForEdit(null);
   };
@@ -891,56 +892,57 @@ if(updatedBy)
     ],
   };
   try {
-    const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+    const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
     if (response) {
       filteredCohortOptionData();
+    }
+    const queryParameters = {
+      name: name,
+      updatedBy:localStorage.getItem('userId'),
+  
+    };
+  
+    try {
+      const cohortCreateResponse = await updateCohort(
+        cohortIdForEdit,
+        queryParameters
+      );
+      if (cohortCreateResponse) {
+        await fetchBlocks();
+        await getCohortSearchBlock(selectedDistrict);
+        showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+  
+  
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'block-update-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+  
+      } else if (cohortCreateResponse.responseCode === 409) {
+        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+      }
+    } catch (error) {
+      console.error("Error creating cohort:", error);
+      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
     }
   } catch (error) {
     console.error("Error adding district:", error);
   }
 
-  const queryParameters = {
-    name: name,
-    updatedBy:localStorage.getItem('userId'),
-
-  };
-
-  try {
-    const cohortCreateResponse = await updateCohort(
-      cohortIdForEdit,
-      queryParameters
-    );
-    if (cohortCreateResponse) {
-      await fetchBlocks();
-      await getCohortSearchBlock(selectedDistrict);
-      showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
-      const windowUrl = window.location.pathname;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
-      const env = cleanedUrl.split("/")[0];
-
-
-      const telemetryInteract = {
-        context: {
-          env: env,
-          cdata: [],
-        },
-        edata: {
-          id: 'block-update-success',
-          type: TelemetryEventType.CLICK,
-          subtype: '',
-          pageid: cleanedUrl,
-        },
-      };
-      telemetryFactory.interact(telemetryInteract);
-
-    } else if (cohortCreateResponse.responseCode === 409) {
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-    }
-  } catch (error) {
-    console.error("Error creating cohort:", error);
-    showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-  }
+ 
   setModalOpen(false);
   setSelectedStateForEdit(null);
 }

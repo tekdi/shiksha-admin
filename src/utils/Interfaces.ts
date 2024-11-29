@@ -145,7 +145,7 @@ export interface Context {
   mode?: string;
   authToken?: string;
   sid?: string;
-  did?: string;
+  did?: any;
   uid?: string;
   channel: string;
   pdata: Pdata;
@@ -158,7 +158,7 @@ export interface Context {
   endpoint?: string;
   dispatcher?: object;
   partner?: any[];
-  contentId: string;
+  contentId?: any;
   dims?: any[];
   app?: string[];
   userData?: {
@@ -198,7 +198,7 @@ export interface Metadata {
   baseDir?: string;
 }
 export interface PlayerConfig {
-  context?: Context;
+  context: Context;
   config?: Config;
   metadata?: Metadata;
   data?: any;
