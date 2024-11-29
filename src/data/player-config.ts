@@ -1,9 +1,15 @@
+import { getDeviceId } from "@/utils/Helper";
 import { PlayerConfig } from "@/utils/Interfaces";
 
 let name = "";
 if (typeof window !== "undefined" && window.localStorage) {
   name = localStorage.getItem("userName") || "";
 }
+
+const DeviceId = getDeviceId().then((deviceId) => {
+  return deviceId;
+});
+
 export const V2PlayerConfig: PlayerConfig = {
   context: {
     mode: "play",
@@ -13,17 +19,17 @@ export const V2PlayerConfig: PlayerConfig = {
       ver: "1.0.0",
       pid: "admin-portal",
     },
-    contentId: "do_12345",
+    contentId: "",
     sid: "",
     uid: "",
     timeDiff: -0.089,
-    channel: "test-k12-channel",
-    tags: ["test-k12-channel"],
-    did: "",
-    contextRollup: { l1: "test-k12-channel" },
+    channel: process.env.NEXT_PUBLIC_CHANNEL_ID || "",
+    tags: [process.env.NEXT_PUBLIC_CHANNEL_ID || ""],
+    did: DeviceId,
+    contextRollup: { l1: process.env.NEXT_PUBLIC_CHANNEL_ID || "" },
     objectRollup: {},
     userData: { firstName: name, lastName: "" },
-    host: "https://telemetry.prathamdigital.org",
+    host: "",
     endpoint: "/v1/telemetry",
   },
   config: {
@@ -33,7 +39,7 @@ export const V2PlayerConfig: PlayerConfig = {
     host: "",
     overlay: { showUser: false },
     splash: {
-      text: "",
+      text: "Powered by Pratham",
       icon: "",
       bgImage: "assets/icons/splacebackground_1.png",
       webLink: "",
@@ -54,6 +60,7 @@ export const V2PlayerConfig: PlayerConfig = {
   },
   data: {},
 };
+
 export const V1PlayerConfig: PlayerConfig = {
   config: {
     whiteListUrl: [],
@@ -114,16 +121,16 @@ export const V1PlayerConfig: PlayerConfig = {
       ver: "1.0.0",
       pid: "admin-portal",
     },
-    contentId: "do_12345",
+    contentId: "",
     sid: "",
     uid: "",
     timeDiff: -1.129,
     contextRollup: {},
-    channel: "test-k12-channel",
-    did: "",
+    channel: process.env.NEXT_PUBLIC_CHANNEL_ID || "",
+    did: DeviceId,
     dims: [],
-    tags: ["test-k12-channel"],
-    app: ["test-k12-channel"],
+    tags: [process.env.NEXT_PUBLIC_CHANNEL_ID || ""],
+    app: [process.env.NEXT_PUBLIC_CHANNEL_ID || ""],
     cdata: [],
     userData: {
       firstName: name,
