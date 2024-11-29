@@ -1,5 +1,9 @@
 import { PlayerConfig } from "@/utils/Interfaces";
 
+let name = "";
+if (typeof window !== "undefined" && window.localStorage) {
+  name = localStorage.getItem("userName") || "";
+}
 export const V2PlayerConfig: PlayerConfig = {
   context: {
     mode: "play",
@@ -18,7 +22,7 @@ export const V2PlayerConfig: PlayerConfig = {
     did: "",
     contextRollup: { l1: "test-k12-channel" },
     objectRollup: {},
-    userData: { firstName: "Guest", lastName: "User" },
+    userData: { firstName: name, lastName: "" },
     host: "https://telemetry.prathamdigital.org",
     endpoint: "/v1/telemetry",
   },
@@ -122,9 +126,9 @@ export const V1PlayerConfig: PlayerConfig = {
     app: ["test-k12-channel"],
     cdata: [],
     userData: {
-      firstName: "Guest",
-      lastName: "User",
+      firstName: name,
+      lastName: "",
     },
   },
-  data: {}
+  data: {},
 };
