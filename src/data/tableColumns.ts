@@ -25,7 +25,10 @@ const generateColumns = (
   }));
 };
 
-export const getUserTableColumns = (t: any, isMobile: boolean) => {
+export const getUserTableColumns = (t: any, isMobile: boolean, isArchived?:any) => {
+ 
+
+
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
@@ -40,7 +43,7 @@ export const getUserTableColumns = (t: any, isMobile: boolean) => {
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 160 },
   ];
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear) {
+  if (isActiveYear && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: "TABLE_TITLE.ACTIONS",
@@ -52,7 +55,8 @@ export const getUserTableColumns = (t: any, isMobile: boolean) => {
   return generateColumns(t, configs, isMobile);
 };
 
-export const getTLTableColumns = (t: any, isMobile: boolean) => {
+export const getTLTableColumns = (t: any, isMobile: boolean, isArchived:any) => {
+
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
@@ -65,7 +69,7 @@ export const getTLTableColumns = (t: any, isMobile: boolean) => {
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 160 },
   ];
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear) {
+  if (isActiveYear && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: "TABLE_TITLE.ACTIONS",
@@ -77,7 +81,33 @@ export const getTLTableColumns = (t: any, isMobile: boolean) => {
   return generateColumns(t, configs, isMobile);
 };
 
-export const getCenterTableData = (t: any, isMobile: boolean) => {
+export const getContentCreatorTableColumns = (t: any, isMobile: boolean, isArchived:any) => {
+
+  const configs: ColumnConfig[] = [
+    { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
+    { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
+    { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
+    // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130 },
+    { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
+    { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
+    { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 160 },
+    { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 160 },
+  ];
+  // Conditionally add the "actions" column if isActiveYear is true
+  if (isActiveYear && !isArchived) {
+    configs.push({
+      key: "actions",
+      titleKey: "TABLE_TITLE.ACTIONS",
+      width: 170,
+      isSortable: false,
+    });
+  }
+
+  return generateColumns(t, configs, isMobile);
+};
+
+export const getCenterTableData = (t: any, isMobile: boolean, isArchived:any) => {
+
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
@@ -98,7 +128,7 @@ export const getCenterTableData = (t: any, isMobile: boolean) => {
     },
   ];
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear) {
+  if (isActiveYear && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: "TABLE_TITLE.ACTIONS",
@@ -183,7 +213,8 @@ export const getDistrictTableData = (t: any, isMobile: boolean) => {
   return generateColumns(t, configs, isMobile);
 };
 
-export const getBlockTableData = (t: any, isMobile: boolean) => {
+export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) => {
+
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: t("TABLE_TITLE.BLOCK").toUpperCase(), width: 130 },
     { key: "code", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
@@ -208,7 +239,7 @@ export const getBlockTableData = (t: any, isMobile: boolean) => {
       width: 130,
     },
   ];
-  if (isActiveYear) {
+  if (isActiveYear && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "export NEXT_PRIVATE_LOCAL_WEBPACK=true && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -17,12 +17,12 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
     "@module-federation/nextjs-mf": "^8.5.5",
     "@module-federation/utilities": "3.0.11",
-    "@mui/icons-material": "^5.15.20",
-    "@mui/material": "^5.16.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.21",
     "@project-sunbird/client-services": "^7.0.6",
     "@project-sunbird/telemetry-sdk": "^1.3.0",
     "@rjsf/core": "^5.19.3",

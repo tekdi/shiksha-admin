@@ -41,6 +41,7 @@ import { getBlockTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 
 type StateDetail = {
   name: string | undefined;
@@ -127,7 +128,12 @@ const Block: React.FC = () => {
   const [pageSize, setPageSize] = React.useState<string | number>(10);
   const [isFirstVisit, setIsFirstVisit] = useState(true);
   const queryClient = useQueryClient();
-
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
+const setIsArchived = useSubmittedButtonStore(
+(state: any) => state.setIsArchived
+);
   const [filters, setFilters] = useState({
     name: searchKeyword,
     states: stateCode,
@@ -315,7 +321,7 @@ const Block: React.FC = () => {
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
-      const blockNameArray = blocks.map((item: any) => item.label);
+      const blockNameArray = blocks.map((item: any) => item.label.toLowerCase());
       setBlockNameArr(blockNameArray);
 
       const blockCodeArray = blocks.map((item: any) => item.value);
@@ -390,7 +396,7 @@ const Block: React.FC = () => {
             const transformedName = blockDetail.name;
 
             const matchingBlock = blocksOptionRead.find(
-              (block: BlockOption) => block.label === transformedName
+              (block: BlockOption) => block?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
 
             return {
@@ -607,16 +613,21 @@ const Block: React.FC = () => {
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false)
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true)
+
     } else if (newValue === Status.ALL_LABEL) {
       setFilters((prevFilters: any) => ({
         ...prevFilters,
         status: "",
       }));
+      setIsArchived(false)
+
     } else {
       setFilters((prevFilters: any) => {
         const { status, ...restFilters } = prevFilters;
@@ -624,6 +635,8 @@ const Block: React.FC = () => {
           ...restFilters,
         };
       });
+      setIsArchived(false)
+
     }
 
     await queryClient.invalidateQueries({
@@ -801,6 +814,7 @@ const Block: React.FC = () => {
     extraArgument?: any
   ) => {
     const newDistrict = {
+      isCreate:true,
       options: [
         {
           controllingfieldfk: controllingField,
@@ -811,45 +825,46 @@ const Block: React.FC = () => {
     };
 
     try {
-      const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+      const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
       if (response) {
         await fetchBlocks();
+      }
+      const queryParameters = {
+        name: name,
+        type: CohortTypes.BLOCK,
+        status: Status.ACTIVE,
+        parentId: cohortId || "",
+        customFields: [
+          {
+            fieldId: stateFieldId, // state fieldId
+            value: [stateCode], // state code
+          },
+  
+          {
+            fieldId: districtFieldId, // district fieldId
+            value: [controllingField], // district code
+          },
+        ],
+      };
+  
+      try {
+        const cohortCreateResponse = await createCohort(queryParameters);
+        if (cohortCreateResponse) {
+          filteredCohortOptionData();
+          showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
+        } else if (cohortCreateResponse.responseCode === 409) {
+          showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+        }
+      } catch (error) {
+        console.error("Error creating cohort:", error);
+        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
       }
     } catch (error) {
       console.error("Error adding district:", error);
     }
 
-    const queryParameters = {
-      name: name,
-      type: CohortTypes.BLOCK,
-      status: Status.ACTIVE,
-      parentId: cohortId || "",
-      customFields: [
-        {
-          fieldId: stateFieldId, // state fieldId
-          value: [stateCode], // state code
-        },
-
-        {
-          fieldId: districtFieldId, // district fieldId
-          value: [controllingField], // district code
-        },
-      ],
-    };
-
-    try {
-      const cohortCreateResponse = await createCohort(queryParameters);
-      if (cohortCreateResponse) {
-        filteredCohortOptionData();
-        showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-    }
+    
     setModalOpen(false);
     setSelectedStateForEdit(null);
   };
@@ -865,7 +880,7 @@ const Block: React.FC = () => {
 if(updatedBy)
 {
   const newDistrict = {
-
+    isCreate:false,
     options: [
       {
         controllingfieldfk: controllingField,
@@ -877,56 +892,57 @@ if(updatedBy)
     ],
   };
   try {
-    const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+    const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
     if (response) {
       filteredCohortOptionData();
+    }
+    const queryParameters = {
+      name: name,
+      updatedBy:localStorage.getItem('userId'),
+  
+    };
+  
+    try {
+      const cohortCreateResponse = await updateCohort(
+        cohortIdForEdit,
+        queryParameters
+      );
+      if (cohortCreateResponse) {
+        await fetchBlocks();
+        await getCohortSearchBlock(selectedDistrict);
+        showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const env = cleanedUrl.split("/")[0];
+  
+  
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: 'block-update-success',
+            type: TelemetryEventType.CLICK,
+            subtype: '',
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+  
+      } else if (cohortCreateResponse.responseCode === 409) {
+        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+      }
+    } catch (error) {
+      console.error("Error creating cohort:", error);
+      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
     }
   } catch (error) {
     console.error("Error adding district:", error);
   }
 
-  const queryParameters = {
-    name: name,
-    updatedBy:localStorage.getItem('userId'),
-
-  };
-
-  try {
-    const cohortCreateResponse = await updateCohort(
-      cohortIdForEdit,
-      queryParameters
-    );
-    if (cohortCreateResponse) {
-      await fetchBlocks();
-      await getCohortSearchBlock(selectedDistrict);
-      showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
-      const windowUrl = window.location.pathname;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
-      const env = cleanedUrl.split("/")[0];
-
-
-      const telemetryInteract = {
-        context: {
-          env: env,
-          cdata: [],
-        },
-        edata: {
-          id: 'block-update-success',
-          type: TelemetryEventType.CLICK,
-          subtype: '',
-          pageid: cleanedUrl,
-        },
-      };
-      telemetryFactory.interact(telemetryInteract);
-
-    } else if (cohortCreateResponse.responseCode === 409) {
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-    }
-  } catch (error) {
-    console.error("Error creating cohort:", error);
-    showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-  }
+ 
   setModalOpen(false);
   setSelectedStateForEdit(null);
 }
@@ -1102,7 +1118,7 @@ if(updatedBy)
             <Box sx={{ marginTop: 2 }}>
               {filteredCohortOptionData().length > 0 ? (
                 <KaTableComponent
-                  columns={getBlockTableData(t, isMobile)}
+                  columns={getBlockTableData(t, isMobile, isArchived)}
                   data={filteredCohortOptionData()}
                   limit={pageLimit}
                   offset={pageOffset}

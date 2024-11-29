@@ -127,7 +127,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
         </Box>
       </Tooltip>
 
-     { userAction && ( <Tooltip title={reassignType}>
+     { userAction && reassignType && ( <Tooltip title={reassignType}>
         <Box
           onClick={() => {
             if(reassignCohort)

@@ -18,12 +18,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: Poppins, sans-serif !important;
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+background: #fff !important;
 }
 
 @layer utilities {
@@ -79,6 +74,7 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
 .ka-thead-cell {
   font-weight: 600;
 }
+
 .ka-thead-cell-content {
   font-weight: normal !important;
 }
@@ -91,18 +87,16 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
   background-color: white;
 }
 
-.add-to-library {
+/* .add-to-library {
   overflow-y: auto;
-}
+} */
 
 .player-grid {
   height: 100vh !important;
   border: solid 1px #ccc;
 }
 
-.player {
-  
-}
+.player {}
 
 #overlay-button[aria-label="Player Menu Open"] {
   margin-top: 4rem !important;
@@ -112,3 +106,82 @@ ul.MuiList-root li.MuiMenuItem-root[data-value=""] {
   display: none !important;
 }
 
+.Request-btn {
+  background: #FDBE16 !important;
+  border-radius: 100px !important;
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+  color: #1E1B16 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.table-ka-container .ka-table-wrapper {
+  /* max-height: calc(100vh - 390px) !important; */
+  min-height: 100% !important;
+}
+
+.css-6hp17o-MuiList-root-MuiMenu-list {
+  max-height: 300px !important;
+  min-height: 100% !important;
+}
+
+
+/* .css-1latkvx-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+  color: #000 !important;
+} */
+
+.Mui-focused {
+  color: #000 !important;
+}
+
+.css-1bxxajt-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #FDBE16 !important;
+}
+
+.css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #FDBE16 !important;
+}
+
+div h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-content{
+  font-family: Poppins, sans-serif !important;
+}
+
+
+.two-line-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.one-line-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ka-thead-cell-content {
+  font-size: 12px !important;
+  color: #635E57 !important;
+  font-weight: 400 !important;
+}
+
+.create-card{
+  min-height: 118px !important;
+}
+
+.img-fluid{    width: 100%;
+    height: auto;
+    max-width: 300px;
+}

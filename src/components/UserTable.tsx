@@ -23,7 +23,7 @@ import { Role, apiCatchingDuration } from "@/utils/app.constant";
 import { getFormRead } from "@/services/CreateUserService";
 import { showToastMessage } from "./Toastify";
 import { capitalizeFirstLetterOfEachWordInArray , firstLetterInUpperCase} from "../utils/Helper";
-import { getUserTableColumns, getTLTableColumns } from "@/data/tableColumns";
+import { getUserTableColumns, getTLTableColumns, getContentCreatorTableColumns } from "@/data/tableColumns";
 import { TablePagination, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/system";
 import CommonUserModal from "./CommonUserModal";
@@ -121,8 +121,12 @@ const UserTable: React.FC<UserTableProps> = ({
   const setSelectedCenterStore = useSubmittedButtonStore(
     (state: any) => state.setSelectedCenterStore
   );
-
-
+  const isArchived = useSubmittedButtonStore(
+        (state: any) => state.isArchived
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
 
  
   const [selectedStateCode, setSelectedStateCode] = useState("");
@@ -203,6 +207,12 @@ const UserTable: React.FC<UserTableProps> = ({
   });
   const { data:teamLeaderFormData ,isLoading: teamLeaderFormDataLoading, error :teamLeaderFormDataErrror } = useQuery<any[]>({
     queryKey: ["teamLeaderFormData"],  
+    queryFn: () => Promise.resolve([]), 
+    staleTime: apiCatchingDuration.GETREADFORM,
+    enabled: false, 
+  });
+  const { data:contentCreatorFormData ,isLoading: contentCreatorFormDataFormDataLoading, error :contentCreatorFormDataErrror } = useQuery<any[]>({
+    queryKey: ["contentCreatorFormData"],  
     queryFn: () => Promise.resolve([]), 
     staleTime: apiCatchingDuration.GETREADFORM,
     enabled: false, 
@@ -361,17 +371,24 @@ const UserTable: React.FC<UserTableProps> = ({
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false);
+
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true);
+
     } else {
+      setIsArchived(false);
+
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
           ...restFilters,
         };
+
       });
     }
     console.log(filters);
@@ -684,9 +701,9 @@ console.log(code[0])
           if (data[item.name] && item?.maxSelections > 1) {
             return [field?.value];
           } else if (item?.type === "checkbox") {
-            return String(field?.value).split(",");
+            return String(field?.code).split(",");
           } else {
-            return field?.value?.toLowerCase();
+            return field?.code?.toLowerCase();
           }
         } else {
           if (item?.type === "numeric") {
@@ -764,6 +781,11 @@ console.log(code[0])
         formFields = await getFormRead("USERS", "TEAM LEADER");
         setFormData(mapFields(teamLeaderFormData, response));
         // handleOpenAddTeamLeaderModal();
+      }
+      else if(Role.CONTENT_CREATOR === role)
+      {
+        formFields = await getFormRead("USERS", Role.CONTENT_CREATOR);
+        setFormData(mapFields(contentCreatorFormData, response));
       }
       handleOpenAddLearnerModal();
 
@@ -1144,7 +1166,7 @@ console.log(selectedBlockStore)
     fetchData();
   }, [data, cohortsFetched]);
 
-
+console.log(userType)
   useEffect(() => {
     const fetchData =  () => {
       try {
@@ -1224,11 +1246,19 @@ console.log(selectedBlockStore)
               //   });
 
               // }
-
-
-              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS"))
+              if(userType===Role.CONTENT_CREATOR)
               {
-                console.log("true---")
+                setFilters({
+                  states: stateField.code,
+                  role: role,
+                  status:[statusValue],
+                })
+
+              }
+              else{
+
+              if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS") &&userType!==Role.CONTENT_CREATOR)
+              {
                setFilters({
                   states: stateField.code,
                   districts:selectedDistrictCode,
@@ -1237,7 +1267,7 @@ console.log(selectedBlockStore)
                   status:[statusValue],
                 })
               }
-              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS"))
+              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS") && userType!==Role.CONTENT_CREATOR)
               {
                setFilters({
                   states: stateField.code,
@@ -1250,6 +1280,7 @@ console.log(selectedBlockStore)
              
              
               }
+            }
               
             
             // setStates(object);
@@ -1263,11 +1294,11 @@ console.log(selectedBlockStore)
     };
   
     fetchData();
-  }, [selectedBlockCode, selectedDistrictCode]);
+  }, [selectedBlockCode, selectedDistrictCode, userType]);
   useEffect(() => {
     const fetchData =  () => {
      // console.log(selectedCenter.length)
-      if(userType===Role.TEAM_LEADERS)
+      if(userType===Role.TEAM_LEADERS || userType===Role.CONTENT_CREATOR)
       {
         setEnableCenterFilter(false);
 
@@ -1522,7 +1553,6 @@ console.log(selectedBlockStore)
   );
 
 
-  console.log("data-----------------------------", data)
   const userProps = {
     userType: userType,
     searchPlaceHolder: searchPlaceholder,
@@ -1572,9 +1602,9 @@ console.log(selectedBlockStore)
       ) : data?.length !== 0 && loading === false ? (
         <KaTableComponent
           columns={
-            role === Role.TEAM_LEADER
-              ? getTLTableColumns(t, isMobile)
-              : getUserTableColumns(t, isMobile)
+            role === Role.TEAM_LEADER 
+              ? getTLTableColumns(t, isMobile, isArchived)
+              :role === Role.CONTENT_CREATOR?getContentCreatorTableColumns(t, isMobile, isArchived): getUserTableColumns(t, isMobile, isArchived)
           }
           reassignCohort={handleReassignCohort}
           data={data}
@@ -1590,7 +1620,7 @@ console.log(selectedBlockStore)
           pagination={pagination}
          // reassignCohort={reassignCohort}
           noDataMessage={data?.length === 0 ? t("COMMON.NO_USER_FOUND") : ""}
-          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"):  t("COMMON.REASSIGN_CENTERS")}
+          reassignType={userType===Role.TEAM_LEADERS?  t("COMMON.REASSIGN_BLOCKS"): userType===Role.CONTENT_CREATOR?undefined: t("COMMON.REASSIGN_CENTERS")}
         />
       ) : (
         loading === false &&
@@ -1672,7 +1702,7 @@ console.log(selectedBlockStore)
             ? FormContextType.STUDENT
             : userType === Role.FACILITATORS
               ? FormContextType.TEACHER
-              : FormContextType.TEAM_LEADER
+              : userType === Role.CONTENT_CREATOR?FormContextType.CONTENT_CREATOR: FormContextType.TEAM_LEADER
         }
       />
     </HeaderComponent>

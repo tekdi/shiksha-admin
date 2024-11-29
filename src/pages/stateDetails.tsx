@@ -51,8 +51,10 @@ const StateDetails = () => {
         setCard(foundCard);
 
         const channel = store?.boards;
+        console.log(channel);
+
         setBoards(channel);
-        localStorage.removeItem("overallCommonSubjects");
+
         setLoading(false);
       }, 1000);
     };
@@ -64,24 +66,12 @@ const StateDetails = () => {
     router.back();
   };
 
-  const handleGradeChange = (event: any) => {
-    setGrade(event.target.value);
-  };
-
-  const handleMediumChange = (event: any) => {
-    setMedium(event.target.value);
-  };
-
-  const handleSearchChange = (event: any) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleDropdownChange = (event: any) => {
-    setSelectedOption(event.target.value);
-  };
-
   const handleBoardClick = (board: string, boardName: string) => {
     setBoard(boardName);
+    localStorage.removeItem("overallCommonSubjects");
+    localStorage.removeItem("selectedGrade");
+    localStorage.removeItem("selectedMedium");
+    localStorage.removeItem("selectedType");
     router.push({
       pathname: "/subjectDetails",
       query: { boardDetails: board, boardName: boardName },
@@ -94,7 +84,7 @@ const StateDetails = () => {
       () => {
         alert("Link copied to clipboard");
         const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
 
         const telemetryInteract = {
@@ -103,10 +93,10 @@ const StateDetails = () => {
             cdata: [],
           },
           edata: {
-            id: 'copy_link',
+            id: "copy_link",
 
             type: TelemetryEventType.CLICK,
-            subtype: '',
+            subtype: "",
             pageid: cleanedUrl,
           },
         };
@@ -122,10 +112,6 @@ const StateDetails = () => {
     return <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />;
   }
 
-  if (!card) {
-    return <Typography>{t("COURSE_PLANNER.DATA_NOT_FOUND")}</Typography>;
-  }
-
   return (
     <Box>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }}>
@@ -133,13 +119,12 @@ const StateDetails = () => {
           <ArrowBackIcon />
         </IconButton>
 
-        <Typography variant="h2">{card.state}</Typography>
+        {/* <Typography variant="h2">{card.state}</Typography> */}
         <Typography variant="h2" sx={{ ml: 1 }}>
-          State
+          States
         </Typography>
 
         <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}></Box>
-
       </Box>
       <Divider />
       <Grid spacing={2} container sx={{ marginTop: "16px", ml: 2 }}>

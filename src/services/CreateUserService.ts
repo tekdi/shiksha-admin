@@ -2,7 +2,7 @@ import { get, post, patch } from "./RestClient";
 import { createUserParam } from "../utils/Interfaces";
 import axios from "axios";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
-import { tenantId } from "../../app.config";
+import { TENANT_ID } from "../../app.config";
 
 export interface UserDetailParam {
   userData?: object;
@@ -29,7 +29,7 @@ export const getFormRead = async (
               .join("&");
           },
           headers: {
-            tenantId: tenantId,
+            tenantId: TENANT_ID,
             Authorization: `Bearer ${token}`,
           },
         }

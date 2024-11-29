@@ -37,6 +37,7 @@ import { Role } from "@/utils/app.constant";
 import { AcademicYear } from "@/utils/Interfaces";
 import { getAcademicYear } from "@/services/AcademicYearService";
 import useStore from '@/store/store';
+import loginImg from '../../public/images/login-image.jpg';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -125,8 +126,8 @@ const LoginPage = () => {
           localStorage.setItem("adminInfo", JSON.stringify(userInfo));
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
-        if (userInfo?.role !== Role.ADMIN) {
-          const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
+        if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
+          const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
         } else {
@@ -145,11 +146,17 @@ const LoginPage = () => {
                 (item) => item.isActive
               );
               const activeSessionId = activeSession ? activeSession.id : "";
-              localStorage.setItem("academicYearId", activeSessionId);             
-              if (activeSessionId){
+              localStorage.setItem("academicYearId", activeSessionId);
+              if (activeSessionId) {
                 setIsActiveYearSelected(true);
                 // router.push("/centers");
-                window.location.href = "/centers";
+                if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
+                  window.location.href = "/course-planner";
+                }
+                else {
+                  window.location.href = "/centers";
+                }
+
               }
             }
           };
@@ -187,6 +194,7 @@ const LoginPage = () => {
 
             const userResponse = await getUserId();
             localStorage.setItem("userId", userResponse?.userId);
+            localStorage.setItem('userIdName', userResponse?.username);
             // Update Zustand store
             setUserId(userResponse?.userId || "");
 
@@ -215,7 +223,7 @@ const LoginPage = () => {
           },
         };
         telemetryFactory.interact(telemetryInteract);
-        
+
       } catch (error: any) {
         setLoading(false);
         const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
@@ -248,18 +256,61 @@ const LoginPage = () => {
   };
 
   return (
-    <Grid container sx={{}}>
+    <>
+      <Box
+        display="flex"
+        flexDirection="column"
+        bgcolor={theme.palette.warning.A200}
+        borderRadius={'10px'}
+        sx={{
+          '@media (min-width: 900px)': {
+            display: 'none',
+          }
+        }}
+      >
+        {loading && (
+          <Loader showBackdrop={true} loadingText={t('COMMON.LOADING')} />
+        )}
+        <Box
+          display={'flex'}
+          overflow="auto"
+          alignItems={'center'}
+          justifyContent={'center'}
+          zIndex={99}
+          sx={{ margin: '5px 10px 25px', }}
+        >
+          <Box sx={{ width: '55%', '@media (max-width: 400px)': { width: '95%' } }}>
+            <Image src={appLogo} alt="App Logo" height={80}
+              layout='responsive'
+            />
+          </Box>
+        </Box>
+      </Box>
+      <Grid container
+        spacing={2}
+        justifyContent={'center'}
+        px={'30px'}
+        alignItems={'center'}
+        width={'100% !important'}>
       {!(isMobile || isMedium) && ( // Render only on desktop view
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            background: `url(${loginImage.src}) no-repeat center center`,
-            backgroundSize: "cover",
-            height: "100vh",
-          }}
-        />
+          <Grid
+            sx={{
+              '@media (max-width: 900px)': {
+                display: 'none',
+              },
+            }}
+            item
+            xs={12}
+            sm={12}
+            md={6}
+          >
+            <Image
+              className="login-img"
+              src={loginImg}
+              alt="Login Image"
+              layout="responsive"
+            />
+          </Grid>
       )}
       <Grid
         item
@@ -267,33 +318,61 @@ const LoginPage = () => {
         md={6}
         display="flex"
         alignItems="center"
-        sx={{
-          backgroundColor: "white",
-        }}
+        
       >
         <Box
-          sx={{
-            width: "100%",
-            maxWidth: 500,
-            margin: "auto",
-            padding: 4,
-            boxShadow: isMedium || isMobile ? null : 3,
-          }}
+            flexGrow={1}
+            // display={'flex'}
+            bgcolor={theme.palette.warning['A400']}
+            height="auto"
+            zIndex={99}
+            justifyContent={'center'}
+            p={'2rem'}
+            borderRadius={'2rem 2rem 0 0'}
+
+            sx={{
+              '@media (min-width: 900px)': {
+                width: '100%',
+                borderRadius: '16px',
+                boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+                marginTop: '50px',
+              },
+              '@media (max-width: 900px)': {
+                marginTop: '-25px',
+              }
+
+            }}
         >
-          <form onSubmit={handleFormSubmit}>
             <Box
               display="flex"
               flexDirection="column"
-              alignItems="center"
               bgcolor={theme.palette.warning.A200}
-              p={2}
-              borderRadius={2}
+              borderRadius={'10px'}
+              sx={{
+                '@media (max-width: 900px)': {
+                  display: 'none',
+                }
+              }}
             >
               {loading && (
-                <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
+                <Loader showBackdrop={true} loadingText={t('COMMON.LOADING')} />
               )}
-              <Image src={appLogo} alt="App Logo" height={100} />
+              <Box
+                display={'flex'}
+                overflow="auto"
+                alignItems={'center'}
+                justifyContent={'center'}
+                zIndex={99}
+              // sx={{ margin: '5px 10px 25px', }}
+              >
+                <Box sx={{ width: '60%', '@media (max-width: 700px)': { width: '95%' } }}>
+                  <Image src={appLogo} alt="App Logo" height={80}
+                    layout='responsive'
+                  />
+                </Box>
+              </Box>
             </Box>
+          <form onSubmit={handleFormSubmit}>
             {/* <Typography
               variant="h4"
               gutterBottom
@@ -373,20 +452,20 @@ const LoginPage = () => {
               }}
               onClick={() => {
                 window.open(
-                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`
+                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`, "_self"
                 );
               }}
             >
               {t("LOGIN_PAGE.FORGOT_PASSWORD")}
             </Box>
-            {/*<Box
+            {<Box
               display="flex"
               alignItems="center"
               marginTop="1.2rem"
               className="remember-me-checkbox"
             >
                <Checkbox
-                onChange={(e) => setRememberMe(e.target.checked)}
+                onChange={(e) => setRememberMe(e.target.checked)}                
                 checked={rememberMe}
               />
               <Typography
@@ -409,7 +488,7 @@ const LoginPage = () => {
               >
                 {t("LOGIN_PAGE.REMEMBER_ME")}
               </Typography> 
-            </Box>*/}
+            </Box>}
 
             <Box marginTop="2rem" textAlign="center">
               <Button
@@ -426,6 +505,7 @@ const LoginPage = () => {
         </Box>
       </Grid>
     </Grid>
+    </>
   );
 };
 

@@ -176,6 +176,15 @@ const customTheme = extendTheme({
         },
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          "&.Mui-checked": {
+            color: "#1F1B13",
+          },
+        },
+      },
+    }
   },
   typography: {
     fontFamily: "Poppins, Arial, sans-serif",

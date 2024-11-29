@@ -7,6 +7,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ResourceType } from "@/utils/app.constant";
 import { useTranslation } from "next-i18next";
 import router from "next/router";
+import { fetchBulkContents } from "@/services/PlayerService";
 
 const ResourceList = () => {
   const [learnersPreReq, setLearnersPreReq] = useState<any[]>([]);
@@ -20,28 +21,51 @@ const ResourceList = () => {
     const fetchData = async () => {
       const resources = tstore.resources;
 
-      const fetchedLearningResources = resources.learningResources || [];
+      const fetchedLearningResources = resources?.learningResources || [];
+      if (fetchedLearningResources?.length) {
+        fetchedLearningResources.forEach((resource: { id: string }) => {
+          resource.id = resource.id.toLowerCase();
+        });
 
-      const preReqs = fetchedLearningResources.filter(
-        (item: any) => item.type === ResourceType.PREREQUISITE
-      );
-      const postReqs = fetchedLearningResources.filter(
-        (item: any) => item.type === ResourceType.POSTREQUISITE
-      );
-      const facilitatorsReqs = fetchedLearningResources.filter(
-        (item: any) => !item.type
-      );
+        console.log(fetchedLearningResources);
 
-      setLearnersPreReq(preReqs);
-      setLearnersPostReq(postReqs);
-      setFacilitatorsPreReq(facilitatorsReqs);
+        let contents = await fetchBulkContents(
+          fetchedLearningResources?.map((item: any) => item.id)
+        );
+
+        contents = contents.map((item: any) => {
+          const contentType = fetchedLearningResources?.find(
+            (resource: any) => resource.id === item.identifier
+          )?.type;
+
+          return {
+            ...item,
+            type: contentType,
+          };
+        });
+        console.log("contents", contents);
+
+        const preRequisite = contents.filter(
+          (item: any) => item.type === ResourceType.LEARNER_PRE_REQUISITE
+        );
+        const postRequisite = contents.filter(
+          (item: any) => item.type === ResourceType.LEARNER_POST_REQUISITE
+        );
+        const facilitatorsRequisite = contents.filter(
+          (item: any) => item.type === ResourceType.FACILITATOR_REQUISITE
+        );
+
+        setLearnersPreReq(preRequisite);
+        setLearnersPostReq(postRequisite);
+        setFacilitatorsPreReq(facilitatorsRequisite);
+      }
     };
 
     fetchData();
   }, [tstore.resources]);
 
   const handleBack = () => {
-    router.push(`/importCsv?subject`);
+    router.back();
   };
 
   return (
@@ -70,15 +94,16 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app}
-                  resource={item.type}
-                  identifier={item.link}
+                  // type={item.app}
+                  resource={item.contentType}
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
             {t("COURSE_PLANNER.NO_DATA_PRE")}
           </Typography>
         )}
@@ -92,15 +117,16 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app}
-                  resource={item.type}
-                  identifier={item.link}
+                  // type={item.app}
+                  resource={item.contentType}
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
             {t("COURSE_PLANNER.NO_DATA_POST")}
           </Typography>
         )}
@@ -114,15 +140,18 @@ const ResourceList = () => {
               <Grid item key={index}>
                 <ResourceCard
                   title={item.name}
-                  type={item.app || "Facilitator"}
-                  resource="Facilitator Requisite"
-                  identifier={item.link}
+                  // type={item.app || "Facilitator"}
+                   resource={item.contentType}
+                  appIcon={item?.appIcon}
+                  identifier={item.identifier}
                 />
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Typography variant="body2" sx={{fontStyle: 'italic'}}>{t("COURSE_PLANNER.NO_DATA")}</Typography>
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+            {t("COURSE_PLANNER.NO_DATA")}
+          </Typography>
         )}
       </Box>
     </Box>

@@ -33,7 +33,16 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
 
   return (
     <Box>
-      <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+      <Dialog
+        open={open}
+        onClose={(event, reason) => {
+          if (reason !== "backdropClick") {
+            onClose();
+          }
+        }}
+        maxWidth="lg"
+        fullWidth
+      >
         <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Box
             sx={{

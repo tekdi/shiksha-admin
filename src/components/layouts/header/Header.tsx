@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useEffect, useRef, useState } from "react";
 import FeatherIcon from "feather-icons-react";
 import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -10,17 +10,22 @@ import TranslateIcon from "@mui/icons-material/Translate";
 import Menu from "@mui/material/Menu";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/router";
+import deleteIcon from '../../../../public/images/Language_icon.png';
 
 import { useTranslation } from "next-i18next";
 import { createTheme, useTheme } from "@mui/material/styles";
 import Profile from "./Profile";
 import { AcademicYear } from "@/utils/Interfaces";
 import useStore from "@/store/store";
+import { useQueryClient } from '@tanstack/react-query';
+import { Role } from "@/utils/app.constant";
 
 const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [lang, setLang] = useState("");
+  const queryClient = useQueryClient();
+
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -29,6 +34,8 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   );
 
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
+  const [userRole, setUserRole] = useState("");
+
   const [academicYearList, setAcademicYearList] = useState<AcademicYear[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>("");
 
@@ -39,7 +46,14 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
       setLanguage(lang);
       const storedList = localStorage.getItem("academicYearList");
       try {
-        setAcademicYearList(storedList ? JSON.parse(storedList) : []);
+        const parsedList = storedList ? JSON.parse(storedList) : [];
+        const modifiedList = parsedList.map((item: { isActive: any; session: any; }) => {
+          if (item.isActive) {
+            return { ...item, session: `${item.session} (${t('COMMON.ACTIVE')})` };
+          }
+          return item;
+        }); 
+        setAcademicYearList(modifiedList);
         const selectedAcademicYearId = localStorage.getItem("academicYearId");
         setSelectedSessionId(selectedAcademicYearId ?? "");
       } catch (error) {
@@ -50,6 +64,15 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     }
   }, [setLanguage]);
 
+
+
+  useEffect(() => {
+    const storedUserData=localStorage.getItem("adminInfo")
+    if(storedUserData){
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
   const handleSelectChange = (event: SelectChangeEvent) => {
     setSelectedSessionId(event.target.value);
     console.log("selected academic year id", event.target.value);
@@ -61,8 +84,13 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     const isActive = selectedYear ? selectedYear.isActive : false;
     // localStorage.setItem('isActiveYearSelected', JSON.stringify(isActive));
     setIsActiveYearSelected(isActive);
-    // window.location.reload();
-    window.location.href = "/centers";
+
+    queryClient.clear();
+ // window.location.reload();
+ const storedUserData = JSON.parse(
+  localStorage.getItem("adminInfo") || "{}"
+);
+    window.location.href = (storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)?"/course-planner":"/centers";
   };
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -102,6 +130,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             display: {
               lg: "none",
               xs: "flex",
+              '@media (max-width: 600px)': {
+                padding: "0px",
+              }
             },
           }}
         >
@@ -117,7 +148,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
         {/* ------------ End Menu icon ------------- */}
 
         <Box flexGrow={1} />
-        <Box sx={{ flexBasis: "20%" }}>
+
+        
+       {userRole !== Role.CCTA && userRole !== Role.SCTA && userRole!=="" &&(<Box sx={{ flexBasis: "20%" }}>
           {/* <FormControl className="drawer-select" sx={{ width: '100%' }}> */}
           <Select
             onChange={handleSelectChange}
@@ -144,7 +177,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             ))}
           </Select>
           {/* </FormControl> */}
-        </Box>
+        </Box>)}
+
+
         <Box
           sx={{
             display: "flex",
@@ -154,11 +189,13 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             alignItems: "center",
             justifyContent: "center",
             height: "20px",
-            width: "30px",
+            width: "35px",
             borderRadius: "10px",
+            cursor: "pointer"
           }}
+          onClick={handleClick}
         >
-          <IconButton
+          {/* <IconButton
             aria-label="more"
             id="long-button"
             aria-controls={open ? "long-menu" : undefined}
@@ -167,7 +204,15 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             onClick={handleClick}
           >
             <TranslateIcon />
-          </IconButton>
+
+          </IconButton> */}
+          <Image src={deleteIcon} alt="" 
+          width={22}
+          />
+
+
+
+
         </Box>
         <Menu
           id="long-menu"

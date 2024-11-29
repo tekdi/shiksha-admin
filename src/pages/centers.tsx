@@ -30,6 +30,8 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import Loader from "@/components/Loader";
 import { getFormRead } from "@/services/CreateUserService";
+import ProtectedRoute from "../components/ProtectedRoute";
+
 import {
   GenerateSchemaAndUiSchema,
   customFields,
@@ -49,6 +51,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
+import axios from 'axios';
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -126,6 +129,12 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
+  const isArchived = useSubmittedButtonStore(
+    (state: any) => state.isArchived
+);
+const setIsArchived = useSubmittedButtonStore(
+(state: any) => state.setIsArchived
+);
   const {
     data: cohortFormData,
     isLoading: cohortFormDataLoading,
@@ -189,8 +198,8 @@ const Center: React.FC = () => {
         );
         const object = [
           {
-            value: stateField.code,
-            label: stateField.value,
+            value: stateField?.code,
+            label: stateField?.value,
           },
         ];
 
@@ -775,23 +784,32 @@ const response=  await fetchCohortMemberList(data);
         ...prevFilters,
         status: [Status.ACTIVE],
       }));
+      setIsArchived(false);
     } else if (newValue === Status.ARCHIVED) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ARCHIVED],
       }));
+      setIsArchived(true);
+
     } else if (newValue === Status.ALL_LABEL) {
+
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: "",
       }));
+      setIsArchived(false);
+
     } else {
+
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
           ...restFilters,
         };
       });
+      setIsArchived(false);
+
     }
     const windowUrl = window.location.pathname;
     const cleanedUrl = windowUrl.replace(/^\//, '');
@@ -945,7 +963,7 @@ const response=  await fetchCohortMemberList(data);
         return;
       }
       let cohortDetails = {
-        name: formData?.name,
+        name: (formData?.name).toLowerCase(),
         updatedBy:localStorage.getItem('userId'),
         customFields: customFields,
       };
@@ -977,7 +995,13 @@ const response=  await fetchCohortMemberList(data);
       }
     } catch (error) {
       console.error("Error updating cohort:", error);
-      showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 409) {
+          showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
+        } 
+      }
+      else
+       showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);
@@ -1174,6 +1198,8 @@ const response=  await fetchCohortMemberList(data);
 
   return (
     <>
+        <ProtectedRoute>
+
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
@@ -1209,7 +1235,7 @@ const response=  await fetchCohortMemberList(data);
           </Box>
         ) : cohortData?.length > 0 ? (
           <KaTableComponent
-            columns={getCenterTableData(t, isMobile)}
+            columns={getCenterTableData(t, isMobile, isArchived)}
             data={cohortData}
             limit={pageLimit}
             offset={pageOffset}
@@ -1309,6 +1335,8 @@ const response=  await fetchCohortMemberList(data);
           )}
         </SimpleModal>
       </HeaderComponent>
+      </ProtectedRoute>
+
     </>
   );
 };

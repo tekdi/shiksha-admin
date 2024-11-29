@@ -1,12 +1,13 @@
 import { CoursePlannerMetaData, GetSolutionDetailsParams, GetTargetedSolutionsParams, GetUserProjectTemplateParams } from "@/utils/Interfaces";
-import { post } from "./RestClient";
+import { get, post } from "./RestClient";
 import axios from 'axios';
-import { frameworkId } from "../../app.config";
+import { FRAMEWORK_ID } from "../../app.config";
+import { URL_CONFIG } from "@/utils/url.config";
 
 
 
 export const getChannelDetails = async (): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_SUNBIRDSAAS_API_URL}/api/framework/v1/read/${frameworkId}`;
+  const apiUrl: string = `/api/framework/v1/read/${FRAMEWORK_ID}`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -18,7 +19,7 @@ export const getChannelDetails = async (): Promise<any> => {
 };
 
 export const getFrameworkDetails = async (frameworkId: string): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_SUNBIRDSAAS_API_URL}/api/framework/v1/read/${frameworkId}?categories=gradeLevel,medium,class,subject`;
+  const apiUrl: string = `/api/framework/v1/read/${frameworkId}?categories=gradeLevel,medium,class,subject`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -30,7 +31,7 @@ export const getFrameworkDetails = async (frameworkId: string): Promise<any> => 
 };
 
 export const uploadCoursePlanner = async (file: File, metaData: CoursePlannerMetaData): Promise<any> => {
-    const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/course-planner/upload`;
+    const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/prathamservice/v1/course-planner/upload`;
     const formData = new FormData();
     formData.append('file', file);
     formData.append('metaData', JSON.stringify(metaData));
@@ -150,7 +151,21 @@ export const uploadCoursePlanner = async (file: File, metaData: CoursePlannerMet
     }
   };
   
-
-
- 
+  export const getContentHierarchy = async ({
+    doId,
+  }: {
+    doId: string;
+  }): Promise<any> => {
+    const apiUrl: string = `${URL_CONFIG.API.CONTENT_HIERARCHY}/${doId}`;
+  
+    try {
+      console.log('Request data', apiUrl);
+      const response = await get(apiUrl);
+      // console.log('response', response);
+      return response;
+    } catch (error) {
+      console.error('Error in getContentHierarchy Service', error);
+      throw error;
+    }
+  };
  

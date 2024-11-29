@@ -1,5 +1,7 @@
 import { CohortMemberList } from "@/utils/Interfaces";
 import { get, post, put } from "../RestClient";
+import axios from 'axios';
+import { showToastMessage } from "@/components/Toastify";
 
 export interface cohortListFilter {
   type: string;
@@ -81,16 +83,26 @@ export const createUser = async (userData: any): Promise<any> => {
   }
 };
 
-export const createCohort = async (userData: any): Promise<any> => {
+export const createCohort = async (userData: any, t?:any): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/create`;
+
   try {
+
     const response = await post(apiUrl, userData);
     return response?.data;
   } catch (error) {
     console.error("error in getting cohort list", error);
-    // throw error;
+
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 409) {
+        showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
+
+   
+     } 
+      else
+     throw error;
   }
-};
+}};
 
 export const fetchCohortMemberList = async ({
   limit,

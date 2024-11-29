@@ -77,6 +77,7 @@ export const generateUsernameAndPassword = (
     [FormContextType.TEACHER]: "FSC",
     [FormContextType.STUDENT]: "SC",
     [FormContextType.TEAM_LEADER]: "TLSC",
+    [FormContextType.CONTENT_CREATOR]: "SCTA",//prefix is not fix till now assume this SCTA(State Content Team Associate)
   };
 
   if (!(role in rolePrefixes)) {
@@ -352,7 +353,7 @@ export const filterAndMapAssociations = (
   }
 
   return options
-    .filter((option) => {
+    ?.filter((option) => {
       const optionCode = option[codeKey];
 
       return associationsList.some(

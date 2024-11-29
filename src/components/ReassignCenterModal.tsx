@@ -307,6 +307,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           ),
           "success"
         );
+        reassignButtonStatus
+            ? setReassignButtonStatus(false)
+            : setReassignButtonStatus(true);
         if( userType === Role.FACILITATORS) {
           if (selectedDistrict[0] !== districtName) 
           {
