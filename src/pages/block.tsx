@@ -322,7 +322,7 @@ const setIsArchived = useSubmittedButtonStore(
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
-      const blockNameArray = blocks.map((item: any) => item.label);
+      const blockNameArray = blocks.map((item: any) => item.label.toLowerCase());
       setBlockNameArr(blockNameArray);
 
       const blockCodeArray = blocks.map((item: any) => item.value);
@@ -397,7 +397,7 @@ const setIsArchived = useSubmittedButtonStore(
             const transformedName = blockDetail.name;
 
             const matchingBlock = blocksOptionRead.find(
-              (block: BlockOption) => block.label === transformedName
+              (block: BlockOption) => block?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
 
             return {

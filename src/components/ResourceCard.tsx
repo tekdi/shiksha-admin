@@ -8,7 +8,7 @@ import { fetchContent } from "@/services/PlayerService";
 interface ResourceCardProps {
   title: string;
   // type: string;
-  // resource: string;
+  resource: string;
   identifier: string;
   appIcon?: string;
 }
@@ -16,7 +16,7 @@ interface ResourceCardProps {
 const ResourceCard: React.FC<ResourceCardProps> = ({
   title,
   // type,
-  // resource,
+  resource,
   identifier,
   appIcon,
 }) => {
@@ -42,7 +42,11 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
 
   const openPlayers = () => {
     sessionStorage.setItem("previousPage", window.location.href);
-    router.push(`/play/content/${identifier}`);
+    if (resource === "Course") {
+      router.push(`/course-hierarchy/${identifier}`);
+    } else {
+      router.push(`/play/content/${identifier}`);
+    }
   };
 
   return (
