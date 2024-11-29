@@ -28,6 +28,7 @@ import {
   findCommonAssociations,
   getAssociationsByCodeNew,
   getOptionsByCategory,
+  normalizeData,
 } from "@/utils/Helper";
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
@@ -118,10 +119,13 @@ const SubjectDetails = () => {
             store?.framedata,
             "medium"
           );
-          const boardAssociations = await getAssociationsByCodeNew(
-            store?.boards,
+          const normalizedBoards = normalizeData(store?.boards || []);
+          const boardAssociations = getAssociationsByCodeNew(
+            normalizedBoards,
             boardName
           );
+          console.log(boardAssociations);
+
           setBoardAssociations(boardAssociations);
           const commonMediumInState = getMedium
             .filter((item1: { code: string }) =>
