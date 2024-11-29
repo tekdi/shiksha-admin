@@ -41,18 +41,16 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
   centers,
   userId,
   userName,
-  userType,
+  userType
 }) => {
-  console.log(centers);
+  console.log(centers)
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const reasons = [
     { value: "Incorrect Data Entry", label: t("COMMON.INCORRECT_DATA_ENTRY") },
     { value: "Duplicated User", label: t("COMMON.DUPLICATED_USER") },
   ];
-  const [checkedCohortDeletion, setCheckedCohortDeletion] = useState<boolean>(
-    centers === "-" ? true : false
-  );
+  const [checkedCohortDeletion, setCheckedCohortDeletion] = useState<boolean>(centers === "-" ? true : false);
 
   useEffect(() => {
     if (centers === "-") {
@@ -91,7 +89,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
 
   return (
     <CustomModal
-      width="25%"
+    width="25%"
       open={open}
       handleClose={handleClose}
       title={t("COMMON.DELETE_USER")}
@@ -114,11 +112,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
             variant="body1"
             sx={{ marginBottom: "12px", fontWeight: "bold", color: "#333" }}
           >
-            {userType === Role.TEAM_LEADERS
-              ? t("COMMON.USER_BLOCK", { name: userName })
-              : centers.split(", ").length === 1
-                ? t("COMMON.USER_CENTER", { name: userName })
-                : t("COMMON.USER_CENTERS", { name: userName })}
+            {userType===Role.TEAM_LEADERS?t("COMMON.USER_BLOCK", { name: userName }): centers.split(', ').length===1 ? t("COMMON.USER_CENTER", { name: userName }) : t("COMMON.USER_CENTERS", { name: userName })}
           </Typography>
 
           <Box
@@ -143,13 +137,8 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
                 color="primary"
               />
             }
-            label={
-              userType === Role.TEAM_LEADERS
-                ? t("COMMON.DELETE_FROM_BLOCK_WARNING")
-                : centers.split(", ").length === 1
-                  ? t("COMMON.DELETE_FROM_CENTER_WARNING")
-                  : t("COMMON.DELETE_FROM_CENTERS_WARNING")
-            }
+            label={userType===Role.TEAM_LEADERS?t("COMMON.DELETE_FROM_BLOCK_WARNING"): centers.split(', ').length===1 ? t("COMMON.DELETE_FROM_CENTER_WARNING") : t("COMMON.DELETE_FROM_CENTERS_WARNING")}
+
             sx={{ marginTop: "12px", color: "#555" }}
           />
         </Box>
