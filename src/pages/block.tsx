@@ -412,7 +412,7 @@ const setIsArchived = useSubmittedButtonStore(
             };
           }
         )
-        .filter((block: { name: string }) => blockNameArr.includes(block.name?.toLocaleLowerCase()));
+        .filter((block: { name: string }) => blockNameArr.includes(block.name?.toLowerCase()));
 
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
