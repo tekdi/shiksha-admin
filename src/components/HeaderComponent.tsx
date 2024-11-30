@@ -1,4 +1,8 @@
 import SearchBar from "@/components/layouts/header/SearchBar";
+import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
+import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 import AddIcon from "@mui/icons-material/Add";
 import {
   Box,
@@ -6,29 +10,22 @@ import {
   FormControl,
   MenuItem,
   Typography,
-  useMediaQuery,
-  Divider,
+  useMediaQuery
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import {
   getCenterList,
   getStateBlockDistrictList,
 } from "../services/MasterDataService";
-import AreaSelection from "./AreaSelection";
 import { transformArray } from "../utils/Helper";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import { useQueryClient } from "@tanstack/react-query";
-import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
-import { useRouter } from "next/router";
-import useSubmittedButtonStore from "@/utils/useSharedState";
-import { userAgent } from "next/server";
-import { telemetryFactory } from "@/utils/telemetry";
+import AreaSelection from "./AreaSelection";
 
 interface State {
   value: string;
@@ -103,7 +100,7 @@ const HeaderComponent = ({
   const [initialized, setInitialized] = useState(false);
   const isArchived = useSubmittedButtonStore(
     (state: any) => state.isArchived
-);
+  );
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const selectedBlockStore = useSubmittedButtonStore(
@@ -195,23 +192,23 @@ const HeaderComponent = ({
     handleDistrictChange(selected, selectedCodes);
 
     const windowUrl = window.location.pathname;
-            const cleanedUrl = windowUrl.replace(/^\//, '');
-            const env = cleanedUrl.split("/")[0];
+    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const env = cleanedUrl.split("/")[0];
 
 
-            const telemetryInteract = {
-              context: {
-                env: env,
-                cdata: [],
-              },
-              edata: {
-                id: 'filter-by-district:'+selected[0],
-                type: TelemetryEventType.CLICK,
-                subtype: '',
-                pageid: cleanedUrl,
-              },
-            };
-            telemetryFactory.interact(telemetryInteract);
+    const telemetryInteract = {
+      context: {
+        env: env,
+        cdata: [],
+      },
+      edata: {
+        id: 'filter-by-district:' + selected[0],
+        type: TelemetryEventType.CLICK,
+        subtype: '',
+        pageid: cleanedUrl,
+      },
+    };
+    telemetryFactory.interact(telemetryInteract);
 
   };
 
@@ -268,7 +265,7 @@ const HeaderComponent = ({
         cdata: [],
       },
       edata: {
-        id: 'filter-by-block:'+selected[0],
+        id: 'filter-by-block:' + selected[0],
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -292,7 +289,7 @@ const HeaderComponent = ({
         cdata: [],
       },
       edata: {
-        id: 'filter-by-center:'+selected[0],
+        id: 'filter-by-center:' + selected[0],
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -370,24 +367,22 @@ const HeaderComponent = ({
                   districtResult[0]?.label
                 );
                 setSelectedDistrictStore(districtResult[0]?.label);
-                 blockResult = await formatedBlocks(
+                blockResult = await formatedBlocks(
                   districtResult[0]?.value
                 );
                 console.log(blockResult)
-                if(blockResult?.message ==="Request failed with status code 404")
-                  {
-                    setBlocks([]);
-                  }
-                  else
-                  {
-                    setBlocks(blockResult);
+                if (blockResult?.message === "Request failed with status code 404") {
+                  setBlocks([]);
+                }
+                else {
+                  setBlocks(blockResult);
 
-                  }
+                }
               }
-            
-              if (!hasBlock && !hasDistrict && userType!==Role.CONTENT_CREATOR) {
-                if (userType === Role.TEAM_LEADERS || userType==="Centers") {
-                //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
+
+              if (!hasBlock && !hasDistrict && userType !== Role.CONTENT_CREATOR) {
+                if (userType === Role.TEAM_LEADERS || userType === "Centers") {
+                  //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
                   //setSelectedBlockCode("")
                   router.replace({
                     pathname: router.pathname,
@@ -399,18 +394,17 @@ const HeaderComponent = ({
                   });
                 } else {
                   console.log(blockResult)
-                  if(blockResult?.message==="Request failed with status code 404")
-                  {
+                  if (blockResult?.message === "Request failed with status code 404") {
                     setBlocks([]);
                   }
-                  else{
+                  else {
                     setSelectedBlock([blockResult[0]?.label]);
                     setSelectedBlockCode(blockResult[0]?.value);
                     localStorage.setItem("selectedBlock", blockResult[0]?.label);
                     setSelectedBlockStore(blockResult[0]?.label);
-  
+
                   }
-                 
+
                   router.replace({
                     pathname: router.pathname,
                     query: {
@@ -422,14 +416,13 @@ const HeaderComponent = ({
                   });
                 }
               }
-              else if(userType===Role.CONTENT_CREATOR)
-              {
+              else if (userType === Role.CONTENT_CREATOR) {
                 router.replace({
                   pathname: router.pathname,
                   query: {
                     ...router.query,
                     state: stateField.code,
-                   
+
                   },
                 });
               }
@@ -542,42 +535,40 @@ const HeaderComponent = ({
   // }, [blocks, selectedBlock, handleBlockChangeWrapper]);
 
   useEffect(() => {
-    const handleRouteparam = async() => 
-    {
+    const handleRouteparam = async () => {
       const { state, district, block, center } = router.query;
       if (state) {
         setSelectedStateCode(state.toString());
       }
-       console.log(district?.toString())
+      console.log(district?.toString())
       if (district) {
         setSelectedDistrictCode(district.toString());
         // setSelectedDistrict([selectedDistrictStore])
         setSelectedDistrict([localStorage.getItem("selectedDistrict")]);
         if (!localStorage.getItem("selectedDistrict")) {
           setSelectedDistrict([selectedDistrictStore]);
-          
-        }
-        try{
-          const  blockResult = await formatedBlocks(
-            district?.toString()
-              );
-              console.log(blockResult.message)
-              if(blockResult.message==="Request failed with status code 404")
-              {
-                setBlocks([]);
 
-              }
-              else
+        }
+        try {
+          const blockResult = await formatedBlocks(
+            district?.toString()
+          );
+          console.log(blockResult.message)
+          if (blockResult.message === "Request failed with status code 404") {
+            setBlocks([]);
+
+          }
+          else
             setBlocks(blockResult);
         }
-        catch{
-        //  console.log("hii")
+        catch {
+          //  console.log("hii")
         }
-       
-      }
-     
 
-      if (block ) {
+      }
+
+
+      if (block) {
         setSelectedBlockCode(block.toString());
         console.log(selectedBlockCode);
         // setSelectedBlock([selectedBlockStore])
@@ -585,7 +576,7 @@ const HeaderComponent = ({
         if (!localStorage.getItem("selectedBlock"))
           setSelectedBlock([selectedBlockStore]);
       }
-   
+
 
       if (center) {
         console.log(center);
@@ -596,7 +587,7 @@ const HeaderComponent = ({
         if (!localStorage.getItem("selectedCenter"))
           setSelectedCenter([selectedCenterStore]);
       }
-   
+
       //  setInitialized(true)
     }
     handleRouteparam();
@@ -619,7 +610,7 @@ const HeaderComponent = ({
         </Typography>
       )}
 
-      {showStateDropdown &&  (
+      {showStateDropdown && (
         <AreaSelection
           states={transformArray(states)}
           districts={transformArray(districts)}
@@ -712,7 +703,7 @@ const HeaderComponent = ({
               placeholder={searchPlaceHolder}
             />
           </Box>
-          {showAddNew  && !isArchived && (
+          {showAddNew && !isArchived && (
             <Box
               display={"flex"}
               gap={1}
@@ -751,40 +742,40 @@ const HeaderComponent = ({
           )}
         </Box>
         {/* {showAddNew && ( */}
-          <Box
-            sx={{
-              display: "flex",
+        <Box
+          sx={{
+            display: "flex",
 
-              ml: "10px",
-              mt: isMobile ? "10px" : "16px",
-              mb: "10px",
-              gap: "15px", // boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            {showSort && (
-              <FormControl sx={{ minWidth: "120px" }}>
-                <Select
-                  value={selectedSort}
-                  onChange={handleSortChange}
-                  displayEmpty
-                  style={{
-                    borderRadius: "8px",
-                    height: "40px",
-                    marginLeft: "5px",
-                    fontSize: "14px",
-                    backgroundColor: theme.palette.secondary["100"],
-                  }}
-                >
-                  <MenuItem value="Sort">{t("COMMON.SORT")}</MenuItem>
-                  {Sort?.map((state, index) => (
-                    <MenuItem value={state} key={index}>
-                      {state}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          </Box>
+            ml: "10px",
+            mt: isMobile ? "10px" : "16px",
+            mb: "10px",
+            gap: "15px", // boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {showSort && (
+            <FormControl sx={{ minWidth: "120px" }}>
+              <Select
+                value={selectedSort}
+                onChange={handleSortChange}
+                displayEmpty
+                style={{
+                  borderRadius: "8px",
+                  height: "40px",
+                  marginLeft: "5px",
+                  fontSize: "14px",
+                  backgroundColor: theme.palette.secondary["100"],
+                }}
+              >
+                <MenuItem value="Sort">{t("COMMON.SORT")}</MenuItem>
+                {Sort?.map((state, index) => (
+                  <MenuItem value={state} key={index}>
+                    {state}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+        </Box>
         {/* )} */}
         {children}
       </Box>
