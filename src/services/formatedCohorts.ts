@@ -117,4 +117,3 @@ export const formatedBlocks = async (districtCode: string) => {
     return error;
   }
 };
-
