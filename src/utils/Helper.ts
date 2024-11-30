@@ -2,7 +2,7 @@ import FingerprintJS from "fingerprintjs2";
 import { getUserDetailsInfo } from "../services/UserList";
 import { Role, FormContextType, FormValues, InputTypes } from "./app.constant";
 import { State } from "./Interfaces";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Value {
   value: string;
@@ -42,7 +42,10 @@ export const generateUUID = () => {
   });
 };
 
-export const getUserName = async (userId: string, fieldValue: boolean = true) => {
+export const getUserName = async (
+  userId: string,
+  fieldValue: boolean = true
+) => {
   try {
     const userDetails = await getUserDetailsInfo(userId, fieldValue);
     console.log("userDetails", userDetails);
@@ -66,9 +69,7 @@ export const getDeviceId = () => {
 export const generateUsernameAndPassword = (
   stateCode: string,
   role: string,
-  yearOfJoining?: string,
-  
-
+  yearOfJoining?: string
 ) => {
   const currentYear = new Date().getFullYear().toString().slice(-2); // Last two digits of the current year
   const randomNum = Math.floor(10000 + Math.random() * 90000).toString(); //NOSONAR
@@ -77,15 +78,14 @@ export const generateUsernameAndPassword = (
     [FormContextType.TEACHER]: "FSC",
     [FormContextType.STUDENT]: "SC",
     [FormContextType.TEAM_LEADER]: "TLSC",
-    [FormContextType.CONTENT_CREATOR]: "SCTA",//prefix is not fix till now assume this SCTA(State Content Team Associate)
+    [FormContextType.CONTENT_CREATOR]: "SCTA", //prefix is not fix till now assume this SCTA(State Content Team Associate)
   };
 
   if (!(role in rolePrefixes)) {
     console.warn(`Unknown role: ${role}`); // Log a warning for unknown roles
     return null; // Return null or handle as needed
   }
-  const yearSuffix =
-  yearOfJoining ? yearOfJoining?.slice(-2) : currentYear;
+  const yearSuffix = yearOfJoining ? yearOfJoining?.slice(-2) : currentYear;
   const prefix = rolePrefixes[role];
   const username = `${prefix}${stateCode}${yearSuffix}${randomNum}`;
 
@@ -114,7 +114,7 @@ export const transformArray = (arr: State[]): State[] => {
 
 export const firstLetterInUpperCase = (label: string): string => {
   if (!label) {
-    return '';
+    return "";
   }
 
   return label
@@ -143,13 +143,13 @@ export const fieldTextValidation = (text: string) => {
 
 export const getCurrentYearPattern = () => {
   const currentYear = new Date().getFullYear();
-  
+
   // Build the dynamic part for the current century
-  let regexPart = '';
+  let regexPart = "";
   if (currentYear >= 2000 && currentYear < 2100) {
     const lastDigit = currentYear % 10;
     const middleDigit = Math.floor((currentYear % 100) / 10);
-    
+
     regexPart = `20[0-${middleDigit - 1}][0-9]|20${middleDigit}[0-${lastDigit}]`;
   }
 
@@ -179,9 +179,10 @@ export const mapFields = (formFields: any, Details: any) => {
           return field?.value?.toLowerCase();
         }
       } else if (item?.type === InputTypes.RADIO) {
-        if(field?.value===FormValues?.REGULAR|| field?.value===FormValues?.REMOTE)
-        {
-
+        if (
+          field?.value === FormValues?.REGULAR ||
+          field?.value === FormValues?.REMOTE
+        ) {
           return field?.code;
         }
         return field?.value || null;
@@ -244,7 +245,7 @@ export const getOptionsByCategory = (frameworks: any, categoryCode: string) => {
   return category.terms.map((term: any) => ({
     name: term.name,
     code: term.code,
-    associations: term.associations
+    associations: term.associations,
   }));
 };
 
@@ -262,51 +263,64 @@ interface DataItem {
   code: string;
   associations: Association[];
 }
-export const getAssociationsByCode = (data: DataItem[], code: string): Association[] | [] => {
-  const foundItem = data.find(item => item.code === code);
+export const getAssociationsByCode = (
+  data: DataItem[],
+  code: string
+): Association[] | [] => {
+  const foundItem = data.find((item) => item.code === code);
   return foundItem ? foundItem.associations : [];
 };
 
-export const getAssociationsByName = (data: DataItem[], name: string): Association[] | [] => {
-  const foundItem = data.find(item => item.name === name);
+export const getAssociationsByName = (
+  data: DataItem[],
+  name: string
+): Association[] | [] => {
+  const foundItem = data.find((item) => item.name === name);
   return foundItem ? foundItem.associations : [];
 };
 
 export const findCommonAssociations = (data1: any[], data2: any[]) => {
-  return data1.map((item1) => {
-    const item2 = data2.find((item) => item.code === item1.code);
-    if (item2) {
-      const commonAssociations = item1.associations.filter((assoc1: any) =>
-        item2.associations.some((assoc2: any) => assoc1.identifier === assoc2.identifier)
-      );
-      return {
-        name: item1.name,
-        code: item1.code,
-        associations: commonAssociations,
-      };
-    }
-    return null;
-  }).filter(Boolean); 
+  return data1
+    .map((item1) => {
+      const item2 = data2.find((item) => item.code === item1.code);
+      if (item2) {
+        const commonAssociations = item1.associations.filter((assoc1: any) =>
+          item2.associations.some(
+            (assoc2: any) => assoc1.identifier === assoc2.identifier
+          )
+        );
+        return {
+          name: item1.name,
+          code: item1.code,
+          associations: commonAssociations,
+        };
+      }
+      return null;
+    })
+    .filter(Boolean);
 };
 
-export function mergeCohortDetails(values: Value[], cohortDetails: CohortDetail[]): Value[] {
-  const filteredValues = values.map(value => ({
-      value: value.value,
-      label: value.label,
-      createdAt: value.createdAt,
-      updatedAt: value.updatedAt,
-      createdBy: value.createdBy,
-      updatedBy: value.updatedBy,
+export function mergeCohortDetails(
+  values: Value[],
+  cohortDetails: CohortDetail[]
+): Value[] {
+  const filteredValues = values.map((value) => ({
+    value: value.value,
+    label: value.label,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+    createdBy: value.createdBy,
+    updatedBy: value.updatedBy,
   }));
 
-  const newValues = cohortDetails.map(cohort => ({
-      value: cohort.name,
-      label: cohort.name,
-      createdAt: cohort.createdAt,
-      updatedAt: cohort.updatedAt,
-      createdBy: cohort.createdBy,
-      updatedBy: cohort.updatedBy,
-      cohortId: cohort.cohortId,
+  const newValues = cohortDetails.map((cohort) => ({
+    value: cohort.name,
+    label: cohort.name,
+    createdAt: cohort.createdAt,
+    updatedAt: cohort.updatedAt,
+    createdBy: cohort.createdBy,
+    updatedBy: cohort.updatedBy,
+    cohortId: cohort.cohortId,
   }));
 
   return [...filteredValues, ...newValues];
@@ -318,24 +332,52 @@ interface DataItem {
   associations: Association[];
 }
 
+export const normalizeData = (data: any[]): DataItem[] => {
+  if (!Array.isArray(data)) {
+    console.warn("Invalid data format:", data);
+    return [];
+  }
 
+  return data.flatMap((item) => {
+    // Handle first data structure
+    if (item.boards && Array.isArray(item.boards)) {
+      return item.boards.map((board: any) => ({
+        name: board.name || "",
+        code: board.code || "",
+        associations: item.associations || [],
+      }));
+    }
 
-export const getAssociationsByCodeNew = (data: DataItem[], code: string): Association[] | [] => {
-  const foundItem = data.find(item => item.name === code);
-  return foundItem ? foundItem.associations : [];
+    return {
+      name: item.name || "",
+      code: item.code || "",
+      associations: item.associations || [],
+    };
+  });
+};
+
+export const getAssociationsByCodeNew = (
+  data: DataItem[] = [],
+  code: string
+): Association[] => {
+  const normalizedData = normalizeData(data);
+
+  const foundItem = normalizedData.find((item) => item.name === code);
+  return foundItem?.associations || [];
 };
 
 export const getYouTubeThumbnail = (url: string): string => {
-  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
 
   if (match && match[1]) {
     const videoId = match[1];
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   } else {
-    return '';
+    return "";
   }
-}
+};
 
 export const filterAndMapAssociations = (
   category: string,
@@ -366,5 +408,3 @@ export const filterAndMapAssociations = (
       associations: option.associations || [],
     }));
 };
-
-
