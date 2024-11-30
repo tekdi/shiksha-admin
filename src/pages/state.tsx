@@ -155,7 +155,7 @@ const State: React.FC = () => {
           };
         })
         .filter((state: { label: any }) =>
-          stateNameArray.includes(state.label)
+          stateNameArray.includes(state?.label?.toLowerCase())
         );
       setStateData(filteredStateData);
       setLoading(false);
