@@ -146,7 +146,7 @@ const District: React.FC = () => {
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item.label.toLowerCase());
+      const districtNameArray = districts.map((item: any) => item.label?.toLowerCase());
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
@@ -252,7 +252,7 @@ const District: React.FC = () => {
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district.label.toLowerCase() === transformedName.toLowerCase()
+                district.label?.toLowerCase() === transformedName?.toLowerCase()
             );
 
             return {
@@ -267,7 +267,7 @@ const District: React.FC = () => {
           }
         )
         .filter((district: { label: any }) =>
-          districtNameArr.includes(district.label)
+          districtNameArr.includes(district?.label?.toLowerCase())
         );
 
       setDistrictData(filteredDistrictData);

@@ -188,7 +188,7 @@ const setIsArchived = useSubmittedButtonStore(
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item.label);
+      const districtNameArray = districts.map((item: any) => item.label?.toLowerCase());
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
@@ -262,7 +262,7 @@ const setIsArchived = useSubmittedButtonStore(
           }
         )
         .filter((district: { label: any }) =>
-          districtNameArr.includes(district.label)
+          districtNameArr.includes(district.label?.toLowerCase())
         );
       if (isFirstVisit) 
       {
@@ -322,7 +322,7 @@ const setIsArchived = useSubmittedButtonStore(
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
-      const blockNameArray = blocks.map((item: any) => item.label.toLowerCase());
+      const blockNameArray = blocks.map((item: any) => item.label?.toLowerCase());
       setBlockNameArr(blockNameArray);
 
       const blockCodeArray = blocks.map((item: any) => item.value);
@@ -413,7 +413,7 @@ const setIsArchived = useSubmittedButtonStore(
             };
           }
         )
-        .filter((block: { name: string }) => blockNameArr.includes(block.name));
+        .filter((block: { name: string }) => blockNameArr.includes(block.name?.toLocaleLowerCase()));
 
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
