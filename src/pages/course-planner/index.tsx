@@ -113,19 +113,32 @@ const Foundation = () => {
             setStateassociations(matchingState?.associations);
             const boards = await getOptionsByCategory(framework, "board");
             if (boards) {
-              const commonBoards = boards
+              const associatedBoards = boards
                 .filter((board: { code: any }) =>
                   matchingState.associations.some(
                     (assoc: { code: any; category: string }) =>
                       assoc.code === board.code && assoc.category === "board"
                   )
                 )
-                .map((board: { name: any; code: any; associations: any }) => ({
+                .map((board: { name: any; code: any }) => ({
                   name: board.name,
                   code: board.code,
-                  associations: board.associations,
                 }));
-              setBoards(commonBoards);
+
+              const stateBoardMapping = [
+                {
+                  stateName: matchingState.name,
+                  boards: associatedBoards,
+                  associations: matchingState.associations || [],
+                },
+              ];
+
+              setBoards(stateBoardMapping);
+
+              const allAssociations = stateBoardMapping.flatMap(
+                (mapping: any) => mapping.associations
+              );
+              setStateassociations(allAssociations);
             }
           }
         }
