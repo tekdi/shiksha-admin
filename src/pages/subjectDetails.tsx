@@ -161,8 +161,9 @@ const SubjectDetails = () => {
             commonMediumInState,
             commonMediumInBoard
           );
+
           setMediumOptions(commonMediumData);
-          setMedium(commonMediumInState);
+          setMedium(commonMediumData);
         } catch (err) {
           console.error("Failed to fetch framework details");
         } finally {
