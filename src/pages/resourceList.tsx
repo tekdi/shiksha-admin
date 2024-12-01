@@ -91,13 +91,14 @@ const ResourceList = () => {
         {learnersPreReq.length > 0 ? (
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {learnersPreReq.map((item, index) => (
-              <Grid item key={index}>
+              <Grid item xs={6} md={4} lg={3} key={index}>
                 <ResourceCard
                   title={item.name}
                   // type={item.app}
                   resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
+                  mimeType={item.mimeType}
                 />
               </Grid>
             ))}
