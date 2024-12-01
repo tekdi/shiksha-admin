@@ -270,7 +270,7 @@ const Foundation = () => {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "18px",
+                          gap: "16px",
                         }}
                       >
                         <FolderOutlinedIcon />
