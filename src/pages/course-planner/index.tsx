@@ -208,14 +208,12 @@ const Foundation = () => {
             </Box>
             <Divider />
             <Grid container spacing={2} mt={2}>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                {role === "Central Admin CCTA" ? (
-                  stateNames.map((stateName) => (
+
+              {role === "Central Admin CCTA" ? (
+                stateNames.map((stateName) => (
+                  <Grid
+                    item xs={12} md={4} lg={4}
+                  >
                     <Box
                       key={stateName}
                       sx={{
@@ -227,7 +225,7 @@ const Foundation = () => {
                         marginLeft: "15px",
                         marginBottom: "10px",
                         marginRight: "10px",
-                        width: "250px",
+                        width: "90%",
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
@@ -256,49 +254,49 @@ const Foundation = () => {
                         </Button>
                       </Box>
                     </Box>
-                  ))
-                ) : (
+                  </Grid>
+                ))
+              ) : (
+                <Box
+                  sx={{
+                    cursor: "pointer",
+                    border: "1px solid #D0C5B4",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                    marginRight: "10px",
+                    width: "100%",
+                    "&:hover": {
+                      backgroundColor: "#D0C5B4",
+                    },
+                  }}
+                  onClick={() => handleCardClick(store?.matchingstate?.name)}
+                >
                   <Box
                     sx={{
-                      cursor: "pointer",
-                      border: "1px solid #D0C5B4",
-                      padding: "10px",
-                      borderRadius: "8px",
                       display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: "10px",
-                      marginRight: "10px",
-                      width: "250px",
-                      "&:hover": {
-                        backgroundColor: "#D0C5B4",
-                      },
+                      alignItems: "center",
+                      gap: "18px",
                     }}
-                    onClick={() => handleCardClick(store?.matchingstate?.name)}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "18px",
-                      }}
-                    >
-                      <FolderOutlinedIcon />
-                      <Typography>{store?.matchingstate?.name}</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCopyLink(store?.matchingstate?.name);
-                        }}
-                        sx={{ minWidth: "auto", padding: 0 }}
-                      >
-                        {/* Add any icon or text for the copy link button */}
-                      </Button>
-                    </Box>
+                    <FolderOutlinedIcon />
+                    <Typography>{store?.matchingstate?.name}</Typography>
                   </Box>
-                )}
-              </Box>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCopyLink(store?.matchingstate?.name);
+                      }}
+                      sx={{ minWidth: "auto", padding: 0 }}
+                    >
+                      {/* Add any icon or text for the copy link button */}
+                    </Button>
+                  </Box>
+                </Box>
+              )}
             </Grid>
           </Box>
         )}
