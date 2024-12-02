@@ -67,7 +67,7 @@ const SubjectDetails = () => {
   const store = coursePlannerStore();
   const [loading, setLoading] = useState(true);
   const [card, setCard] = useState<Card | null>(null);
-  const [subject, setSubject] = useState<any>();
+  const [subject, setSubject] = useState<any>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [medium, setMedium] = useState<any>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
