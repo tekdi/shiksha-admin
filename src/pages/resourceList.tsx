@@ -115,13 +115,14 @@ const ResourceList = () => {
         {learnersPostReq.length > 0 ? (
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {learnersPostReq.map((item, index) => (
-              <Grid item key={index}>
+              <Grid xs={6} md={4} lg={3} item key={index}>
                 <ResourceCard
                   title={item.name}
                   // type={item.app}
                   resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
+                  mimeType={item.mimeType}
                 />
               </Grid>
             ))}
@@ -138,13 +139,14 @@ const ResourceList = () => {
         {facilitatorsPreReq.length > 0 ? (
           <Grid container spacing={2}>
             {facilitatorsPreReq.map((item, index) => (
-              <Grid item key={index}>
+              <Grid xs={6} md={4} lg={3} item key={index}>
                 <ResourceCard
                   title={item.name}
                   // type={item.app || "Facilitator"}
                    resource={item.contentType}
                   appIcon={item?.appIcon}
                   identifier={item.identifier}
+                  mimeType={item.mimeType}
                 />
               </Grid>
             ))}
