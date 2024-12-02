@@ -606,7 +606,7 @@ const SubjectDetails = () => {
 
   const handleCopyLink = (subject: any) => {};
 
-  const handleCardClick = (subject: any) => {
+  const handleCardClick = (subject: string) => {
     setTaxonomySubject(subject);
     router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
@@ -839,7 +839,7 @@ const SubjectDetails = () => {
 
       <Box sx={{ marginTop: "16px" }}>
         {subject && subject.length > 1 ? (
-          subject.map((subj: any, index: number) => (
+          subject?.map((subj: string, index: number) => (
             <MuiCard
               key={index}
               sx={{
