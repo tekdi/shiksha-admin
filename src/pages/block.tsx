@@ -291,8 +291,10 @@ const Block: React.FC = () => {
 
 
   useEffect(() => {
-    if(selectedDistrict==="")
-    setSelectedDistrict(districtData[0]?.value);
+    if(selectedDistrict==="" && districtData?.length!==0){
+      setSelectedDistrict(districtData[0]?.value);
+
+    }
   }, [districtData]);
 
 
