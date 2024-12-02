@@ -57,9 +57,11 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
           } else if (INTERACTIVE_MIME_TYPE.includes(data?.mimeType)) {
             playerConfig = V1PlayerConfig;
             playerConfig.metadata = data;
+            playerConfig.context["contentId"] = identifier;
           } else {
             playerConfig = V2PlayerConfig;
             playerConfig.metadata = data;
+            playerConfig.context["contentId"] = identifier;
           }
           setLoading(false);
         }
@@ -74,15 +76,14 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }} onClick={() => router.back()}>
+      <Box
+        sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }}
+        onClick={() => router.back()}
+      >
         <IconButton>
           <ArrowBackIcon />
         </IconButton>
-        <Typography
-          variant="h4"
-        >
-          {t("COMMON.BACK")}
-        </Typography>
+        <Typography variant="h4">{t("COMMON.BACK")}</Typography>
       </Box>
       {loading && (
         <Box
@@ -97,14 +98,18 @@ const Players: React.FC<SunbirdPlayerProps> = () => {
         </Box>
       )}
       <Box margin={"1rem 0"}>
-        <Typography color={'#024f9d'} sx={{ padding: '0 0 4px 4px', fontWeight: 'bold' }}>{playerConfig?.metadata?.name}</Typography>
+        <Typography
+          color={"#024f9d"}
+          sx={{ padding: "0 0 4px 4px", fontWeight: "bold" }}
+        >
+          {playerConfig?.metadata?.name}
+        </Typography>
         {!loading ? <SunbirdPlayers player-config={playerConfig} /> : null}
       </Box>
 
       {/* <Box mt={2}>
         <Typography variant="h4">{t('COMMON.DESCRIPTION')}</Typography>
       </Box> */}
-
     </Box>
   );
 };

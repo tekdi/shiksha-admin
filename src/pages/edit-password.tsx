@@ -13,6 +13,7 @@ import { showToastMessage } from '@/components/Toastify';
 import { telemetryFactory } from '@/utils/telemetry';
 import PasswordCreate from '@/components/PasswordCreate';
 import CentralizedModal from '@/components/CentralizedModal';
+import { Role } from '@/utils/app.constant';
 
 const EditForgotPassword = () => {
   const { t } = useTranslation();
@@ -41,6 +42,14 @@ const EditForgotPassword = () => {
     }
   };
   const handlePrimaryButton = () => {
+    const storedUserData = JSON.parse(
+      localStorage.getItem("adminInfo") || "{}"
+    );
+    if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)
+    {
+      router.push(`/course-planner`);
+
+    }else
     router.push(`/centers`);
     localStorage.setItem('skipResetPassword', 'true');
   };

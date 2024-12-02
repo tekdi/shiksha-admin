@@ -11,6 +11,7 @@ import {
   Select,
   Divider,
   Tooltip,
+  Grid,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -830,34 +831,50 @@ const SubjectDetails = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">{boardName}</Typography>
-        <Typography variant="h2" sx={{ ml: 1 }}>
-          Board
-        </Typography>
+        {/* <Typography variant="h2" sx={{ ml: 1 }}>
+          Boardasahskj
+        </Typography> */}
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />
+
       <Box sx={{ marginTop: "16px" }}>
-        {subject && subject.length > 1 ? (
-          subject.map((subj: any, index: number) => (
-            <MuiCard
-              key={index}
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr 1fr",
-                padding: "14px",
-                cursor: "pointer",
-                border: "1px solid rgba(0, 0, 0, 0.1)",
-                boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
-                borderRadius: "8px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "#EAF2FF",
-                  transform: "scale(1.02)",
-                },
-                marginTop: "12px",
-              }}
-              onClick={() => handleCardClick(subj)}
+        <Grid container spacing={2}>
+          {subject && subject.length > 1 ? (
+            subject.map((subj: any, index: number) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Box
+                  onClick={() => handleCardClick(subj)}
+                  sx={{
+                    padding: "14px",
+                    cursor: "pointer",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                    borderRadius: "8px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "#EAF2FF",
+                      transform: "scale(1.02)",
+                    },
+                    marginTop: "12px",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
+                    <Typography variant="h6" noWrap>
+                      {subj?.name || "Untitled Subject"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            ))
+          ) : (
+            <Typography
+              variant="h4"
+              align="center"
+              sx={{ marginTop: "24px", color: "#6B7280" }}
             >
+
               {/* Left Section: Folder Icon and Subject Name */}
               <Box
                 sx={{
@@ -882,6 +899,8 @@ const SubjectDetails = () => {
             Select Medium, Grade, and Type
           </Typography>
         )}
+
+        </Grid>
       </Box>
     </Box>
   );

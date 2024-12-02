@@ -1,7 +1,8 @@
 import { CoursePlannerMetaData, GetSolutionDetailsParams, GetTargetedSolutionsParams, GetUserProjectTemplateParams } from "@/utils/Interfaces";
-import { post } from "./RestClient";
+import { get, post } from "./RestClient";
 import axios from 'axios';
 import { FRAMEWORK_ID } from "../../app.config";
+import { URL_CONFIG } from "@/utils/url.config";
 
 
 
@@ -150,7 +151,21 @@ export const uploadCoursePlanner = async (file: File, metaData: CoursePlannerMet
     }
   };
   
-
-
- 
+  export const getContentHierarchy = async ({
+    doId,
+  }: {
+    doId: string;
+  }): Promise<any> => {
+    const apiUrl: string = `${URL_CONFIG.API.CONTENT_HIERARCHY}/${doId}`;
+  
+    try {
+      console.log('Request data', apiUrl);
+      const response = await get(apiUrl);
+      // console.log('response', response);
+      return response;
+    } catch (error) {
+      console.error('Error in getContentHierarchy Service', error);
+      throw error;
+    }
+  };
  

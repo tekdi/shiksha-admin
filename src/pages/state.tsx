@@ -94,7 +94,7 @@ const State: React.FC = () => {
 
       const states = resp?.result?.values || [];
       setStateDataOptinon(states);
-      const stateNameArra = states.map((item: any) => item.label);
+      const stateNameArra = states.map((item: any) => item.label.toLowerCase());
       setStateNameArr(stateNameArra);
       const stateCodeArra = states.map((item: any) => item.value);
       setStateCodeArr(stateCodeArra);
@@ -121,6 +121,8 @@ const State: React.FC = () => {
         filters: {
           name: searchKeyword,
           type: "STATE",
+          status:["active"]
+
         },
         sort: sortBy,
       };
@@ -142,7 +144,7 @@ const State: React.FC = () => {
         .map((stateDetail: any) => {
           const transformedName = transformLabel(stateDetail.name);
           const matchingState = stateDataOption.find(
-            (state: { label: string }) => state.label === transformedName
+            (state: { label: string }) => state?.label?.toLowerCase() === transformedName?.toLowerCase()
           );
           return {
             label: transformedName,
@@ -155,7 +157,7 @@ const State: React.FC = () => {
           };
         })
         .filter((state: { label: any }) =>
-          stateNameArray.includes(state.label)
+          stateNameArray.includes(state?.label?.toLowerCase())
         );
       setStateData(filteredStateData);
       setLoading(false);

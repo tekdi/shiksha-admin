@@ -115,8 +115,9 @@ const SendCredentialModal: React.FC<SendCredentialModalProps> = ({
         <Box
           p="18px"
           display="flex"
-          justifyContent="space-between"
-          alignItems="center"
+         justifyContent="flex-end"
+         gap="8px"
+  alignItems="center"
         >
           {userType === Role.STUDENT ? (
             <Button
