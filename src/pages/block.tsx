@@ -288,6 +288,17 @@ const Block: React.FC = () => {
   }, [isFirstVisit, searchKeyword, pageLimit, pageOffset, stateCode]);
 
 
+
+
+  useEffect(() => {
+    if(selectedDistrict==="" && districtData?.length!==0){
+      setSelectedDistrict(districtData[0]?.value);
+
+    }
+  }, [districtData]);
+
+
+
   useEffect(() => {
     if (districtData[0]?.value && isFirstVisit) {
       setSelectedDistrict(districtData[0]?.value);

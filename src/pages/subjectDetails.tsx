@@ -604,9 +604,6 @@ const SubjectDetails = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">{boardName}</Typography>
-        <Typography variant="h2" sx={{ ml: 1 }}>
-          Board
-        </Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />

@@ -207,46 +207,80 @@ const Foundation = () => {
               <Typography>{t("MASTER.STATE")}</Typography>
             </Box>
             <Divider />
-            <Grid container spacing={2} mt={2}>
-
-              {role === "Central Admin CCTA" ? (
-                stateNames.map((stateName) => (
-                  <Grid
-                    item xs={12} md={4} lg={4}
-                  >
+              <Grid container spacing={2} mt={2} sx={{ overflow: "hidden", maxWidth: "100%" }}>
+                {role === "Central Admin CCTA" ? (
+                  stateNames.map((stateName) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={stateName}>
+                      <Box
+                        sx={{
+                          cursor: "pointer",
+                          border: "1px solid #D0C5B4",
+                          padding: "10px",
+                          borderRadius: "8px",
+                          width: "100%",
+                          boxSizing: "border-box",
+                          "&:hover": {
+                            backgroundColor: "#D0C5B4",
+                          },
+                        }}
+                        onClick={() => handleCardClick(stateName)}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "18px",
+                          }}
+                        >
+                          <FolderOutlinedIcon />
+                          <Typography>{stateName}</Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyLink(stateName);
+                            }}
+                            sx={{ minWidth: "auto", padding: 0 }}
+                          >
+                            {/* Add any icon or text for the copy link button */}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))
+                ) : (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                     <Box
-                      key={stateName}
                       sx={{
                         cursor: "pointer",
                         border: "1px solid #D0C5B4",
                         padding: "10px",
+                        borderRadius: "8px",
                         display: "flex",
                         justifyContent: "space-between",
-                        marginLeft: "15px",
-                        marginBottom: "10px",
-                        marginRight: "10px",
-                        width: "90%",
+                        width: "100%",
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
                       }}
-                      onClick={() => handleCardClick(stateName)}
+                      onClick={() => handleCardClick(store?.matchingstate?.name)}
                     >
                       <Box
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "18px",
+                          gap: "16px",
                         }}
                       >
                         <FolderOutlinedIcon />
-                        <Typography>{stateName}</Typography>
+                        <Typography>{store?.matchingstate?.name}</Typography>
                       </Box>
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleCopyLink(stateName);
+                            handleCopyLink(store?.matchingstate?.name);
                           }}
                           sx={{ minWidth: "auto", padding: 0 }}
                         >
@@ -255,49 +289,9 @@ const Foundation = () => {
                       </Box>
                     </Box>
                   </Grid>
-                ))
-              ) : (
-                <Box
-                  sx={{
-                    cursor: "pointer",
-                    border: "1px solid #D0C5B4",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                    marginRight: "10px",
-                    width: "100%",
-                    "&:hover": {
-                      backgroundColor: "#D0C5B4",
-                    },
-                  }}
-                  onClick={() => handleCardClick(store?.matchingstate?.name)}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "18px",
-                    }}
-                  >
-                    <FolderOutlinedIcon />
-                    <Typography>{store?.matchingstate?.name}</Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCopyLink(store?.matchingstate?.name);
-                      }}
-                      sx={{ minWidth: "auto", padding: 0 }}
-                    >
-                      {/* Add any icon or text for the copy link button */}
-                    </Button>
-                  </Box>
-                </Box>
-              )}
-            </Grid>
+                )}
+              </Grid>
+
           </Box>
         )}
       </>
