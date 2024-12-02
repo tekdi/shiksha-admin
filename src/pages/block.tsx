@@ -215,6 +215,7 @@ const Block: React.FC = () => {
           name: searchKeyword,
           states: stateCode,
           type: CohortTypes.DISTRICT,
+          status:["active"]
         },
         sort: sortBy,
       };
