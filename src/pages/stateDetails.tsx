@@ -80,53 +80,55 @@ const StateDetails = () => {
         </Typography>
       </Box>
       <Divider />
-      <Grid container spacing={2} sx={{ marginTop: "16px", ml: 2 }}>
+      <Box sx={{mx:'16px'}}>
         <Box
-          sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2, mt: 2 }}
+          sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, }}
         >
           <Typography variant="h2">Boards:</Typography>
         </Box>
-        {boards.map((board: any, index: number) => (
-          <Grid item xs={12} md={4} key={index}>
-            <Box
-              sx={{
-                alignItems: "center",
-                cursor: "pointer",
-                border: "1px solid #0000001A",
-                boxShadow: "none",
-                transition: "background-color 0.3s",
-                "&:hover": {
-                  backgroundColor: "#EAF2FF",
-                },
+        <Grid container spacing={2} sx={{ overflow: "hidden", maxWidth: "100%" }}>
+          {boards.map((board: any, index: number) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <Box
+                sx={{
+                  alignItems: "center",
+                  cursor: "pointer",
+                  border: "1px solid #0000001A",
+                  boxShadow: "none",
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "#EAF2FF",
+                  },
 
-                marginTop: "8px",
-                padding: "16px",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-              onClick={() => {
-                handleBoardClick(board.code, board.name);
-                console.log(board);
-              }}
-            >
-              <Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <FolderOutlinedIcon />
-                  <Typography variant="h6" sx={{ fontSize: "16px" }}>
-                    {board.name}
-                  </Typography>
+                  marginTop: "8px",
+                  padding: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+                onClick={() => {
+                  handleBoardClick(board.code, board.name);
+                  console.log(board);
+                }}
+              >
+                <Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <FolderOutlinedIcon />
+                    <Typography variant="h6" sx={{ fontSize: "16px" }}>
+                      {board.name}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 };
