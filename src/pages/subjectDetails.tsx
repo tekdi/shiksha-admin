@@ -66,7 +66,7 @@ const SubjectDetails = () => {
   const store = coursePlannerStore();
   const [loading, setLoading] = useState(true);
   const [card, setCard] = useState<Card | null>(null);
-  const [subject, setSubject] = useState<any>();
+  const [subject, setSubject] = useState<any>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [medium, setMedium] = useState<any>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
@@ -836,6 +836,7 @@ const SubjectDetails = () => {
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />
+
       <Box sx={{ marginTop: "16px" }}>
         {subject && subject.length > 1 ? (
           subject.map((subj: any, index: number) => (
