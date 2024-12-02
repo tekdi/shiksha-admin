@@ -31,6 +31,7 @@ export interface Field {
   required?: boolean;
   default: string | number;
   isRequired?: boolean;
+  isHidden?: boolean;
 }
 export interface TenantCohortRoleMapping {
   tenantId: string;
