@@ -211,9 +211,7 @@ export const createOrUpdateOption = async (
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 409) {
-        showToastMessage(t("COHORT_CODE_EXISTS"), "error");
-
-   
+        showToastMessage(t("COMMON.COHORT_CODE_EXISTS"), "error");
      } 
     }
     console.error(
