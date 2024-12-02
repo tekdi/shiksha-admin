@@ -112,6 +112,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
 
     const cleanedFormData = cleanAndReplace(event.formData);
+    console.log("cleanedFormData---", cleanedFormData);
+
     console.log("Form data changed:", cleanedFormData);
 
     setLocalFormData(cleanedFormData);
@@ -247,8 +249,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       return error;
     });
   };
-  useEffect(() => {
-    // setSubmittedButtonStatus(false);
+ useEffect(() => {
+   
+    const updatedFormData = Object.fromEntries(
+      Object.entries(localFormData)?.map(([key, value]) => [key, value === "undefined" ? "" : value])
+    ); 
+    setLocalFormData(updatedFormData);
   }, []);
   return (
     <div>
