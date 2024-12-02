@@ -18,6 +18,8 @@ const StateDetails = () => {
   const [boards, setBoards] = useState<any>([]);
 
   useEffect(() => {
+    const stateValue = Array.isArray(state) ? state.join(",") : state || "";
+    localStorage.setItem("selectedState", stateValue);
     const fetchBoards = () => {
       let boardsData = [];
       if (
