@@ -923,10 +923,15 @@ console.log(code[0])
           resp = await userList({ limit, filters, sort, offset, fields });
 
         }
-        if (!resp?.getUserDetails) {
+        if (!resp?.userDetails &&enableCenterFilter) {
           setData([]);
           //showToastMessage("No data found", "info");
-        }       
+        } 
+        else if(!resp?.getUserDetails)
+        {
+          setData([]);
+
+        }      
          const result = enableCenterFilter?resp?.userDetails:resp?.getUserDetails;
         console.log(result)
          console.log(resp?.totalCount)
@@ -1069,10 +1074,10 @@ console.log(code[0])
           });
 
           setData(prioritizedResult);
-        } else if (resp?.getUserDetails){
+        } else if (resp?.userDetails || resp?.getUserDetails){
           setData(finalResult);
         }
-        else
+       else
         {
           setData([]);
 

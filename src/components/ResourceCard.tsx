@@ -4,86 +4,121 @@ import Image, { StaticImageData } from "next/image";
 import placeholderImage from "../../public/placeholderImage.png";
 import router from "next/router";
 import { fetchContent } from "@/services/PlayerService";
+import { ContentCardsTypes, FileType } from "@/utils/app.constant";
 
 interface ResourceCardProps {
   title: string;
   // type: string;
-  // resource: string;
+  resource: string;
   identifier: string;
   appIcon?: string;
+  mimeType?: string;
 }
 
 const ResourceCard: React.FC<ResourceCardProps> = ({
   title,
   // type,
-  // resource,
+  resource,
   identifier,
   appIcon,
+  mimeType
 }) => {
-  // const [thumbnailUrl, setThumbnailUrl] = useState<string | StaticImageData>(placeholderImage);
-  const thumbnailUrl = appIcon || placeholderImage;
-
-  // useEffect(() => {
-  //   const loadContent = async () => {
-  //     try {
-  //       if (identifier) {
-  //         const data = await fetchContent(identifier);
-  //         if (data?.appIcon) {
-  //           setThumbnailUrl(data.appIcon);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Unable to fetch content", error);
-  //     }
-  //   }
-  //   loadContent();
-
-  // }, [identifier])
+  
 
   const openPlayers = () => {
     sessionStorage.setItem("previousPage", window.location.href);
-    router.push(`/play/content/${identifier}`);
+    if (resource === "Course") {
+      router.push(`/course-hierarchy/${identifier}`);
+    } else {
+      router.push(`/play/content/${identifier}`);
+    }
   };
 
+  const getBackgroundImage = () => {
+    if (appIcon) {
+      return appIcon;
+    } else if (ContentCardsTypes[mimeType as keyof FileType]?.BgImgPath?.src) {
+      return ContentCardsTypes[mimeType as keyof FileType]?.BgImgPath?.src;
+    } else {
+      return placeholderImage.src;
+    }
+  }
+
   return (
-    <Card sx={{ width: 150, height: 180, borderRadius: 2, cursor: "pointer" }}>
-      <CardContent>
+      <Box
+        onClick={openPlayers}
+        sx={{
+          backgroundImage: `url(${getBackgroundImage()})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          borderRadius: '16px',
+          overflow: 'hidden',
+          cursor: 'pointer',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
           sx={{
-            height: 100,
-            backgroundColor: "#f5f5f5",
-            borderRadius: "10px",
-            cursor: "pointer",
+            height: '204px',
+            position: 'relative',
           }}
-          onClick={openPlayers}
         >
-          <Image
-            src={thumbnailUrl}
-            alt="Resource Placeholder"
-            width={100}
-            height={100}
-            style={{ borderRadius: "10px" }}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 0.5) 100%)',
+              zIndex: 1,
+              borderTopLeftRadius: '16px',
+              borderTopRightRadius: '16px'
+            }}
           />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: '16px',
+              left: '16px',
+              right: '16px',
+              zIndex: 2,
+              color: '#FFFFFF',
+              fontSize: '16px',
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {title}
+          </Box>
         </Box>
-        <Typography
-          variant="subtitle1"
+
+        <Box
           sx={{
-            mt: 1,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            height: '40px',
+            background: '#ECE6F0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 16px',
+            borderRadius: '0px 0px 16px 16px',
           }}
         >
-          {title}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
-          {/* {type} */}
-        </Typography>
-      </CardContent>
-    </Card>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Image
+              src={ContentCardsTypes[mimeType as keyof FileType]?.imgPath}
+              alt="Content Thumbnail"
+              style={{ marginRight: '8px', height: '25px', width: '23px' }}
+            />
+            <span style={{ fontSize: '12px', color: '#1F1B13', fontWeight: 400 }}>
+              {ContentCardsTypes[mimeType as keyof FileType]?.name}
+            </span>
+          </Box>
+        </Box>
+      </Box>
   );
 };
 

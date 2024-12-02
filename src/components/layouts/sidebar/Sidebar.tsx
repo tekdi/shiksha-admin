@@ -62,15 +62,15 @@ const Sidebar = ({
                     if (item.subOptions) {
                       handleClick(index);
                     } else {
-                      router.push(item.href);
+                      router.push(item.href[0]);
                       onSidebarClose();
                     }
                   }}
-                  selected={location === item.href}
+                  selected={item.href?.includes(location)}
                   sx={{
                     mb: 1,
 
-                    ...(location === item.href && {
+                    ...(item.href?.includes(location) && {
                       color: "black",
                       backgroundColor: (theme) =>
                         `${theme.palette.primary.main}!important`,
@@ -109,15 +109,15 @@ const Sidebar = ({
                           button
                           key={subItem.title}
                           onClick={() => {
-                            router.push(subItem.href);
+                            router.push(subItem.href[0]);
                             onSidebarClose();
                           }}
-                          selected={location === subItem.href}
+                          selected={subItem.href.includes(location)}
                           sx={{
                             pl: 8,
                             ml: 2,
                             mb: 1,
-                            ...(location === subItem.href && {
+                            ...(subItem.href.includes(location) && {
                               color: "black",
                               backgroundColor: (theme) =>
                                 `${theme.palette.primary.main}!important`,
@@ -148,7 +148,7 @@ const Sidebar = ({
         variant="persistent"
         PaperProps={{
           sx: {
-            width: "275px",
+            width: "284px",
             border: "0 !important",
             boxShadow: "0px 7px 30px 0px rgb(113 122 131 / 11%)",
           },
@@ -165,7 +165,7 @@ const Sidebar = ({
       onClose={onSidebarClose}
       PaperProps={{
         sx: {
-          width: "275px",
+          width: "284px",
           border: "0 !important",
         },
       }}
