@@ -66,7 +66,7 @@ const SubjectDetails = () => {
   const store = coursePlannerStore();
   const [loading, setLoading] = useState(true);
   const [card, setCard] = useState<Card | null>(null);
-  const [subject, setSubject] = useState<any>([]);
+  const [subject, setSubject] = useState<string[]>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [medium, setMedium] = useState<any>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
@@ -607,10 +607,10 @@ const SubjectDetails = () => {
   const handleCopyLink = (subject: any) => {};
 
   const handleCardClick = (subject: any) => {
-    setTaxonomySubject(subject?.name);
-    router.push(`/importCsv?subject=${encodeURIComponent(subject?.name)}`);
+    setTaxonomySubject(subject);
+    router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
-    setTaxanomySubject(subject?.name);
+    setTaxanomySubject(subject);
   };
 
   const handleMediumChange = (event: any) => {
@@ -698,7 +698,7 @@ const SubjectDetails = () => {
     setSelectedmedium("");
     setSelectedgrade("");
     setSelectedtype("");
-    setSubject("");
+    setSubject([""]);
   };
 
   return (
