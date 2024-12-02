@@ -121,6 +121,8 @@ const State: React.FC = () => {
         filters: {
           name: searchKeyword,
           type: "STATE",
+          status:["active"]
+
         },
         sort: sortBy,
       };

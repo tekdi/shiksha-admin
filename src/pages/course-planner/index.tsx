@@ -217,7 +217,7 @@ const Foundation = () => {
                           border: "1px solid #D0C5B4",
                           padding: "10px",
                           borderRadius: "8px",
-                          width: "100%",
+                          // width: "100%",
                           boxSizing: "border-box",
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
@@ -259,7 +259,7 @@ const Foundation = () => {
                         borderRadius: "8px",
                         display: "flex",
                         justifyContent: "space-between",
-                        width: "100%",
+                        // width: "100%",
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
