@@ -605,9 +605,9 @@ const SubjectDetails = () => {
     router.back();
   };
 
-  const handleCopyLink = (subject: any) => {};
+  const handleCopyLink = (subject: any) => { };
 
-  const handleCardClick = (subject: any) => {
+  const handleCardClick = (subject: string) => {
     setTaxonomySubject(subject);
     router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
@@ -704,8 +704,8 @@ const SubjectDetails = () => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", flexDirection: "row", marginTop: "20px" }}>
-        <Box>
+      <Grid container spacing={2} sx={{ marginTop: "20px" }}>
+        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
           <Select
             value={selectedmedium || ""}
             onChange={handleMediumChange}
@@ -723,7 +723,7 @@ const SubjectDetails = () => {
               borderRadius: "8px",
               marginRight: "16px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -735,8 +735,8 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
-        <Box>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
           <Select
             value={selectedgrade || ""}
             onChange={handleGradeChange}
@@ -754,7 +754,7 @@ const SubjectDetails = () => {
               borderRadius: "8px",
               marginRight: "16px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -766,9 +766,9 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
+        </Grid>
 
-        <Box>
+        <Grid item xs={12} sm={12} md={4} lg={6} xl={4}>
           <Select
             value={selectedtype || ""}
             onChange={handleTypeChange}
@@ -785,7 +785,7 @@ const SubjectDetails = () => {
               border: "1px solid #3C3C3C",
               borderRadius: "8px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -797,32 +797,31 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
-        <Box>
+        </Grid>
+        <Grid item xs={12} sm={12} md={4} lg={6} xl={2}>
           <Button
             onClick={handleReset}
             sx={{
               height: 40,
-              width: "80px",
               backgroundColor: "#4D4639",
               color: "#FFFFFF",
               borderRadius: "8px",
-              marginLeft: "16px",
               "&:hover": {
                 backgroundColor: "black",
               },
+              width: "100%",
             }}
           >
             Reset
           </Button>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
 
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-
+          marginLeft: "10px",
           marginTop: "16px",
           marginBottom: "16px",
         }}
@@ -836,51 +835,57 @@ const SubjectDetails = () => {
       <Divider />
 
       <Box sx={{ marginTop: "16px" }}>
-        {subject && subject.length > 1 ? (
-          subject?.map((subj: string, index: number) => (
-            <MuiCard
-              key={index}
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr 1fr",
-                padding: "14px",
-                cursor: "pointer",
-                border: "1px solid rgba(0, 0, 0, 0.1)",
-                boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
-                borderRadius: "8px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "#EAF2FF",
-                  transform: "scale(1.02)",
-                },
-                marginTop: "12px",
-              }}
-              onClick={() => handleCardClick(subj)}
+        <Grid container spacing={2}>
+
+
+          {subject && subject.length > 1 ? (
+            subject?.map((subj: string, index: number) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <MuiCard
+                  key={index}
+                  sx={{
+
+                    padding: "14px",
+                    cursor: "pointer",
+                    border: "1px solid rgba(0, 0, 0, 0.1)",
+                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                    borderRadius: "8px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      backgroundColor: "#EAF2FF",
+                      transform: "scale(1.02)",
+                    },
+                    marginTop: "12px",
+                  }}
+                  onClick={() => handleCardClick(subj)}
+                >
+                  {/* Left Section: Folder Icon and Subject Name */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
+                    <Typography variant="h6" noWrap>
+                      {subj || "Untitled Subject"}
+                    </Typography>
+                  </Box>
+                </MuiCard>
+              </Grid>
+
+            ))
+          ) : (
+            <Typography
+              variant="h4"
+              align="center"
+              sx={{ marginTop: "24px", color: "#6B7280" }}
             >
-              {/* Left Section: Folder Icon and Subject Name */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
-                <Typography variant="h6" noWrap>
-                  {subj || "Untitled Subject"}
-                </Typography>
-              </Box>
-            </MuiCard>
-          ))
-        ) : (
-          <Typography
-            variant="h4"
-            align="center"
-            sx={{ marginTop: "24px", color: "#6B7280" }}
-          >
-            Select Medium, Grade, and Type
-          </Typography>
-        )}
+              Select Medium, Grade, and Type
+            </Typography>
+          )}
+        </Grid>
       </Box>
     </Box>
   );
