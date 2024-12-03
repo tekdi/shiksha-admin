@@ -15,7 +15,7 @@ const generateColumns = (
   configs: ColumnConfig[],
   isMobile: boolean
 ) => {
-  return configs.map((config) => ({
+  const newConfigs = configs.map((config) => ({
     key: config.key,
     title: t(config.titleKey).toUpperCase(),
     dataType: DataType.String,
@@ -23,6 +23,8 @@ const generateColumns = (
     width: isMobile && config.width ? config.width : config.width || undefined,
     isSortable: config.isSortable,
   }));
+  console.log("configs", newConfigs);
+  return [...newConfigs];
 };
 
 export const getUserTableColumns = (t: any, isMobile: boolean, isArchived?:any) => {
@@ -143,13 +145,13 @@ export const getStateDataMaster = (t: any, isMobile: boolean) => {
   const configs: ColumnConfig[] = [
     {
       key: "label",
-      titleKey: t("TABLE_TITLE.STATE").toUpperCase(),
+      titleKey: "TABLE_TITLE.STATE",
       width: 130,
     },
-    { key: "value", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
+    { key: "value", titleKey: "TABLE_TITLE.CODE", width: 130 },
     {
       key: "createdBy",
-      titleKey: t("TABLE_TITLE.CREATED_BY").toUpperCase(),
+      titleKey: "TABLE_TITLE.CREATED_BY",
       width: 130,
     },
     {
@@ -216,33 +218,33 @@ export const getDistrictTableData = (t: any, isMobile: boolean) => {
 export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) => {
 
   const configs: ColumnConfig[] = [
-    { key: "name", titleKey: t("TABLE_TITLE.BLOCK").toUpperCase(), width: 130 },
-    { key: "code", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
+    { key: "name", titleKey: "TABLE_TITLE.BLOCK", width: 130 },
+    { key: "code", titleKey: "TABLE_TITLE.CODE", width: 130 },
     {
       key: "createdBy",
-      titleKey: t("TABLE_TITLE.CREATED_BY").toUpperCase(),
+      titleKey: "TABLE_TITLE.CREATED_BY",
       width: 130,
     },
     {
       key: "updatedBy",
-      titleKey: t("TABLE_TITLE.UPDATED_BY").toUpperCase(),
+      titleKey: "TABLE_TITLE.UPDATED_BY",
       width: 130,
     },
     {
       key: "createdAt",
-      titleKey: t("TABLE_TITLE.CREATED_DATE").toUpperCase(),
+      titleKey: "TABLE_TITLE.CREATED_DATE",
       width: 130,
     },
     {
       key: "updatedAt",
-      titleKey: t("TABLE_TITLE.UPDATED_DATE").toUpperCase(),
+      titleKey: "TABLE_TITLE.UPDATED_DATE",
       width: 130,
     },
   ];
   if (isActiveYear && !isArchived) {
     configs.push({
       key: "actions",
-      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+      titleKey: "TABLE_TITLE.ACTIONS",
       width: 160,
     });
   }

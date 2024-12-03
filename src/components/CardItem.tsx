@@ -3,7 +3,7 @@ import { Box, Card, Typography, Button } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
 import CustomStepper from "@/components/Steper";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 interface CardItemProps {
   card: {
     id: number;

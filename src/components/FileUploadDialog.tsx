@@ -10,7 +10,7 @@ import {
 import UploadIcon from "@mui/icons-material/Upload";
 import CloseIcon from "@mui/icons-material/Close";
 import FileCopyIcon from "@mui/icons-material/FileCopy";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 
 interface FileUploadDialogProps {
   open: boolean;

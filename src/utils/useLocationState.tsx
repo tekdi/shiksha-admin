@@ -6,7 +6,7 @@ import {
 } from "../services/MasterDataService"; // Update the import path as needed
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { FormContextType, QueryKeys, Status, Role } from "./app.constant";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { cohortMemberList } from "@/services/UserList";

@@ -16,7 +16,7 @@ import {
 } from "../../../../config.json";
 import { V1PlayerConfig, V2PlayerConfig } from "../../../data/player-config";
 import Loader from "@/components/Loader";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import useStore from "@/store/store";
 
 // @ts-ignore
