@@ -12,7 +12,7 @@ const remotes = (isServer) => {
   };
 };
 
-const PORTAL_BASE_URL = "https://sunbird-editor.tekdinext.com";
+const PORTAL_BASE_URL = "https://staging.sunbirded.org";
 
 const routes = {
   API: {
