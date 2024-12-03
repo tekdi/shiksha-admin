@@ -472,6 +472,7 @@ const District: React.FC = () => {
         if (cohortCreateResponse) {
           filteredCohortOptionData();
           showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
+          setFetchDistrict(!fetchDistrict);
           const windowUrl = window.location.pathname;
           const cleanedUrl = windowUrl.replace(/^\//, '');
           const env = cleanedUrl.split("/")[0];

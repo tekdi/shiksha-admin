@@ -136,6 +136,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEAM_LEADER),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
+  const {  i18n } = useTranslation();
 
   const {
     data: contentCreatorFormData,
@@ -258,7 +259,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
       }
     };
     getAddUserFormData();
-  }, [userType, teacherFormData, studentFormData, teamLeaderFormData, contentCreatorFormData]);
+  }, [userType, teacherFormData, studentFormData, teamLeaderFormData, contentCreatorFormData, i18n.language]);
  const { getNotification } = useNotification();
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
@@ -786,6 +787,8 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                   showErrorList={true}
                   customFields={customFields}
                   formData={formValue}
+                  key={`${i18n.language}`}
+
                 >
                   {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
                 </DynamicForm>
