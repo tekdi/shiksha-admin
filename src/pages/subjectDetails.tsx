@@ -607,7 +607,7 @@ const SubjectDetails = () => {
 
   const handleCopyLink = (subject: any) => {};
 
-  const handleCardClick = (subject: any) => {
+  const handleCardClick = (subject: string) => {
     setTaxonomySubject(subject);
     router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
@@ -704,7 +704,14 @@ const SubjectDetails = () => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", flexDirection: "row", marginTop: "20px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: "20px",
+          marginLeft: "20px",
+        }}
+      >
         <Box>
           <Select
             value={selectedmedium || ""}
@@ -822,7 +829,7 @@ const SubjectDetails = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-
+          marginLeft: "10px",
           marginTop: "16px",
           marginBottom: "16px",
         }}
@@ -838,14 +845,20 @@ const SubjectDetails = () => {
       </Box>
       <Divider />
 
-      <Box sx={{ marginTop: "16px" }}>
+      <Box
+        sx={{
+          marginLeft: "20px",
+          marginTop: "16px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "16px", // Space between cards
+        }}
+      >
         {subject && subject.length > 1 ? (
           subject?.map((subj: string, index: number) => (
             <MuiCard
               key={index}
               sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr 1fr",
                 padding: "14px",
                 cursor: "pointer",
                 border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -856,7 +869,6 @@ const SubjectDetails = () => {
                   backgroundColor: "#EAF2FF",
                   transform: "scale(1.02)",
                 },
-                marginTop: "12px",
               }}
               onClick={() => handleCardClick(subj)}
             >

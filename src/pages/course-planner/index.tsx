@@ -202,8 +202,8 @@ const Foundation = () => {
         {loading ? (
           <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
         ) : (
-          <Box sx={{ pl: "20px", mt: 5 }}>
-            <Box sx={{ mb: 2 }}>
+          <Box sx={{ pl: "20px", ml: 2 }}>
+            <Box sx={{ m: 2 }}>
               <Typography>{t("MASTER.STATE")}</Typography>
             </Box>
             <Divider />
@@ -268,10 +268,15 @@ const Foundation = () => {
                     >
                       <Box
                         sx={{
+                          cursor: "pointer",
+                          border: "1px solid #D0C5B4",
+                          borderRadius: "8px",
+                          padding: "10px",
                           display: "flex",
                           alignItems: "center",
                           gap: "16px",
                         }}
+                        onClick={() => handleCardClick(stateName)}
                       >
                         <FolderOutlinedIcon />
                         <Typography>{store?.matchingstate?.name}</Typography>
@@ -282,7 +287,6 @@ const Foundation = () => {
                             e.stopPropagation();
                             handleCopyLink(store?.matchingstate?.name);
                           }}
-                          sx={{ minWidth: "auto", padding: 0 }}
                         >
                           {/* Add any icon or text for the copy link button */}
                         </Button>
@@ -291,7 +295,6 @@ const Foundation = () => {
                   </Grid>
                 )}
               </Grid>
-
           </Box>
         )}
       </>
