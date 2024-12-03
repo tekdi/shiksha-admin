@@ -215,8 +215,6 @@ const Foundation = () => {
                   ? stateNames.map((stateName) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={stateName} >
                       <Box
-                      
-                        
                         sx={{
                           cursor: "pointer",
                           border: "1px solid #D0C5B4",
@@ -227,6 +225,7 @@ const Foundation = () => {
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
                           },
+                          marginTop: "8px"
                         }}
                         onClick={() => handleCardClick(stateName)}
                       >
@@ -268,6 +267,7 @@ const Foundation = () => {
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
                           },
+                          marginTop:"8px"
                         }}
                         onClick={() =>
                           handleCardClick(store.matchingstate.name)
