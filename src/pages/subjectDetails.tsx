@@ -821,14 +821,15 @@ const SubjectDetails = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          marginLeft: "10px",
           marginTop: "16px",
           marginBottom: "16px",
+          gap:'5px'
         }}
+        onClick={handleBackClick}
       >
-        <IconButton onClick={handleBackClick}>
+      
           <ArrowBackIcon />
-        </IconButton>
+       
         <Typography variant="h2">{boardName}</Typography>
         {/* <Typography variant="h2" sx={{ ml: 1 }}>
           Boardasahskj
@@ -858,7 +859,6 @@ const SubjectDetails = () => {
                       backgroundColor: "#EAF2FF",
                       transform: "scale(1.02)",
                     },
-                    marginTop: "12px",
                   }}
                   onClick={() => handleCardClick(subj)}
                 >
@@ -883,7 +883,7 @@ const SubjectDetails = () => {
             <Typography
               variant="h4"
               align="center"
-              sx={{ marginTop: "24px", color: "#6B7280" }}
+              sx={{ marginTop: "24px", color: "#6B7280", mx:'16px' }}
             >
               Select Medium, Grade, and Type
             </Typography>
