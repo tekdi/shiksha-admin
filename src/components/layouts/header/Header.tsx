@@ -90,7 +90,21 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
  const storedUserData = JSON.parse(
   localStorage.getItem("adminInfo") || "{}"
 );
-    window.location.href = (storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)?"/course-planner":"/centers";
+    // window.location.href = (storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)?"/course-planner":"/centers";
+    const { locale } = router; 
+    if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)
+    {
+      if(locale)
+    router.push("/course-planner", undefined, { locale: locale });
+       else
+       router.push("/course-planner");
+    }
+    else{
+      if(locale)
+      router.push("/centers", undefined, { locale: locale });
+    else
+    router.push("/centers");
+    }
   };
 
   const handleChange = (event: SelectChangeEvent) => {
