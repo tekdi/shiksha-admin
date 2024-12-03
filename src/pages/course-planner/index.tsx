@@ -207,29 +207,18 @@ const Foundation = () => {
               <Typography>{t("MASTER.STATE")}</Typography>
             </Box>
             <Divider />
-            <Grid container spacing={2} mt={5}>
-              <Grid
-                container
-                spacing={2} // Space between grid items
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", // Ensures 3-4 items per row
-                  gap: "16px", // Adds consistent spacing between items
-                  marginLeft: "10px",
-                }}
-              >
-                {role === "Central Admin CCTA"
-                  ? stateNames.map((stateName) => (
-                      <Grid
-                        item // Ensure each item is properly treated as a grid item
-                        key={stateName}
+              <Grid container spacing={2} mt={2} sx={{ overflow: "hidden", maxWidth: "100%" }}>
+                {role === "Central Admin CCTA" ? (
+                  stateNames.map((stateName) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={stateName}>
+                      <Box
                         sx={{
                           cursor: "pointer",
                           border: "1px solid #D0C5B4",
-                          borderRadius: "8px",
                           padding: "10px",
-                          display: "flex",
-                          justifyContent: "space-between",
+                          borderRadius: "8px",
+                          // width: "100%",
+                          boxSizing: "border-box",
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
                           },
@@ -257,50 +246,55 @@ const Foundation = () => {
                             {/* Add any icon or text for the copy link button */}
                           </Button>
                         </Box>
-                      </Grid>
-                    ))
-                  : store?.matchingstate && (
-                      <Grid
-                        item // Ensure proper treatment as grid item
+                      </Box>
+                    </Grid>
+                  ))
+                ) : (
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                    <Box
+                      sx={{
+                        cursor: "pointer",
+                        border: "1px solid #D0C5B4",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        // width: "100%",
+                        "&:hover": {
+                          backgroundColor: "#D0C5B4",
+                        },
+                      }}
+                      onClick={() => handleCardClick(store?.matchingstate?.name)}
+                    >
+                      <Box
                         sx={{
                           cursor: "pointer",
                           border: "1px solid #D0C5B4",
+                          borderRadius: "8px",
                           padding: "10px",
                           display: "flex",
-                          justifyContent: "space-between",
-                          "&:hover": {
-                            backgroundColor: "#D0C5B4",
-                          },
+                          alignItems: "center",
+                          gap: "16px",
                         }}
-                        onClick={() =>
-                          handleCardClick(store.matchingstate.name)
-                        }
+                        onClick={() => handleCardClick(stateName)}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "18px",
+                        <FolderOutlinedIcon />
+                        <Typography>{store?.matchingstate?.name}</Typography>
+                      </Box>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCopyLink(store?.matchingstate?.name);
                           }}
                         >
-                          <FolderOutlinedIcon />
-                          <Typography>{store.matchingstate.name}</Typography>
-                        </Box>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCopyLink(store.matchingstate.name);
-                            }}
-                            sx={{ minWidth: "auto", padding: 0 }}
-                          >
-                            {/* Add any icon or text for the copy link button */}
-                          </Button>
-                        </Box>
-                      </Grid>
-                    )}
+                          {/* Add any icon or text for the copy link button */}
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
-            </Grid>
           </Box>
         )}
       </>

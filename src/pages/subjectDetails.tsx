@@ -11,6 +11,7 @@ import {
   Select,
   Divider,
   Tooltip,
+  Grid,
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
@@ -837,9 +838,9 @@ const SubjectDetails = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">{boardName}</Typography>
-        <Typography variant="h2" sx={{ ml: 1 }}>
-          Board
-        </Typography>
+        {/* <Typography variant="h2" sx={{ ml: 1 }}>
+          Boardasahskj
+        </Typography> */}
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />
