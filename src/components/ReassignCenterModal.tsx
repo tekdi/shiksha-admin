@@ -109,11 +109,10 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   } = useLocationState(open, onClose, roleType, true);
   let cohorts: Cohort[] = allCenters?.map(
     (cohort: { cohortId: any; name: string }) => ({
-      name: cohort.name,
+      name: cohort.name.toLowerCase(),
       id: cohort.cohortId,
     })
   );
-
   console.log(blockCode);
   console.log(selectedBlock);
   const names = cohortData.map((item: any) => item.name);
@@ -123,7 +122,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   const reassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.reassignButtonStatus
   );
-  console.log(names);
   // const [filters, setFilters] = useState<FilterDetails>({
   //  // cohortId:selectedBlockCohortId,
   //   role: Role.TEAM_LEADER,
@@ -163,12 +161,12 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
   const handleToggle = (name: string) => {
     if (userType === Role.LEARNERS) {
-      setCheckedCenters([name]);
+      setCheckedCenters([name?.toLowerCase()]);
     } else {
       setCheckedCenters((prev) =>
         prev.includes(name)
           ? prev.filter((center) => center !== name)
-          : [...prev, name]
+          : [...prev, name?.toLowerCase()]
       );
     }
   };
@@ -180,7 +178,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     if (centers) {
       if (userType !== Role.TEAM_LEADERS)
         setCheckedCenters(
-          centers?.split(",").map((center: any) => center.trim())
+          centers?.split(",").map((center: any) => center?.trim()?.toLowerCase())
         );
     }
   }, [blockName, centers, open]);
@@ -197,7 +195,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       if (userType !== Role.TEAM_LEADERS) {
         selectedData = cohorts
           .filter(
-            (center) => center?.name && checkedCenters.includes(center.name)
+            (center) => center?.name && checkedCenters.includes((center?.name)?.toLowerCase())
           )
           .map((center) => center!.id);
 
@@ -522,11 +520,9 @@ console.log(filteredCBlocks)
 console.log(formattedBlocks)
 
   const handleToggle2 = (centerName: string) => {
-    // If the selected center is already checked, uncheck it
     if (checkedCenters.includes(centerName)) {
       setCheckedCenters([]);
     } else {
-      // Otherwise, clear any previous selection and check the new one
       setCheckedCenters([centerName]);
     }
   };
@@ -742,11 +738,11 @@ console.log(formattedBlocks)
                         <Checkbox
                           checked={
                             center?.name
-                              ? checkedCenters.includes(center.name)
+                              ? checkedCenters.includes(center.name?.toLowerCase())
                               : false
                           }
                           onChange={() =>
-                            center?.name && handleToggle(center.name)
+                            center?.name && handleToggle((center.name)?.toLowerCase())
                           }
                           sx={{
                             color: theme.palette.text.primary,
