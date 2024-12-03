@@ -77,7 +77,15 @@ const LoginPage = () => {
 
       const token = localStorage.getItem("token");
       if (token) {
+        const { locale } = router; 
+        if(locale)
+        {
+        router.push("/centers", undefined, { locale: locale });
+        }
+        else
         router.push("/centers");
+
+
       }
     }
   }, []);
@@ -152,9 +160,25 @@ const LoginPage = () => {
                 // router.push("/centers");
                 if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
                   window.location.href = "/course-planner";
+                  const { locale } = router; 
+                  if(locale)
+                  {
+                  router.push("/course-planner", undefined, { locale: locale });
+                  }
+                  else
+                  router.push("/course-planner");
+          
                 }
                 else {
-                  window.location.href = "/centers";
+                  //window.location.href = "/centers";
+                  const { locale } = router; 
+        if(locale)
+        {
+        router.push("/centers", undefined, { locale: locale });
+        }
+        else
+        router.push("/centers");
+
                 }
 
               }
