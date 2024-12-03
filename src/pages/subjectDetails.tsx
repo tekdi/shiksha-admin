@@ -607,7 +607,7 @@ const SubjectDetails = () => {
 
   const handleCopyLink = (subject: any) => { };
 
-  const handleCardClick = (subject: any) => {
+  const handleCardClick = (subject: string) => {
     setTaxonomySubject(subject);
     router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
@@ -821,7 +821,7 @@ const SubjectDetails = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-
+          marginLeft: "10px",
           marginTop: "16px",
           marginBottom: "16px",
         }}
