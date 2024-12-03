@@ -13,7 +13,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useState, useEffect } from "react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import FileUploadDialog from "@/components/FileUploadDialog";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import Loader from "@/components/Loader"; // Ensure Loader component is imported
 
 const FileDetails = () => {

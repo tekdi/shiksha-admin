@@ -18,7 +18,7 @@ import cardData from "@/data/cardData";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import FileUploadDialog from "@/components/FileUploadDialog";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import Loader from "@/components/Loader";
 import { CoursePlannerMetaData } from "@/utils/Interfaces";
 import {

@@ -11,7 +11,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import { showToastMessage } from "./Toastify";
