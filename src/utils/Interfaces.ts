@@ -97,7 +97,7 @@ export interface GetTargetedSolutionsParams {
   medium: string;
   class: string;
   board: string;
-  type: string;
+  courseType: string;
 }
 
 export interface GetSolutionDetailsParams {
