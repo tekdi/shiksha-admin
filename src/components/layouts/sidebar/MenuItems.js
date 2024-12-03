@@ -33,7 +33,7 @@ const Menuitems = [
     ],
   },
   {
-    title: "Master",
+    title: "MASTER.MASTER",
     icon: masterIcon,
     subOptions: [
       {
