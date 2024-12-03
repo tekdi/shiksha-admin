@@ -75,7 +75,7 @@ const StateDetails = () => {
         <IconButton onClick={handleBackClick}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h2" sx={{ ml: 1 }}>
+        <Typography variant="h2">
           {state || "States"}
         </Typography>
       </Box>
@@ -86,24 +86,21 @@ const StateDetails = () => {
         >
           <Typography variant="h2">Boards:</Typography>
         </Box>
-        <Grid container spacing={2} sx={{ overflow: "hidden", maxWidth: "100%" }}>
+        <Grid container spacing={2} sx={{ overflow: "hidden", maxWidth: "100%", }}>
           {boards.map((board: any, index: number) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Box
                 sx={{
-                  alignItems: "center",
                   cursor: "pointer",
-                  border: "1px solid #0000001A",
-                  boxShadow: "none",
-                  transition: "background-color 0.3s",
-                  "&:hover": {
-                    backgroundColor: "#EAF2FF",
-                  },
-
-                  marginTop: "8px",
-                  padding: "16px",
+                  border: "1px solid #D0C5B4",
+                  borderRadius: "8px",
+                  padding: "10px",
                   display: "flex",
                   justifyContent: "space-between",
+                  "&:hover": {
+                    backgroundColor: "#D0C5B4",
+                  },
+                  marginTop: "8px",
                 }}
                 onClick={() => {
                   handleBoardClick(board.code, board.name);

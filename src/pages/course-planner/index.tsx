@@ -202,27 +202,19 @@ const Foundation = () => {
         {loading ? (
           <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />
         ) : (
-          <Box sx={{ pl: "20px", ml: 2 }}>
+          <Box sx={{ pl: "20px" }}>
             <Box sx={{ m: 2 }}>
               <Typography>{t("MASTER.STATE")}</Typography>
             </Box>
             <Divider />
-            <Grid container spacing={2} mt={5}>
+            
               <Grid
-                container
-                spacing={2} // Space between grid items
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", // Ensures 3-4 items per row
-                  gap: "16px", // Adds consistent spacing between items
-                  marginLeft: "10px",
-                }}
+                container spacing={2} sx={{ overflow: "hidden", maxWidth: "100%", mt: 2 }}
               >
                 {role === "Central Admin CCTA"
                   ? stateNames.map((stateName) => (
-                      <Grid
-                        item // Ensure each item is properly treated as a grid item
-                        key={stateName}
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={stateName} >
+                      <Box
                         sx={{
                           cursor: "pointer",
                           border: "1px solid #D0C5B4",
@@ -233,6 +225,7 @@ const Foundation = () => {
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
                           },
+                          marginTop: "8px"
                         }}
                         onClick={() => handleCardClick(stateName)}
                       >
@@ -257,20 +250,24 @@ const Foundation = () => {
                             {/* Add any icon or text for the copy link button */}
                           </Button>
                         </Box>
-                      </Grid>
+                      </Box>
+                    </Grid>
                     ))
                   : store?.matchingstate && (
-                      <Grid
-                        item // Ensure proper treatment as grid item
+
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                      <Box
                         sx={{
                           cursor: "pointer",
                           border: "1px solid #D0C5B4",
+                          borderRadius: "8px",
                           padding: "10px",
                           display: "flex",
                           justifyContent: "space-between",
                           "&:hover": {
                             backgroundColor: "#D0C5B4",
                           },
+                          marginTop:"8px"
                         }}
                         onClick={() =>
                           handleCardClick(store.matchingstate.name)
@@ -297,10 +294,11 @@ const Foundation = () => {
                             {/* Add any icon or text for the copy link button */}
                           </Button>
                         </Box>
-                      </Grid>
+                      </Box>
+                    </Grid>
                     )}
               </Grid>
-            </Grid>
+         
           </Box>
         )}
       </>

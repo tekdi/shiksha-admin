@@ -80,7 +80,7 @@ const Center: React.FC = () => {
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
 
-  const { t } = useTranslation();
+  const { t , i18n} = useTranslation();
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state.adminInformation
   );
@@ -226,7 +226,7 @@ const Center: React.FC = () => {
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, [cohortFormData]);
+  }, [cohortFormData, i18n.language]);
 
   const fetchUserList = async () => {
     setLoading(true);

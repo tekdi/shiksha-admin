@@ -66,7 +66,6 @@ const SubjectDetails = () => {
   const tStore = taxonomyStore();
   const store = coursePlannerStore();
   const [loading, setLoading] = useState(true);
-  const [card, setCard] = useState<Card | null>(null);
   const [subject, setSubject] = useState<string[]>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [medium, setMedium] = useState<any>([]);
@@ -96,104 +95,19 @@ const SubjectDetails = () => {
   );
   const setBoards = coursePlannerStore((state) => state.setBoards);
 
-  // useEffect(() => {
-  //   const handleBMGS = async () => {
-  //     try {
-  //       const StateName = "Rajasthan";
-  //       const medium = "Hindi";
-  //       const grade = "Grade 10";
-  //       const board = "NIOS";
-
-  //       if (StateName && medium && grade && board) {
-  //         const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
-  //         const boardData = await fetch(url).then((res) => res.json());
-  //         const frameworks = boardData?.result?.framework;
-
-  //         const getStates = getOptionsByCategory(frameworks, "state");
-  //         const matchState = getStates.find(
-  //           (item: any) =>
-  //             item?.name?.toLowerCase() === StateName?.toLocaleLowerCase()
-  //         );
-
-  //         const getBoards = getOptionsByCategory(frameworks, "board");
-  //         console.log("getBoards", getBoards);
-  //         const matchBoard = getBoards.find((item: any) => item.name === board);
-  //         console.log("matchBoard", matchBoard);
-  //         const getMedium = getOptionsByCategory(frameworks, "medium");
-  //         const matchMedium = getMedium.find(
-  //           (item: any) => item.name === medium
-  //         );
-
-  //         const getGrades = getOptionsByCategory(frameworks, "gradeLevel");
-  //         const matchGrade = getGrades.find((item: any) => item.name === grade);
-
-  //         const getCourseTypes = getOptionsByCategory(frameworks, "courseType");
-  //         const courseTypes = getCourseTypes?.map((type: any) => type.name);
-  //         // setCourseTypes(courseTypes);
-
-  //         const courseTypesAssociations = getCourseTypes?.map((type: any) => {
-  //           return {
-  //             code: type.code,
-  //             name: type.name,
-  //             associations: type.associations,
-  //           };
-  //         });
-
-  //         const courseSubjectLists = courseTypesAssociations.map(
-  //           (courseType: any) => {
-  //             const commonAssociations = courseType?.associations.filter(
-  //               (assoc: any) =>
-  //                 matchState?.associations.filter(
-  //                   (item: any) => item.code === assoc.code
-  //                 )?.length &&
-  //                 matchBoard?.associations.filter(
-  //                   (item: any) => item.code === assoc.code
-  //                 )?.length &&
-  //                 matchMedium?.associations.filter(
-  //                   (item: any) => item.code === assoc.code
-  //                 )?.length &&
-  //                 matchGrade?.associations.filter(
-  //                   (item: any) => item.code === assoc.code
-  //                 )?.length
-  //             );
-  //             console.log(commonAssociations);
-  //             const getSubjects = getOptionsByCategory(frameworks, "subject");
-  //             const subjectAssociations = commonAssociations?.filter(
-  //               (assoc: any) =>
-  //                 getSubjects.map((item: any) => assoc.code === item?.code)
-  //             );
-  //             console.log(subjectAssociations);
-  //             return {
-  //               courseTypeName: courseType?.name,
-  //               courseType: courseType?.code,
-  //               subjects: subjectAssociations?.map(
-  //                 (subject: any) => subject?.name
-  //               ),
-  //             };
-  //           }
-  //         );
-
-  //         console.log(courseSubjectLists);
-  //         // setSubjectLists(courseSubjectLists);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching board data:", error);
-  //     }
-  //   };
-  //   handleBMGS();
-  // }, []);
+  useEffect(() => {
+    const savedMedium = localStorage.getItem("selectedMedium") || "";
+    const savedGrade = localStorage.getItem("selectedGrade") || "";
+    const savedType = localStorage.getItem("selectedType") || "";
+    setSelectedmedium(savedMedium);
+    setSelectedgrade(savedGrade);
+    setSelectedtype(savedType);
+  }, []);
 
   useEffect(() => {
     const fetchTaxonomyResultsOne = async () => {
       try {
-        const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
-
-        // Use axios to fetch data from the API
-        const response = await axios.get(url);
-        const boardData = response.data;
-
-        console.log(boardData?.result?.framework);
-        const frameworks = boardData?.result?.framework;
+        const frameworks = store?.framedata;
 
         // Get states options
         const getStates = getOptionsByCategory(frameworks, "state");
@@ -221,8 +135,6 @@ const SubjectDetails = () => {
 
             setNewAssociations(commonBoardsNew);
 
-            console.log("FIRST TIME API", getBoards);
-
             const commonBoards = await getBoards
               .filter((item1: { code: any }) =>
                 matchingState?.associations?.some(
@@ -235,8 +147,6 @@ const SubjectDetails = () => {
                 code: item1.code,
                 associations: item1.associations,
               }));
-
-            console.log("FIRST TIME API", commonBoards);
 
             const stateBoardMapping = getStates.map((state: any) => {
               const stateAssociations = state.associations || [];
@@ -261,7 +171,6 @@ const SubjectDetails = () => {
               };
             });
 
-            console.log("State-Board Mapping:", stateBoardMapping);
             const selectedState = localStorage.getItem("selectedState");
 
             const filteredState = stateBoardMapping.filter(
@@ -270,23 +179,11 @@ const SubjectDetails = () => {
 
             // Log the result
             if (filteredState) {
-              console.log("Filtered State Data:", filteredState);
-
               // Set the frameworks state
               setFramework(frameworks);
-
-              // const getBoardsByName = (commonBoards: any, boardName: any) => {
-              //   return commonBoards.filter(
-              //     (commonBoards: any) => commonBoards.name === boardName
-              //   );
-              // };
-
-              // const selectedBoard = getBoardsByName(commonBoards, boardName);
-              // console.log(selectedBoard);
               setBoards(filteredState);
               setSelectedBoard(filteredState);
             } else {
-              console.log("State not found in the mapping.");
             }
             //   }
             // }
@@ -298,15 +195,6 @@ const SubjectDetails = () => {
     };
 
     fetchTaxonomyResultsOne();
-  }, []);
-
-  useEffect(() => {
-    const savedMedium = localStorage.getItem("selectedMedium") || "";
-    const savedGrade = localStorage.getItem("selectedGrade") || "";
-    const savedType = localStorage.getItem("selectedType") || "";
-    setSelectedmedium(savedMedium);
-    setSelectedgrade(savedGrade);
-    // setSelectedtype(savedType);
   }, []);
 
   useEffect(() => {
@@ -333,14 +221,12 @@ const SubjectDetails = () => {
             store?.framedata,
             "medium"
           );
-          console.log(store?.boards);
 
           const normalizedBoards = normalizeData(store?.boards || []);
           const boardAssociations = getAssociationsByCodeNew(
             normalizedBoards,
             boardName
           );
-          console.log(boardAssociations);
 
           setBoardAssociations(boardAssociations);
           const commonMediumInState = getMedium
@@ -399,8 +285,6 @@ const SubjectDetails = () => {
     const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
     setMediumAssociations(mediumAssociations);
 
-    console.log(getGrades);
-
     const commonGradeInState = filterAndMapAssociations(
       "gradeLevel",
       getGrades,
@@ -437,7 +321,6 @@ const SubjectDetails = () => {
     const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
     setGradeAssociations(gradeAssociations);
     const type = getOptionsByCategory(store?.framedata, "courseType");
-    console.log(type);
 
     const commonTypeInState = filterAndMapAssociations(
       "courseType",
@@ -490,8 +373,6 @@ const SubjectDetails = () => {
       const board = boardName;
 
       if (StateName && medium && grade && board) {
-        console.log(StateName, medium, grade, board);
-
         const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
@@ -503,9 +384,7 @@ const SubjectDetails = () => {
         );
 
         const getBoards = getOptionsByCategory(frameworks, "board");
-        console.log("getBoards", getBoards);
         const matchBoard = getBoards.find((item: any) => item.name === board);
-        console.log("matchBoard", matchBoard);
         const getMedium = getOptionsByCategory(frameworks, "medium");
         const matchMedium = getMedium.find((item: any) => item.name === medium);
 
@@ -541,13 +420,13 @@ const SubjectDetails = () => {
                   (item: any) => item.code === assoc.code
                 )?.length
             );
-            console.log(commonAssociations);
+
             const getSubjects = getOptionsByCategory(frameworks, "subject");
             const subjectAssociations = commonAssociations?.filter(
               (assoc: any) =>
                 getSubjects.map((item: any) => assoc.code === item?.code)
             );
-            console.log(subjectAssociations);
+
             return {
               courseTypeName: courseType?.name,
               courseType: courseType?.code,
@@ -563,7 +442,6 @@ const SubjectDetails = () => {
 
         const matchingSubjects = matchedCourse ? matchedCourse.subjects : [];
 
-        console.log(matchingSubjects);
         setSubject(matchingSubjects);
         localStorage.setItem(
           "overallCommonSubjects",
@@ -604,8 +482,6 @@ const SubjectDetails = () => {
     localStorage.removeItem("selectedType");
     router.back();
   };
-
-  const handleCopyLink = (subject: any) => { };
 
   const handleCardClick = (subject: string) => {
     setTaxonomySubject(subject);
@@ -705,7 +581,7 @@ const SubjectDetails = () => {
   return (
     <Box>
       <Grid container spacing={2} sx={{ marginTop: "20px" }}>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedmedium || ""}
             onChange={handleMediumChange}
@@ -736,7 +612,7 @@ const SubjectDetails = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedgrade || ""}
             onChange={handleGradeChange}
@@ -768,7 +644,7 @@ const SubjectDetails = () => {
           </Select>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={4}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedtype || ""}
             onChange={handleTypeChange}
@@ -798,7 +674,7 @@ const SubjectDetails = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={2}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Button
             onClick={handleReset}
             sx={{
@@ -812,7 +688,7 @@ const SubjectDetails = () => {
               width: "100%",
             }}
           >
-            Reset
+            Clear Selection
           </Button>
         </Grid>
       </Grid>
@@ -821,14 +697,15 @@ const SubjectDetails = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          marginLeft: "10px",
           marginTop: "16px",
           marginBottom: "16px",
+          gap:'5px'
         }}
+        onClick={handleBackClick}
       >
-        <IconButton onClick={handleBackClick}>
+      
           <ArrowBackIcon />
-        </IconButton>
+       
         <Typography variant="h2">{boardName}</Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
@@ -836,15 +713,12 @@ const SubjectDetails = () => {
 
       <Box sx={{ marginTop: "16px" }}>
         <Grid container spacing={2}>
-
-
           {subject && subject.length > 1 ? (
             subject?.map((subj: string, index: number) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                 <MuiCard
                   key={index}
                   sx={{
-
                     padding: "14px",
                     cursor: "pointer",
                     border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -855,7 +729,6 @@ const SubjectDetails = () => {
                       backgroundColor: "#EAF2FF",
                       transform: "scale(1.02)",
                     },
-                    marginTop: "12px",
                   }}
                   onClick={() => handleCardClick(subj)}
                 >
@@ -874,13 +747,12 @@ const SubjectDetails = () => {
                   </Box>
                 </MuiCard>
               </Grid>
-
             ))
           ) : (
             <Typography
               variant="h4"
               align="center"
-              sx={{ marginTop: "24px", color: "#6B7280" }}
+              sx={{ marginTop: "24px", color: "#6B7280", mx:'16px' }}
             >
               Select Medium, Grade, and Type
             </Typography>

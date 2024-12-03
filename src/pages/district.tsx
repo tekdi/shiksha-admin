@@ -82,6 +82,8 @@ const District: React.FC = () => {
   const [pageSizeArray, setPageSizeArray] = useState<number[]>([5, 10, 20, 50]);
   const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [fetchDistrict, setFetchDistrict] = useState(true);
+
   const [paginationCount, setPaginationCount] = useState<number>(Numbers.ZERO);
   const [stateCode, setStateCode] = useState<any>();
   const [stateValue, setStateValue] = useState<string>("");
@@ -161,7 +163,7 @@ const District: React.FC = () => {
 
   useEffect(() => {
     fetchDistricts();
-  }, []);
+  }, [fetchDistrict]);
   // get cohort id of state
   const getStatecohorts = async () => {
     let userId: any;
@@ -470,6 +472,7 @@ const District: React.FC = () => {
         if (cohortCreateResponse) {
           filteredCohortOptionData();
           showToastMessage(t("COMMON.DISTRICT_ADDED_SUCCESS"), "success");
+          setFetchDistrict(!fetchDistrict);
           const windowUrl = window.location.pathname;
           const cleanedUrl = windowUrl.replace(/^\//, '');
           const env = cleanedUrl.split("/")[0];
@@ -559,6 +562,7 @@ const District: React.FC = () => {
             });
 
             showToastMessage(t("COMMON.DISTRICT_UPDATED_SUCCESS"), "success");
+            setFetchDistrict(!fetchDistrict);
             const windowUrl = window.location.pathname;
             const cleanedUrl = windowUrl.replace(/^\//, '');
             const env = cleanedUrl.split("/")[0];

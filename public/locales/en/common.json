@@ -292,7 +292,8 @@
     "STATE_CODE": "State Code",
     "DISTRICT_CODE": "District Code",
     "BLOCK_CODE": "Block Code",
-    "CODE": "Code"
+    "CODE": "Code",
+    "MASTER":"Master"
   },
   "CENTERS": {
     "CENTER": "center",

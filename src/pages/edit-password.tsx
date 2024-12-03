@@ -45,12 +45,21 @@ const EditForgotPassword = () => {
     const storedUserData = JSON.parse(
       localStorage.getItem("adminInfo") || "{}"
     );
+    const { locale } = router; 
+
     if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)
     {
-      router.push(`/course-planner`);
-
+      if(locale)
+      router.push("/course-planner", undefined, { locale: locale });
+         else
+         router.push("/course-planner");
     }else
-    router.push(`/centers`);
+    {
+      if(locale)
+      router.push("/centers", undefined, { locale: locale });
+    else
+    router.push("/centers");
+    }
     localStorage.setItem('skipResetPassword', 'true');
   };
 

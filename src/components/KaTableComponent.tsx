@@ -13,7 +13,7 @@ import { ITableProps, Table } from "ka-table";
 import { PagingPosition, SortDirection, SortingMode } from "ka-table/enums";
 import "ka-table/style.css";
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import ActionIcon from "./ActionIcon";
 import UserNameCell from "./UserNameCell";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -60,7 +60,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
   handleMemberClick,
 }) => {
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -92,6 +92,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
     <Paper>
       <div className="ka-table-wrapper">
         <Table
+         key={`${i18n.language}`}
           {...tableProps}
           childComponents={{
             pagingSizes: {
