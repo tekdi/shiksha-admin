@@ -705,7 +705,7 @@ const SubjectDetails = () => {
   return (
     <Box>
       <Grid container spacing={2} sx={{ marginTop: "20px" }}>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedmedium || ""}
             onChange={handleMediumChange}
@@ -736,7 +736,7 @@ const SubjectDetails = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={3}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedgrade || ""}
             onChange={handleGradeChange}
@@ -768,7 +768,7 @@ const SubjectDetails = () => {
           </Select>
         </Grid>
 
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={4}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedtype || ""}
             onChange={handleTypeChange}
@@ -798,7 +798,7 @@ const SubjectDetails = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={12} md={4} lg={6} xl={2}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Button
             onClick={handleReset}
             sx={{
@@ -812,7 +812,7 @@ const SubjectDetails = () => {
               width: "100%",
             }}
           >
-            Reset
+            Clear Selection
           </Button>
         </Grid>
       </Grid>
