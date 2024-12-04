@@ -150,8 +150,9 @@
     "USER_CENTER": "{{name}} निम्नलिखित केंद्र से संबंधित है",
     "DELETE_FROM_BLOCK_WARNING": "क्या आप उपयोगकर्ता को ब्लॉक से हटाना चाहते हैं?",
     "DELETE_FROM_CENTER_WARNING": "क्या आप उपयोगकर्ता को केंद्र से हटाना चाहते हैं?",
-    "DELETE_FROM_CENTERS_WARNING": "क्या आप उपयोगकर्ता को केंद्रों से हटाना चाहते हैं?"
-    
+    "DELETE_FROM_CENTERS_WARNING": "क्या आप उपयोगकर्ता को केंद्रों से हटाना चाहते हैं?",
+    "COHORT_CODE_EXISTS": "कोड पहले से मौजूद है"
+
   },
   "LOGIN_PAGE": {
     "USERNAME": "उपयोगकर्ता नाम",
@@ -273,7 +274,9 @@
     "STATE_CODE": "राज्य कोड",
     "DISTRICT_CODE": "जिला कोड",
     "BLOCK_CODE": "ब्लॉक कोड",
-    "CODE": "कोड"
+    "CODE": "कोड",
+    "MASTER":"मास्टर"
+
   },
   "CENTERS": {
     "CENTERS": "केंद्र",

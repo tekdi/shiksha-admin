@@ -115,9 +115,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
 
     const cleanedFormData = cleanAndReplace(event.formData);
-    console.log("cleanedFormData---", cleanedFormData);
-
-    console.log("Form data changed:", cleanedFormData);
+  
 
     setLocalFormData(cleanedFormData);
     setUserEnteredEmail(cleanedFormData?.email);
