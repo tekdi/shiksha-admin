@@ -145,7 +145,9 @@
     "PAGE_NOT_FOUND": "पृष्ठ सापडले नाही",
     "ACCESS_DENIED": "प्रवेश नाकारला",
     "YOU_DONT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE": "तुम्हाला या पृष्ठावर प्रवेश नाही",
-    "RETURN_TO_LOGIN": "लॉगिनवर परत जा"
+    "RETURN_TO_LOGIN": "लॉगिनवर परत जा",
+    "COHORT_CODE_EXISTS": "कोड आधीच अस्तित्वात आहे"
+
   },
   "LOGIN_PAGE": {
     "USERNAME": "वापरकर्ता नाव",
@@ -261,7 +263,9 @@
     "STATE_CODE": "राज्य कोड",
     "DISTRICT_CODE": "जिल्हा कोड",
     "BLOCK_CODE": "ब्लॉक कोड",
-    "CODE": "कोड"
+    "CODE": "कोड",
+    "MASTER":"मास्टर"
+
   },
   "CENTERS": {
     "CENTERS": "केंद्रे",
