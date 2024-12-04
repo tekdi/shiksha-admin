@@ -109,7 +109,7 @@ export const GenerateSchemaAndUiSchema = (
               ? opt.label
               : t(`FORM.${opt.label}`),
         }));
-        // fieldUiSchema["ui:widget"] = "CustomRadioWidget";
+         fieldUiSchema["ui:widget"] = "CustomRadioWidget";
         break;
       default:
         break;
