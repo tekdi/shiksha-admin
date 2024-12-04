@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent } from "react";
+import React, { useState, useEffect, MouseEvent, useTransition } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -36,6 +36,7 @@ import { telemetryFactory } from "@/utils/telemetry";
 import theme from "@/components/theme/theme";
 import { FRAMEWORK_ID } from "../../app.config";
 import axios from "axios";
+import { useTranslation, UseTranslation } from "next-i18next";
 
 // Define Card interface
 interface Card {
@@ -59,6 +60,7 @@ interface FoundCard {
 
 const SubjectDetails = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { boardDetails, boardName } = router.query as {
     boardDetails?: any;
     boardName?: any;
@@ -603,7 +605,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Medium</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_MEDIUM")}</Typography>
             </MenuItem>
             {medium.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -634,7 +636,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Grade</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_GRADE")}</Typography>
             </MenuItem>
             {grade.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -665,7 +667,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Type</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_TYPE")}</Typography>
             </MenuItem>
             {type.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -688,7 +690,7 @@ const SubjectDetails = () => {
               width: "100%",
             }}
           >
-            Clear Selection
+            {t("COURSE_PLANNER.CLEAR_SELECTION")}
           </Button>
         </Grid>
       </Grid>
@@ -699,13 +701,12 @@ const SubjectDetails = () => {
           alignItems: "center",
           marginTop: "16px",
           marginBottom: "16px",
-          gap:'5px'
+          gap: "5px",
         }}
         onClick={handleBackClick}
       >
-      
-          <ArrowBackIcon />
-       
+        <ArrowBackIcon />
+
         <Typography variant="h2">{boardName}</Typography>
         {/* <Typography variant="h2" sx={{ ml: 1 }}>
           Boardasahskj
@@ -755,9 +756,9 @@ const SubjectDetails = () => {
             <Typography
               variant="h4"
               align="center"
-              sx={{ marginTop: "24px", color: "#6B7280", mx:'16px' }}
+              sx={{ marginTop: "24px", color: "#6B7280", mx: "16px" }}
             >
-              Select Medium, Grade, and Type
+              {t("COURSE_PLANNER.SELECT_ALL_MESSSAGE")}
             </Typography>
           )}
         </Grid>

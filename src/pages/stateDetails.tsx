@@ -7,10 +7,12 @@ import Loader from "@/components/Loader";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation, UseTranslation } from "next-i18next";
 
 const StateDetails = () => {
   const router = useRouter();
   const { state } = router.query;
+  const { t } = useTranslation();
   const store = coursePlannerStore();
   const setBoard = taxonomyStore((state) => state.setBoard);
 
@@ -75,18 +77,18 @@ const StateDetails = () => {
         <IconButton onClick={handleBackClick}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h2">
-          {state || "States"}
-        </Typography>
+        <Typography variant="h2">{state || t("MASTER.STATE")}</Typography>
       </Box>
       <Divider />
-      <Box sx={{mx:'16px'}}>
-        <Box
-          sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, }}
-        >
-          <Typography variant="h2">Boards:</Typography>
+      <Box sx={{ mx: "16px" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+          <Typography variant="h2">{t("COURSE_PLANNER.BOARDS")}</Typography>
         </Box>
-        <Grid container spacing={2} sx={{ overflow: "hidden", maxWidth: "100%", }}>
+        <Grid
+          container
+          spacing={2}
+          sx={{ overflow: "hidden", maxWidth: "100%" }}
+        >
           {boards.map((board: any, index: number) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Box
