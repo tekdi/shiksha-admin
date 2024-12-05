@@ -47,7 +47,7 @@ const RecursiveAccordion = ({ data }: { data: any[] }) => {
                   variant="h1"
                   sx={{
                     marginBottom: '0.75rem',
-                    fontWeight: 'bold',
+                    fontWeight: 'bold', 
                     borderBottom: '1px solid #ddd',
                     paddingBottom: '4px',
                     paddingLeft: '4px',
@@ -64,7 +64,7 @@ const RecursiveAccordion = ({ data }: { data: any[] }) => {
                     {node?.name}
                   </Typography>
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails sx={{padding:'20px'}}>
                   {node?.children && renderAccordion(node?.children, level + 1)}
                 </AccordionDetails>
               </Accordion>
