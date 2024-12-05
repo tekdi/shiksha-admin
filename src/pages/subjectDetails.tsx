@@ -102,6 +102,7 @@ const SubjectDetails = () => {
     const savedGrade = localStorage.getItem("selectedGrade") || "";
     const savedType = localStorage.getItem("selectedType") || "";
     setSelectedmedium(savedMedium);
+    
     setSelectedgrade(savedGrade);
     setSelectedtype(savedType);
   }, []);
@@ -286,6 +287,7 @@ const SubjectDetails = () => {
     const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
     const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
     setMediumAssociations(mediumAssociations);
+    localStorage.setItem("mediumAssociations", JSON.stringify(mediumAssociations));
 
     const commonGradeInState = filterAndMapAssociations(
       "gradeLevel",
@@ -322,6 +324,8 @@ const SubjectDetails = () => {
   const fetchAndSetTypeData = (grade: any) => {
     const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
     setGradeAssociations(gradeAssociations);
+    localStorage.setItem("gradeAssociations", JSON.stringify(gradeAssociations));
+
     const type = getOptionsByCategory(store?.framedata, "courseType");
 
     const commonTypeInState = filterAndMapAssociations(
@@ -330,22 +334,36 @@ const SubjectDetails = () => {
       store?.stateassociations,
       "code"
     );
+    console.log(`commonTypeInState`, commonTypeInState);
     const commonTypeInBoard = filterAndMapAssociations(
       "courseType",
       type,
       boardAssociations,
       "code"
     );
+    console.log(`commonTypeInBoard`, commonTypeInBoard);
+    const storageMediumAssociations = localStorage.getItem("mediumAssociations");
+    const localMediumAssociations = storageMediumAssociations
+      ? JSON.parse(storageMediumAssociations)
+      : mediumAssociations;
     const commonTypeInMedium = filterAndMapAssociations(
       "courseType",
       type,
-      mediumAssociations,
+      localMediumAssociations,
       "code"
     );
+    console.log(`mediumAssociations`, localMediumAssociations);
+
+    console.log(`commonTypeInMedium`, commonTypeInMedium);
+    const storageGradeAssociations = localStorage.getItem("gradeAssociations");
+    const localGradeAssociations = storageMediumAssociations
+      ? JSON.parse(storageMediumAssociations)
+      : gradeAssociations;
+
     const commonTypeInGrade = filterAndMapAssociations(
       "courseType",
       type,
-      gradeAssociations,
+      localGradeAssociations,
       "code"
     );
 
