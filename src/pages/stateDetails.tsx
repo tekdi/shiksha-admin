@@ -68,7 +68,7 @@ const StateDetails = () => {
   };
 
   if (loading) {
-    return <Loader showBackdrop={true} loadingText="Loading..." />;
+    return <Loader showBackdrop={true} loadingText="Loading" />;
   }
 
   return (

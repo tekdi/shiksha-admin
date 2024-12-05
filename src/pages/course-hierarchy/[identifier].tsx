@@ -6,12 +6,14 @@ import {
   Typography,
   Link,
   Box,
+  Grid,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getContentHierarchy } from '@/services/coursePlanner';
 import { useRouter } from 'next/router';
 import Loader from '@/components/Loader';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import ResourceCard from '@/components/ResourceCard';
 
 const RecursiveAccordion = ({ data }: { data: any[] }) => {
   let router = useRouter();
@@ -38,22 +40,12 @@ const RecursiveAccordion = ({ data }: { data: any[] }) => {
             {node.children && renderAccordion(node.children, level + 1)}
           </>
         ) : node.contentType === 'Resource' ? (
-          <Box
-            className="facilitator-bg"
-            sx={{
-              backgroundImage: `url(${node?.appIcon ? node.appIcon : '/decorationBg.png'})`,
-              position: 'relative',
-              marginLeft: `${(level - 1) * 2}px`, // Indentation for resources
-              cursor: 'pointer',
-              height: '50px',
-              width: '50px',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-            onClick={() =>
-              router.push(`/play/content/${node?.identifier || node?.id}`)
-            }
-          ></Box>
+          <Grid container>
+            <Grid item xs={6} md={4} lg={3} sx={{ mt: 2 }}>
+              <ResourceCard title={node?.name} resource={node?.resourceType} identifier={node?.identifier} mimeType={node?.mimeType} />
+            </Grid>
+          </Grid>
+
         ) : (
           <Accordion sx={{ marginLeft: `${(level - 1) * 2}px` }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -114,7 +106,7 @@ export default function CourseHierarchy() {
 
   if (loading) {
     return (
-      <Loader showBackdrop={true} loadingText="Loading..." />
+      <Loader showBackdrop={true} loadingText="Loading" />
     );
   }
 
