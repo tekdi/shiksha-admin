@@ -11,6 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getContentHierarchy } from '@/services/coursePlanner';
 import { useRouter } from 'next/router';
 import Loader from '@/components/Loader';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 const RecursiveAccordion = ({ data }: { data: any[] }) => {
   let router = useRouter();
@@ -102,7 +103,7 @@ export default function CourseHierarchy() {
         console.error('Error fetching solution details:', error);
         throw error;
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -118,4 +119,22 @@ export default function CourseHierarchy() {
   }
 
   return <RecursiveAccordion data={courseHierarchyData} />;
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+}
+
+export async function getStaticProps({ locale, params }: any) {
+  const { identifier } = params;
+
+  return {
+    props: {
+      identifier,
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 }
