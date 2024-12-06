@@ -6,72 +6,78 @@ import {
   Typography,
   Link,
   Box,
+  Grid,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { getContentHierarchy } from '@/services/coursePlanner';
 import { useRouter } from 'next/router';
 import Loader from '@/components/Loader';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import ResourceCard from '@/components/ResourceCard';
 
 const RecursiveAccordion = ({ data }: { data: any[] }) => {
-  let router = useRouter();
+  const router = useRouter();
 
   const renderAccordion = (nodes: any[], level = 0) => {
-    return nodes.map((node, index) => (
-      <Box key={`${node.name}-${index}`} sx={{ marginBottom: '16px' }}>
-        {level === 0 ? (
-          <>
-            {/* Render level 0 name as heading */}
-            <Typography
-              variant="h1"
-              sx={{
-                marginBottom: '0.75rem',
-                fontWeight: 'bold',
-                borderBottom: '1px solid #ddd',
-                paddingBottom: '4px',
-                paddingLeft: '4px'
-              }}
-            >
-              {node.name}
-            </Typography>
-            {/* Render children as accordions */}
-            {node.children && renderAccordion(node.children, level + 1)}
-          </>
-        ) : node.contentType === 'Resource' ? (
-          <Box
-            className="facilitator-bg"
-            sx={{
-              backgroundImage: `url(${node?.appIcon ? node.appIcon : '/decorationBg.png'})`,
-              position: 'relative',
-              marginLeft: `${(level - 1) * 2}px`, // Indentation for resources
-              cursor: 'pointer',
-              height: '50px',
-              width: '50px',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-            onClick={() =>
-              router.push(`/play/content/${node?.identifier || node?.id}`)
-            }
-          ></Box>
-        ) : (
-          <Accordion sx={{ marginLeft: `${(level - 1) * 2}px` }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="body1" fontWeight={600}>
-                {node?.name}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {/* Recursively render children */}
-              {node?.children && renderAccordion(node?.children, level + 1)}
-            </AccordionDetails>
-          </Accordion>
+    const resourceNodes = nodes.filter(node => node.contentType === 'Resource');
+    const nonResourceNodes = nodes.filter(node => node.contentType !== 'Resource');
+
+    return (
+      <>
+        {resourceNodes.length > 0 && (
+          <Grid container spacing={2} sx={{ marginBottom: '16px' }}>
+            {resourceNodes.map((node, index) => (
+              <Grid item xs={6} md={4} lg={3} key={`${node.name}-${index}`}>
+                <ResourceCard
+                  title={node?.name}
+                  resource={node?.resourceType}
+                  identifier={node?.identifier}
+                  mimeType={node?.mimeType}
+                />
+              </Grid>
+            ))}
+          </Grid>
         )}
-      </Box>
-    ));
+
+        {nonResourceNodes.map((node, index) => (
+          <Box key={`${node.name}-${index}`} sx={{ marginBottom: '16px' }}>
+            {level === 0 ? (
+              <>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    marginBottom: '0.75rem',
+                    fontWeight: 'bold', 
+                    borderBottom: '1px solid #ddd',
+                    paddingBottom: '4px',
+                    paddingLeft: '4px',
+                  }}
+                >
+                  {node.name}
+                </Typography>
+                {node.children && renderAccordion(node.children, level + 1)}
+              </>
+            ) : (
+              <Accordion sx={{ marginLeft: `${(level - 1) * 2}px` }}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography variant="body1" fontWeight={600}>
+                    {node?.name}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{padding:'20px'}}>
+                  {node?.children && renderAccordion(node?.children, level + 1)}
+                </AccordionDetails>
+              </Accordion>
+            )}
+          </Box>
+        ))}
+      </>
+    );
   };
 
   return <Box>{renderAccordion(data)}</Box>;
 };
+
 
 export default function CourseHierarchy() {
   const router = useRouter();
@@ -102,7 +108,7 @@ export default function CourseHierarchy() {
         console.error('Error fetching solution details:', error);
         throw error;
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -113,9 +119,27 @@ export default function CourseHierarchy() {
 
   if (loading) {
     return (
-      <Loader showBackdrop={true} loadingText="Loading..." />
+      <Loader showBackdrop={true} loadingText="Loading" />
     );
   }
 
   return <RecursiveAccordion data={courseHierarchyData} />;
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+}
+
+export async function getStaticProps({ locale, params }: any) {
+  const { identifier } = params;
+
+  return {
+    props: {
+      identifier,
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
 }

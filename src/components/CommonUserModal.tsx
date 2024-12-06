@@ -654,6 +654,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 color: "secondary",
                 fontSize: "14px",
                 fontWeight: "500",
+                textTransform: "capitalize"
               }}
               variant="outlined"
             >

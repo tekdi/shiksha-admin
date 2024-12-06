@@ -10,6 +10,7 @@ import MultiSelectCheckboxes from "./form/MultiSelectCheckboxes";
 import MultiSelectDropdown from "./form/MultiSelectDropdown";
 const FormWithMaterialUI = withTheme(MaterialUITheme);
 import { getCurrentYearPattern } from "@/utils/Helper";
+import CustomNumberWidget from './CustomNumberWidget';
 
 interface DynamicFormProps {
   schema: any;
@@ -61,6 +62,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     MultiSelectDropdown: MultiSelectDropdown,
     MultiSelectCheckboxes: MultiSelectCheckboxes,
     CustomRadioWidget: CustomRadioWidget,
+    CustomNumberWidget: CustomNumberWidget,
+
   };
 
   const handleError = (errors: any) => {
@@ -112,9 +115,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
 
     const cleanedFormData = cleanAndReplace(event.formData);
-    console.log("cleanedFormData---", cleanedFormData);
-
-    console.log("Form data changed:", cleanedFormData);
+  
 
     setLocalFormData(cleanedFormData);
     setUserEnteredEmail(cleanedFormData?.email);
