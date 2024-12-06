@@ -720,15 +720,14 @@ const SubjectDetails = () => {
           marginTop: "16px",
           marginBottom: "16px",
           gap: "5px",
+          width:'fit-content',
+          cursor:'pointer'
         }}
         onClick={handleBackClick}
       >
         <ArrowBackIcon />
 
         <Typography variant="h2">{boardName}</Typography>
-        {/* <Typography variant="h2" sx={{ ml: 1 }}>
-          Boardasahskj
-        </Typography> */}
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />
