@@ -58,9 +58,22 @@ const RecursiveAccordion = ({ data }: { data: any[] }) => {
                 {node.children && renderAccordion(node.children, level + 1)}
               </>
             ) : (
-              <Accordion sx={{ marginLeft: `${(level - 1) * 2}px` }}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography variant="body1" fontWeight={600}>
+                <Accordion sx={{
+                  marginLeft: `${(level - 1) * 0.2}px`,
+                  boxShadow:
+                    level !== 1
+                      ? '0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)'
+                      : 'unset',
+                }}>
+                  <AccordionSummary sx={{
+                    '&.MuiAccordionSummary-root': {
+                      backgroundColor: level === 1 ? '#F1E7D9' : '#fff',
+                      borderBottom: '1px solid #D0C5B4',
+                    },
+                  }} expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="body1"
+                      fontWeight={500}
+                      sx={{ color: '#1F1B13', fontWeight: 500, fontSize: '14px' }}>
                     {node?.name}
                   </Typography>
                 </AccordionSummary>
