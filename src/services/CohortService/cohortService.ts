@@ -37,11 +37,11 @@ export const getCohortList = async (data: cohortListData): Promise<any> => {
 };
 
 export const updateCohortUpdate = async (
-  userId: string,
+  selectedCohortId: string,
   cohortDetails: any
 ): Promise<any> => {
   // const { name, status, type } = cohortDetails;
-  let apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohort/update/${userId}`;
+  let apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohort/update/${selectedCohortId}`;
 
   try {
     const response = await put(apiUrl, cohortDetails);

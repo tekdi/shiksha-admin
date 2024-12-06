@@ -1186,7 +1186,7 @@ const Center: React.FC = () => {
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
-            ? t("CENTERS.YOU_CANT_DELETE_CLASS_HAS_ACTIVE_LEARNERS", {
+            ? t("CENTERS.ARE_YOU_SURE_WANT_TO_DELETE_CLASS_HAS_ACTIVE_LEARNERS", {
                 activeMembers: `${selectedRowData?.totalActiveMembers}`,
               })
             : t("CENTERS.SURE_DELETE_CLASS") +
@@ -1197,9 +1197,12 @@ const Center: React.FC = () => {
         }
         handleAction={handleActionForDelete}
         buttonNames={
-          selectedRowData?.totalActiveMembers > 0
-            ? { secondary: t("COMMON.CANCEL") }
-            : { primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL") }
+          // selectedRowData?.totalActiveMembers > 0
+          //   ? { secondary: t("COMMON.CANCEL") }
+            // : 
+            { 
+              primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL")
+             }
         }
         handleCloseModal={handleCloseModal}
         modalOpen={confirmationModalOpen}

@@ -298,6 +298,7 @@
     "SURE_DELETE_CLASS": "Are you sure you want to Delete",
     "SURE_DELETE_DATA": "Are you sure you want to Delete {{data}} ?",
     "YOU_CANT_DELETE_CLASS_HAS_ACTIVE_LEARNERS": "You can't delete the Class because it has {{activeMembers}} Active Students",
+    "ARE_YOU_SURE_WANT_TO_DELETE_CLASS_HAS_ACTIVE_LEARNERS": "Are you sure you want to archive the class? It currently has {{activeMembers}} active students.",
     "CLASS_UPDATE_SUCCESSFULLY": "Class has been Successfully Updated",
     "CLASS_DELETE_SUCCESSFULLY": "Class has been Successfully Deleted",
     "CLASS_CREATED_SUCCESSFULLY": "Class Created Successfully",
