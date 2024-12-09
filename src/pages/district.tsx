@@ -73,7 +73,7 @@ const District: React.FC = () => {
     useState<DistrictDetail | null>(null);
   const [confirmationDialogOpen, setConfirmationDialogOpen] =
     useState<boolean>(false);
-  const [districtFieldId, setDistrictFieldId] = useState<string>("");
+  const [districtFieldId, setDistrictFieldId] = useState<string>("b61edfc6-3787-4079-86d3-37262bf23a9e");
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [pageCount, setPageCount] = useState<number>(Numbers.ONE);
