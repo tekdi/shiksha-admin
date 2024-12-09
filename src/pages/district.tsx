@@ -136,15 +136,16 @@ const District: React.FC = () => {
 
   const fetchDistricts = async () => {
     try {
-      const data = await queryClient.fetchQuery({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
-        queryFn: () =>
-          getDistrictsForState({
-            controllingfieldfk: stateCode,
-            fieldName: "districts",
-          }),
-      });
-
+     
+      if(stateCode)
+      {
+        const data = await getDistrictsForState({
+          controllingfieldfk: stateCode,
+          fieldName: "districts",
+        })
+      
+     
+      
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
@@ -156,6 +157,7 @@ const District: React.FC = () => {
 
       const districtFieldID = data?.result?.fieldId || "b61edfc6-3787-4079-86d3-37262bf23a9e";
       setDistrictFieldId(districtFieldID);
+      }
     } catch (error) {
       console.error("Error fetching districts", error);
     }
@@ -163,7 +165,7 @@ const District: React.FC = () => {
 
   useEffect(() => {
     fetchDistricts();
-  }, [fetchDistrict]);
+  }, [fetchDistrict, stateCode]);
   // get cohort id of state
   const getStatecohorts = async () => {
     let userId: any;
