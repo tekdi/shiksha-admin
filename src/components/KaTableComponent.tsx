@@ -46,6 +46,7 @@ interface KaTableComponentProps {
   noDataMessage?: any;
   pagination?: boolean;
   reassignType?: string;
+  onActivate?: any;
 }
 
 const KaTableComponent: React.FC<KaTableComponentProps> = ({
@@ -62,6 +63,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
   noDataMessage,
   pagination = true,
   reassignType,
+  onActivate,
 }) => {
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
   const { t } = useTranslation();
@@ -90,6 +92,10 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
         position: PagingPosition.Bottom,
       },
     }),
+  };
+
+  const handleActivateClick = (rowData: any) => {
+    onActivate && onActivate(rowData);
   };
 
   return (
@@ -135,6 +141,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                       userAction={props.rowData?.userId}
                       disable={props.rowData?.status === Status.ARCHIVED}
                       reassignType={reassignType}
+                      onActivate={handleActivateClick}
                     />
                   );
                 }

@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import deleteIcon from "../../public/images/deleteIcon.svg";
 import editIcon from "../../public/images/editIcon.svg";
 import cohortIcon from "../../public/images/apartment.svg";
+import Restore from "../../public/images/Restore.svg";
 
 import Image from "next/image";
 
@@ -15,8 +16,9 @@ interface ActionCellProps {
   reassignCohort?: (rowData: any) => void;
   reassignType?: string;
   rowData: any;
-  disable: boolean;
+  disable?: boolean;
   userAction?: boolean;
+  onActivate?: (rowData: any) => void;
 }
 
 const ActionIcon: React.FC<ActionCellProps> = ({
@@ -27,6 +29,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
   userAction = false,
   disable = false,
   reassignType,
+  onActivate,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -37,10 +40,11 @@ const ActionIcon: React.FC<ActionCellProps> = ({
         flexDirection: "row",
         gap: "20px",
         alignItems: "center",
-        pointerEvents: disable ? "none" : "auto",
+        // pointerEvents: disable ? "none" : "auto",
+        pointerEvents: "auto",
       }}
     >
-      {onEdit && (
+      {!disable && onEdit && (
         <Tooltip title={t("COMMON.EDIT")}>
           <Box
             onClick={() => {
@@ -51,7 +55,8 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               flexDirection: "column",
               alignItems: "center",
               cursor: "pointer",
-              color: disable ? theme?.palette?.secondary.contrastText : "",
+              // color: disable ? theme?.palette?.secondary.contrastText : "",
+              color: "",
               backgroundColor: "#E3EAF0",
               p: "10px",
             }}
@@ -63,7 +68,29 @@ const ActionIcon: React.FC<ActionCellProps> = ({
           </Box>
         </Tooltip>
       )}
-      {onDelete && (
+      {disable && onActivate && (
+        <Tooltip title={t("CENTERS.ACTIVATE_COHORT")}>
+          <Box
+            onClick={() => {
+              onActivate(rowData);
+            }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              cursor: "pointer",
+              // color: disable ? theme?.palette?.secondary.contrastText : "",
+              color: "",
+              backgroundColor: "#F8EFE7",
+              p: "10px",
+            }}
+          >
+            <Image src={Restore} alt="" />
+          </Box>
+        </Tooltip>
+      )}
+
+      {!disable && onDelete && (
         <Tooltip title={t("COMMON.DELETE")}>
           <Box
             onClick={() => {
@@ -74,7 +101,8 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               flexDirection: "column",
               alignItems: "center",
               cursor: "pointer",
-              color: disable ? theme?.palette?.secondary.contrastText : "",
+              // color: disable ? theme?.palette?.secondary.contrastText : "",
+              color: "",
               backgroundColor: "#F8EFE7",
               p: "10px",
             }}
@@ -99,7 +127,8 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               flexDirection: "column",
               alignItems: "center",
               cursor: "pointer",
-              color: disable ? theme?.palette?.secondary.contrastText : "",
+              // color: disable ? theme?.palette?.secondary.contrastText : "",
+              color: "",
               backgroundColor: "#E5E5E5",
               p: "10px",
             }}

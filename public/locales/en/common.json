@@ -315,7 +315,9 @@
     "DUPLICATION_ENTRY": "Duplicate Entry",
     "CENTER_CREATED_SUCCESSFULLY": "Center Created Successfully",
     "NOT_ABLE_CREATE_CENTER": "Not Able To Create Center",
-    "NO_COHORT_ID_SELECTED": "No Cohort Id Selected"
+    "NO_COHORT_ID_SELECTED": "No Cohort Id Selected",
+    "ACTIVATE_COHORT": "Activate Cohort",
+    "CLASS_ACTIVATED_SUCCESSFULLY": "Class Activated Successfully"
   },
   "FORM": {
     "FULL_NAME": "Full Name",
