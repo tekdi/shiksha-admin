@@ -154,7 +154,7 @@ const District: React.FC = () => {
       const districtCodeArray = districts.map((item: any) => item.value);
       setDistrictCodeArr(districtCodeArray);
 
-      const districtFieldID = data?.result?.fieldId || "";
+      const districtFieldID = data?.result?.fieldId || "b61edfc6-3787-4079-86d3-37262bf23a9e";
       setDistrictFieldId(districtFieldID);
     } catch (error) {
       console.error("Error fetching districts", error);
