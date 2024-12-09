@@ -68,6 +68,8 @@ export const GenerateSchemaAndUiSchema = (
         if (field?.minLength !== undefined && field?.minLength !== null) {
           fieldSchema.minimum = Number(field.minLength);
         }
+        fieldUiSchema['ui:widget'] = 'CustomNumberWidget';
+
         // fieldUiSchema['ui:field'] = 'NumberInputField';
         break;
       case "drop_down":
@@ -107,7 +109,7 @@ export const GenerateSchemaAndUiSchema = (
               ? opt.label
               : t(`FORM.${opt.label}`),
         }));
-        fieldUiSchema["ui:widget"] = "CustomRadioWidget";
+         fieldUiSchema["ui:widget"] = "CustomRadioWidget";
         break;
       default:
         break;

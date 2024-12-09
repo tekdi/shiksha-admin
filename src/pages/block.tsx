@@ -1044,7 +1044,7 @@ const Block: React.FC = () => {
             flexDirection={"column"}
             alignItems={"center"}
           >
-            <Loader showBackdrop={false} loadingText="Loading..." />
+            <Loader showBackdrop={false} loadingText="Loading" />
           </Box>
         ) : (
           <>
