@@ -523,6 +523,34 @@ const Center: React.FC = () => {
     fetchUserList();
   };
 
+  const handleActionForActivate = async (rowData: any) => {
+    let selectedCohortId = rowData.cohortId;
+    if (selectedCohortId) {
+      let cohortDetails = {
+        status: Status.ACTIVE,
+      };
+      const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
+      console.log(resp);
+      if (resp?.responseCode === 200) {
+        showToastMessage(t("CENTERS.CLASS_ACTIVATED_SUCCESSFULLY"), "success");
+        const cohort = cohortData?.find(
+          (item: any) => item.cohortId == selectedCohortId
+        );
+        if (cohort) {
+          cohort.status = Status.ACTIVE;
+        }
+        console.log(resp?.params?.successmessage);
+      } else {
+        console.log("Cohort Not Activated");
+      }
+      setSelectedCohortId("");
+    } else {
+      console.log("No Cohort Selected");
+      setSelectedCohortId("");
+    }
+    fetchUserList();
+  };
+
   const handleSortChange = async (event: SelectChangeEvent) => {
     if (cohortData?.length > 0) {
       if (event.target.value === "Z-A") {
@@ -589,7 +617,7 @@ const Center: React.FC = () => {
     if (rowData) {
       const cohortId = rowData?.cohortId;
       setSelectedCohortId(cohortId);
-      const cohortName = rowData?.name;
+      const cohortName = rowData?.className;
       setInputName(cohortName);
 
       let data = {
@@ -615,7 +643,7 @@ const Center: React.FC = () => {
   const handleDelete = (rowData: any) => {
     setLoading(true);
 
-    const cohortName = rowData?.name;
+    const cohortName = rowData?.className;
     // SetDeletedRowData
     setInputName(cohortName);
     setConfirmationModalOpen(true);
@@ -626,6 +654,13 @@ const Center: React.FC = () => {
       setLoading(false);
     }
     setLoading(false);
+  };
+
+  const handleActivateCohort = (rowData: any) => {
+    setSelectedCohortId(rowData.cohortId);
+    if (rowData.cohortId){
+      handleActionForActivate(rowData);
+    }  
   };
 
   const handleAddFacilitator = () => {
@@ -1189,7 +1224,7 @@ const Center: React.FC = () => {
             ? t("CENTERS.ARE_YOU_SURE_WANT_TO_DELETE_CLASS_HAS_ACTIVE_LEARNERS", {
                 activeMembers: `${selectedRowData?.totalActiveMembers}`,
               })
-            : t("CENTERS.SURE_DELETE_CLASS") +
+            : t("CENTERS.SURE_DELETE_CLASS") + " " +
               inputName +
               " " +
               t("CENTERS.CENTER") +
@@ -1235,6 +1270,7 @@ const Center: React.FC = () => {
             showIcons={true}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onActivate={handleActivateCohort}
           />
         ) : (
           !loading && (
