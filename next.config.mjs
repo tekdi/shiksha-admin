@@ -116,6 +116,10 @@ const nextConfig = {
         destination: `${PORTAL_BASE_URL}/:path*`, // Proxy to generic editor portal
       },
       {
+        source: '/sunbird-plugins/renderer/:path*',
+        destination: `${process.env.WORKSPACE_BASE_URL}/sunbird-plugins/renderer/:path*`
+      },
+      {
         source: "/app/telemetry", // Match telemetry route
         destination: `${process.env.WORKSPACE_BASE_URL}/api/telemetry`, // Redirect to telemetry proxy
       },
