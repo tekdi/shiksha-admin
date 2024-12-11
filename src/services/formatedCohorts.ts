@@ -48,6 +48,7 @@ export const formatedDistricts = async () => {
       controllingfieldfk: adminState.code,
       fieldName: "districts",
     };
+
     const optionReadResponse = await getStateBlockDistrictList(object);
     //console.log(blockFieldId)
     const result = optionReadResponse?.result?.values;
@@ -57,14 +58,25 @@ export const formatedDistricts = async () => {
       const cohortMatch = cohortDetails.find((cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase());
       return cohortMatch ? { ...value } : null;
     }).filter(Boolean);
-    return matchedCohorts;
-    // console.log(matchedCohorts);
+
+    const uniqueMatchedCohorts = matchedCohorts.reduce((acc: any[], current: any) => {
+      const isDuplicate = acc.some(
+        (item) => item.label.toLowerCase() === current.label.toLowerCase()
+      );
+      if (!isDuplicate) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+
+    return uniqueMatchedCohorts;
 
   } catch (error) {
-    console.log('Error in getting Channel Details', error);
+    console.error("Error in getting District Details", error);
     return error;
   }
 };
+
 
 
 export const formatedBlocks = async (districtCode: string) => {
@@ -110,6 +122,56 @@ export const formatedBlocks = async (districtCode: string) => {
       })
       .filter(Boolean);
 
+
+    return matchedCohorts;
+  } catch (error) {
+    console.log("Error in getting Channel Details", error);
+    return error;
+  }
+};
+
+
+export const formatedStates = async () => {
+  // const adminState = JSON.parse(
+  //   localStorage.getItem("adminInfo") || "{}"
+  // ).customFields.find(
+  //   (field: any) => field.label === "STATES"
+  // );
+  try {
+    const reqParams = {
+      limit: 0,
+      offset: 0,
+      filters: {
+        // name: searchKeyword,
+       
+        type: CohortTypes.STATE,
+        status: ["active"],
+      },
+      sort: ["name", "asc"],
+    };
+
+    const response = await getCohortList(reqParams);
+    const cohortDetails = response?.results?.cohortDetails || [];
+
+    const object = {
+      fieldName: "states",
+    };
+    const optionReadResponse = await getStateBlockDistrictList(object);
+    const StateFieldId=optionReadResponse?.result?.fieldId;
+    localStorage.setItem("stateFieldId", StateFieldId);
+    const result = optionReadResponse?.result?.values;
+
+    console.log(cohortDetails);
+    console.log(result);
+
+    const matchedCohorts = result
+      ?.map((value: any) => {
+        const cohortMatch = cohortDetails.find(
+          (cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase()
+        );
+        return cohortMatch ? { ...value, cohortId: cohortMatch.cohortId } : null;
+      })
+      .filter(Boolean);
 
     return matchedCohorts;
   } catch (error) {
