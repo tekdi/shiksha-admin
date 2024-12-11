@@ -53,23 +53,23 @@ export const formatedDistricts = async () => {
     //console.log(blockFieldId)
     const result = optionReadResponse?.result?.values;
     console.log(cohortDetails)
-    console.log(result)
-    const matchedCohorts = result?.map((value: any) => {
+    const uniqueResults = result.reduce((acc: any, current: any) => {
+      const isDuplicate = acc.some((item: any) => item.label === current.label);
+      if (!isDuplicate) {
+          acc.push(current);
+      }
+      return acc;
+  }, [] as typeof result);
+  
+  console.log(uniqueResults);  
+    const matchedCohorts = uniqueResults?.map((value: any) => {
       const cohortMatch = cohortDetails.find((cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase());
       return cohortMatch ? { ...value } : null;
     }).filter(Boolean);
 
-    const uniqueMatchedCohorts = matchedCohorts.reduce((acc: any[], current: any) => {
-      const isDuplicate = acc.some(
-        (item) => item.label.toLowerCase() === current.label.toLowerCase()
-      );
-      if (!isDuplicate) {
-        acc.push(current);
-      }
-      return acc;
-    }, []);
+   
 
-    return uniqueMatchedCohorts;
+    return matchedCohorts;
 
   } catch (error) {
     console.error("Error in getting District Details", error);
@@ -131,51 +131,4 @@ export const formatedBlocks = async (districtCode: string) => {
 };
 
 
-export const formatedStates = async () => {
-  // const adminState = JSON.parse(
-  //   localStorage.getItem("adminInfo") || "{}"
-  // ).customFields.find(
-  //   (field: any) => field.label === "STATES"
-  // );
-  try {
-    const reqParams = {
-      limit: 0,
-      offset: 0,
-      filters: {
-        // name: searchKeyword,
-       
-        type: CohortTypes.STATE,
-        status: ["active"],
-      },
-      sort: ["name", "asc"],
-    };
 
-    const response = await getCohortList(reqParams);
-    const cohortDetails = response?.results?.cohortDetails || [];
-
-    const object = {
-      fieldName: "states",
-    };
-    const optionReadResponse = await getStateBlockDistrictList(object);
-    const StateFieldId=optionReadResponse?.result?.fieldId;
-    localStorage.setItem("stateFieldId", StateFieldId);
-    const result = optionReadResponse?.result?.values;
-
-    console.log(cohortDetails);
-    console.log(result);
-
-    const matchedCohorts = result
-      ?.map((value: any) => {
-        const cohortMatch = cohortDetails.find(
-          (cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase()
-        );
-        return cohortMatch ? { ...value, cohortId: cohortMatch.cohortId } : null;
-      })
-      .filter(Boolean);
-
-    return matchedCohorts;
-  } catch (error) {
-    console.log("Error in getting Channel Details", error);
-    return error;
-  }
-};
