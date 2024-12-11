@@ -3,7 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, InputBase, Paper, useMediaQuery } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 

@@ -18,7 +18,7 @@ import cardData from "@/data/cardData";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import FileUploadDialog from "@/components/FileUploadDialog";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import Loader from "@/components/Loader";
 import { CoursePlannerMetaData } from "@/utils/Interfaces";
 import {
@@ -75,9 +75,9 @@ const ImportCsv = () => {
       const response = await getTargetedSolutions({
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: tstore?.state,
+        state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
-        type: tstore?.taxonomyType,
+        courseType: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,
       });
 
@@ -115,9 +115,9 @@ const ImportCsv = () => {
       const updatedResponse = await getTargetedSolutions({
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: tstore?.state,
+        state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
-        type: tstore?.taxonomyType,
+        courseType: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,
       });
       setLoading(false);
@@ -185,7 +185,7 @@ const ImportCsv = () => {
       const metaData: CoursePlannerMetaData = {
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: tstore?.state,
+        state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         type: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,

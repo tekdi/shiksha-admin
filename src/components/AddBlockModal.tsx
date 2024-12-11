@@ -111,7 +111,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item.label);
+      const districtNameArray = districts.map((item: any) => item?.label?.toLowerCase());
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
@@ -162,7 +162,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district.label === transformedName
+                district?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
             return {
               label: transformedName,
@@ -176,7 +176,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
           }
         )
         .filter((district: { label: any }) =>
-          districtNameArr.includes(district.label)
+          districtNameArr.includes(district?.label?.toLowerCase())
         );
       setDistricts(filteredDistrictData);
     } catch (error) {

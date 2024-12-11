@@ -1,5 +1,6 @@
+import { showToastMessage } from "@/components/Toastify";
 import { deleteApi, patch, post, put } from "./RestClient";
-
+import axios from "axios";
 export interface CenterListParam {
   limit?: number;
   filters?: any;
@@ -194,7 +195,8 @@ export const createOrUpdateOption = async (
   fieldParams: {
     isCreate?: boolean;
     options: { name: string; value: string; controllingfieldfk?: string ,updatedBy?:string}[];
-  }
+  },
+  t?:any
   // stateId?: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/update/${fieldId}`;
@@ -207,6 +209,11 @@ export const createOrUpdateOption = async (
     console.log("api response", response?.data);
     return response?.data;
   } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 409) {
+        showToastMessage(t("COMMON.COHORT_CODE_EXISTS"), "error");
+     } 
+    }
     console.error(
       "Error in createOrUpdateOption:",
       error.message,

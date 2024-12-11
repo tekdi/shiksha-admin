@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { logout } from "../services/LoginService";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Loader from "@/components/Loader";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useQueryClient } from '@tanstack/react-query';
 
 function Logout() {

@@ -41,7 +41,7 @@ import { showToastMessage } from "@/components/Toastify";
 import AddNewCenters from "@/components/AddNewCenters";
 import { getCenterTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
-import { firstLetterInUpperCase, mapFields , transformLabel} from "@/utils/Helper";
+import { firstLetterInUpperCase, mapFields, transformLabel } from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
@@ -80,7 +80,7 @@ const Center: React.FC = () => {
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
 
-  const { t } = useTranslation();
+  const { t , i18n} = useTranslation();
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state.adminInformation
   );
@@ -131,17 +131,17 @@ const Center: React.FC = () => {
   const [selectedRowData, setSelectedRowData] = useState<any>("");
   const isArchived = useSubmittedButtonStore(
     (state: any) => state.isArchived
-);
-const setIsArchived = useSubmittedButtonStore(
-(state: any) => state.setIsArchived
-);
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
   const {
     data: cohortFormData,
     isLoading: cohortFormDataLoading,
     error: cohortFormDataError,
   } = useQuery<any>({
     queryKey: ["cohortFormData"],
-    queryFn: () => getFormRead( FormContext.COHORTS, FormContextType.COHORT),
+    queryFn: () => getFormRead(FormContext.COHORTS, FormContextType.COHORT),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
   const selectedBlockStore = useSubmittedButtonStore(
@@ -182,7 +182,7 @@ const setIsArchived = useSubmittedButtonStore(
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
-   setSubmittedButtonStatus(false);
+    setSubmittedButtonStatus(false);
 
   };
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -226,7 +226,7 @@ const setIsArchived = useSubmittedButtonStore(
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, [cohortFormData]);
+  }, [cohortFormData, i18n.language]);
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -254,7 +254,7 @@ const setIsArchived = useSubmittedButtonStore(
       //   ],
       //   queryFn: () => getCohortList(data),
       // });
-console.log(resp)
+      console.log(resp)
       if (resp) {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
@@ -267,10 +267,10 @@ console.log(resp)
             return await getCohortMemberlistData(cohortId);
           })
         );
-console.log(result)
-const finalResult=  result
-?.filter((cohort: any) => cohort.type === "COHORT")
-finalResult?.forEach((item: any, index: number) => {
+        console.log(result)
+        const finalResult = result
+          ?.filter((cohort: any) => cohort.type === "COHORT")
+        finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
               (field: any) => field.label === "TYPE_OF_COHORT"
@@ -292,8 +292,8 @@ finalResult?.forEach((item: any, index: number) => {
             createdAt: item?.createdAt,
             updatedAt: item?.updatedAt,
             cohortId: item?.cohortId,
-            customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",   
-           totalActiveMembers: counts?.totalActiveMembers,
+            customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",
+            totalActiveMembers: counts?.totalActiveMembers,
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
@@ -317,7 +317,7 @@ finalResult?.forEach((item: any, index: number) => {
         setPageCount(pageCount);
         setLoading(false);
       }
-      else{
+      else {
         setCohortData([]);
 
       }
@@ -331,7 +331,7 @@ finalResult?.forEach((item: any, index: number) => {
 
   const getFormData = async () => {
     try {
-     // const res = await getFormRead("cohorts", "cohort");
+      // const res = await getFormRead("cohorts", "cohort");
       if (cohortFormData && cohortFormData?.fields) {
         const formData = cohortFormData?.fields;
         setFormData(formData);
@@ -352,7 +352,7 @@ finalResult?.forEach((item: any, index: number) => {
         cohortId: cohortId,
       },
     };
-const response=  await fetchCohortMemberList(data);
+    const response = await fetchCohortMemberList(data);
     // const response = await queryClient.fetchQuery({
     //   queryKey: [
     //     QueryKeys.GET_COHORT_MEMBER_LIST,
@@ -366,11 +366,11 @@ const response=  await fetchCohortMemberList(data);
     if (response?.result) {
       const userDetails = response.result.userDetails;
       const getActiveMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ACTIVE && member?.role ===  Role.STUDENT      );
+        (member: any) => member?.status === Status.ACTIVE && member?.role === Role.STUDENT);
       const totalActiveMembers = getActiveMembers?.length || 0;
 
       const getArchivedMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT      );
+        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT);
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
       return {
@@ -403,7 +403,7 @@ const response=  await fetchCohortMemberList(data);
   };
 
   useEffect(() => {
-    if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")  ){
+    if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
       fetchUserList();
     }
     getFormData();
@@ -431,7 +431,7 @@ const response=  await fetchCohortMemberList(data);
         cdata: [],
       },
       edata: {
-        id: 'change-page-number:'+value,
+        id: 'change-page-number:' + value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -467,22 +467,22 @@ const response=  await fetchCohortMemberList(data);
   );
 
   const handleStateChange = async (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
- 
+    const newQuery = { ...router.query };
+
     if (newQuery.center) {
-      delete newQuery.center;  
+      delete newQuery.center;
     }
     if (newQuery.district) {
-     delete newQuery.district;
-   }
+      delete newQuery.district;
+    }
     if (newQuery.block) {
       delete newQuery.block;
     }
     router.replace({
       pathname: router.pathname,
-      query: { 
-        ...newQuery, 
-        state: code?.join(","), 
+      query: {
+        ...newQuery,
+        state: code?.join(","),
       }
     });
     setSelectedDistrict([]);
@@ -490,12 +490,12 @@ const response=  await fetchCohortMemberList(data);
     setSelectedState(selected);
 
 
-   // setSelectedCenterCode([])
+    // setSelectedCenterCode([])
 
-   
+
     setSelectedBlockCode("");
     setSelectedDistrictCode("");
-  
+
 
     if (selected[0] === "") {
       if (filters.status)
@@ -515,54 +515,54 @@ const response=  await fetchCohortMemberList(data);
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     console.log(selected)
-        if (newQuery.center) {
-          delete newQuery.center;  
-        }
-        if (newQuery.block) {
-          delete newQuery.block;
-        }
+    if (newQuery.center) {
+      delete newQuery.center;
+    }
+    if (newQuery.block) {
+      delete newQuery.block;
+    }
     setSelectedBlock([]);
     setSelectedDistrict(selected);
     setSelectedBlockCode("");
     localStorage.setItem('selectedDistrict', selected[0])
-    
+
     setSelectedDistrictStore(selected[0])
-    if (selected[0] === "" ||  selected[0] === t("COMMON.ALL_DISTRICTS")) {
+    if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
       if (filters.status) {
         console.log("true...")
         setFilters({
           states: selectedStateCode,
           status: filters.status,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       } else {
         setFilters({
 
           states: selectedStateCode,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       }
       if (newQuery.district) {
-        delete newQuery.district;  
+        delete newQuery.district;
       }
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
         }
       });
     } else {
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: code?.join(",") 
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: code?.join(",")
         }
       });
       const districts = code?.join(",");
@@ -581,7 +581,7 @@ const response=  await fetchCohortMemberList(data);
 
           states: selectedStateCode,
           districts: districts,
-         // type:"COHORT",
+          // type:"COHORT",
 
         });
       }
@@ -591,17 +591,17 @@ const response=  await fetchCohortMemberList(data);
   };
   const handleBlockChange = (selected: string[], code: string[]) => {
     setSelectedBlock(selected);
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     if (newQuery.center) {
-      delete newQuery.center;  
+      delete newQuery.center;
     }
     if (newQuery.block) {
       delete newQuery.block;
     }
     console.log(code?.join(","))
-    
-    
-   
+
+
+
     localStorage.setItem('selectedBlock', selected[0])
     setSelectedBlockStore(selected[0])
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_BLOCKS")) {
@@ -610,10 +610,10 @@ const response=  await fetchCohortMemberList(data);
       }
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: selectedDistrictCode, 
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: selectedDistrictCode,
         }
       });
       if (filters.status) {
@@ -622,7 +622,7 @@ const response=  await fetchCohortMemberList(data);
           states: selectedStateCode,
           districts: selectedDistrictCode,
           status: filters.status,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       } else {
@@ -630,18 +630,18 @@ const response=  await fetchCohortMemberList(data);
 
           states: selectedStateCode,
           districts: selectedDistrictCode,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       }
     } else {
       router.replace({
         pathname: router.pathname,
-        query: { 
-          ...newQuery, 
-          state: selectedStateCode, 
-          district: selectedDistrictCode, 
-          block: code?.join(",") 
+        query: {
+          ...newQuery,
+          state: selectedStateCode,
+          district: selectedDistrictCode,
+          block: code?.join(",")
         }
       });
       const blocks = code?.join(",");
@@ -653,7 +653,7 @@ const response=  await fetchCohortMemberList(data);
           districts: selectedDistrictCode,
           blocks: blocks,
           status: filters.status,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       } else {
@@ -662,7 +662,7 @@ const response=  await fetchCohortMemberList(data);
           states: selectedStateCode,
           districts: selectedDistrictCode,
           blocks: blocks,
-          type:"COHORT",
+          type: "COHORT",
 
         });
       }
@@ -685,7 +685,7 @@ const response=  await fetchCohortMemberList(data);
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, '');
         const env = cleanedUrl.split("/")[0];
-    
+
         const telemetryInteract = {
           context: {
             env: env,
@@ -738,7 +738,7 @@ const response=  await fetchCohortMemberList(data);
         cdata: [],
       },
       edata: {
-        id: 'sort-by:'+event.target?.value,
+        id: 'sort-by:' + event.target?.value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -821,7 +821,7 @@ const response=  await fetchCohortMemberList(data);
         cdata: [],
       },
       edata: {
-        id: 'changed-tab-to:'+newValue,
+        id: 'changed-tab-to:' + newValue,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -964,7 +964,7 @@ const response=  await fetchCohortMemberList(data);
       }
       let cohortDetails = {
         name: (formData?.name).toLowerCase(),
-        updatedBy:localStorage.getItem('userId'),
+        updatedBy: localStorage.getItem('userId'),
         customFields: customFields,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
@@ -974,8 +974,8 @@ const response=  await fetchCohortMemberList(data);
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, '');
         const env = cleanedUrl.split("/")[0];
-    
-    
+
+
         const telemetryInteract = {
           context: {
             env: env,
@@ -998,10 +998,10 @@ const response=  await fetchCohortMemberList(data);
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 409) {
           showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
-        } 
+        }
       }
       else
-       showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
+        showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);
@@ -1046,15 +1046,13 @@ const response=  await fetchCohortMemberList(data);
         // const result = response?.result?.values;
         if (typeof window !== "undefined" && window.localStorage) {
           const admin = localStorage.getItem("adminInfo");
-          if(admin)
-          {
+          if (admin) {
             const stateField = JSON.parse(admin).customFields.find((field: any) => field.label === "STATES");
-              if (!stateField.value.includes(',')) {
+            if (!stateField.value.includes(',')) {
               setSelectedState([stateField.value]);
               setSelectedStateCode(stateField.code)
-               if(selectedDistrictCode && selectedDistrict.length!==0 &&selectedDistrict[0]!==t("COMMON.ALL_DISTRICTS"))
-              {
-               
+              if (selectedDistrictCode && selectedDistrict.length !== 0 && selectedDistrict[0] !== t("COMMON.ALL_DISTRICTS")) {
+
                 setFilters({
 
                   states: stateField.code,
@@ -1064,25 +1062,24 @@ const response=  await fetchCohortMemberList(data);
 
                 });
               }
-              if(selectedBlockCode && selectedBlock.length!==0 && selectedBlock[0]!==t("COMMON.ALL_BLOCKS"))
-              {
-               setFilters({
+              if (selectedBlockCode && selectedBlock.length !== 0 && selectedBlock[0] !== t("COMMON.ALL_BLOCKS")) {
+                setFilters({
                   states: stateField.code,
-                  districts:selectedDistrictCode,
-                  blocks:selectedBlockCode,
+                  districts: selectedDistrictCode,
+                  blocks: selectedBlockCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
 
                 })
               }
-           }
-           }
+            }
+          }
         }
       } catch (error) {
         console.log(error);
       }
     };
-  
+
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode]);
 
@@ -1147,7 +1144,7 @@ const response=  await fetchCohortMemberList(data);
           "Incomplete location data (state, district, block) for the cohort."
         );
       }
-      
+
 
       if (urlData) {
         // router.push(
@@ -1186,155 +1183,152 @@ const response=  await fetchCohortMemberList(data);
     setStatusValue: setStatusValue,
     showSort: true,
     selectedBlockCode: selectedBlockCode,
-    setSelectedBlockCode:setSelectedBlockCode,
+    setSelectedBlockCode: setSelectedBlockCode,
     selectedDistrictCode: selectedDistrictCode,
-    setSelectedDistrictCode:setSelectedDistrictCode,
-     setSelectedStateCode:setSelectedStateCode,
-     setSelectedDistrict:setSelectedDistrict,
-     setSelectedBlock:setSelectedBlock
-
-
+    setSelectedDistrictCode: setSelectedDistrictCode,
+    setSelectedStateCode: setSelectedStateCode,
+    setSelectedDistrict: setSelectedDistrict,
+    setSelectedBlock: setSelectedBlock
   };
 
   return (
     <>
-        <ProtectedRoute>
-
-      <ConfirmationModal
-        message={
-          selectedRowData?.totalActiveMembers > 0
-            ? t("CENTERS.YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS", {
+      <ProtectedRoute>
+        <ConfirmationModal
+          message={
+            selectedRowData?.totalActiveMembers > 0
+              ? t("CENTERS.YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS", {
                 activeMembers: `${selectedRowData?.totalActiveMembers}`,
               })
-            : t("CENTERS.SURE_DELETE_CENTER") +
-              inputName +
+              : t("CENTERS.SURE_DELETE_CENTER") +
+              transformLabel(inputName) +
               " " +
               t("CENTERS.CENTER") +
               "?"
-        }
-        handleAction={handleActionForDelete}
-        buttonNames={
-          selectedRowData?.totalActiveMembers > 0
-            ? { secondary: t("COMMON.CANCEL") }
-            : { primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL") }
-        }
-        handleCloseModal={handleCloseModal}
-        modalOpen={confirmationModalOpen}
-      />
-
-      <HeaderComponent {...userProps}>
-        {loading ? (
-          <Box
-            width={"100%"}
-            id="check"
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-          >
-            <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-          </Box>
-        ) : cohortData?.length > 0 ? (
-          <KaTableComponent
-            columns={getCenterTableData(t, isMobile, isArchived)}
-            data={cohortData}
-            limit={pageLimit}
-            offset={pageOffset}
-            paginationEnable={totalCount > Numbers.TEN}
-            PagesSelector={PagesSelector}
-            pagination={pagination}
-            PageSizeSelector={PageSizeSelectorFunction}
-            pageSizes={pageSizeArray}
-            extraActions={extraActions}
-            showIcons={true}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            handleMemberClick={handleMemberClick}
-          />
-        ) : (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="20vh"
-          >
-            <Typography marginTop="10px" textAlign={"center"}>
-              {t("COMMON.NO_CENTER_FOUND")}
-            </Typography>
-          </Box>
-        )}
-
-        <AddNewCenters
-          open={openAddNewCohort}
-          onClose={handleCloseAddLearnerModal}
-          formData={formdata}
-          isEditModal={true}
-          userId={userId}
+          }
+          handleAction={handleActionForDelete}
+          buttonNames={
+            selectedRowData?.totalActiveMembers > 0
+              ? { secondary: t("COMMON.CANCEL") }
+              : { primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL") }
+          }
+          handleCloseModal={handleCloseModal}
+          modalOpen={confirmationModalOpen}
         />
 
-        <SimpleModal
-          open={isEditForm}
-          onClose={onCloseEditForm}
-          showFooter={false}
-          modalTitle={t("COMMON.UPDATE_CENTER")}
-        >
-          {schema && uiSchema && (
-            <DynamicForm
-              schema={schema}
-              uiSchema={uiSchema}
-              onSubmit={handleUpdateAction}
-              onChange={handleChangeForm}
-              onError={handleError}
-              widgets={{}}
-              showErrorList={true}
-              customFields={customFields}
-              formData={editFormData}
-              id="update-center-form"
+        <HeaderComponent {...userProps}>
+          {loading ? (
+            <Box
+              width={"100%"}
+              id="check"
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"center"}
             >
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "right", // Centers the button horizontally
-                  marginTop: "20px", // Adjust margin as needed
-                }}
-                gap={2}
-              >
-                <Button
-                  variant="outlined"
-                  type="submit"
-                  form="update-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={onCloseEditForm}
-                >
-                  {t("COMMON.CANCEL")}
-                </Button>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  form="update-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={() => {
-                    setSubmittedButtonStatus(true);
-                  }}
-                >
-                  {t("COMMON.UPDATE")}
-                </Button>
-              </Box>
-            </DynamicForm>
+              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+            </Box>
+          ) : cohortData?.length > 0 ? (
+            <KaTableComponent
+              columns={getCenterTableData(t, isMobile, isArchived)}
+              data={cohortData}
+              limit={pageLimit}
+              offset={pageOffset}
+              paginationEnable={totalCount > Numbers.TEN}
+              PagesSelector={PagesSelector}
+              pagination={pagination}
+              PageSizeSelector={PageSizeSelectorFunction}
+              pageSizes={pageSizeArray}
+              extraActions={extraActions}
+              showIcons={true}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              handleMemberClick={handleMemberClick}
+            />
+          ) : (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="20vh"
+            >
+              <Typography marginTop="10px" textAlign={"center"}>
+                {t("COMMON.NO_CENTER_FOUND")}
+              </Typography>
+            </Box>
           )}
-        </SimpleModal>
-      </HeaderComponent>
+
+          <AddNewCenters
+            open={openAddNewCohort}
+            onClose={handleCloseAddLearnerModal}
+            formData={formdata}
+            isEditModal={true}
+            userId={userId}
+          />
+
+          <SimpleModal
+            open={isEditForm}
+            onClose={onCloseEditForm}
+            showFooter={false}
+            modalTitle={t("COMMON.UPDATE_CENTER")}
+          >
+            {schema && uiSchema && (
+              <DynamicForm
+                schema={schema}
+                uiSchema={uiSchema}
+                onSubmit={handleUpdateAction}
+                onChange={handleChangeForm}
+                onError={handleError}
+                widgets={{}}
+                showErrorList={true}
+                customFields={customFields}
+                formData={editFormData}
+                id="update-center-form"
+              >
+                <Box
+                  style={{
+                    display: "flex",
+                    justifyContent: "right", // Centers the button horizontally
+                    marginTop: "20px", // Adjust margin as needed
+                  }}
+                  gap={2}
+                >
+                  <Button
+                    variant="outlined"
+                    type="submit"
+                    form="update-center-form" // Add this line
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      width: "auto",
+                      height: "40px",
+                      marginLeft: "10px",
+                    }}
+                    onClick={onCloseEditForm}
+                  >
+                    {t("COMMON.CANCEL")}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    form="update-center-form" // Add this line
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: "500",
+                      width: "auto",
+                      height: "40px",
+                      marginLeft: "10px",
+                    }}
+                    onClick={() => {
+                      setSubmittedButtonStatus(true);
+                    }}
+                  >
+                    {t("COMMON.UPDATE")}
+                  </Button>
+                </Box>
+              </DynamicForm>
+            )}
+          </SimpleModal>
+        </HeaderComponent>
       </ProtectedRoute>
 
     </>

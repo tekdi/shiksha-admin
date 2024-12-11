@@ -130,10 +130,10 @@ const Block: React.FC = () => {
   const queryClient = useQueryClient();
   const isArchived = useSubmittedButtonStore(
     (state: any) => state.isArchived
-);
-const setIsArchived = useSubmittedButtonStore(
-(state: any) => state.setIsArchived
-);
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
   const [filters, setFilters] = useState({
     name: searchKeyword,
     states: stateCode,
@@ -188,7 +188,7 @@ const setIsArchived = useSubmittedButtonStore(
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item.label);
+      const districtNameArray = districts.map((item: any) => item.label?.toLowerCase());
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
@@ -215,6 +215,7 @@ const setIsArchived = useSubmittedButtonStore(
           name: searchKeyword,
           states: stateCode,
           type: CohortTypes.DISTRICT,
+          status:["active"]
         },
         sort: sortBy,
       };
@@ -231,7 +232,7 @@ const setIsArchived = useSubmittedButtonStore(
       //   queryFn: () => getCohortList(reqParams),
       // });
 
-      const response= await getCohortList(reqParams)
+      const response = await getCohortList(reqParams)
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -248,7 +249,7 @@ const setIsArchived = useSubmittedButtonStore(
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district.label === transformedName
+                district?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
             return {
               label: transformedName,
@@ -262,10 +263,9 @@ const setIsArchived = useSubmittedButtonStore(
           }
         )
         .filter((district: { label: any }) =>
-          districtNameArr.includes(district.label)
+          districtNameArr.includes(district.label?.toLowerCase())
         );
-      if (isFirstVisit) 
-      {
+      if (isFirstVisit) {
         if (
           filteredDistrictData.length > 0 &&
           selectedDistrict !== t("COMMON.ALL")
@@ -289,11 +289,21 @@ const setIsArchived = useSubmittedButtonStore(
   }, [isFirstVisit, searchKeyword, pageLimit, pageOffset, stateCode]);
 
 
+
+
   useEffect(() => {
-    if(districtData[0]?.value && isFirstVisit)
-    {
+    if(selectedDistrict==="" && districtData?.length!==0){
       setSelectedDistrict(districtData[0]?.value);
-    setIsFirstVisit(false);
+
+    }
+  }, [districtData]);
+
+
+
+  useEffect(() => {
+    if (districtData[0]?.value && isFirstVisit) {
+      setSelectedDistrict(districtData[0]?.value);
+      setIsFirstVisit(false);
     }
 
   }, [districtData]);
@@ -314,7 +324,7 @@ const setIsArchived = useSubmittedButtonStore(
       // });
 
 
-      const response=await   getBlocksForDistricts({
+      const response = await getBlocksForDistricts({
         controllingfieldfk:
           selectedDistrict === t("COMMON.ALL") ? "" : selectedDistrict,
         fieldName: "blocks",
@@ -322,7 +332,7 @@ const setIsArchived = useSubmittedButtonStore(
       const blocks = response?.result?.values || [];
       setBlocksOptionRead(blocks);
 
-      const blockNameArray = blocks.map((item: any) => item.label);
+      const blockNameArray = blocks.map((item: any) => item.label?.toLowerCase());
       setBlockNameArr(blockNameArray);
 
       const blockCodeArray = blocks.map((item: any) => item.value);
@@ -377,7 +387,7 @@ const setIsArchived = useSubmittedButtonStore(
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-      const response= await  getCohortList(reqParams)
+      const response = await getCohortList(reqParams)
 
 
       const cohortDetails = response?.results?.cohortDetails || [];
@@ -397,7 +407,7 @@ const setIsArchived = useSubmittedButtonStore(
             const transformedName = blockDetail.name;
 
             const matchingBlock = blocksOptionRead.find(
-              (block: BlockOption) => block.label === transformedName
+              (block: BlockOption) => block?.label?.toLowerCase() === transformedName?.toLowerCase()
             );
 
             return {
@@ -413,7 +423,7 @@ const setIsArchived = useSubmittedButtonStore(
             };
           }
         )
-        .filter((block: { name: string }) => blockNameArr.includes(block.name));
+        .filter((block: { name: string }) => blockNameArr.includes(block.name?.toLowerCase()));
 
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
@@ -422,7 +432,7 @@ const setIsArchived = useSubmittedButtonStore(
       setPaginationCount(totalCount);
       setPageCount(Math.ceil(totalCount / pageLimit));
 
-      setLoading(false); 
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching and filtering cohort blocks", error);
       setLoading(false);
@@ -507,7 +517,7 @@ const setIsArchived = useSubmittedButtonStore(
         cdata: [],
       },
       edata: {
-        id: 'sort-by:'+event.target?.value,
+        id: 'sort-by:' + event.target?.value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -552,7 +562,7 @@ const setIsArchived = useSubmittedButtonStore(
         cdata: [],
       },
       edata: {
-        id: 'filter-by-district:'+event.target.value,
+        id: 'filter-by-district:' + event.target.value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -660,7 +670,7 @@ const setIsArchived = useSubmittedButtonStore(
         cdata: [],
       },
       edata: {
-        id: 'changed-tab-to:'+newValue,
+        id: 'changed-tab-to:' + newValue,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -748,7 +758,7 @@ const setIsArchived = useSubmittedButtonStore(
         cdata: [],
       },
       edata: {
-        id: 'change-page-number:'+value,
+        id: 'change-page-number:' + value,
         type: TelemetryEventType.CLICK,
         subtype: '',
         pageid: cleanedUrl,
@@ -815,7 +825,7 @@ const setIsArchived = useSubmittedButtonStore(
     extraArgument?: any
   ) => {
     const newDistrict = {
-      isCreate:true,
+      isCreate: true,
       options: [
         {
           controllingfieldfk: controllingField,
@@ -826,45 +836,46 @@ const setIsArchived = useSubmittedButtonStore(
     };
 
     try {
-      const response = await createOrUpdateOption(blocksFieldId, newDistrict);
+      const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
       if (response) {
         await fetchBlocks();
+      }
+      const queryParameters = {
+        name: name,
+        type: CohortTypes.BLOCK,
+        status: Status.ACTIVE,
+        parentId: cohortId || "",
+        customFields: [
+          {
+            fieldId: stateFieldId, // state fieldId
+            value: [stateCode], // state code
+          },
+
+          {
+            fieldId: districtFieldId, // district fieldId
+            value: [controllingField], // district code
+          },
+        ],
+      };
+
+      try {
+        const cohortCreateResponse = await createCohort(queryParameters);
+        if (cohortCreateResponse) {
+          filteredCohortOptionData();
+          showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
+        } else if (cohortCreateResponse.responseCode === 409) {
+          showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+        }
+      } catch (error) {
+        console.error("Error creating cohort:", error);
+        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
       }
     } catch (error) {
       console.error("Error adding district:", error);
     }
 
-    const queryParameters = {
-      name: name,
-      type: CohortTypes.BLOCK,
-      status: Status.ACTIVE,
-      parentId: cohortId || "",
-      customFields: [
-        {
-          fieldId: stateFieldId, // state fieldId
-          value: [stateCode], // state code
-        },
 
-        {
-          fieldId: districtFieldId, // district fieldId
-          value: [controllingField], // district code
-        },
-      ],
-    };
-
-    try {
-      const cohortCreateResponse = await createCohort(queryParameters);
-      if (cohortCreateResponse) {
-        filteredCohortOptionData();
-        showToastMessage(t("COMMON.BLOCK_ADDED_SUCCESS"), "success");
-      } else if (cohortCreateResponse.responseCode === 409) {
-        showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-      }
-    } catch (error) {
-      console.error("Error creating cohort:", error);
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-    }
     setModalOpen(false);
     setSelectedStateForEdit(null);
   };
@@ -876,76 +887,76 @@ const setIsArchived = useSubmittedButtonStore(
     DistrictId?: string,
     extraArgument?: any
   ) => {
-    const updatedBy=localStorage.getItem("userId")
-if(updatedBy)
-{
-  const newDistrict = {
-    isCreate:false,
-    options: [
-      {
-        controllingfieldfk: controllingField,
-        name,
-        value,
-        updatedBy
+    const updatedBy = localStorage.getItem("userId")
+    if (updatedBy) {
+      const newDistrict = {
+        isCreate: false,
+        options: [
+          {
+            controllingfieldfk: controllingField,
+            name,
+            value,
+            updatedBy
 
-      },
-    ],
-  };
-  try {
-    const response = await createOrUpdateOption(blocksFieldId, newDistrict);
-
-    if (response) {
-      filteredCohortOptionData();
-    }
-  } catch (error) {
-    console.error("Error adding district:", error);
-  }
-
-  const queryParameters = {
-    name: name,
-    updatedBy:localStorage.getItem('userId'),
-
-  };
-
-  try {
-    const cohortCreateResponse = await updateCohort(
-      cohortIdForEdit,
-      queryParameters
-    );
-    if (cohortCreateResponse) {
-      await fetchBlocks();
-      await getCohortSearchBlock(selectedDistrict);
-      showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
-      const windowUrl = window.location.pathname;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
-      const env = cleanedUrl.split("/")[0];
-
-
-      const telemetryInteract = {
-        context: {
-          env: env,
-          cdata: [],
-        },
-        edata: {
-          id: 'block-update-success',
-          type: TelemetryEventType.CLICK,
-          subtype: '',
-          pageid: cleanedUrl,
-        },
+          },
+        ],
       };
-      telemetryFactory.interact(telemetryInteract);
+      try {
+        const response = await createOrUpdateOption(blocksFieldId, newDistrict, t);
 
-    } else if (cohortCreateResponse.responseCode === 409) {
-      showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+        if (response) {
+          filteredCohortOptionData();
+        }
+        const queryParameters = {
+          name: name,
+          updatedBy: localStorage.getItem('userId'),
+
+        };
+
+        try {
+          const cohortCreateResponse = await updateCohort(
+            cohortIdForEdit,
+            queryParameters
+          );
+          if (cohortCreateResponse) {
+            await fetchBlocks();
+            await getCohortSearchBlock(selectedDistrict);
+            showToastMessage(t("COMMON.BLOCK_UPDATED_SUCCESS"), "success");
+            const windowUrl = window.location.pathname;
+            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const env = cleanedUrl.split("/")[0];
+
+
+            const telemetryInteract = {
+              context: {
+                env: env,
+                cdata: [],
+              },
+              edata: {
+                id: 'block-update-success',
+                type: TelemetryEventType.CLICK,
+                subtype: '',
+                pageid: cleanedUrl,
+              },
+            };
+            telemetryFactory.interact(telemetryInteract);
+
+          } else if (cohortCreateResponse.responseCode === 409) {
+            showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+          }
+        } catch (error) {
+          console.error("Error creating cohort:", error);
+          showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
+        }
+      } catch (error) {
+        console.error("Error adding district:", error);
+      }
+
+
+      setModalOpen(false);
+      setSelectedStateForEdit(null);
     }
-  } catch (error) {
-    console.error("Error creating cohort:", error);
-    showToastMessage(t("COMMON.BLOCK_DUPLICATION_FAILURE"), "error");
-  }
-  setModalOpen(false);
-  setSelectedStateForEdit(null);
-}
-   
+
   };
 
   const userProps = {
@@ -999,10 +1010,10 @@ if(updatedBy)
         initialValues={
           selectedStateForEdit
             ? {
-                controllingField: selectedStateForEdit.selectedDistrict,
-                name: selectedStateForEdit.name,
-                value: selectedStateForEdit.value,
-              }
+              controllingField: selectedStateForEdit.selectedDistrict,
+              name: selectedStateForEdit.name,
+              value: selectedStateForEdit.value,
+            }
             : {}
         }
       />
@@ -1011,8 +1022,8 @@ if(updatedBy)
         message={
           countOfCenter > 0
             ? t("COMMON.ARE_YOU_SURE_DELETE_BLOCK", {
-                centerCount: `${countOfCenter}`,
-              })
+              centerCount: `${countOfCenter}`,
+            })
             : t("COMMON.NO_ACTIVE_CENTERS_DELETE")
         }
         handleAction={handleConfirmDelete}

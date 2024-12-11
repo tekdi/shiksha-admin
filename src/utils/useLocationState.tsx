@@ -6,10 +6,11 @@ import {
 } from "../services/MasterDataService"; // Update the import path as needed
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { FormContextType, QueryKeys, Status, Role } from "./app.constant";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { cohortMemberList } from "@/services/UserList";
+import { firstLetterInUpperCase} from "@/utils/Helper";
 type FilterDetails = {
   role: any;
   status?: any;
@@ -206,8 +207,8 @@ export const useLocationState = (
                  // setcreateTLAlertModal(true)
                   setAssignedTeamLeader(resp?.userDetails?.length)
                //   setSelectedBlockForTL(selectedBlock[0])
-                  const userNames = resp?.userDetails?.map((user: any )=> user.name);
-                  //setSelectedTLUserID(userId)
+               const userNames = resp?.userDetails?.map((user: any) => firstLetterInUpperCase(user.name));
+               //setSelectedTLUserID(userId)
                  setAssignedTeamLeaderNames(userNames)
                  }
                  else{

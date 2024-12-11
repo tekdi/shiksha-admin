@@ -29,10 +29,13 @@ import {
   findCommonAssociations,
   getAssociationsByCodeNew,
   getOptionsByCategory,
+  normalizeData,
 } from "@/utils/Helper";
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import theme from "@/components/theme/theme";
+import { FRAMEWORK_ID } from "../../app.config";
+import axios from "axios";
 
 // Define Card interface
 interface Card {
@@ -63,8 +66,7 @@ const SubjectDetails = () => {
   const tStore = taxonomyStore();
   const store = coursePlannerStore();
   const [loading, setLoading] = useState(true);
-  const [card, setCard] = useState<Card | null>(null);
-  const [subject, setSubject] = useState<any>();
+  const [subject, setSubject] = useState<string[]>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [medium, setMedium] = useState<any>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
@@ -76,6 +78,7 @@ const SubjectDetails = () => {
   const [selectedgrade, setSelectedgrade] = useState<any>();
   const [gradeOptions, setGradeOptions] = useState<any[]>([]);
   const [typeOptions, setTypeOptions] = useState<any[]>([]);
+  const [newAssociations, setNewAssociations] = useState<any[]>([]);
   const [type, setType] = useState<any>([]);
   const [selectedtype, setSelectedtype] = useState<any>();
   const setTaxanomySubject = coursePlannerStore(
@@ -85,6 +88,12 @@ const SubjectDetails = () => {
   const setTaxonomyGrade = taxonomyStore((state) => state.setTaxonomyGrade);
   const setTaxonomyType = taxonomyStore((state) => state.setTaxonomyType);
   const setTaxonomySubject = taxonomyStore((state) => state.setTaxonomySubject);
+  const [framework, setFramework] = useState<any[]>([]);
+  const [selectedBoard, setSelectedBoard] = useState<any[]>([]);
+  const setStateassociations = coursePlannerStore(
+    (state) => state.setStateassociations
+  );
+  const setBoards = coursePlannerStore((state) => state.setBoards);
 
   useEffect(() => {
     const savedMedium = localStorage.getItem("selectedMedium") || "";
@@ -92,7 +101,100 @@ const SubjectDetails = () => {
     const savedType = localStorage.getItem("selectedType") || "";
     setSelectedmedium(savedMedium);
     setSelectedgrade(savedGrade);
-    // setSelectedtype(savedType);
+    setSelectedtype(savedType);
+  }, []);
+
+  useEffect(() => {
+    const fetchTaxonomyResultsOne = async () => {
+      try {
+        const frameworks = store?.framedata;
+
+        // Get states options
+        const getStates = getOptionsByCategory(frameworks, "state");
+
+        const matchingState = getStates.find(
+          (state: any) => state.name === localStorage.getItem("selectedState")
+        );
+
+        if (matchingState) {
+          setStateassociations(matchingState?.associations);
+          const getBoards = await getOptionsByCategory(frameworks, "board");
+          if (getBoards && matchingState) {
+            const commonBoardsNew = await getBoards
+              .filter((item1: { code: any }) =>
+                matchingState.associations.some(
+                  (item2: { code: any; category: string }) =>
+                    item2.code === item1.code && item2.category === "board"
+                )
+              )
+              .map((item1: { name: any; code: any; associations: any }) => ({
+                name: item1.name,
+                code: item1.code,
+                associations: item1.associations,
+              }));
+
+            setNewAssociations(commonBoardsNew);
+
+            const commonBoards = await getBoards
+              .filter((item1: { code: any }) =>
+                matchingState?.associations?.some(
+                  (item2: { code: any; category: string }) =>
+                    item2.code === item1.code && item2.category === "board"
+                )
+              )
+              .map((item1: { name: any; code: any; associations: any }) => ({
+                name: item1.name,
+                code: item1.code,
+                associations: item1.associations,
+              }));
+
+            const stateBoardMapping = getStates.map((state: any) => {
+              const stateAssociations = state.associations || [];
+              const boards = getOptionsByCategory(frameworks, "board");
+
+              const associatedBoards = boards
+                .filter((board: { code: any }) =>
+                  stateAssociations.some(
+                    (assoc: { code: any; category: string }) =>
+                      assoc.code === board.code && assoc.category === "board"
+                  )
+                )
+                .map((board: { name: any; code: any }) => ({
+                  name: board.name,
+                  code: board.code,
+                }));
+
+              return {
+                stateName: state.name,
+                boards: associatedBoards,
+                associations: stateAssociations,
+              };
+            });
+
+            const selectedState = localStorage.getItem("selectedState");
+
+            const filteredState = stateBoardMapping.filter(
+              (state: any) => state.stateName === selectedState
+            );
+
+            // Log the result
+            if (filteredState) {
+              // Set the frameworks state
+              setFramework(frameworks);
+              setBoards(filteredState);
+              setSelectedBoard(filteredState);
+            } else {
+            }
+            //   }
+            // }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch cohort search results:", error);
+      }
+    };
+
+    fetchTaxonomyResultsOne();
   }, []);
 
   useEffect(() => {
@@ -119,10 +221,13 @@ const SubjectDetails = () => {
             store?.framedata,
             "medium"
           );
-          const boardAssociations = await getAssociationsByCodeNew(
-            store?.boards,
+
+          const normalizedBoards = normalizeData(store?.boards || []);
+          const boardAssociations = getAssociationsByCodeNew(
+            normalizedBoards,
             boardName
           );
+
           setBoardAssociations(boardAssociations);
           const commonMediumInState = getMedium
             .filter((item1: { code: string }) =>
@@ -158,8 +263,9 @@ const SubjectDetails = () => {
             commonMediumInState,
             commonMediumInBoard
           );
+
           setMediumOptions(commonMediumData);
-          setMedium(commonMediumInState);
+          setMedium(commonMediumData);
         } catch (err) {
           console.error("Failed to fetch framework details");
         } finally {
@@ -178,8 +284,6 @@ const SubjectDetails = () => {
     const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
     const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
     setMediumAssociations(mediumAssociations);
-
-    console.log(getGrades);
 
     const commonGradeInState = filterAndMapAssociations(
       "gradeLevel",
@@ -217,7 +321,6 @@ const SubjectDetails = () => {
     const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
     setGradeAssociations(gradeAssociations);
     const type = getOptionsByCategory(store?.framedata, "courseType");
-    console.log(type);
 
     const commonTypeInState = filterAndMapAssociations(
       "courseType",
@@ -262,86 +365,93 @@ const SubjectDetails = () => {
     setType(commonType3Data);
   };
 
-  const fetchAndSetSubData = (type: any) => {
-    const typeAssociations = getAssociationsByCodeNew(typeOptions, type);
-    setTypeAssociations(typeAssociations);
-    const subject = getOptionsByCategory(store?.framedata, "subject");
+  const fetchAndSetSubData = async (type: any) => {
+    try {
+      const StateName = localStorage.getItem("selectedState");
+      const medium = selectedmedium;
+      const grade = selectedgrade;
+      const board = boardName;
 
-    console.log(subject);
+      if (StateName && medium && grade && board) {
+        const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
+        const boardData = await fetch(url).then((res) => res.json());
+        const frameworks = boardData?.result?.framework;
 
-    const commonTypeInState = filterAndMapAssociations(
-      "subject",
-      subject,
-      store?.stateassociations,
-      "code"
-    );
-    const commonTypeInBoard = filterAndMapAssociations(
-      "subject",
-      type,
-      boardAssociations,
-      "code"
-    );
-    const commonTypeInMedium = filterAndMapAssociations(
-      "subject",
-      subject,
-      mediumAssociations,
-      "code"
-    );
-    const commonTypeInGrade = filterAndMapAssociations(
-      "subject",
-      subject,
-      gradeAssociations,
-      "code"
-    );
-    const commonTypeInType = filterAndMapAssociations(
-      "subject",
-      subject,
-      typeAssociations,
-      "code"
-    );
-
-    const findCommonAssociations = (array1: any[], array2: any[]) => {
-      return array1.filter((item1: { code: any }) =>
-        array2.some((item2: { code: any }) => item1.code === item2.code)
-      );
-    };
-
-    const findOverallCommonSubjects = (arrays: any[]) => {
-      const nonEmptyArrays = arrays.filter(
-        (array: string | any[]) => array && array.length > 0
-      );
-
-      if (nonEmptyArrays.length === 0) return [];
-
-      let commonSubjects = nonEmptyArrays[0];
-
-      for (let i = 1; i < nonEmptyArrays.length; i++) {
-        commonSubjects = findCommonAssociations(
-          commonSubjects,
-          nonEmptyArrays[i]
+        const getStates = getOptionsByCategory(frameworks, "state");
+        const matchState = getStates.find(
+          (item: any) =>
+            item?.name?.toLowerCase() === StateName?.toLocaleLowerCase()
         );
 
-        if (commonSubjects.length === 0) return [];
+        const getBoards = getOptionsByCategory(frameworks, "board");
+        const matchBoard = getBoards.find((item: any) => item.name === board);
+        const getMedium = getOptionsByCategory(frameworks, "medium");
+        const matchMedium = getMedium.find((item: any) => item.name === medium);
+
+        const getGrades = getOptionsByCategory(frameworks, "gradeLevel");
+        const matchGrade = getGrades.find((item: any) => item.name === grade);
+
+        const getCourseTypes = getOptionsByCategory(frameworks, "courseType");
+        const courseTypes = getCourseTypes?.map((type: any) => type.name);
+        // setCourseTypes(courseTypes);
+
+        const courseTypesAssociations = getCourseTypes?.map((type: any) => {
+          return {
+            code: type.code,
+            name: type.name,
+            associations: type.associations,
+          };
+        });
+
+        const courseSubjectLists = courseTypesAssociations.map(
+          (courseType: any) => {
+            const commonAssociations = courseType?.associations.filter(
+              (assoc: any) =>
+                matchState?.associations.filter(
+                  (item: any) => item.code === assoc.code
+                )?.length &&
+                matchBoard?.associations.filter(
+                  (item: any) => item.code === assoc.code
+                )?.length &&
+                matchMedium?.associations.filter(
+                  (item: any) => item.code === assoc.code
+                )?.length &&
+                matchGrade?.associations.filter(
+                  (item: any) => item.code === assoc.code
+                )?.length
+            );
+
+            const getSubjects = getOptionsByCategory(frameworks, "subject");
+            const subjectAssociations = commonAssociations?.filter(
+              (assoc: any) =>
+                getSubjects.map((item: any) => assoc.code === item?.code)
+            );
+
+            return {
+              courseTypeName: courseType?.name,
+              courseType: courseType?.code,
+              subjects: subjectAssociations?.map(
+                (subject: any) => subject?.name
+              ),
+            };
+          }
+        );
+        const matchedCourse = courseSubjectLists.find(
+          (course: any) => course.courseTypeName === type
+        );
+
+        const matchingSubjects = matchedCourse ? matchedCourse.subjects : [];
+
+        setSubject(matchingSubjects);
+        localStorage.setItem(
+          "overallCommonSubjects",
+          JSON.stringify(matchingSubjects)
+        );
+        // setSubjectLists(courseSubjectLists);
       }
-
-      return commonSubjects;
-    };
-
-    const arrays = [
-      commonTypeInState,
-      commonTypeInBoard,
-      commonTypeInMedium,
-      commonTypeInGrade,
-      commonTypeInType,
-    ];
-
-    const overallCommonSubjects = findOverallCommonSubjects(arrays);
-
-    setSubject(overallCommonSubjects);
-    localStorage.setItem(
-      "overallCommonSubjects",
-      JSON.stringify(overallCommonSubjects)
-    );
+    } catch (error) {
+      console.error("Error fetching board data:", error);
+    }
   };
 
   useEffect(() => {
@@ -373,13 +483,11 @@ const SubjectDetails = () => {
     router.back();
   };
 
-  const handleCopyLink = (subject: any) => {};
+  const handleCardClick = (subject: string) => {
+    setTaxonomySubject(subject);
+    router.push(`/importCsv?subject=${encodeURIComponent(subject)}`);
 
-  const handleCardClick = (subject: any) => {
-    setTaxonomySubject(subject?.name);
-    router.push(`/importCsv?subject=${encodeURIComponent(subject?.name)}`);
-
-    setTaxanomySubject(subject?.name);
+    setTaxanomySubject(subject);
   };
 
   const handleMediumChange = (event: any) => {
@@ -467,13 +575,13 @@ const SubjectDetails = () => {
     setSelectedmedium("");
     setSelectedgrade("");
     setSelectedtype("");
-    setSubject("");
+    setSubject([""]);
   };
 
   return (
     <Box>
-      <Box sx={{ display: "flex", flexDirection: "row", marginTop: "20px" }}>
-        <Box>
+      <Grid container spacing={2} sx={{ marginTop: "20px" }}>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedmedium || ""}
             onChange={handleMediumChange}
@@ -491,7 +599,7 @@ const SubjectDetails = () => {
               borderRadius: "8px",
               marginRight: "16px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -503,8 +611,8 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
-        <Box>
+        </Grid>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedgrade || ""}
             onChange={handleGradeChange}
@@ -522,7 +630,7 @@ const SubjectDetails = () => {
               borderRadius: "8px",
               marginRight: "16px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -534,9 +642,9 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
+        </Grid>
 
-        <Box>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Select
             value={selectedtype || ""}
             onChange={handleTypeChange}
@@ -553,7 +661,7 @@ const SubjectDetails = () => {
               border: "1px solid #3C3C3C",
               borderRadius: "8px",
               height: 40,
-              width: "170px",
+              width: "100%",
             }}
           >
             <MenuItem value="">
@@ -565,43 +673,40 @@ const SubjectDetails = () => {
               </MenuItem>
             ))}
           </Select>
-        </Box>
-        <Box>
+        </Grid>
+        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
           <Button
             onClick={handleReset}
             sx={{
               height: 40,
-              width: "80px",
               backgroundColor: "#4D4639",
               color: "#FFFFFF",
               borderRadius: "8px",
-              marginLeft: "16px",
               "&:hover": {
                 backgroundColor: "black",
               },
+              width: "100%",
             }}
           >
-            Reset
+            Clear Selection
           </Button>
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
 
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-
           marginTop: "16px",
           marginBottom: "16px",
+          gap:'5px'
         }}
+        onClick={handleBackClick}
       >
-        <IconButton onClick={handleBackClick}>
+      
           <ArrowBackIcon />
-        </IconButton>
+       
         <Typography variant="h2">{boardName}</Typography>
-        <Typography variant="h2" sx={{ ml: 1 }}>
-          Board
-        </Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
       <Divider />
@@ -609,10 +714,10 @@ const SubjectDetails = () => {
       <Box sx={{ marginTop: "16px" }}>
         <Grid container spacing={2}>
           {subject && subject.length > 1 ? (
-            subject.map((subj: any, index: number) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Box
-                  onClick={() => handleCardClick(subj)}
+            subject?.map((subj: string, index: number) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                <MuiCard
+                  key={index}
                   sx={{
                     padding: "14px",
                     cursor: "pointer",
@@ -624,29 +729,35 @@ const SubjectDetails = () => {
                       backgroundColor: "#EAF2FF",
                       transform: "scale(1.02)",
                     },
-                    marginTop: "12px",
                   }}
+                  onClick={() => handleCardClick(subj)}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  {/* Left Section: Folder Icon and Subject Name */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
                     <FolderOutlinedIcon sx={{ color: "#3C3C3C" }} />
                     <Typography variant="h6" noWrap>
-                      {subj?.name || "Untitled Subject"}
+                      {subj || "Untitled Subject"}
                     </Typography>
                   </Box>
-                </Box>
+                </MuiCard>
               </Grid>
             ))
           ) : (
             <Typography
               variant="h4"
               align="center"
-              sx={{ marginTop: "24px", color: "#6B7280" }}
+              sx={{ marginTop: "24px", color: "#6B7280", mx:'16px' }}
             >
               Select Medium, Grade, and Type
             </Typography>
           )}
         </Grid>
-
       </Box>
     </Box>
   );

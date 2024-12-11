@@ -31,6 +31,7 @@ export interface Field {
   required?: boolean;
   default: string | number;
   isRequired?: boolean;
+  isHidden?: boolean;
 }
 export interface TenantCohortRoleMapping {
   tenantId: string;
@@ -96,7 +97,7 @@ export interface GetTargetedSolutionsParams {
   medium: string;
   class: string;
   board: string;
-  type: string;
+  courseType: string;
 }
 
 export interface GetSolutionDetailsParams {
@@ -145,7 +146,7 @@ export interface Context {
   mode?: string;
   authToken?: string;
   sid?: string;
-  did?: string;
+  did?: any;
   uid?: string;
   channel: string;
   pdata: Pdata;
@@ -158,7 +159,7 @@ export interface Context {
   endpoint?: string;
   dispatcher?: object;
   partner?: any[];
-  contentId: string;
+  contentId?: any;
   dims?: any[];
   app?: string[];
   userData?: {
@@ -198,7 +199,7 @@ export interface Metadata {
   baseDir?: string;
 }
 export interface PlayerConfig {
-  context?: Context;
+  context: Context;
   config?: Config;
   metadata?: Metadata;
   data?: any;

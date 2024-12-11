@@ -141,7 +141,8 @@
     "PAGE_NOT_FOUND": "Page not found",
     "ACCESS_DENIED": "Access Denied",
     "YOU_DONT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE": "You don't have access to this page",
-    "RETURN_TO_LOGIN": "Return to Login"
+    "RETURN_TO_LOGIN": "Return to Login",
+    "COHORT_CODE_EXISTS": "Code already exists"
 
   },
   "LOGIN_PAGE": {
@@ -291,7 +292,8 @@
     "STATE_CODE": "State Code",
     "DISTRICT_CODE": "District Code",
     "BLOCK_CODE": "Block Code",
-    "CODE": "Code"
+    "CODE": "Code",
+    "MASTER":"Master"
   },
   "CENTERS": {
     "CENTER": "center",
@@ -313,10 +315,10 @@
     "RENAME": "Rename",
     "CENTER_RENAMED": "Center Renamed Successfully!",
     "SEND_REQUEST": "Send Request",
-    "SURE_DELETE_CENTER": "Are you sure you want to Delete ",
-    "CENTER_UPDATE_SUCCESSFULLY": "Center has been Successfully Updated",
-    "CENTER_DELETE_SUCCESSFULLY": "Center has been Successfully Deleted",
-    "CENTER_CREATED_SUCCESSFULLY": "Center Created Successfully",
+    "SURE_DELETE_CENTER": "Are you sure you want to delete ",
+    "CENTER_UPDATE_SUCCESSFULLY": "Center has been successfully updated",
+    "CENTER_DELETE_SUCCESSFULLY": "Center has been successfully deleted",
+    "CENTER_CREATED_SUCCESSFULLY": "Center Created successfully",
     "SEARCHBAR_PLACEHOLDER": "Search Center..",
     "CENTER_UPDATE_FAILED": "Something went wrong while updating center",
     "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the center because it has {{activeMembers}} Active Learners"

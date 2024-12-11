@@ -12,7 +12,7 @@ const Menuitems = [
   {
     title: "SIDEBAR.CENTERS",
     icon: centerIcon,
-    href: "/centers",
+    href: ["/centers"],
   },
   {
     title: "SIDEBAR.MANAGE_USERS",
@@ -20,33 +20,33 @@ const Menuitems = [
     subOptions: [
       {
         title: "SIDEBAR.TEAM_LEADERS",
-        href: "/team-leader",
+        href: ["/team-leader"],
       },
       {
         title: "SIDEBAR.FACILITATORS",
-        href: "/faciliator",
+        href: ["/faciliator"],
       },
       {
         title: "SIDEBAR.LEARNERS",
-        href: "/learners",
+        href: ["/learners"],
       },
     ],
   },
   {
-    title: "Master",
+    title: "MASTER.MASTER",
     icon: masterIcon,
     subOptions: [
       {
         title: "MASTER.STATE",
-        href: "/state",
+        href: ["/state"],
       },
       {
         title: "MASTER.DISTRICTS",
-        href: "/district",
+        href: ["/district"],
       },
       {
         title: "MASTER.BLOCKS",
-        href: "/block",
+        href: ["/block"],
       },
     ],
   },
@@ -55,7 +55,7 @@ const Menuitems = [
         {
           title: "SIDEBAR.COURSE_PLANNER",
           icon: coursePlannerIcon,
-          href: "/course-planner",
+          href: ["/course-planner", "/stateDetails", "/subjectDetails", "/importCsv", "/resourceList", "/play/content/[identifier]"],
         },
       ]
     : []),
@@ -64,7 +64,7 @@ const Menuitems = [
         {
           title: "SIDEBAR.WORKSPACE",
           icon: dashboardIcon,
-          href: "/workspace/content/create",
+          href: ["/workspace/content/create"],
         },
       ]
     : []),
