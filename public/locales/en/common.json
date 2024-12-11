@@ -271,7 +271,13 @@
     "NO_DATA_POST": "No data available for Learners Post-requisites",
     "FACILITATORS": "Facilitators Requisites",
     "NO_DATA": "No data available for Facilitators Requisites",
-    "DOWNLOAD_SAMPLE_CSV": "Download Sample CSV"
+    "DOWNLOAD_SAMPLE_CSV": "Download Sample CSV",
+    "BOARDS":"Boards",
+    "SELECT_MEDIUM":"Select Medium",
+    "SELECT_GRADE":"Select Grade",
+    "SELECT_TYPE":"Select Type",
+    "CLEAR_SELECTION":"Clear Selection",
+    "SELECT_ALL_MESSSAGE":"Select Medium, Grade, and Type"
   },
   "MASTER": {
     "STATE": "States",

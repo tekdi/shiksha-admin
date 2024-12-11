@@ -17,10 +17,11 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@module-federation/nextjs-mf": "^8.5.5",
-    "@module-federation/utilities": "3.0.11",
+    "@aws-sdk/client-s3": "^3.705.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@module-federation/nextjs-mf": "^8.5.5",
+    "@module-federation/utilities": "3.0.11",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.21",
     "@project-sunbird/client-services": "^7.0.6",

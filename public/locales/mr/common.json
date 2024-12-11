@@ -145,7 +145,9 @@
     "PAGE_NOT_FOUND": "पृष्ठ सापडले नाही",
     "ACCESS_DENIED": "प्रवेश नाकारला",
     "YOU_DONT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE": "तुम्हाला या पृष्ठावर प्रवेश नाही",
-    "RETURN_TO_LOGIN": "लॉगिनवर परत जा"
+    "RETURN_TO_LOGIN": "लॉगिनवर परत जा",
+    "COHORT_CODE_EXISTS": "कोड आधीच अस्तित्वात आहे"
+
   },
   "LOGIN_PAGE": {
     "USERNAME": "वापरकर्ता नाव",
@@ -261,7 +263,9 @@
     "STATE_CODE": "राज्य कोड",
     "DISTRICT_CODE": "जिल्हा कोड",
     "BLOCK_CODE": "ब्लॉक कोड",
-    "CODE": "कोड"
+    "CODE": "कोड",
+    "MASTER":"मास्टर"
+
   },
   "CENTERS": {
     "CENTERS": "केंद्रे",
@@ -379,37 +383,44 @@
     "ADMIN_UPDATED_SUCCESSFULLY": "अ‍ॅडमिन यशस्वीपणे अद्ययावत केला"
   },
   "COURSE_PLANNER": {
-   
-    "LEARNERS_PREREQISITE": "विद्यार्थ्यांसाठीच्या  पूर्व-आवश्यकता",
-    "NO_DATA_PRE": "विद्यार्थ्यांसाठी पूर्व-आवश्यकतेसाठी कोणताही डेटा उपलब्ध नाही",
-    "LEARNERS_POSTREQISITE": "विद्यार्थ्यांसाठी नंतरच्या आवश्यकता",
-    "NO_DATA_POST": "विद्यार्थ्यांसाठी नंतरच्या आवश्यकतेसाठी कोणताही डेटा उपलब्ध नाही",
-    "FACILITATORS": "फैसिलिटेटरच्या आवश्यकता",
-    "NO_DATA": "फैसिलिटेटरसाठी कोणताही डेटा उपलब्ध नाही",
-    "DOWNLOAD_SAMPLE_CSV": "नमुना CSV डाउनलोड करा",
-    "GRADE": "इयत्ता",
-    "MEDIUM": "माध्यम",
-    "FILTER": "फिल्टर",
-    "BOARDS_FULLY_UPLOADED": "बोर्ड्स पूर्णपणे अपलोड केले",
-    "ACTIVITY": "क्रियाकलाप",
-    "COPY_LINK": "लिंक कॉपी करा",
-    "SEARCH": "शोधा",
-    "DATA_NOT_FOUND": "डेटा सापडला नाही",
-    "SUBJECTS_UPLOADED": "विषय अपलोड केले",
-    "IMPORT_PLANNER": "नियोजक आयात करा",
-    "REMOVE_FILE": "काढा",
-    "IMPORT_PLANNER_TO_UPLOADING": "‘आयात नियोजक’ वर क्लिक करा सुरू करण्यासाठी अपलोड करा",
-    "TOPIC_DETAILS": "विषय तपशील",
-    "BROWSE_FILE": "फाइल शोधा",
-    "UPLOAD": "अपलोड करा",
-    "COURSE_CREATED_SUCCESSFULLY": "कोर्स यशस्वीपणे तयार केला",
-    "COURSE_NOT_CREATED": "कोर्स तयार नाही",
-    "SUB-TOPIC": "उपघटक ",
-    "SUBTOPICS": "उपघटक ",
-    "RESOURCES": "साधने",
-    "TOPIC": "विषय",
-    "DURATION/MONTH": "कालावधी/महिना"
-  },
+  "GRADE": "ग्रेड",
+  "MEDIUM": "माध्यम",
+  "FILTER": "फिल्टर",
+  "BOARDS_FULLY_UPLOADED": "बोर्ड पूर्णपणे अपलोड केले गेले आहेत",
+  "ACTIVITY": "क्रियाकलाप",
+  "COPY_LINK": "लिंक कॉपी करा",
+  "SEARCH": "शोधा",
+  "DATA_NOT_FOUND": "डेटा सापडला नाही",
+  "SUBJECTS_UPLOADED": "विषय अपलोड केले गेले आहेत",
+  "IMPORT_PLANNER": "आयात प्लॅनर",
+  "REMOVE_FILE": "फाईल काढा",
+  "IMPORT_PLANNER_TO_UPLOADING": "अपलोड सुरू करण्यासाठी 'आयात प्लॅनर' वर क्लिक करा",
+  "TOPIC_DETAILS": "विषय तपशील",
+  "BROWSE_FILE": "फाईल ब्राउझ करा",
+  "UPLOAD": "अपलोड करा",
+  "COURSE_CREATED_SUCCESSFULLY": "कोर्स यशस्वीरित्या तयार झाला",
+  "COURSE_NOT_CREATED": "कोर्स तयार केला गेला नाही",
+  "UPLOAD_FAILED": "अपलोड अयशस्वी",
+  "SUB-TOPIC": "उपविषय",
+  "SUBTOPICS": "उपविषय",
+  "RESOURCES": "साधने",
+  "TOPIC": "विषय",
+  "DURATION/MONTH": "कालावधी/महिना",
+  "LEARNERS_PREREQISITE": "शिक्षार्थ्यांची पूर्व आवश्यकता",
+  "NO_DATA_PRE": "शिक्षार्थ्यांच्या पूर्व आवश्यकतांसाठी डेटा उपलब्ध नाही",
+  "LEARNERS_POSTREQISITE": "शिक्षार्थ्यांची पोस्ट आवश्यकता",
+  "NO_DATA_POST": "शिक्षार्थ्यांच्या पोस्ट आवश्यकतांसाठी डेटा उपलब्ध नाही",
+  "FACILITATORS": "सुविधाकारांची आवश्यकता",
+  "NO_DATA": "सुविधाकारांची आवश्यकतांसाठी डेटा उपलब्ध नाही",
+  "DOWNLOAD_SAMPLE_CSV": "नमुना CSV डाउनलोड करा",
+  "BOARDS": "बोर्ड",
+  "SELECT_MEDIUM": "माध्यम निवडा",
+  "SELECT_GRADE": "ग्रेड निवडा",
+  "SELECT_TYPE": "प्रकार निवडा",
+  "CLEAR_SELECTION": "निवड साफ करा",
+  "SELECT_ALL_MESSSAGE": "माध्यम, ग्रेड आणि प्रकार निवडा"
+},
+
  
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "अवैध इनपुट",

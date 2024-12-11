@@ -1,4 +1,4 @@
-import React, { useState, useEffect, MouseEvent } from "react";
+import React, { useState, useEffect, MouseEvent, useTransition } from "react";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -36,6 +36,7 @@ import { telemetryFactory } from "@/utils/telemetry";
 import theme from "@/components/theme/theme";
 import { FRAMEWORK_ID } from "../../app.config";
 import axios from "axios";
+import { useTranslation, UseTranslation } from "next-i18next";
 
 // Define Card interface
 interface Card {
@@ -59,6 +60,7 @@ interface FoundCard {
 
 const SubjectDetails = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const { boardDetails, boardName } = router.query as {
     boardDetails?: any;
     boardName?: any;
@@ -100,6 +102,7 @@ const SubjectDetails = () => {
     const savedGrade = localStorage.getItem("selectedGrade") || "";
     const savedType = localStorage.getItem("selectedType") || "";
     setSelectedmedium(savedMedium);
+    
     setSelectedgrade(savedGrade);
     setSelectedtype(savedType);
   }, []);
@@ -284,6 +287,7 @@ const SubjectDetails = () => {
     const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
     const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
     setMediumAssociations(mediumAssociations);
+    localStorage.setItem("mediumAssociations", JSON.stringify(mediumAssociations));
 
     const commonGradeInState = filterAndMapAssociations(
       "gradeLevel",
@@ -320,6 +324,8 @@ const SubjectDetails = () => {
   const fetchAndSetTypeData = (grade: any) => {
     const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
     setGradeAssociations(gradeAssociations);
+    localStorage.setItem("gradeAssociations", JSON.stringify(gradeAssociations));
+
     const type = getOptionsByCategory(store?.framedata, "courseType");
 
     const commonTypeInState = filterAndMapAssociations(
@@ -328,22 +334,36 @@ const SubjectDetails = () => {
       store?.stateassociations,
       "code"
     );
+    console.log(`commonTypeInState`, commonTypeInState);
     const commonTypeInBoard = filterAndMapAssociations(
       "courseType",
       type,
       boardAssociations,
       "code"
     );
+    console.log(`commonTypeInBoard`, commonTypeInBoard);
+    const storageMediumAssociations = localStorage.getItem("mediumAssociations");
+    const localMediumAssociations = storageMediumAssociations
+      ? JSON.parse(storageMediumAssociations)
+      : mediumAssociations;
     const commonTypeInMedium = filterAndMapAssociations(
       "courseType",
       type,
-      mediumAssociations,
+      localMediumAssociations,
       "code"
     );
+    console.log(`mediumAssociations`, localMediumAssociations);
+
+    console.log(`commonTypeInMedium`, commonTypeInMedium);
+    const storageGradeAssociations = localStorage.getItem("gradeAssociations");
+    const localGradeAssociations = storageMediumAssociations
+      ? JSON.parse(storageMediumAssociations)
+      : gradeAssociations;
+
     const commonTypeInGrade = filterAndMapAssociations(
       "courseType",
       type,
-      gradeAssociations,
+      localGradeAssociations,
       "code"
     );
 
@@ -473,7 +493,7 @@ const SubjectDetails = () => {
   }, [selectedtype]);
 
   if (loading) {
-    return <Loader showBackdrop={true} loadingText="Loading..." />;
+    return <Loader showBackdrop={true} loadingText="Loading" />;
   }
 
   const handleBackClick = () => {
@@ -603,7 +623,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Medium</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_MEDIUM")}</Typography>
             </MenuItem>
             {medium.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -634,7 +654,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Grade</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_GRADE")}</Typography>
             </MenuItem>
             {grade.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -665,7 +685,7 @@ const SubjectDetails = () => {
             }}
           >
             <MenuItem value="">
-              <Typography>Select Type</Typography>
+              <Typography>{t("COURSE_PLANNER.SELECT_TYPE")}</Typography>
             </MenuItem>
             {type.map((item: any) => (
               <MenuItem key={item.name} value={item.name}>
@@ -688,7 +708,7 @@ const SubjectDetails = () => {
               width: "100%",
             }}
           >
-            Clear Selection
+            {t("COURSE_PLANNER.CLEAR_SELECTION")}
           </Button>
         </Grid>
       </Grid>
@@ -699,13 +719,14 @@ const SubjectDetails = () => {
           alignItems: "center",
           marginTop: "16px",
           marginBottom: "16px",
-          gap:'5px'
+          gap: "5px",
+          width:'fit-content',
+          cursor:'pointer'
         }}
         onClick={handleBackClick}
       >
-      
-          <ArrowBackIcon />
-       
+        <ArrowBackIcon />
+
         <Typography variant="h2">{boardName}</Typography>
         <Box sx={{ width: "40px", height: "40px" }}></Box>
       </Box>
@@ -752,9 +773,9 @@ const SubjectDetails = () => {
             <Typography
               variant="h4"
               align="center"
-              sx={{ marginTop: "24px", color: "#6B7280", mx:'16px' }}
+              sx={{ marginTop: "24px", color: "#6B7280", mx: "16px" }}
             >
-              Select Medium, Grade, and Type
+              {t("COURSE_PLANNER.SELECT_ALL_MESSSAGE")}
             </Typography>
           )}
         </Grid>

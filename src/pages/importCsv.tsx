@@ -550,7 +550,7 @@ const ImportCsv = () => {
                                     color: "#7C766F",
                                   }}
                                 >
-                                  {`${subTopic?.learningResources?.length} Resources`}
+                                  {`${subTopic?.learningResources?.length} ${t("COURSE_PLANNER.RESOURCES")}`}
                                 </Box>
                                 <Box
                                   sx={{
