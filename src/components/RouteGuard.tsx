@@ -25,10 +25,10 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           keysToKeep.forEach((key: string) => {
             valuesToKeep[key] = localStorage.getItem(key);
           });
-    
+
           // Clear all local storage
           localStorage.clear();
-    
+
           // Re-add the keys to keep with their values
           keysToKeep.forEach((key: string) => {
             if (valuesToKeep[key] !== null) {
@@ -44,7 +44,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const user = JSON.parse(adminInfo);
 
-    const allowedPaths = ["/workspace/content/create","/course-planner", "/subjectDetails","/stateDetails"];
+    const allowedPaths = ["/workspace/content/create", "/course-planner", "/subjectDetails", "/stateDetails"];
     const isWorkspaceContent = router.pathname.startsWith("/workspace/content");
     const coursePlannerPaths = [
       "/course-planner",
@@ -62,12 +62,12 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       "/edit-password",
       "/course-hierarchy"
     ];
-    
+
     const isCoursePlannerContent = coursePlannerPaths.some((path) =>
       router.pathname.startsWith(path)
     );
 
-    if ((user.role === Role.SCTA ||user.role === Role.CCTA)&& !(allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
+    if ((user.role === Role.SCTA || user.role === Role.CCTA) && !(allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
       if (router.pathname !== "/login" && router.pathname !== "/logout") {
         if (typeof window !== 'undefined' && window.localStorage) {
           // Specify the keys you want to keep
@@ -83,10 +83,10 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           keysToKeep.forEach((key: string) => {
             valuesToKeep[key] = localStorage.getItem(key);
           });
-    
+
           // Clear all local storage
           // localStorage.clear();
-    
+
           // // Re-add the keys to keep with their values
           // keysToKeep.forEach((key: string) => {
           //   if (valuesToKeep[key] !== null) {
@@ -99,9 +99,9 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
     }
 
-    if ((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN )&& (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
-      if (router.pathname !== "/login" && router.pathname !== "/logout") {
-        
+    if ((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN) && (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
+      if (router.pathname !== "/login" && router.pathname !== "/logout" && router.pathname !== "/edit-password") {
+
         router.push("/unauthorized");
       }
     }
