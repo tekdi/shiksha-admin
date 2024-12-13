@@ -17,7 +17,9 @@ import { useTranslation } from "next-i18next";
 import { getDistrictsForState } from "@/services/MasterDataService";
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { useQueryClient } from "@tanstack/react-query";
-import { CohortTypes, QueryKeys } from "@/utils/app.constant";
+import { CohortTypes, QueryKeys, Role } from "@/utils/app.constant";
+import { formatedStates } from "@/services/formatedCohorts";
+import MultipleSelectCheckmarks from "./FormControl";
 
 interface AddBlockModalProps {
   open: boolean;
@@ -38,7 +40,11 @@ interface AddBlockModalProps {
   };
   districtId?: string;
 }
-
+interface State {
+  value: string;
+  label: string;
+  cohortId?: any;
+}
 export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   open,
   onClose,
@@ -52,7 +58,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     value: initialValues.value || "",
     controllingField: initialValues.controllingField || "",
   });
-
+console.log("formData",initialValues);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [districts, setDistricts] = useState<
     { value: string; label: string; cohortId: string | null }[]
@@ -64,20 +70,47 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const [cohortIdAddNewDropdown, setCohortIdAddNewDropdown] = useState<any>("");
   const [stateCode, setStateCode] = useState<any>("");
   const [stateName, setStateName] = useState<any>("");
+  const [states, setStates] = useState<State[]>([]);
+  const [defaultStates, setDefaultStates] = useState<any>();
+  const [userRole, setUserRole] = useState("");
+  const [selectedState, setSelectedState] = useState<string>("");
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const storedUserData = JSON.parse(
-      localStorage.getItem("adminInfo") || "{}"
-    );
-    const stateCodes = storedUserData?.customFields[0]?.code;
-    const stateNames = storedUserData?.customFields[0]?.value;
-    setStateCode(stateCodes);
-    setStateName(stateNames);
-  }, [open]);
+    const fetchStates = async () => {
+      try {
+        if (userRole === Role.CENTRAL_ADMIN) {
+          const result = await formatedStates();
+          console.log("result", result[0]?.value);
+          setStates(result);
+          setStateCode(result[0]?.value);
+          setDefaultStates(result[0]);
+        } else {
+          const storedUserData = JSON.parse(
+            localStorage.getItem("adminInfo") || "{}"
+          );
+          const stateCodes = storedUserData?.customFields[0]?.code;
+          const stateNames = storedUserData?.customFields[0]?.value;
+          setStateCode(stateCodes);
+          setStateName(stateNames);
+        }
+      } catch (error) {
+        setDistricts([]);
 
+        console.error("Error fetching districts:", error);
+      }
+    };
+    fetchStates();
+  }, [open, userRole]);
+  useEffect(() => {
+    const storedUserData = localStorage.getItem("adminInfo");
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
   useEffect(() => {
     setFormData({
       name: initialValues.name || "",
@@ -111,41 +144,61 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item?.label?.toLowerCase());
+      const districtNameArray = districts.map((item: any) =>
+        item?.label?.toLowerCase()
+      );
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
       setDistrictCodeArr(districtCodeArray);
     } catch (error) {
+      setDistricts([]);
       console.error("Error fetching districts", error);
     }
   };
 
   useEffect(() => {
-    if (open) fetchDistricts();
-  }, [open, formData.controllingField]);
+    if (open && stateCode !== "" && stateCode) fetchDistricts();
+  }, [open, formData.controllingField, stateCode]);
+  const handleStateChangeWrapper = async (
+    selectedNames: string[],
+    selectedCodes: string[]
+  ) => {
+    try {
+      // setSelectedNames(selectedNames);
 
+      setStateCode(selectedCodes[0]);
+      setSelectedState(selectedNames[0]);
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getFilteredCohortData = async () => {
     try {
+      console.log("stateCode", stateCode);
       const reqParams = {
         limit: 0,
         offset: 0,
         filters: {
           states: stateCode,
           type: CohortTypes.DISTRICT,
+          status: ["active"],
         },
       };
 
-      const response = await queryClient.fetchQuery({
-        queryKey: [
-          QueryKeys.FIELD_OPTION_READ,
-          reqParams.limit,
-          reqParams.offset,
-          CohortTypes.DISTRICT,
-        ],
-        queryFn: () => getCohortList(reqParams),
-      });
-
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     CohortTypes.DISTRICT,
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+      const response = await getCohortList(reqParams);
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -162,8 +215,13 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district?.label?.toLowerCase() === transformedName?.toLowerCase()
+                district?.label?.toLowerCase() ===
+                transformedName?.toLowerCase()
             );
+            console.log("districtsOptionRead", districtsOptionRead);
+            console.log("matchingDistrict", matchingDistrict);
+            console.log("cohortDetails", cohortDetails);
+
             return {
               label: transformedName,
               value: matchingDistrict ? matchingDistrict.value : null,
@@ -178,14 +236,16 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
         );
+      console.log("filteredDistrictData", filteredDistrictData);
       setDistricts(filteredDistrictData);
     } catch (error) {
+      setDistricts([]);
       console.error("Error fetching and filtering cohort districts", error);
     }
   };
   useEffect(() => {
-    if (open) getFilteredCohortData();
-  }, [open, districtNameArr]);
+    if (open && stateCode !== "" && stateCode) getFilteredCohortData();
+  }, [open, districtNameArr, stateCode]);
 
   function transformLabels(label: string) {
     if (!label || typeof label !== "string") return "";
@@ -306,6 +366,24 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
+        {userRole === Role.CENTRAL_ADMIN && (
+          <MultipleSelectCheckmarks
+            names={states?.map(
+              (state) =>
+                state.label?.toLowerCase().charAt(0).toUpperCase() +
+                state.label?.toLowerCase().slice(1)
+            )}
+            codes={states?.map((state) => state.value)}
+            tagName={t("FACILITATORS.STATE")}
+            selectedCategories={[selectedState]}
+            onCategoryChange={handleStateChangeWrapper}
+            cohortIds={states?.map((state) => state.cohortId)}
+            disabled={isEditing}
+            // overall={!inModal}
+            width="290px"
+            defaultValue={defaultStates?.label}
+          />
+        )}
         {!(formData.controllingField === "All") && (
           <Select
             value={formData.controllingField}
@@ -314,6 +392,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                 e as React.ChangeEvent<HTMLInputElement>
               )
             }
+            sx={{ marginTop: "8px" }}
             MenuProps={{
               PaperProps: {
                 sx: {

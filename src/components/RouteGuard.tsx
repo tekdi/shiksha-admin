@@ -44,7 +44,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const user = JSON.parse(adminInfo);
 
-    const allowedPaths = ["/workspace/content/create","/course-planner", "/subjectDetails","/stateDetails"];
+    const allowedPaths = ["/workspace/content/create","/course-planner", "/subjectDetails","/stateDetails" ];
     const isWorkspaceContent = router.pathname.startsWith("/workspace/content");
     const coursePlannerPaths = [
       "/course-planner",
@@ -100,7 +100,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
 
     if ((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN )&& (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) {
-      if (router.pathname !== "/login" && router.pathname !== "/logout") {
+      if (router.pathname !== "/login" && router.pathname !== "/logout" &&router.pathname !== "/edit-password") {
         
         router.push("/unauthorized");
       }

@@ -112,6 +112,7 @@ export enum CohortTypes {
   COHORT = "COHORT",
   BLOCK = "BLOCK",
   DISTRICT = "DISTRICT",
+  STATE="STATE"
 }
 
 export enum FormValues {
@@ -137,6 +138,8 @@ export const QueryKeys = {
   FIELD_OPTION_READ: "fieldOptionRead",
   MY_COHORTS: "myCohorts",
   GET_COHORT_LIST: "getcohortList",
+  GET_STATE_COHORT_LIST: "getStateCohortList",
+
   GET_COHORT_MEMBER_LIST: "getCohortMemberList",
 }
 

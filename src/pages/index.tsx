@@ -25,7 +25,13 @@ const Home: React.FC = () => {
           window.location.href = "/course-planner"; 
         }
         else
-        push("/centers");
+        {
+          if(storedUserData?.role === Role.CENTRAL_ADMIN)
+          push("/state");
+          else
+          push("/centers");
+
+        }
       } else {
         push("/login", undefined, { locale: "en" });
       }

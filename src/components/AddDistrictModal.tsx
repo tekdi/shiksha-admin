@@ -15,8 +15,10 @@ import {
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "next-i18next";
 import { getUserDetailsInfo } from "@/services/UserList";
-import { QueryKeys, Storage } from "@/utils/app.constant";
+import { QueryKeys, Role, Storage } from "@/utils/app.constant";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatedStates } from "@/services/formatedCohorts";
+import MultipleSelectCheckmarks from "./FormControl";
 
 interface AddDistrictBlockModalProps {
   open: boolean;
@@ -26,7 +28,8 @@ interface AddDistrictBlockModalProps {
     value: string,
     controllingField: string,
     fieldId: string,
-    districtId?: string
+   // districtId?: string,
+    stateParentId?: string
   ) => void;
   fieldId: string;
   initialValues?: {
@@ -36,7 +39,11 @@ interface AddDistrictBlockModalProps {
   };
   districtId?: string;
 }
-
+interface State {
+  value: string;
+  label: string;
+  cohortId?: any;
+}
 const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
   open,
   onClose,
@@ -44,6 +51,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
   fieldId,
   initialValues = {},
   districtId,
+  
 }) => {
   const [formData, setFormData] = useState({
     name: initialValues?.name ?? "",
@@ -54,10 +62,22 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [stateCode, setStateCode] = useState<string>("");
   const [stateValue, setStateValue] = useState<string>("");
+  const [states, setStates] = useState<State[]>([]);
+  const [defaultStates, setDefaultStates] = useState<any>();
+  const [userRole, setUserRole] = useState("");
+  const [selectedState, setSelectedState] = React.useState<string[]>([]);
+  const [fetchDistrict, setFetchDistrict] = useState(true);
+  const [stateParentId, setStateParentId] = useState<any>("");
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-
+  useEffect(() => {
+    const storedUserData=localStorage.getItem("adminInfo")
+    if(storedUserData){
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
   useEffect(() => {
     const fetchUserDetail = async () => {
       let userId: any;
@@ -72,8 +92,28 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
         const statesField = response.userData.customFields.find(
           (field: { label: string }) => field.label === "STATES"
         );
+        const storedUserData=localStorage.getItem("adminInfo")
+        let userData;
+        if(storedUserData){
+           userData = JSON.parse(storedUserData);
+        }
+       
+            if(userData?.role===Role.CENTRAL_ADMIN)
+       {
 
-        if (statesField) {
+        const result= await formatedStates();
+         console.log("result", result)
+         setStates(result)
+         setStateCode(result[0]?.value);
+         setStateParentId(result[0]?.cohortId);
+         setSelectedState(result[0]?.label);
+         setDefaultStates(result[0]);
+         setFormData((prev) => ({
+          ...prev,
+          controllingField: result[0]?.value,
+        }));
+       }
+       else if (statesField) {
           setStateValue(statesField.value);
           setStateCode(statesField.code);
           setFormData((prev) => ({
@@ -88,7 +128,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     if (open) {
       fetchUserDetail();
     }
-  }, [open]);
+  }, [open, userRole]);
 
   useEffect(() => {
     setFormData({
@@ -144,7 +184,8 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
         formData.value,
         formData.controllingField || stateCode,
         fieldId,
-        districtId
+        //districtId,
+        stateParentId
       );
       setFormData({
         name: "",
@@ -154,7 +195,27 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       onClose();
     }
   };
+  const handleStateChangeWrapper = async (
+    selectedNames: string[],
+    selectedCodes: string[],
+    cohortIdOfState?: string
 
+  ) => {
+    try {
+       // setSelectedNames(selectedNames);
+        setStateCode(selectedCodes[0]);
+        setSelectedState(selectedNames);
+        setFormData((prev) => ({
+          ...prev,
+          controllingField: selectedCodes[0],
+        }));
+        setStateParentId(cohortIdOfState);
+        console.log("cohortIdOfState",cohortIdOfState);
+    }
+     catch (error) {
+      console.log(error);
+    }
+  };
   const isEditing = !!initialValues.name;
   const isEditCode = !!initialValues.value;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
@@ -167,6 +228,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       open={open}
       onClose={(event, reason) => {
         if (reason !== "backdropClick") {
+         
           onClose();
         }
       }}
@@ -174,7 +236,26 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
-        <Select
+
+        {userRole===Role.CENTRAL_ADMIN?(<>
+          <MultipleSelectCheckmarks
+              names={states?.map(
+                (state) =>
+                  state.label?.toLowerCase().charAt(0).toUpperCase() +
+                  state.label?.toLowerCase().slice(1)
+              )}
+              codes={states?.map((state) => state.value)}
+              tagName={t("FACILITATORS.STATE")}
+              selectedCategories={selectedState}
+              onCategoryChange={handleStateChangeWrapper}
+              cohortIds={states?.map((state) => state.cohortId)}
+
+              disabled={isEditCode}
+              // overall={!inModal}
+             width="293px"
+              defaultValue={defaultStates?.label}
+            />
+        </>):(<Select
           value={formData.controllingField || stateCode}
           onChange={(e) => handleChange("controllingField", e.target.value)}
           fullWidth
@@ -187,7 +268,8 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
           <MenuItem key={stateCode} value={stateCode}>
             {stateValue}
           </MenuItem>
-        </Select>
+        </Select>)}
+
         {errors.controllingField && (
           <Typography variant="caption" color="error">
             {errors.controllingField}

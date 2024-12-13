@@ -1,5 +1,5 @@
 import SearchBar from "@/components/layouts/header/SearchBar";
-import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
+import { formatedBlocks, formatedDistricts, formatedStates } from "@/services/formatedCohorts";
 import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";
@@ -308,7 +308,9 @@ const HeaderComponent = ({
       const queryString = fullPath.split("?")[1]; // Get the part after '?'
       console.log(queryString);
       const params = new URLSearchParams(queryString);
-
+      // const result= await formatedStates();
+      // console.log("result", result)
+      // setStates(result)
       // Check if 'block' is present
       const hasBlock = params.has("block");
       const hasDistrict = params.has("district");

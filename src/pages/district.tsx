@@ -21,13 +21,14 @@ import {
   CohortTypes,
   Numbers,
   QueryKeys,
+  Role,
   SORT,
   Status,
   Storage,
   TelemetryEventType,
 } from "@/utils/app.constant";
 import { transformLabel } from "@/utils/Helper";
-import { Pagination, Typography, useMediaQuery } from "@mui/material";
+import { Grid, Pagination, Typography, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -41,6 +42,10 @@ import React, { useEffect, useState } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
+import MultipleSelectCheckmarks from "@/components/FormControl";
+import { set } from "date-fns";
+import { formatedStates } from "@/services/formatedCohorts";
+import MasterData from "@/components/MasterData";
 
 type StateDetail = {
   stateCode: string | undefined;
@@ -60,7 +65,10 @@ type DistrictDetail = {
   label: string;
   controllingField: string;
 };
-
+interface State {
+  value: string;
+  label: string;
+}
 const District: React.FC = () => {
   const { t } = useTranslation();
   const store = useStore();
@@ -83,18 +91,23 @@ const District: React.FC = () => {
   const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [fetchDistrict, setFetchDistrict] = useState(true);
+  const [states, setStates] = useState<State[]>([]);
+  const [defaultStates, setDefaultStates] = useState<any>();
+  const [stateFieldId, setStateFieldId] = useState<string>("6469c3ac-8c46-49d7-852a-00f9589737c5");
 
-  const [paginationCount, setPaginationCount] = useState<number>(Numbers.ZERO);
+   const [paginationCount, setPaginationCount] = useState<number>(Numbers.ZERO);
   const [stateCode, setStateCode] = useState<any>();
   const [stateValue, setStateValue] = useState<string>("");
   useState<string>("");
-  const [stateFieldId, setStateFieldId] = useState<string>("");
   const [pagination, setPagination] = useState(true);
   const [cohotIdForDelete, setCohortIdForDelete] = useState<any>("");
+  const [userRole, setUserRole] = useState("");
 
   const [districtsOptionRead, setDistrictsOptionRead] = useState<any>([]);
   const [districtCodeArr, setDistrictCodeArr] = useState<any>([]);
   const [districtNameArr, setDistrictNameArr] = useState<any>([]);
+  const [selectedState, setSelectedState] = React.useState<string[]>([]);
+
   const [cohortIdForEdit, setCohortIdForEdit] = useState<any>();
   const [districtValueForDelete, setDistrictValueForDelete] = useState<any>("");
   const [countOfBlocks, setCountOfBlocks] = useState<number>(0);
@@ -104,7 +117,15 @@ const District: React.FC = () => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  useEffect(() => {
+    const storedUserData=localStorage.getItem("adminInfo")
+    if(storedUserData){
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
 
+  
   useEffect(() => {
     const fetchUserDetail = async () => {
       let userId: any;
@@ -122,17 +143,33 @@ const District: React.FC = () => {
           (field: { label: string }) => field.label === "STATES"
         );
 
-        if (statesField) {
+      
+        if(userRole===Role.CENTRAL_ADMIN)
+        {
+          const result= await formatedStates();
+           console.log("result", result)
+           setStates(result)
+           setStateCode(result[0]?.value);
+           setDefaultStates(result[0]);
+
+
+        }
+         else if (statesField) {
           setStateValue(statesField.value); // state name
           setStateCode(statesField.code); // state code
-          setStateFieldId(statesField?.fieldId); // field id of state
+          setStateFieldId(statesField?.fieldId);
+          // const object={
+          //   value:statesField.value,
+          //   code:statesField.code,
+          // }
+        //  setStates(object); // field id of state
         }
       } catch (error) {
         console.log(error);
       }
     };
     fetchUserDetail();
-  }, []);
+  }, [userRole]);
 
   const fetchDistricts = async () => {
     try {
@@ -456,6 +493,7 @@ const District: React.FC = () => {
         });
         await fetchDistricts();
       }
+   
       const queryParameters = {
         name: name,
         type: CohortTypes.DISTRICT,
@@ -463,8 +501,8 @@ const District: React.FC = () => {
         parentId: cohortIdofState,
         customFields: [
           {
-            fieldId: stateFieldId,
-            value: [stateCode],
+            fieldId: localStorage.getItem("stateFieldId") ||stateFieldId,
+            value: [controllingField],
           },
         ],
       };
@@ -680,6 +718,19 @@ const District: React.FC = () => {
 
     return transformedData.slice(startIndex, endIndex);
   };
+  const handleStateChangeWrapper = async (
+    selectedNames: string[],
+    selectedCodes: string[]
+  ) => {
+    try {
+       // setSelectedNames(selectedNames);
+        setStateCode(selectedCodes[0]);
+        setSelectedState(selectedNames);
+    }
+     catch (error) {
+      console.log(error);
+    }
+  };
   const PagesSelector = () => (
     <Box sx={{ display: { xs: "block" } }}>
       <Pagination
@@ -705,150 +756,171 @@ const District: React.FC = () => {
   );
 
   return (
-    <>
-      <AddDistrictModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={(name, value, controllingField) => {
-          if (selectedStateForEdit) {
-            handleUpdateCohortSubmit(
-              name,
-              value,
-              controllingField,
-              districtFieldId,
-              selectedStateForEdit?.value
-            );
-          } else {
-            handleCreateCohortSubmit(
-              name,
-              value,
-              controllingField,
-              districtFieldId
-            );
-          }
-        }}
-        fieldId={districtFieldId}
-        initialValues={
-          selectedStateForEdit
-            ? {
-              name: selectedStateForEdit.label,
-              value: selectedStateForEdit.value,
-              controllingField: selectedStateForEdit.stateCode,
-            }
-            : {}
-        }
-      />
-      <ConfirmationModal
-        modalOpen={confirmationDialogOpen}
-        message={
-          countOfBlocks > 0
-            ? t("COMMON.ARE_YOU_SURE_DELETE", {
-              block: `${countOfBlocks}`,
-            })
-            : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
-        }
-        handleAction={handleConfirmDelete}
-        buttonNames={{
-          primary: t("COMMON.DELETE"),
-          secondary: t("COMMON.CANCEL"),
-        }}
-        disableDelete={countOfBlocks > 0}
-        handleCloseModal={() => setConfirmationDialogOpen(false)}
-      />
-      <HeaderComponent
-        userType={t("MASTER.DISTRICTS")}
-        searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_DISTRICT")}
-        showStateDropdown={false}
-        handleSortChange={handleSortChange}
-        showSort={true}
-        selectedSort={selectedSort}
-        shouldFetchDistricts={false}
-        handleSearch={handleSearch}
-        showFilter={false}
-        showAddNew={!!isActiveYear}
-        handleAddUserClick={() => {
-          setModalOpen(true);
-          setSelectedStateForEdit(null);
-          const windowUrl = window.location.pathname;
-          const cleanedUrl = windowUrl.replace(/^\//, '');
-          const env = cleanedUrl.split("/")[0];
+    // <>
+    //   <AddDistrictModal
+    //     open={modalOpen}
+    //     onClose={() => setModalOpen(false)}
+    //     onSubmit={(name, value, controllingField) => {
+    //       if (selectedStateForEdit) {
+    //         handleUpdateCohortSubmit(
+    //           name,
+    //           value,
+    //           controllingField,
+    //           districtFieldId,
+    //           selectedStateForEdit?.value
+    //         );
+    //       } else {
+    //         handleCreateCohortSubmit(
+    //           name,
+    //           value,
+    //           controllingField,
+    //           districtFieldId
+    //         );
+    //       }
+    //     }}
+    //     fieldId={districtFieldId}
+    //     initialValues={
+    //       selectedStateForEdit
+    //         ? {
+    //           name: selectedStateForEdit.label,
+    //           value: selectedStateForEdit.value,
+    //           controllingField: selectedStateForEdit.stateCode,
+    //         }
+    //         : {}
+    //     }
+    //   />
+    //   <ConfirmationModal
+    //     modalOpen={confirmationDialogOpen}
+    //     message={
+    //       countOfBlocks > 0
+    //         ? t("COMMON.ARE_YOU_SURE_DELETE", {
+    //           block: `${countOfBlocks}`,
+    //         })
+    //         : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
+    //     }
+    //     handleAction={handleConfirmDelete}
+    //     buttonNames={{
+    //       primary: t("COMMON.DELETE"),
+    //       secondary: t("COMMON.CANCEL"),
+    //     }}
+    //     disableDelete={countOfBlocks > 0}
+    //     handleCloseModal={() => setConfirmationDialogOpen(false)}
+    //   />
+    //   <HeaderComponent
+    //     userType={t("MASTER.DISTRICTS")}
+    //     searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_DISTRICT")}
+    //     showStateDropdown={false}
+    //     handleSortChange={handleSortChange}
+    //     showSort={true}
+    //     selectedSort={selectedSort}
+    //     shouldFetchDistricts={false}
+    //     handleSearch={handleSearch}
+    //     showFilter={false}
+    //     showAddNew={!!isActiveYear && userRole===Role.CENTRAL_ADMIN}
+    //     handleAddUserClick={() => {
+    //       setModalOpen(true);
+    //       setSelectedStateForEdit(null);
+    //       const windowUrl = window.location.pathname;
+    //       const cleanedUrl = windowUrl.replace(/^\//, '');
+    //       const env = cleanedUrl.split("/")[0];
 
 
-          const telemetryInteract = {
-            context: {
-              env: env,
-              cdata: [],
-            },
-            edata: {
-              id: 'click-on-add-new',
-              type: TelemetryEventType.CLICK,
-              subtype: '',
-              pageid: cleanedUrl,
-            },
-          };
-          telemetryFactory.interact(telemetryInteract);
-        }}
-      >
-        {loading ? (
-          <Box
-            width={"100%"}
-            id="check"
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
-          >
-            <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-          </Box>
-        ) : (
-          <>
-            <Box display="flex" gap={2}>
-              <FormControl
-                variant="outlined"
-                sx={{ minWidth: 220, marginTop: 1, mb: 2, marginLeft: 2 }}
-              >
-                <InputLabel id="state-select-label">{stateValue}</InputLabel>
-                <Select labelId="state-select-label" id="state-select" disabled>
-                  <MenuItem key={stateCode} value={stateCode}>
-                    {transformLabel(stateValue)}
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+    //       const telemetryInteract = {
+    //         context: {
+    //           env: env,
+    //           cdata: [],
+    //         },
+    //         edata: {
+    //           id: 'click-on-add-new',
+    //           type: TelemetryEventType.CLICK,
+    //           subtype: '',
+    //           pageid: cleanedUrl,
+    //         },
+    //       };
+    //       telemetryFactory.interact(telemetryInteract);
+    //     }}
+    //   >
+    //     {loading ? (
+    //       <Box
+    //         width={"100%"}
+    //         id="check"
+    //         display={"flex"}
+    //         flexDirection={"column"}
+    //         alignItems={"center"}
+    //       >
+    //         <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+    //       </Box>
+    //     ) : (
+    //       <>
+    //         <Box display="flex" gap={2}  sx={{  marginTop: 1, mb: 2, marginLeft: 2 }}>
+    //        { userRole===Role.CENTRAL_ADMIN?  (
+    //           <MultipleSelectCheckmarks
+    //           names={states?.map(
+    //             (state) =>
+    //               state.label?.toLowerCase().charAt(0).toUpperCase() +
+    //               state.label?.toLowerCase().slice(1)
+    //           )}
+    //           codes={states?.map((state) => state.value)}
+    //           tagName={t("FACILITATORS.STATE")}
+    //           selectedCategories={selectedState}
+    //           onCategoryChange={handleStateChangeWrapper}
+    //           disabled={stateValue?true:false}
+    //          // overall={!inModal}
+    //          width="200px"
+    //           defaultValue={defaultStates?.label}
+    //         />
+              
+    //           )
+    //         :
+    //          userRole!=="" &&(<FormControl
+    //           variant="outlined"
+    //           sx={{ minWidth: 220}}
+    //         >
+    //           <InputLabel id="state-select-label">{stateValue}</InputLabel>
+    //           <Select labelId="state-select-label" id="state-select" disabled>
+    //             <MenuItem key={stateCode} value={stateCode}>
+    //               {transformLabel(stateValue)}
+    //             </MenuItem>
+    //           </Select>
+    //         </FormControl>)
+    //             }
+    //         </Box>
 
-            {filteredCohortOptionData().length > 0 ? (
-              <KaTableComponent
-                columns={getDistrictTableData(t, isMobile)}
-                data={filteredCohortOptionData()}
-                limit={pageLimit}
-                offset={pageOffset}
-                paginationEnable={paginationCount >= Numbers.FIVE}
-                PagesSelector={PagesSelector}
-                PageSizeSelector={PageSizeSelectorFunction}
-                pageSizes={pageSizeArray}
-                pagination={pagination}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                extraActions={[]}
-                noDataMessage={t("COMMON.DISTRICT_NOT_FOUND")}
-              />
-            ) : (
-              !loading && (
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  height="20vh"
-                >
-                  <Typography marginTop="10px" textAlign="center">
-                    {t("COMMON.DISTRICT_NOT_FOUND")}
-                  </Typography>
-                </Box>
-              )
-            )}
-          </>
-        )}
-      </HeaderComponent>
-    </>
+    //         {filteredCohortOptionData().length > 0 ? (
+    //           <KaTableComponent
+    //             columns={getDistrictTableData(t, isMobile)}
+    //             data={filteredCohortOptionData()}
+    //             limit={pageLimit}
+    //             offset={pageOffset}
+    //             paginationEnable={paginationCount >= Numbers.FIVE}
+    //             PagesSelector={PagesSelector}
+    //             PageSizeSelector={PageSizeSelectorFunction}
+    //             pageSizes={pageSizeArray}
+    //             pagination={pagination}
+    //             onEdit={handleEdit}
+    //             onDelete={handleDelete}
+    //             extraActions={[]}
+    //             noDataMessage={t("COMMON.DISTRICT_NOT_FOUND")}
+    //           />
+    //         ) : (
+    //           !loading && (
+    //             <Box
+    //               display="flex"
+    //               justifyContent="center"
+    //               alignItems="center"
+    //               height="20vh"
+    //             >
+    //               <Typography marginTop="10px" textAlign="center">
+    //                 {t("COMMON.DISTRICT_NOT_FOUND")}
+    //               </Typography>
+    //             </Box>
+    //           )
+    //         )}
+    //       </>
+    //     )}
+    //   </HeaderComponent>
+    // </>
+    <MasterData cohortType={CohortTypes.DISTRICT}/>
   );
 };
 
