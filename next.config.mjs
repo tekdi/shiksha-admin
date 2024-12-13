@@ -96,6 +96,10 @@ const nextConfig = {
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/:path*`, // Forward them to proxy.js
       },
       {
+        source: "/api/content-upload/get-status/:path*", // Match //api/content-upload/get-status/ routes
+        destination: `${process.env.WORKSPACE_BASE_URL}/api/content-upload/get-status/:path*`, // Forward to workspace get-status API
+      },
+      {
         source: "/api/:path*", // Match /api/ routes
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
       },
