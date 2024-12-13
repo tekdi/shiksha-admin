@@ -133,6 +133,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         filters: {
           states: stateCode,
           type: CohortTypes.DISTRICT,
+          status:["active"]
+
         },
       };
 
