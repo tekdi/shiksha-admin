@@ -23,3 +23,5 @@ jobs:
             echo "${{ secrets.QA_ENV }}" > .env
             ls -ltra
             ./deploy.sh
+
+            

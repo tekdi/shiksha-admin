@@ -1344,3 +1344,5 @@ export async function getStaticProps({ locale }: any) {
 }
 
 export default Center;
+
+
