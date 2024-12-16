@@ -689,6 +689,8 @@ const Block: React.FC = () => {
           )
         );
         showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success");
+        filteredCohortOptionData();
+          fetchBlocks();
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, '');
         const env = cleanedUrl.split("/")[0];
