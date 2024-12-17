@@ -80,6 +80,14 @@ const nextConfig = {
         destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`,
       },
       {
+        source: "/action/data/v3/telemetry",
+        destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`,
+      },
+      {
+        source: "/data/v3/telemetry",
+        destination: `${process.env.NEXT_PUBLIC_TELEMETRY_URL}/v1/telemetry`,
+      },
+      {
         source: "/action/content/:path*", // Match other /action/asset routes
         destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/:path*`, // Forward other /action/asset requests to proxy.js
       },
@@ -106,6 +114,10 @@ const nextConfig = {
       {
         source: routes.API.GENERAL.GENERIC_EDITOR,
         destination: `${PORTAL_BASE_URL}/:path*`, // Proxy to generic editor portal
+      },
+      {
+        source: '/sunbird-plugins/renderer/:path*',
+        destination: `${process.env.WORKSPACE_BASE_URL}/sunbird-plugins/renderer/:path*`
       },
       {
         source: "/app/telemetry", // Match telemetry route

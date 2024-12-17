@@ -11,7 +11,7 @@ import youtube from "../assets/images/youtube.svg";
 import bgpdf from "./../assets/images/bgPDF.svg";
 import bgepub from "../assets/images/bgEpub.svg";
 import bghtml from "../assets/images/bgHtml.svg";
-import bgmp4 from "../assets/images/bgMP4 .svg";
+import bgmp4 from "../assets/images/bgMP4.svg";
 import bgqml from "../assets/images/bgQml.svg";
 import bgyoutube from "../assets/images/bgYouTube.svg";
 

@@ -64,7 +64,7 @@ const Menuitems = [
         {
           title: "SIDEBAR.WORKSPACE",
           icon: dashboardIcon,
-          href: ["/workspace/content/create"],
+          href: ["/workspace/content/create", "/course-hierarchy/[identifier]"],
         },
       ]
     : []),

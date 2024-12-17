@@ -195,7 +195,8 @@ console.log("formData",initialValues);
         filters: {
           states: stateCode,
           type: CohortTypes.DISTRICT,
-          status: ["active"],
+          status:["active"]
+
         },
       };
 
