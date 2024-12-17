@@ -193,6 +193,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       setUserRole(userData.role);
     }
   }, []);
+  console.log("setStateCode", stateCode); 
   useEffect(() => {
     const fetchUserDetail = async () => {
       let userId: any;
@@ -358,7 +359,6 @@ console.log("cohortDetails",districtsOptionRead);
     }
   }, [
     isFirstVisit,
-    searchKeyword,
     stateCode,
     districtsOptionRead,
     statusValue
@@ -542,7 +542,7 @@ console.log("cohortDetails",districtsOptionRead);
         .filter((block: { name: string }) =>
           blockNameArr.includes(block.name?.toLowerCase())
         );
-
+        console.log("filteredBlockData", filteredBlockData.length);
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
 
@@ -564,8 +564,7 @@ console.log("cohortDetails",districtsOptionRead);
   }, [
     filters,
     searchKeyword,
-    pageLimit,
-    pageOffset,
+  
     sortBy,
     blocksOptionRead,
     blockNameArr,
@@ -759,7 +758,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       updatedRowData = {
         ...rowData,
         name: rowData.name || "",
-        value: rowData.code || "",
+        value: rowData.value || "",
         stateCode: stateCode,
         cohortId: cohortIdForEDIT,
         selectedState: selectedState || "All",
@@ -1053,9 +1052,12 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     controllingField: string,
     cohortId?: string,
     stateParentId?: string,
+    stateCodeForCreate?: string
    
   ) => {
+    console.log("stateCodeForCreate",stateCodeForCreate);
     console.log("stateParentId",stateParentId);
+
     const fieldId = type === "block" ? blocksFieldId : districtFieldId;
     const toastSuccessMessage =
       type === "block"
@@ -1098,7 +1100,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           customFields: [
             {
               fieldId: stateFieldId, // state fieldId
-              value: [stateCode], // state code
+              value: [stateCodeForCreate], // state code
             },
 
             {
@@ -1331,8 +1333,12 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           name: string,
           value: string,
           controllingField: string,
-          cohortId?: string
+          cohortId?: string,
+          fieldId?: string,
+          districtId?: string,
+          stateCode?: string
         ) => {
+          console.log("stateCode", stateCode);
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               "block",
@@ -1349,7 +1355,8 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
               value,
               controllingField,
               cohortId,
-              blocksFieldId
+              blocksFieldId,
+              stateCode
             );
           }
         }}

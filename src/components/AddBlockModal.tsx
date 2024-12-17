@@ -32,7 +32,9 @@ interface AddBlockModalProps {
     controllingField: string,
     cohortId: string,
     fieldId: string,
-    districtId?: string
+    districtId?: string,
+    stateCode?: string,
+
   ) => void;
   fieldId: string;
   initialValues?: {
@@ -79,6 +81,8 @@ console.log("formData",initialValues);
   const [defaultStates, setDefaultStates] = useState<any>();
   const [userRole, setUserRole] = useState("");
   const [selectedState, setSelectedState] = useState<string>("");
+  const [disabledDistrict, setDisabledDistrict] = useState<boolean>(true);
+
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -174,6 +178,7 @@ console.log("formData",initialValues);
 
       setStateCode(selectedCodes[0]);
       setSelectedState(selectedNames[0]);
+      setDisabledDistrict(false);
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
       });
@@ -341,7 +346,8 @@ console.log("formData",initialValues);
         formData.controllingField,
         currentCohortId,
         fieldId,
-        districtId
+        districtId,
+        stateCode
       );
 
       setFormData({
@@ -349,10 +355,19 @@ console.log("formData",initialValues);
         value: "",
         controllingField: "",
       });
+      setDefaultStates("");
+      setSelectedState("")
+      setDistricts([])
+      setDisabledDistrict(true)
 
       onClose();
     }
   };
+  console.log("formData.controllingField", formData.controllingField);
+  if(formData.controllingField==="")
+  {
+    console.log("trueeee")
+  }
   const isEditing = !!initialValues.name;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
   const dialogTitle = isEditing
@@ -364,6 +379,10 @@ console.log("formData",initialValues);
       open={open}
       onClose={(event, reason) => {
         if (reason !== "backdropClick") {
+          setDefaultStates("")
+          setDistricts([])
+          setDisabledDistrict(true)
+
           onClose();
         }
       }}
@@ -386,44 +405,57 @@ console.log("formData",initialValues);
             disabled={isEditing}
             // overall={!inModal}
             width="290px"
-            defaultValue={defaultStates?.label}
+           // defaultValue={defaultStates?.label}
           />
         )}
         {!(formData.controllingField === "All") && !initialValues.controllingField && (
-          <Select
-            value={initialValues.controllingField
-              ? initialValues.controllingField:formData.controllingField}
-            onChange={(e) =>
-              handleChange("controllingField")(
-                e as React.ChangeEvent<HTMLInputElement>
-              )
-            }
-            sx={{ marginTop: "8px" }}
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  maxHeight: 400,
-                },
-              },
-            }}
-            fullWidth
-          //  displayEmpty
-            variant="outlined"
-            margin="dense"
-         //   disabled={isEditing}
-          >
-            <MenuItem value="">{t("COMMON.SELECT_DISTRICT")}</MenuItem>
-            {districts.length > 0  && !initialValues.controllingField  ? (
-              districts.map((district: any) => (
-                <MenuItem key={district.value} value={district.value}>
-                  {initialValues.controllingField ? initialValues.controllingField :transformLabels(district.label)}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem  value={t("COMMON.NO_DISTRICTS")} disabled>{t("COMMON.NO_DISTRICTS")}</MenuItem> 
-            )}
-          </Select>
-        )}
+  <>
+  <FormControl fullWidth sx={{ marginTop: "8px" }}>
+ {!disabledDistrict && (<InputLabel id="district-label" >District</InputLabel>)} 
+  <Select
+  labelId="district-label"
+    label={!disabledDistrict?"District": null}
+      value={formData.controllingField!=="" && formData.controllingField? formData.controllingField : "district"}
+      onChange={(e) =>
+        handleChange("controllingField")(
+          e as React.ChangeEvent<HTMLInputElement>
+        )
+      }
+       sx={{ marginTop: "8px" }}
+      MenuProps={{
+        PaperProps: {
+          sx: {
+            maxHeight: 400,
+          },
+        },
+      }}
+      fullWidth
+      // variant="outlined"
+      // margin="dense"
+      disabled={disabledDistrict}
+    >
+      {/* Default MenuItem */}
+      {disabledDistrict && (<MenuItem value="district">District</MenuItem>)}
+      
+      {/* District Options */}
+      {districts.length > 0 && !initialValues.controllingField ? (
+        districts.map((district: any) => (
+          <MenuItem key={district.value} value={district.value}>
+            {transformLabels(district.label)}
+          </MenuItem>
+        ))
+      ) : (
+        <MenuItem value="no_districts" disabled>
+          {t("COMMON.NO_DISTRICTS")}
+        </MenuItem>
+      )}
+    </Select>
+    </FormControl>
+
+  
+  </>
+)}
+
           {initialValues.controllingField && !(formData.controllingField === "All") &&( <FormControl fullWidth disabled>
       <InputLabel id="district-label"  sx={{ marginTop: "8px" }}>District</InputLabel>
       <Select
@@ -477,7 +509,15 @@ console.log("formData",initialValues);
       <Divider />
       <DialogActions sx={{ p: 2 }}>
         <Button
-          onClick={onClose}
+          onClick={() => {
+            {
+              setSelectedState("")
+              setDefaultStates("")
+              setDistricts([])
+              setDisabledDistrict(true)
+              onClose();
+            }
+          }}
           sx={{
             border: "none",
             color: "secondary",

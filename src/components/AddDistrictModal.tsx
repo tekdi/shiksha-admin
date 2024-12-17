@@ -59,7 +59,6 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     value: initialValues?.value ?? "",
     controllingField: initialValues?.controllingField ?? "",
   });
-  console.log("initialValues",initialValues);
 
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [stateCode, setStateCode] = useState<string>("");
@@ -252,7 +251,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
               onCategoryChange={handleStateChangeWrapper}
               cohortIds={states?.map((state) => state.cohortId)}
 
-              disabled={isEditCode}
+              disabled={isEditing}
               // overall={!inModal}
              width="293px"
               defaultValue={defaultStates?.label}
@@ -298,7 +297,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
           onChange={(e) => handleChange("value", e.target.value.toUpperCase())}
           error={!!errors.value}
           helperText={errors.value}
-          disabled={isEditCode}
+          disabled={isEditing}
         />
         <Box display="flex" alignItems="center" mt={2}>
           <InfoOutlinedIcon color="primary" sx={{ mr: 1 }} />
