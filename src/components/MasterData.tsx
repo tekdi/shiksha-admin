@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import HeaderComponent from "@/components/HeaderComponent";
 import { Pagination, Typography, useMediaQuery } from "@mui/material";
@@ -345,6 +345,9 @@ console.log("cohortDetails",districtsOptionRead);
         setIsFirstVisit(false);
       }
       setDistrictData(filteredDistrictData);
+      const totalCount = filteredDistrictData.length;
+      setPaginationCount(totalCount);
+      setPageCount(Math.ceil(totalCount / pageLimit));
       console.log("filteredDistrictData", filteredDistrictData);
       setLoading(false);
     } catch (error) {
@@ -353,16 +356,21 @@ console.log("cohortDetails",districtsOptionRead);
       setLoading(false);
     }
   };
+
+  const dependencyArray = useMemo(() => {
+    const baseDeps = [isFirstVisit, stateCode, districtsOptionRead, statusValue];
+    if (CohortTypes.DISTRICT === cohortType) {
+      baseDeps.push(searchKeyword);
+    }
+    return baseDeps;
+  }, [isFirstVisit, searchKeyword, stateCode, districtsOptionRead, statusValue]);
+  
   useEffect(() => {
     if (stateCode) {
       getFilteredCohortData();
     }
-  }, [
-    isFirstVisit,
-    stateCode,
-    districtsOptionRead,
-    statusValue
-  ]);
+  }, dependencyArray);
+
 
   useEffect(() => {
     if (selectedDistrict === "" && districtData?.length !== 0) {
@@ -563,8 +571,9 @@ console.log("cohortDetails",districtsOptionRead);
     }
   }, [
     filters,
-    searchKeyword,
-  
+     searchKeyword,
+    // pageLimit,
+    // pageOffset,
     sortBy,
     blocksOptionRead,
     blockNameArr,
@@ -774,7 +783,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       selectedDistrict: selectedDistrictLabel || "All",
       selectedState: selectedState || "All",
 
-      controllingField: "",
+      controllingField: selectedDistrict,
       block: "",
       label: "",
     };    }
@@ -1366,7 +1375,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
             ? {
                 name: selectedStateForEdit.name,
                 value: selectedStateForEdit.value,
-                controllingField: selectedStateForEdit.selectedDistrict,
+                controllingField: selectedStateForEdit.controllingField,
                controllingFieldLabel: selectedStateForEdit.selectedDistrict,
                stateLabel:selectedStateForEdit.selectedState
               }
