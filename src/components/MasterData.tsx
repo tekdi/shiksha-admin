@@ -57,12 +57,19 @@ type StateDetail = {
   label: string;
   stateCode?: string | undefined;
   status?: Status;
+  selectedState?: string | undefined;
 };
 
 type DistrictDetail = {
   cohortId(cohortId: any): unknown;
   value: string;
   label: string;
+  status: Status;
+  updatedBy: any;
+  createdBy: any;
+ 
+ 
+  controllingField: string;
 };
 
 type BlockDetail = {
@@ -97,6 +104,8 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
   const isActiveYear = store.isActiveYearSelected;
   const [selectedSort, setSelectedSort] = useState<string>("Sort");
   const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedDistrictLabel, setSelectedDistrictLabel] = useState<string>("");
+
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [stateData, setStateData] = useState<StateDetail[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
@@ -109,11 +118,17 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
 
   const [selectedStateForDelete, setSelectedStateForDelete] =
     useState<BlockDetail | null>(null);
+
+  const [selectedDistrictStateForDelete, setSelectedDistrictStateForDelete] =
+  useState<DistrictDetail | null>(null);
   const [confirmationDialogOpen, setConfirmationDialogOpen] =
+    useState<boolean>(false);
+    const [confirmationDistrictDialogOpen, setDistrictConfirmationDialogOpen] =
     useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [districtModalOpen, setDistrictModalOpen] = useState<boolean>(false);
   const [fetchDistrict, setFetchDistrict] = useState(true);
+  const [countOfBlocks, setCountOfBlocks] = useState<number>(0);
 
   const [editState, setEditState] = useState<StateDetail | null>(null);
   const [selectedStateForEdit, setSelectedStateForEdit] =
@@ -154,6 +169,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
   const queryClient = useQueryClient();
   const [states, setStates] = useState<State[]>([]);
   const [defaultStates, setDefaultStates] = useState<any>();
+  const [districtValueForDelete, setDistrictValueForDelete] = useState<any>("");
 
   const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
   const setIsArchived = useSubmittedButtonStore(
@@ -319,9 +335,11 @@ console.log("cohortDetails",districtsOptionRead);
       if (isFirstVisit) {
         if (
           filteredDistrictData.length > 0 &&
-          selectedDistrict !== t("COMMON.ALL")
+          selectedDistrict !== t("COMMON.ALL") 
         ) {
           setSelectedDistrict(filteredDistrictData[0].value);
+          setSelectedDistrictLabel(filteredDistrictData[0].label);
+
         }
         setIsFirstVisit(false);
       }
@@ -341,8 +359,6 @@ console.log("cohortDetails",districtsOptionRead);
   }, [
     isFirstVisit,
     searchKeyword,
-    pageLimit,
-    pageOffset,
     stateCode,
     districtsOptionRead,
     statusValue
@@ -351,14 +367,21 @@ console.log("cohortDetails",districtsOptionRead);
   useEffect(() => {
     if (selectedDistrict === "" && districtData?.length !== 0) {
       setSelectedDistrict(districtData[0]?.value);
-    } else if (districtData?.length !== 0) {
+      setSelectedDistrictLabel(districtData[0]?.label);
+    }
+     else if (districtData?.length !== 0 ) {
+
       setSelectedDistrict(districtData[0]?.value);
+      setSelectedDistrictLabel(districtData[0]?.label);
+
     }
   }, [districtData]);
 
   useEffect(() => {
     if (districtData[0]?.value && isFirstVisit) {
       setSelectedDistrict(districtData[0]?.value);
+      setSelectedDistrictLabel(districtData[0]?.label);
+
       setIsFirstVisit(false);
     }
   }, [districtData]);
@@ -408,7 +431,41 @@ console.log("cohortDetails",districtsOptionRead);
 
     }
   }, [selectedDistrict, statusValue]);
+  const getBlockDataCohort = async () => {
+    try {
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          districts: districtValueForDelete,
+          type: CohortTypes.BLOCK,
+        },
+        sort: sortBy,
+      };
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     reqParams.filters.districts || "",
+      //     CohortTypes.BLOCK,
+      //     reqParams.sort.join(","),
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+      const response = await getCohortList(reqParams)
 
+      const activeBlocks = response?.results?.cohortDetails || [];
+
+      const activeBlocksCount = activeBlocks.filter(
+        (block: { status: string }) => block.status === "active"
+      ).length;
+      setCountOfBlocks(activeBlocksCount);
+    } catch (error) {
+      console.error("Error fetching and filtering cohort districts", error);
+      setLoading(false);
+    }
+  };
   const getCohortSearchBlock = async (selectedDistrict: string) => {
     try {
       setLoading(true);
@@ -622,6 +679,8 @@ console.log("cohortDetails",districtsOptionRead);
     const selectedDistrictData = districtData.find(
       (district) => district.value === selectedDistrict
     );
+// console.log("selectedDistrictData",selectedDistrictData)
+setSelectedDistrictLabel(selectedDistrictData?.label||"");
 
     const cohortId = selectedDistrictData?.cohortId as any | null;
 
@@ -699,16 +758,23 @@ console.log("cohortDetails",districtsOptionRead);
     if(cohortType === CohortTypes.DISTRICT){
       updatedRowData = {
         ...rowData,
+        name: rowData.name || "",
+        value: rowData.code || "",
         stateCode: stateCode,
         cohortId: cohortIdForEDIT,
+        selectedState: selectedState || "All",
       };
     }
     else
     {
       updatedRowData = {
+        ...rowData,
+
       name: rowData.name || "",
       value: rowData.code || "",
-      selectedDistrict: selectedDistrict || "All",
+      selectedDistrict: selectedDistrictLabel || "All",
+      selectedState: selectedState || "All",
+
       controllingField: "",
       block: "",
       label: "",
@@ -716,6 +782,11 @@ console.log("cohortDetails",districtsOptionRead);
     
     setSelectedStateForEdit(updatedRowData);
   };
+  useEffect(() => {
+    if (districtValueForDelete) {
+      getBlockDataCohort();
+    }
+  }, [districtValueForDelete]);
   const handleDelete = (rowData: BlockDetail) => {
     setSelectedStateForDelete(rowData);
     setCohortIdForDelete(rowData.cohortId);
@@ -724,6 +795,13 @@ console.log("cohortDetails",districtsOptionRead);
     setParentIdBlock(rowData.code as any | null);
     const blockValue = rowData.value;
     setBlockValueForDelete(blockValue);
+  };
+  const handleDeleteDistrict = (rowData: DistrictDetail) => {
+    setSelectedDistrictStateForDelete(rowData);
+    const districtValue = rowData.value;
+    setDistrictValueForDelete(districtValue);
+    setCohortIdForDelete(rowData.cohortId);
+    setDistrictConfirmationDialogOpen(true);
   };
 
   const handleSearch = (keyword: string) => {
@@ -811,36 +889,40 @@ console.log("cohortDetails",districtsOptionRead);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedStateForDelete) {
+     {
       try {
+        if (selectedStateForDelete) {
         await deleteOption("blocks", selectedStateForDelete.value);
         setStateData((prevStateData) =>
           prevStateData.filter(
             (state) => state.value !== selectedStateForDelete.value
           )
         );
-        cohortType === CohortTypes.BLOCK? showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success"):
-        
-        showToastMessage(t("COMMON.DISTRICT_DELETED_SUCCESS"), "success");
         
 
         if (cohortType === CohortTypes.BLOCK) {
+          showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success")
           filteredCohortOptionData();
           fetchBlocks();
         }
-        // queryClient.invalidateQueries({
-        //   queryKey: [
-        //     QueryKeys.FIELD_OPTION_READ,
-        //     stateCode,
-        //     type === "block" ? "blocks" : "districts",
-        //   ],
-        // });
-        else if(cohortType === CohortTypes.DISTRICT) {
+      }
+      else if(selectedDistrictStateForDelete)
+      {await deleteOption("districts", selectedDistrictStateForDelete.value);
+      setDistrictData((prev) =>
+        prev.filter(
+          (district) => district.value !== selectedDistrictStateForDelete.value
+        )
+      );
+         if(cohortType === CohortTypes.DISTRICT) {
+          showToastMessage(t("COMMON.DISTRICT_DELETED_SUCCESS"), "success")
           queryClient.invalidateQueries({
             queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
           });
           fetchDistricts();
         }
+      }
+        
+        
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
@@ -860,7 +942,7 @@ console.log("cohortDetails",districtsOptionRead);
         telemetryFactory.interact(telemetryInteract);
       } catch (error) {
         console.error("Error deleting state", error);
-        showToastMessage(t("COMMON.BLOCK_DELETED_FAILURE"), "error");
+        showToastMessage(t("Unable to delete"), "error");
       }
     }
     //delete cohort
@@ -1275,9 +1357,11 @@ console.log("cohortDetails",districtsOptionRead);
         initialValues={
           selectedStateForEdit
             ? {
-                controllingField: selectedStateForEdit.selectedDistrict,
                 name: selectedStateForEdit.name,
                 value: selectedStateForEdit.value,
+                controllingField: selectedStateForEdit.selectedDistrict,
+               controllingFieldLabel: selectedStateForEdit.selectedDistrict,
+               stateLabel:selectedStateForEdit.selectedState
               }
             : {}
         }
@@ -1316,6 +1400,7 @@ console.log("cohortDetails",districtsOptionRead);
                 name: selectedStateForEdit.label,
                 value: selectedStateForEdit.value,
                 controllingField: selectedStateForEdit.stateCode,
+                controllingFieldLabel: selectedStateForEdit.selectedState,
               }
             : {}
         }
@@ -1337,6 +1422,26 @@ console.log("cohortDetails",districtsOptionRead);
         disableDelete={countOfCenter > 0}
         handleCloseModal={() => setConfirmationDialogOpen(false)}
       />
+   <ConfirmationModal
+        modalOpen={confirmationDistrictDialogOpen}
+        message={
+          countOfBlocks > 0
+            ? t("COMMON.ARE_YOU_SURE_DELETE", {
+              block: `${countOfBlocks}`,
+            })
+            : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
+        }
+        handleAction={handleConfirmDelete}
+        buttonNames={{
+          primary: t("COMMON.DELETE"),
+          secondary: t("COMMON.CANCEL"),
+        }}
+        disableDelete={countOfBlocks > 0}
+        handleCloseModal={() => setDistrictConfirmationDialogOpen(false)}
+      />
+
+
+
 
       <HeaderComponent
         {...(cohortType === CohortTypes.BLOCK
@@ -1504,7 +1609,7 @@ console.log("cohortDetails",districtsOptionRead);
                       pageSizes={pageSizeArray}
                       pagination={pagination}
                       onEdit={handleEdit}
-                      onDelete={handleDelete}
+                      onDelete={handleDeleteDistrict}
                       extraActions={[]}
                       // noDataMessage={t("COMMON.DISTRICT_NOT_FOUND")}
                     />
@@ -1525,6 +1630,7 @@ console.log("cohortDetails",districtsOptionRead);
                 </Box>
               ) : null}
             </Box>
+            
           </>
         )}
       </HeaderComponent>

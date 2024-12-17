@@ -31,6 +31,7 @@ import Loader from "@/components/Loader";
 import { telemetryFactory } from "@/utils/telemetry";
 import { AddStateModal } from "@/components/AddStateModal";
 import useStore from "@/store/store";
+import ConfirmationModal from "@/components/ConfirmationModal";
 export interface StateDetail {
   updatedAt: any;
   createdAt: any;
@@ -45,8 +46,7 @@ const State: React.FC = () => {
   const { t } = useTranslation();
   const [stateData, setStateData] = useState<StateDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [confirmationDialogOpen, setConfirmationDialogOpen] =
-    useState<boolean>(false);
+ 
   const [addStateModalOpen, setAddStateModalOpen] = useState<boolean>(false);
   const [selectedStateForDelete, setSelectedStateForDelete] =
     useState<StateDetail | null>(null);
@@ -71,7 +71,11 @@ const State: React.FC = () => {
   const isActiveYear = store.isActiveYearSelected;
   const [userRole, setUserRole] = useState("");
   const [cohortIdForEdit, setCohortIdForEdit] = useState<any>();
+  const [stateValueForDelete, setStateValueForDelete] = useState<any>("");
 
+  const [countOfDistricts, setCountOfDistricts] = useState<number>(0);
+  const [confirmationDialogOpen, setConfirmationDialogOpen] =
+    useState<boolean>(false);
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -224,6 +228,8 @@ const State: React.FC = () => {
   const handleDelete = (rowData: StateDetail) => {
     setSelectedStateForDelete(rowData);
     setConfirmationDialogOpen(true);
+    console.log("Delete row:", rowData.value);
+    setStateValueForDelete(rowData.value);
   };
   const handleSortChange = async (event: SelectChangeEvent) => {
     const sortOrder =
@@ -246,6 +252,42 @@ const State: React.FC = () => {
         showToastMessage(t("COMMON.STATE_DELETED_FAILURE"), "error");
       }
       setConfirmationDialogOpen(false);
+    }
+  };
+  const getDistrictDataCohort = async () => {
+    try {
+      console.log("hellooo")
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          states: stateValueForDelete,
+          type: CohortTypes.DISTRICT,
+        },
+        sort: sortBy,
+      };
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     reqParams.filters.districts || "",
+      //     CohortTypes.BLOCK,
+      //     reqParams.sort.join(","),
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+      const response = await getCohortList(reqParams)
+
+      const activeDistricts = response?.results?.cohortDetails || [];
+
+      const activeDistrictsCount = activeDistricts.filter(
+        (block: { status: string }) => block.status === "active"
+      ).length;
+      setCountOfDistricts(activeDistrictsCount);
+    } catch (error) {
+      console.error("Error fetching and filtering cohort districts", error);
+      setLoading(false);
     }
   };
   const handleSearch = (keyword: string) => {
@@ -461,6 +503,11 @@ const State: React.FC = () => {
       />
     </Box>
   );
+  useEffect(() => {
+    if (stateValueForDelete) {
+      getDistrictDataCohort();
+    }
+  }, [stateValueForDelete]);
   return (
     <>
      <HeaderComponent
@@ -475,6 +522,7 @@ const State: React.FC = () => {
       showFilter={false}
       handleSearch={handleSearch}
       handleAddUserClick={handleAddStateClick}
+      handleDelete={handleDelete}
     >
       {loading ? (
         <Box
@@ -500,6 +548,7 @@ const State: React.FC = () => {
               pageSizes={pageSizeArray}
               onEdit={handleEdit}
               extraActions={[]}
+              onDelete={handleDelete}
             />
           ) : (
             !loading && (
@@ -546,6 +595,23 @@ const State: React.FC = () => {
               }
             : {}
         }
+      />
+       <ConfirmationModal
+        modalOpen={confirmationDialogOpen}
+        message={
+          countOfDistricts > 0
+            ? t("COMMON.ARE_YOU_SURE_DELETE_STATE", {
+              district: `${countOfDistricts}`,
+            })
+            : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
+        }
+        handleAction={handleConfirmDelete}
+        buttonNames={{
+          primary: t("COMMON.DELETE"),
+          secondary: t("COMMON.CANCEL"),
+        }}
+        disableDelete={countOfDistricts > 0}
+        handleCloseModal={() => setConfirmationDialogOpen(false)}
       />
     </>
    

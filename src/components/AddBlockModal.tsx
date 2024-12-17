@@ -11,6 +11,8 @@ import {
   Select,
   MenuItem,
   Divider,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "next-i18next";
@@ -37,6 +39,9 @@ interface AddBlockModalProps {
     name?: string;
     value?: string;
     controllingField?: string;
+    controllingFieldLabel?: string;
+    stateLabel?:string
+
   };
   districtId?: string;
 }
@@ -158,7 +163,7 @@ console.log("formData",initialValues);
   };
 
   useEffect(() => {
-    if (open && stateCode !== "" && stateCode) fetchDistricts();
+    if (stateCode !== "" && stateCode) fetchDistricts();
   }, [open, formData.controllingField, stateCode]);
   const handleStateChangeWrapper = async (
     selectedNames: string[],
@@ -244,7 +249,7 @@ console.log("formData",initialValues);
     }
   };
   useEffect(() => {
-    if (open && stateCode !== "" && stateCode) getFilteredCohortData();
+    if ( stateCode !== "" && stateCode) getFilteredCohortData();
   }, [open, districtNameArr, stateCode]);
 
   function transformLabels(label: string) {
@@ -375,7 +380,7 @@ console.log("formData",initialValues);
             )}
             codes={states?.map((state) => state.value)}
             tagName={t("FACILITATORS.STATE")}
-            selectedCategories={[selectedState]}
+            selectedCategories={initialValues.stateLabel ? [initialValues.stateLabel] : [selectedState]}
             onCategoryChange={handleStateChangeWrapper}
             cohortIds={states?.map((state) => state.cohortId)}
             disabled={isEditing}
@@ -384,9 +389,10 @@ console.log("formData",initialValues);
             defaultValue={defaultStates?.label}
           />
         )}
-        {!(formData.controllingField === "All") && (
+        {!(formData.controllingField === "All") && !initialValues.controllingField && (
           <Select
-            value={formData.controllingField}
+            value={initialValues.controllingField
+              ? initialValues.controllingField:formData.controllingField}
             onChange={(e) =>
               handleChange("controllingField")(
                 e as React.ChangeEvent<HTMLInputElement>
@@ -401,23 +407,38 @@ console.log("formData",initialValues);
               },
             }}
             fullWidth
-            displayEmpty
+          //  displayEmpty
             variant="outlined"
             margin="dense"
-            disabled={isEditing}
+         //   disabled={isEditing}
           >
             <MenuItem value="">{t("COMMON.SELECT_DISTRICT")}</MenuItem>
-            {districts.length > 0 ? (
+            {districts.length > 0  && !initialValues.controllingField  ? (
               districts.map((district: any) => (
                 <MenuItem key={district.value} value={district.value}>
-                  {transformLabels(district.label)}
+                  {initialValues.controllingField ? initialValues.controllingField :transformLabels(district.label)}
                 </MenuItem>
               ))
             ) : (
-              <MenuItem disabled>{t("COMMON.NO_DISTRICTS")}</MenuItem>
+              <MenuItem  value={t("COMMON.NO_DISTRICTS")} disabled>{t("COMMON.NO_DISTRICTS")}</MenuItem> 
             )}
           </Select>
         )}
+          {initialValues.controllingField && !(formData.controllingField === "All") &&( <FormControl fullWidth disabled>
+      <InputLabel id="district-label"  sx={{ marginTop: "8px" }}>District</InputLabel>
+      <Select
+        labelId="district-label"
+        id="disabled-select"
+        value={initialValues.controllingFieldLabel}
+        label="District"
+        fullWidth            sx={{ marginTop: "8px" }}
+        // variant="outlined"
+        //     margin="dense"
+
+      >
+        <MenuItem value={initialValues.controllingFieldLabel}>{initialValues.controllingFieldLabel}</MenuItem>
+      </Select>
+    </FormControl>)}
         {errors.controllingField && (
           <Typography variant="caption" color="error">
             {errors.controllingField}

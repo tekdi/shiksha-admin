@@ -36,6 +36,7 @@ interface AddDistrictBlockModalProps {
     name?: string;
     value?: string;
     controllingField?: string;
+    controllingFieldLabel?: string;
   };
   districtId?: string;
 }
@@ -58,6 +59,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     value: initialValues?.value ?? "",
     controllingField: initialValues?.controllingField ?? "",
   });
+  console.log("initialValues",initialValues);
 
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [stateCode, setStateCode] = useState<string>("");
@@ -246,7 +248,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
               )}
               codes={states?.map((state) => state.value)}
               tagName={t("FACILITATORS.STATE")}
-              selectedCategories={selectedState}
+              selectedCategories={initialValues.controllingFieldLabel ? [initialValues.controllingFieldLabel] : selectedState}
               onCategoryChange={handleStateChangeWrapper}
               cohortIds={states?.map((state) => state.cohortId)}
 

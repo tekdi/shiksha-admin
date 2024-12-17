@@ -30,6 +30,8 @@
     "BACK": "Back",
     "CANCEL": "Cancel",
     "ARE_YOU_SURE_DELETE": "There are {{block}} active blocks in this district you cannot delete it.",
+    "ARE_YOU_SURE_DELETE_STATE": "There are {{district}} active districts in this state you cannot delete it.",
+
     "NO_ACTIVE_BLOCKS_DELETE": "There are no active blocks in this district. Do you want to delete it?",
     "ARE_YOU_SURE_DELETE_BLOCK": "There are {{centerCount}} active centers in this block you cannot delete it",
     "NO_ACTIVE_CENTERS_DELETE": "There are no active centers in this block. Do you want to delete it?",
