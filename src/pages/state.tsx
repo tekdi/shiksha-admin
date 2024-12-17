@@ -40,13 +40,15 @@ export interface StateDetail {
   label: string | undefined;
   name: string;
   value: string;
+  cohortId?: string;
 }
 
 const State: React.FC = () => {
   const { t } = useTranslation();
   const [stateData, setStateData] = useState<StateDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
- 
+  const [cohortIdForDelete, setCohortIdForDelete] = useState<any>("");
+
   const [addStateModalOpen, setAddStateModalOpen] = useState<boolean>(false);
   const [selectedStateForDelete, setSelectedStateForDelete] =
     useState<StateDetail | null>(null);
@@ -227,6 +229,7 @@ const State: React.FC = () => {
   };
   const handleDelete = (rowData: StateDetail) => {
     setSelectedStateForDelete(rowData);
+    setCohortIdForDelete(rowData?.cohortId);
     setConfirmationDialogOpen(true);
     console.log("Delete row:", rowData.value);
     setStateValueForDelete(rowData.value);
@@ -246,6 +249,27 @@ const State: React.FC = () => {
             (state) => state.value !== selectedStateForDelete.value
           )
         );
+        if (cohortIdForDelete) {
+          let cohortDetails = {
+            status: Status.ARCHIVED,
+          };
+          const resp = await updateCohort(cohortIdForDelete, cohortDetails);
+          if (resp?.responseCode === 200) {
+            const cohort = filteredCohortOptionData()?.find(
+              (item: any) => item.cohortId == cohortIdForDelete
+            );
+          //   if (cohort) {
+          //     cohort?.status = Status.ARCHIVED;
+          //   }
+          // } else {
+          //   console.log("Cohort Not Archived");
+          // }
+            }
+          setCohortIdForDelete("");
+        } else {
+          console.log("No Cohort Selected");
+          setCohortIdForDelete("");
+        }
         showToastMessage(t("COMMON.STATE_DELETED_SUCCESS"), "success");
       } catch (error) {
         console.error("Error deleting state", error);
@@ -256,7 +280,6 @@ const State: React.FC = () => {
   };
   const getDistrictDataCohort = async () => {
     try {
-      console.log("hellooo")
       const reqParams = {
         limit: 0,
         offset: 0,
@@ -574,14 +597,14 @@ const State: React.FC = () => {
         onSubmit={(name, value, controllingField) => {
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
-              name,
+              name?.toLowerCase(),
               value,
               // districtFieldId,
               // selectedStateForEdit?.value
             );
           } else {
             handleAddStateSubmit(
-              name,
+              name?.toLowerCase(),
               value,
             );
           }

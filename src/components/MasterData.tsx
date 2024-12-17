@@ -360,10 +360,10 @@ console.log("cohortDetails",districtsOptionRead);
   const dependencyArray = useMemo(() => {
     const baseDeps = [isFirstVisit, stateCode, districtsOptionRead, statusValue];
     if (CohortTypes.DISTRICT === cohortType) {
-      baseDeps.push(searchKeyword);
+      baseDeps.push(searchKeyword, sortBy);
     }
     return baseDeps;
-  }, [isFirstVisit, searchKeyword, stateCode, districtsOptionRead, statusValue]);
+  }, [isFirstVisit, searchKeyword, stateCode, districtsOptionRead, statusValue,sortBy]);
   
   useEffect(() => {
     if (stateCode) {
@@ -566,7 +566,10 @@ console.log("cohortDetails",districtsOptionRead);
   };
 
   useEffect(() => {
-    if (selectedDistrict && cohortType === cohortType.BLOCK) {
+
+    if (selectedDistrict && CohortTypes.BLOCK === cohortType) {
+
+
       getCohortSearchBlock(selectedDistrict);
     }
   }, [
@@ -1351,7 +1354,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               "block",
-              name,
+              name?.toLowerCase(),
               value,
               controllingField
               // blocksFieldId,
@@ -1360,7 +1363,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           } else {
             handleCreateCohortSubmit(
               "block",
-              name,
+              name?.toLowerCase(),
               value,
               controllingField,
               cohortId,
@@ -1390,7 +1393,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               "district",
-              name,
+              name?.toLowerCase(),
               value,
               controllingField,
               
@@ -1401,7 +1404,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           } else {
             handleCreateCohortSubmit(
               "district",
-              name,
+              name?.toLowerCase(),
               value,
               controllingField,
               cohortId,
@@ -1639,7 +1642,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
                   height="20vh"
                 >
                   <Typography marginTop="10px" textAlign="center">
-                    {cohortType.BLOCK
+                    {cohortType=== CohortTypes.BLOCK
                       ? t("COMMON.BLOCKS_NOT_FOUND")
                       : t("COMMON.DISTRICT_NOT_FOUND")}
                   </Typography>
