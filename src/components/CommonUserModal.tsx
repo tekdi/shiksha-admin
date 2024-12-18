@@ -26,7 +26,14 @@ import {
 } from "@/utils/app.constant";
 import { useLocationState } from "@/utils/useLocationState";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import { Box, Button, Checkbox, FormControlLabel, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +46,7 @@ import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
 import { cohortMemberList } from "@/services/UserList";
 import CustomModal from "./CustomModal";
-import { setConfig } from "next/config"; 
+import { setConfig } from "next/config";
 import { telemetryFactory } from "@/utils/telemetry";
 import useNotification from "@/hooks/useNotification";
 
@@ -51,10 +58,8 @@ interface UserModalProps {
   userId?: string;
   onSubmit: (submitValue: boolean) => void;
   userType: string;
- userName?:string;
+  userName?: string;
 }
-
-
 
 const CommonUserModal: React.FC<UserModalProps> = ({
   open,
@@ -64,7 +69,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   userId,
   onSubmit,
   userType,
-  userName
+  userName,
 }) => {
   console.log(userName);
   const [schema, setSchema] = React.useState<any>();
@@ -73,8 +78,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const [adminInfo, setAdminInfo] = React.useState<any>();
   const [createTLAlertModal, setcreateTLAlertModal] = useState(false);
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
-  const [checkedConfirmation, setCheckedConfirmation] = useState<boolean>(false);
-  
+  const [checkedConfirmation, setCheckedConfirmation] =
+    useState<boolean>(false);
+
   const messageKeyMap: Record<string, string> = {
     [FormContextType.STUDENT]: "LEARNERS.LEARNER_CREATED_SUCCESSFULLY",
     [FormContextType.TEACHER]: "FACILITATORS.FACILITATOR_CREATED_SUCCESSFULLY",
@@ -136,7 +142,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEAM_LEADER),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
-  const {  i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const {
     data: contentCreatorFormData,
@@ -144,7 +150,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     error: contentCreatorFormDataError,
   } = useQuery<any>({
     queryKey: ["contentCreatorFormData"],
-    queryFn: () => getFormRead(FormContext.USERS, FormContextType.CONTENT_CREATOR),
+    queryFn: () =>
+      getFormRead(FormContext.USERS, FormContextType.CONTENT_CREATOR),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
   // const { data:adminFormData ,isLoading: adminFormDataLoading, error :adminFormDataErrror} = useQuery<FormData>({
@@ -160,12 +167,16 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       ? t("LEARNERS.NEW_LEARNER")
       : userType === FormContextType.TEACHER
         ? t("FACILITATORS.NEW_FACILITATOR")
-        :userType === FormContextType.CONTENT_CREATOR?t("CONTENT_CREATOR_REVIEWER.CREATE_CONTENT_CREATOR") :t("TEAM_LEADERS.NEW_TEAM_LEADER")
+        : userType === FormContextType.CONTENT_CREATOR
+          ? t("CONTENT_CREATOR_REVIEWER.CREATE_CONTENT_CREATOR")
+          : t("TEAM_LEADERS.NEW_TEAM_LEADER")
     : userType === FormContextType.STUDENT
       ? t("LEARNERS.EDIT_LEARNER")
       : userType === FormContextType.TEACHER
         ? t("FACILITATORS.EDIT_FACILITATOR")
-        :userType === FormContextType.CONTENT_CREATOR?t("CONTENT_CREATOR_REVIEWER.EDIT_CONTENT_REVIEWER"): t("TEAM_LEADERS.EDIT_TEAM_LEADER");
+        : userType === FormContextType.CONTENT_CREATOR
+          ? t("CONTENT_CREATOR_REVIEWER.EDIT_CONTENT_REVIEWER")
+          : t("TEAM_LEADERS.EDIT_TEAM_LEADER");
   const theme = useTheme<any>();
   const {
     states,
@@ -195,9 +206,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     stateDefaultValue,
     assignedTeamLeader,
     assignedTeamLeaderNames,
-    selectedStateCohortId
+    selectedStateCohortId,
   } = useLocationState(open, onClose, roleType);
-  console.log(assignedTeamLeaderNames)
+  console.log(assignedTeamLeaderNames);
 
   useEffect(() => {
     const getAddUserFormData = () => {
@@ -211,15 +222,17 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         //   userType
         // );
         // console.log("sortedFields", response);
-console.log("userType",userType, FormContextType.CONTENT_CREATOR)
+        console.log("userType", userType, FormContextType.CONTENT_CREATOR);
         const response: FormData =
           userType === FormContextType.TEACHER
             ? teacherFormData
             : userType === FormContextType.STUDENT
               ? studentFormData
-              :userType === FormContextType.CONTENT_CREATOR?contentCreatorFormData: teamLeaderFormData;
+              : userType === FormContextType.CONTENT_CREATOR
+                ? contentCreatorFormData
+                : teamLeaderFormData;
         //    console.log(studentFormData)
-        console.log("object",response);
+        console.log("object", response);
 
         if (response) {
           if (userType === FormContextType.TEACHER) {
@@ -257,8 +270,15 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
       }
     };
     getAddUserFormData();
-  }, [userType, teacherFormData, studentFormData, teamLeaderFormData, contentCreatorFormData, i18n.language]);
- const { getNotification } = useNotification();
+  }, [
+    userType,
+    teacherFormData,
+    studentFormData,
+    teamLeaderFormData,
+    contentCreatorFormData,
+    i18n.language,
+  ]);
+  const { getNotification } = useNotification();
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
@@ -289,7 +309,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
       const { username, password } = result;
 
       let apiBody: any = {
-        username: username,
+        username: formData.email,
         password: password,
         tenantCohortRoleMapping: [
           {
@@ -299,11 +319,15 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 ? RoleId.STUDENT
                 : userType === FormContextType.TEACHER
                   ? RoleId.TEACHER
-                  :userType === FormContextType.CONTENT_CREATOR?RoleId.SCTA: RoleId.TEAM_LEADER,
+                  : userType === FormContextType.CONTENT_CREATOR
+                    ? RoleId.SCTA
+                    : RoleId.TEAM_LEADER,
             cohortIds:
               userType === FormContextType.TEAM_LEADER
                 ? [selectedBlockCohortId]
-                :userType === FormContextType.CONTENT_CREATOR? selectedStateCohortId: [selectedCenterCode],
+                : userType === FormContextType.CONTENT_CREATOR
+                  ? selectedStateCohortId
+                  : [selectedCenterCode],
           },
         ],
         customFields: [],
@@ -349,13 +373,12 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
           }
         }
       });
-      if(userType === FormContextType.CONTENT_CREATOR && !isEditModal){
+      if (userType === FormContextType.CONTENT_CREATOR && !isEditModal) {
         apiBody.customFields.push({
           fieldId: stateFieldId,
           value: [selectedStateCode],
         });
-      }
-      else if (!isEditModal) {
+      } else if (!isEditModal) {
         apiBody.customFields.push({
           fieldId: blockFieldId,
           value: [selectedBlockCode],
@@ -378,7 +401,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
             mobile: apiBody?.mobile,
             father_name: apiBody?.father_name,
             email: apiBody?.email,
-            updatedBy:localStorage.getItem("userId")
+            updatedBy: localStorage.getItem("userId"),
           };
           const customFields = apiBody?.customFields;
           console.log(customFields);
@@ -395,40 +418,45 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 : "TEAM_LEADERS.TEAM_LEADER_UPDATED_SUCCESSFULLY";
 
           showToastMessage(t(messageKey), "success");
-          if( userType === FormContextType.TEAM_LEADER){
+          if (userType === FormContextType.TEAM_LEADER) {
             getNotification(userId, "TL_PROFILE_UPDATE");
           }
-           if( userType === FormContextType.TEACHER){
+          if (userType === FormContextType.TEACHER) {
             getNotification(userId, "FACILITATOR_PROFILE_UPDATE");
           }
-           if( userType === FormContextType.STUDENT){
-               const replacements = {
-                "{learnerName}":userName
-               }
-            getNotification(userId, "LEARNER_PROFILE_UPDATE_ALERT", replacements);
-            getNotification(userId, "LEARNER_PROFILE_UPDATE_BY_ADMIN_TL_FC", replacements);
+          if (userType === FormContextType.STUDENT) {
+            const replacements = {
+              "{learnerName}": userName,
+            };
+            getNotification(
+              userId,
+              "LEARNER_PROFILE_UPDATE_ALERT",
+              replacements
+            );
+            getNotification(
+              userId,
+              "LEARNER_PROFILE_UPDATE_BY_ADMIN_TL_FC",
+              replacements
+            );
           }
 
-
           const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
-    const env = cleanedUrl.split("/")[0];
+          const cleanedUrl = windowUrl.replace(/^\//, "");
+          const env = cleanedUrl.split("/")[0];
 
-
-    const telemetryInteract = {
-      context: {
-        env: env,
-        cdata: [],
-      },
-      edata: {
-        id: userType+'updated-successfully',
-        type: TelemetryEventType.CLICK,
-        subtype: '',
-        pageid: cleanedUrl,
-      },
-    };
-    telemetryFactory.interact(telemetryInteract);
-
+          const telemetryInteract = {
+            context: {
+              env: env,
+              cdata: [],
+            },
+            edata: {
+              id: userType + "updated-successfully",
+              type: TelemetryEventType.CLICK,
+              subtype: "",
+              pageid: cleanedUrl,
+            },
+          };
+          telemetryFactory.interact(telemetryInteract);
         } else {
           const response = await createUser(apiBody);
           console.log(response);
@@ -439,26 +467,24 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
               showToastMessage(t(messageKey), "success");
 
               const windowUrl = window.location.pathname;
-              const cleanedUrl = windowUrl.replace(/^\//, '');
+              const cleanedUrl = windowUrl.replace(/^\//, "");
               const env = cleanedUrl.split("/")[0];
-          
-          
+
               const telemetryInteract = {
                 context: {
                   env: env,
                   cdata: [],
                 },
                 edata: {
-                  id: userType+'created-successfully',
+                  id: userType + "created-successfully",
                   type: TelemetryEventType.CLICK,
-                  subtype: '',
+                  subtype: "",
                   pageid: cleanedUrl,
                 },
               };
               telemetryFactory.interact(telemetryInteract);
-          
             }
-          
+
             if (!isEditModal) {
               const isQueue = false;
               const context = "USER";
@@ -469,7 +495,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                   : userType === FormContextType.TEACHER
                     ? "onFacilitatorCreated"
                     : "onTeamLeaderCreated";
-    
+
               if (typeof window !== "undefined" && window.localStorage) {
                 creatorName = localStorage.getItem("name");
               }
@@ -487,7 +513,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 } else {
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(apiBody["name"]),
-                    "{UserName}": username,
+                    "{UserName}": formData?.email,
                     "{Password}": password,
                   };
                 }
@@ -509,14 +535,14 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 });
                 if (userType !== FormContextType.STUDENT) {
                   const messageKey = messageKeyMap[userType];
-    
+
                   if (response?.result[0]?.data[0]?.status === "success") {
                     showToastMessage(t(messageKey), "success");
                   } else {
                     const messageKey =
                       delayCredentialsMessageMap[userType] ||
                       "TEAM_LEADERS.USER_CREDENTIALS_WILL_BE_SEND_SOON";
-    
+
                     showToastMessage(t(messageKey), "success");
                   }
                 }
@@ -537,7 +563,6 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
               }
             }
-          
           } else {
             showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
           }
@@ -545,11 +570,14 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
         onSubmit(true);
         onClose();
         onCloseModal();
-
-       
-      } catch (error) {
-        onClose();
+      } catch (error: any) {
+        // onClose();
         console.log(error);
+        if (error?.response?.data?.params?.err === "User already exist.") {
+          showToastMessage(error?.response?.data?.params?.err, "error");
+        } else {
+          showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+        }
       }
     }
   };
@@ -564,7 +592,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
     setCreateFacilitator(false);
     setOpenModal(false);
   };
- 
+
   const handleAction = () => {
     setTimeout(() => {
       setCreateFacilitator(true);
@@ -592,38 +620,31 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
     }
   }, [dynamicForm, dynamicFormForBlock, open]);
 
-
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCheckedConfirmation(event.target.checked);
-
   };
 
   const wrappedHandleContinueAction = () => {
     handleCloseConfirmation();
-     setOpenModal(true);
-     //onClose();
-
-  
-
-}
+    setOpenModal(true);
+    //onClose();
+  };
 
   const handleCancelAction = async () => {
     // await handleDeleteAction();
     handleCloseConfirmation();
-//setAssignedTeamLeaderNames([]);
-   };
-  const handleCloseConfirmation=  () => {
+    //setAssignedTeamLeaderNames([]);
+  };
+  const handleCloseConfirmation = () => {
     // await handleDeleteAction();
-   // handleCloseConfirmation();
-   setcreateTLAlertModal(false);
-   setCheckedConfirmation(false);
-   setConfirmButtonDisable(true);
- //  setAssignedTeamLeaderNames([]);
+    // handleCloseConfirmation();
+    setcreateTLAlertModal(false);
+    setCheckedConfirmation(false);
+    setConfirmButtonDisable(true);
+    //  setAssignedTeamLeaderNames([]);
+  };
 
-   };
-
-
-   useEffect(() => {
+  useEffect(() => {
     if (checkedConfirmation) {
       setConfirmButtonDisable(false);
     } else {
@@ -652,7 +673,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                 color: "secondary",
                 fontSize: "14px",
                 fontWeight: "500",
-                textTransform: "capitalize"
+                textTransform: "capitalize",
               }}
               variant="outlined"
             >
@@ -686,18 +707,18 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                   !isEditModal &&
                   noError
                 ) {
-                 // setOpenModal(true);
-                 console.log(assignedTeamLeaderNames.length)
-                 if(assignedTeamLeaderNames.length!==0 && userType===FormContextType.TEAM_LEADER)
-                 {
+                  // setOpenModal(true);
+                  console.log(assignedTeamLeaderNames.length);
+                  if (
+                    assignedTeamLeaderNames.length !== 0 &&
+                    userType === FormContextType.TEAM_LEADER
+                  ) {
                     setcreateTLAlertModal(true);
-                                     // setOpenModal(true)
-
-                 }
-                 else{
-                  //onClose();
-                  setOpenModal(true)
-                 }
+                    // setOpenModal(true)
+                  } else {
+                    //onClose();
+                    setOpenModal(true);
+                  }
                 }
                 console.log("Submit button was clicked");
               }}
@@ -725,12 +746,15 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
               handleBlockChangeWrapper={handleBlockChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
-              isCenterSelection={userType !== "TEAM LEADER" && userType !== FormContextType.CONTENT_CREATOR}
+              isCenterSelection={
+                userType !== "TEAM LEADER" &&
+                userType !== FormContextType.CONTENT_CREATOR
+              }
               allCenters={allCenters}
               selectedCenter={selectedCenter}
               handleCenterChangeWrapper={handleCenterChangeWrapper}
               inModal={true}
-              userType= {userType}
+              userType={userType}
               stateDefaultValue={stateDefaultValue}
             />
           </Box>
@@ -787,7 +811,6 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
                   customFields={customFields}
                   formData={formValue}
                   key={`${i18n.language}`}
-
                 >
                   {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
                 </DynamicForm>
@@ -811,52 +834,47 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
         }
       />
 
-
-
-
-
-
-
-
-
-<CustomModal
-          width="30%"
-          open={createTLAlertModal}
-          handleClose={handleCloseConfirmation}
-          primaryBtnText={t("COMMON.CONTINUE")}
-          primaryBtnClick={wrappedHandleContinueAction}
-          primaryBtnDisabled={confirmButtonDisable}
-          secondaryBtnText={t("COMMON.CANCEL")}
-          secondaryBtnClick={handleCancelAction}
+      <CustomModal
+        width="30%"
+        open={createTLAlertModal}
+        handleClose={handleCloseConfirmation}
+        primaryBtnText={t("COMMON.CONTINUE")}
+        primaryBtnClick={wrappedHandleContinueAction}
+        primaryBtnDisabled={confirmButtonDisable}
+        secondaryBtnText={t("COMMON.CANCEL")}
+        secondaryBtnClick={handleCancelAction}
+      >
+        <Box
+          sx={{
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "16px",
+            width: "fit-content",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          }}
         >
-          <Box
-            sx={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "16px",
-              width: "fit-content",
-              backgroundColor: "#f9f9f9",
-              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
+          <Typography
+            variant="body1"
+            sx={{ marginBottom: "12px", fontWeight: "bold", color: "#333" }}
           >
-            <Typography
-              variant="body1"
-              sx={{ marginBottom: "12px", fontWeight: "bold", color: "#333" }}
-            >
-{assignedTeamLeaderNames.length>1 ?(
+            {assignedTeamLeaderNames.length > 1 ? (
               <>
-               {t('COMMON.MULTIPLE_TEAM_LEADERS_ASSIGNED', { selectedBlockForTL: selectedBlock[0],assignedTeamLeader: assignedTeamLeader})}
-
+                {t("COMMON.MULTIPLE_TEAM_LEADERS_ASSIGNED", {
+                  selectedBlockForTL: selectedBlock[0],
+                  assignedTeamLeader: assignedTeamLeader,
+                })}
               </>
-            ):(<>
-
-              {t('COMMON.SINGLE_TEAM_LEADERS_ASSIGNED', { selectedBlockForTL: selectedBlock[0],assignedTeamLeader: assignedTeamLeader})}
-
-                        </>)
-}
-             
-            </Typography>
-            <Box
+            ) : (
+              <>
+                {t("COMMON.SINGLE_TEAM_LEADERS_ASSIGNED", {
+                  selectedBlockForTL: selectedBlock[0],
+                  assignedTeamLeader: assignedTeamLeader,
+                })}
+              </>
+            )}
+          </Typography>
+          <Box
             sx={{
               border: "1px solid #ddd",
               borderRadius: "8px",
@@ -867,32 +885,31 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
               overflowY: "auto",
             }}
           >
-            {assignedTeamLeaderNames.length>1 ?(
-            <>
-             {t('COMMON.ASSIGNED_TEAM_LEADERS', { assignedTeamLeaderNames:assignedTeamLeaderNames[0]})}
-
-            </> 
-
-
-            ):(<>
-              {assignedTeamLeaderNames[0]}
-            </>)
-             
-            }
-         </Box>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checkedConfirmation}
-                  onChange={handleChangeCheckBox}
-                  color="primary"
-                />
-              }
-              label={ t('COMMON.CONTINUE_ASSIGNED_TEAM_LEADER', {selectedBlockForTL: selectedBlock[0]})}
-              sx={{ marginTop: "12px", color: "#555" }}
-            />
+            {assignedTeamLeaderNames.length > 1 ? (
+              <>
+                {t("COMMON.ASSIGNED_TEAM_LEADERS", {
+                  assignedTeamLeaderNames: assignedTeamLeaderNames[0],
+                })}
+              </>
+            ) : (
+              <>{assignedTeamLeaderNames[0]}</>
+            )}
           </Box>
-        </CustomModal>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checkedConfirmation}
+                onChange={handleChangeCheckBox}
+                color="primary"
+              />
+            }
+            label={t("COMMON.CONTINUE_ASSIGNED_TEAM_LEADER", {
+              selectedBlockForTL: selectedBlock[0],
+            })}
+            sx={{ marginTop: "12px", color: "#555" }}
+          />
+        </Box>
+      </CustomModal>
     </>
   );
 };

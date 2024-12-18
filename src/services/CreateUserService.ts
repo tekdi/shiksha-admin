@@ -59,7 +59,7 @@ export const createUser = async (userData: any): Promise<any> => {
     return response?.data?.result;
   } catch (error) {
     console.error("error in getting cohort list", error);
-    // throw error;
+    throw error;
   }
 };
 
