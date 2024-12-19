@@ -16,6 +16,8 @@ import Image from "next/image";
 import appLogo from "../../public/images/Logo.svg";
 import { deleteProgram, updateProgram } from "@/services/ProgramServices";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import { showToastMessage } from "./Toastify";
+import { useTranslation } from "next-i18next";
 
 interface ProgramCardProps {
   programId: string;
@@ -39,6 +41,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   const setFetchPrograms = useSubmittedButtonStore(
     (state: any) => state.setFetchPrograms
   );
+  const { t } = useTranslation();
+
   console.log("programId:", programId);
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -56,8 +60,11 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
       }
      const response=await updateProgram(programData,tenantId);
+
      setFetchPrograms(!fetchPrograms)
      setAnchorEl(null);
+     showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_DELETED_SUCCESS"), "success");
+
     }
     catch(e)
     {
