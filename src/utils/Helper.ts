@@ -408,3 +408,26 @@ export const filterAndMapAssociations = (
       associations: option.associations || [],
     }));
 };
+
+
+export const dataURLToBlob = (dataURL: any): Blob => {
+  const [header, base64Data] = dataURL.split(',');
+  const mimeType = header.match(/:(.*?);/)[1];
+  const binary = atob(base64Data);
+  const array = [];
+  for (let i = 0; i < binary.length; i++) {
+    array.push(binary.charCodeAt(i));
+  }
+  return new Blob([new Uint8Array(array)], { type: mimeType });
+}
+
+
+export const getFilenameFromDataURL = (dataURL: string): string | null => {
+  // Check if the dataURL has a custom filename parameter
+  const matches = dataURL.match(/filename=([^;&]+)/); // Look for `filename` in the query
+  if (matches && matches[1]) {
+    return decodeURIComponent(matches[1]);
+  }
+
+  return null;
+}

@@ -120,6 +120,10 @@ export const GenerateSchemaAndUiSchema = (
           if (field?.hint) {
             fieldUiSchema["ui:help"] = t(`FORM.${field?.hint}`);
           }
+
+          if (field?.pattern) {
+            fieldUiSchema['ui:options'] = { accept: field.pattern };
+          }
           break;
       default:
         break;
@@ -206,7 +210,7 @@ export const GenerateSchemaAndUiSchema = (
       fieldSchema.uniqueItems = true;
       fieldUiSchema["ui:widget"] = "MultiSelectCheckboxes";
     }
-    if (pattern) {
+    if (pattern && type !== "file") {
       fieldSchema.pattern = pattern;
       // fieldUiSchema["ui:help"]= "Only alphabetic characters are allowed.";
     }

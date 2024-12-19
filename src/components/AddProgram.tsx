@@ -1,19 +1,17 @@
-import { createProgram } from "@/services/ProgramServices";
-import React, { useEffect, useState } from "react";
-import SimpleModal from "./SimpleModal";
-import { i18n, useTranslation } from "next-i18next";
 import DynamicForm from "@/components/DynamicForm";
 import {
   GenerateSchemaAndUiSchema,
   customFields,
 } from "@/components/GeneratedSchemas";
-import { getFormRead } from "@/services/CreateUserService";
-import { FormData } from "@/utils/Interfaces";
+import { createProgram } from "@/services/ProgramServices";
+import useSubmittedButtonStore from "@/utils/useSharedState";
+import { Box, Button } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
-import { Box, Button } from "@mui/material";
-import useSubmittedButtonStore from "@/utils/useSharedState";
-import { set } from "date-fns";
+import { useTranslation } from "next-i18next";
+import React, { useEffect, useState } from "react";
+import SimpleModal from "./SimpleModal";
+import { dataURLToBlob, getFilenameFromDataURL } from "@/utils/Helper";
 
 interface AddProgramModalProps {
   open: boolean;
@@ -65,11 +63,23 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
 
     try {
 
-      // if (data?.formData?.programImages) {
-      //   data.formData.programImage = base64ToFile(data?.formData?.programImages, 'sdsjdjios');
-      // }
+      let binaryFile: Blob | undefined;
+      if (data?.formData?.programImages) {
+        binaryFile = dataURLToBlob(data?.formData?.programImages);
+      }
 
-      const result = await createProgram(data?.formData);
+      const fileName = getFilenameFromDataURL(data?.formData?.programImages) || 'image.png';
+      delete data?.formData?.programImages;
+
+      const formData = new FormData();
+      for (const key in data?.formData) {
+        formData.append(key, data?.formData[key]);
+      }
+
+
+      formData.append("programImages", binaryFile as Blob, fileName);
+
+      const result = await createProgram(formData);
       setFetchPrograms(!fetchPrograms);
       onClose();
       console.log("Program created successfully:", result);
@@ -167,7 +177,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
               order: "0",
               fieldId: null,
               options: [],
-              pattern: null,
+              pattern: ".png, .jpg, .jpeg",
               coreField: 1,
               dependsOn: null,
               maxLength: null,
@@ -197,7 +207,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
           );
           setFormValue(formValues);
           setSchema(schema);
-          console.log({schema,uiSchema});
+          console.log({ schema, uiSchema });
           setUiSchema(uiSchema);
         }
       } catch (error) {
@@ -245,7 +255,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
             }}
             color="primary"
             // disabled={!submitButtonEnable}
-            onClick={() => {}}
+            onClick={() => { }}
           >
             {true ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
           </Button>
@@ -260,9 +270,9 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
         // onChange={handleChange}
         onChange={({ formData }) => {
           // setFormData(formData);
-          console.log({formData})
+          console.log({ formData })
           if (formData.programImages instanceof File) {
-            console.log({formData})
+            console.log({ formData })
             // setFile(formData.fileInput); // Update the file state when the form data changes
           }
         }}
