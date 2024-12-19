@@ -238,9 +238,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if (userType === FormContextType.TEACHER) {
             const newResponse = {
               ...response,
-              fields: response?.fields?.filter(
-                (field: any) => field.name !== "no_of_clusters"
-              ),
+              fields: response?.fields
             };
             const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
               newResponse,
