@@ -17,7 +17,7 @@ const Menuitems = [
     href: ["/centers"],
   },
   {
-    title: "SIDEBAR.MANAGE_PROGRAM",
+    title: "PROGRAM_MANAGEMENT.PROGRAMS",
     icon: programIcon,
     href: ["/programs"],
   },

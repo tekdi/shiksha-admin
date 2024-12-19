@@ -12,6 +12,8 @@ import { useTranslation } from "next-i18next";
 import React, { useEffect, useState } from "react";
 import SimpleModal from "./SimpleModal";
 import { dataURLToBlob, getFilenameFromDataURL } from "@/utils/Helper";
+import { showToastMessage } from "./Toastify";
+import { getFormRead } from "@/services/CreateUserService";
 
 interface AddProgramModalProps {
   open: boolean;
@@ -80,6 +82,8 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
       formData.append("programImages", binaryFile as Blob, fileName);
 
       const result = await createProgram(formData);
+      showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"), "success");
+
       setFetchPrograms(!fetchPrograms);
       onClose();
       console.log("Program created successfully:", result);
@@ -88,7 +92,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
     }
   };
   useEffect(() => {
-    const getAddUserFormData = () => {
+    const getAddUserFormData = async() => {
       try {
         // const response: FormData = await getFormRead(
         //   FormContext.USERS,
@@ -99,110 +103,15 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
         //   userType
         // );
         // console.log("sortedFields", response);
-        const d: any = {
-          formid: "ae7113bf-0a75-4929-bc35-696a02214022",
-          title: "CREATE PROGRAM",
-          fields: [
-            {
-              hint: null,
-              name: "name",
-              type: "text",
-              label: "PROGRAM_NAME",
-              order: "0",
-              fieldId: null,
-              options: [],
-              pattern: "^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$",
-              coreField: 1,
-              dependsOn: null,
-              maxLength: null,
-              minLength: null,
-              isEditable: true,
-              isPIIField: null,
-              isRequired: true,
-              validation: ["string"],
-              placeholder: "ENTER_PROGRAM_NAME",
-              isMultiSelect: false,
-              maxSelections: 0,
-              sourceDetails: {},
-            },
-            {
-              hint: null,
-              name: "description",
-              type: "text",
-              label: "DESCRIPTION",
-              order: "1",
-              fieldId: null,
-              options: [],
-              pattern: null,
-              coreField: 1,
-              dependsOn: null,
-              maxLength: null,
-              minLength: null,
-              isEditable: true,
-              isPIIField: null,
-              isRequired: true,
-              validation: ["string"],
-              placeholder: "ENTER_DESCRIPTION",
-              isMultiSelect: false,
-              maxSelections: 0,
-              sourceDetails: {},
-            },
-            {
-              hint: null,
-              name: "programHead",
-              type: "text",
-              label: "PROGRAM_HEAD_NAME",
-              order: "2",
-              fieldId: null,
-              options: [],
-              pattern: "^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$",
-              coreField: 1,
-              dependsOn: null,
-              maxLength: null,
-              minLength: null,
-              isEditable: true,
-              isPIIField: null,
-              isRequired: true,
-              validation: ["string"],
-              placeholder: "ENTER_PROGRAM_HEAD_NAME",
-              isMultiSelect: false,
-              maxSelections: 0,
-              sourceDetails: {},
-            },
-            {
-              hint: null,
-              name: "programImages",
-              type: "file",
-              label: "PROGRAM_IMAGE",
-              order: "0",
-              fieldId: null,
-              options: [],
-              pattern: ".png, .jpg, .jpeg",
-              coreField: 1,
-              dependsOn: null,
-              maxLength: null,
-              minLength: null,
-              isEditable: true,
-              isPIIField: null,
-              isRequired: true,
-              validation: ["string"],
-              placeholder: "ENTER_PROGRAM_NAME",
-              isMultiSelect: false,
-              maxSelections: 0,
-              sourceDetails: {},
-            },
-          ],
-        };
+       const formFields = await getFormRead("TENANT", "TENANT");
 
+      
         //    console.log(studentFormData)
         // console.log("object",response);
-        if (d) {
-          const newResponse = {
-            ...d,
-            fields: d?.fields,
-          };
+        if (formFields) {
+         
           const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
-            d,
+            formFields,
             t
           );
           setFormValue(formValues);
