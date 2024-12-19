@@ -203,9 +203,9 @@
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
     "SCTA":"State Content Team Associate",
+   "WORKSPACE": "Workspace",
+   "MANAGE_PROGRAM": "Programs"
 
-
-    "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
     "STATE": "State",
@@ -413,7 +413,16 @@
     "LIFE_SKILLS": "Life Skills",
     "BOARD": "Board",
     "MEDIUM": "Medium",
-    "GRADE": "Grade"
+    "GRADE": "Grade",
+    "DESCRIPTION":"Description",
+    "PROGRAM_NAME":"Program Name",
+    "PROGRAM_DESCRIPTION":"Program Description",
+    "PROGRAM_TYPE":"Program Type",
+    "PROGRAM_HEAD_NAME":"Program Head Name",
+    "PROGRAM_IMAGE":"Program Image"
+
+
+
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -471,5 +480,15 @@
     "EDIT_CONTENT_CREATOR":"Edit content creator",
     "CREATE_CONTENT_CREATOR":"Create content creator",
     "EDIT_CONTENT_REVIEWER":"Edit content reviewer"
+  },
+
+
+  "PROGRAM_MANAGEMENT": {
+    "PROGRAMS": "Programs",
+    "CREATE_PROGRAM": "Create Program",
+    "EDIT_PROGRAM": "Edit Program",
+    "DELETE_PROGRAM": "Delete Program",
+    "SEARCH_PROGRAM": "Search Program...",
+    "NO_PROGRAMS_FOUND": "No Program Found"
   }
 }

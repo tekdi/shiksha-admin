@@ -36,7 +36,7 @@ export async function patch<T>(
 
 export async function deleteApi<T>(
   url: string,
-  body: T,
+  body?: T,
   headers: AxiosRequestConfig["headers"] = {},
 ): Promise<AxiosResponse> {
   return axiosInstance.delete(url, { data: body, headers });

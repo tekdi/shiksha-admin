@@ -1618,7 +1618,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
                 ) : (
                   cohortType === CohortTypes.DISTRICT && (
                     <KaTableComponent
-                      columns={getDistrictTableData(t, isMobile)}
+                      columns={getDistrictTableData(t, isMobile, isArchived)}
                       data={filteredCohortOptionData()}
                       limit={pageLimit}
                       offset={pageOffset}
