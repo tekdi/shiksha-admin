@@ -404,6 +404,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             updatedBy: localStorage.getItem("userId"),
             username: apiBody?.username,
           };
+
           const customFields = apiBody?.customFields;
           console.log(customFields);
           const object = {
