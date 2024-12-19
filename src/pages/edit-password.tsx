@@ -56,9 +56,21 @@ const EditForgotPassword = () => {
     }else
     {
       if(locale)
-      router.push("/centers", undefined, { locale: locale });
+      {
+        if(storedUserData?.role === Role.CENTRAL_ADMIN)
+        router.push("/state", undefined, { locale: locale });
+        else
+        router.push("/centers", undefined, { locale: locale });
+
+      }
     else
-    router.push("/centers");
+    {
+      if(storedUserData?.role === Role.CENTRAL_ADMIN)
+      router.push("/state");
+      else
+      router.push("/centers");
+
+    }
     }
     localStorage.setItem('skipResetPassword', 'true');
   };

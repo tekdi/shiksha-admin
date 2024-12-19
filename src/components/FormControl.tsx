@@ -24,10 +24,12 @@ interface MultipleSelectCheckmarksProps {
   codes: string[];
   tagName: string;
   selectedCategories: string[];
-  onCategoryChange: (selectedNames: string[], selectedCodes: string[]) => void;
+  onCategoryChange: (selectedNames: string[], selectedCodes: string[], selectedCohortId?: any) => void;
   disabled?: boolean;
   overall?: boolean;
   defaultValue?: string;
+  width?:any
+  cohortIds?:any
 }
 
 const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
@@ -39,6 +41,8 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
   disabled = false,
   overall = false,
   defaultValue,
+  width,
+  cohortIds
 }) => {
   const { t } = useTranslation();
   const isSmallScreen = useMediaQuery((theme: any) =>
@@ -62,8 +66,12 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
     const selectedCodes = selectedNames?.map(
       (name) => codes[names.indexOf(name)]
     );
-
-    onCategoryChange(selectedNames, selectedCodes);
+    const selectedCohortId = selectedNames?.map(
+      (name) => cohortIds[names.indexOf(name)]
+    );
+    console.log("selectedCohortId",selectedCohortId);
+//const selectedCohortId="";
+    onCategoryChange(selectedNames, selectedCodes, selectedCohortId);
   };
 
   return (
@@ -80,6 +88,7 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
                 : ""
               : selectedCategories
           }
+          sx={{ width: width? width:undefined }}
           onChange={handleChange}
           input={<OutlinedInput label={tagName} />}
           renderValue={(selected) => {

@@ -90,6 +90,16 @@ export const getFilteredMenuItems = () => {
     }
 
     if (
+      userInfo?.role === Role.ADMIN 
+    ) {
+      // Exclude Course Planner and Workspace for Admin and Central Admin
+      return Menuitems.filter(
+        (item) =>
+          item.title !== "SIDEBAR.COURSE_PLANNER" &&
+          item.title !== "SIDEBAR.WORKSPACE"
+      );
+    }
+    if (
       userInfo?.role === Role.ADMIN ||
       userInfo?.role === Role.CENTRAL_ADMIN
     ) {
@@ -97,7 +107,11 @@ export const getFilteredMenuItems = () => {
       return Menuitems.filter(
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
-          item.title !== "SIDEBAR.WORKSPACE"
+          item.title !== "SIDEBAR.WORKSPACE" &&
+          item.title !== "SIDEBAR.CENTERS" &&
+          item.title !== "SIDEBAR.MANAGE_USERS"
+
+
       );
     }
 

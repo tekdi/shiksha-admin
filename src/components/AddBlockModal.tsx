@@ -11,13 +11,17 @@ import {
   Select,
   MenuItem,
   Divider,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "next-i18next";
 import { getDistrictsForState } from "@/services/MasterDataService";
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { useQueryClient } from "@tanstack/react-query";
-import { CohortTypes, QueryKeys } from "@/utils/app.constant";
+import { CohortTypes, QueryKeys, Role } from "@/utils/app.constant";
+import { formatedStates } from "@/services/formatedCohorts";
+import MultipleSelectCheckmarks from "./FormControl";
 
 interface AddBlockModalProps {
   open: boolean;
@@ -28,17 +32,26 @@ interface AddBlockModalProps {
     controllingField: string,
     cohortId: string,
     fieldId: string,
-    districtId?: string
+    districtId?: string,
+    stateCode?: string,
+
   ) => void;
   fieldId: string;
   initialValues?: {
     name?: string;
     value?: string;
     controllingField?: string;
+    controllingFieldLabel?: string;
+    stateLabel?:string
+
   };
   districtId?: string;
 }
-
+interface State {
+  value: string;
+  label: string;
+  cohortId?: any;
+}
 export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   open,
   onClose,
@@ -52,7 +65,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     value: initialValues.value || "",
     controllingField: initialValues.controllingField || "",
   });
-
+console.log("formData",initialValues);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [districts, setDistricts] = useState<
     { value: string; label: string; cohortId: string | null }[]
@@ -64,20 +77,49 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const [cohortIdAddNewDropdown, setCohortIdAddNewDropdown] = useState<any>("");
   const [stateCode, setStateCode] = useState<any>("");
   const [stateName, setStateName] = useState<any>("");
+  const [states, setStates] = useState<State[]>([]);
+  const [defaultStates, setDefaultStates] = useState<any>();
+  const [userRole, setUserRole] = useState("");
+  const [selectedState, setSelectedState] = useState<string>("");
+  const [disabledDistrict, setDisabledDistrict] = useState<boolean>(true);
+
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const storedUserData = JSON.parse(
-      localStorage.getItem("adminInfo") || "{}"
-    );
-    const stateCodes = storedUserData?.customFields[0]?.code;
-    const stateNames = storedUserData?.customFields[0]?.value;
-    setStateCode(stateCodes);
-    setStateName(stateNames);
-  }, [open]);
+    const fetchStates = async () => {
+      try {
+        if (userRole === Role.CENTRAL_ADMIN) {
+          const result = await formatedStates();
+          console.log("result", result[0]?.value);
+          setStates(result);
+          setStateCode(result[0]?.value);
+          setDefaultStates(result[0]);
+        } else {
+          const storedUserData = JSON.parse(
+            localStorage.getItem("adminInfo") || "{}"
+          );
+          const stateCodes = storedUserData?.customFields[0]?.code;
+          const stateNames = storedUserData?.customFields[0]?.value;
+          setStateCode(stateCodes);
+          setStateName(stateNames);
+        }
+      } catch (error) {
+        setDistricts([]);
 
+        console.error("Error fetching districts:", error);
+      }
+    };
+    fetchStates();
+  }, [open, userRole]);
+  useEffect(() => {
+    const storedUserData = localStorage.getItem("adminInfo");
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData);
+      setUserRole(userData.role);
+    }
+  }, []);
   useEffect(() => {
     setFormData({
       name: initialValues.name || "",
@@ -111,22 +153,42 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       const districts = data?.result?.values || [];
       setDistrictsOptionRead(districts);
 
-      const districtNameArray = districts.map((item: any) => item?.label?.toLowerCase());
+      const districtNameArray = districts.map((item: any) =>
+        item?.label?.toLowerCase()
+      );
       setDistrictNameArr(districtNameArray);
 
       const districtCodeArray = districts.map((item: any) => item.value);
       setDistrictCodeArr(districtCodeArray);
     } catch (error) {
+      setDistricts([]);
       console.error("Error fetching districts", error);
     }
   };
 
   useEffect(() => {
-    if (open) fetchDistricts();
-  }, [open, formData.controllingField]);
+    if (stateCode !== "" && stateCode) fetchDistricts();
+  }, [open, formData.controllingField, stateCode]);
+  const handleStateChangeWrapper = async (
+    selectedNames: string[],
+    selectedCodes: string[]
+  ) => {
+    try {
+      // setSelectedNames(selectedNames);
 
+      setStateCode(selectedCodes[0]);
+      setSelectedState(selectedNames[0]);
+      setDisabledDistrict(false);
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getFilteredCohortData = async () => {
     try {
+      console.log("stateCode", stateCode);
       const reqParams = {
         limit: 0,
         offset: 0,
@@ -138,16 +200,16 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         },
       };
 
-      const response = await queryClient.fetchQuery({
-        queryKey: [
-          QueryKeys.FIELD_OPTION_READ,
-          reqParams.limit,
-          reqParams.offset,
-          CohortTypes.DISTRICT,
-        ],
-        queryFn: () => getCohortList(reqParams),
-      });
-
+      // const response = await queryClient.fetchQuery({
+      //   queryKey: [
+      //     QueryKeys.FIELD_OPTION_READ,
+      //     reqParams.limit,
+      //     reqParams.offset,
+      //     CohortTypes.DISTRICT,
+      //   ],
+      //   queryFn: () => getCohortList(reqParams),
+      // });
+      const response = await getCohortList(reqParams);
       const cohortDetails = response?.results?.cohortDetails || [];
 
       const filteredDistrictData = cohortDetails
@@ -164,8 +226,13 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
             const matchingDistrict = districtsOptionRead.find(
               (district: { label: string }) =>
-                district?.label?.toLowerCase() === transformedName?.toLowerCase()
+                district?.label?.toLowerCase() ===
+                transformedName?.toLowerCase()
             );
+            console.log("districtsOptionRead", districtsOptionRead);
+            console.log("matchingDistrict", matchingDistrict);
+            console.log("cohortDetails", cohortDetails);
+
             return {
               label: transformedName,
               value: matchingDistrict ? matchingDistrict.value : null,
@@ -180,14 +247,16 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
         );
+      console.log("filteredDistrictData", filteredDistrictData);
       setDistricts(filteredDistrictData);
     } catch (error) {
+      setDistricts([]);
       console.error("Error fetching and filtering cohort districts", error);
     }
   };
   useEffect(() => {
-    if (open) getFilteredCohortData();
-  }, [open, districtNameArr]);
+    if ( stateCode !== "" && stateCode) getFilteredCohortData();
+  }, [open, districtNameArr, stateCode]);
 
   function transformLabels(label: string) {
     if (!label || typeof label !== "string") return "";
@@ -278,7 +347,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         formData.controllingField,
         currentCohortId,
         fieldId,
-        districtId
+        districtId,
+        stateCode
       );
 
       setFormData({
@@ -286,10 +356,19 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         value: "",
         controllingField: "",
       });
+      setDefaultStates("");
+      setSelectedState("")
+      setDistricts([])
+      setDisabledDistrict(true)
 
       onClose();
     }
   };
+  console.log("formData.controllingField", formData.controllingField);
+  if(formData.controllingField==="")
+  {
+    console.log("trueeee")
+  }
   const isEditing = !!initialValues.name;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
   const dialogTitle = isEditing
@@ -301,6 +380,10 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       open={open}
       onClose={(event, reason) => {
         if (reason !== "backdropClick") {
+          setDefaultStates("")
+          setDistricts([])
+          setDisabledDistrict(true)
+
           onClose();
         }
       }}
@@ -308,39 +391,87 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
-        {!(formData.controllingField === "All") && (
-          <Select
-            value={formData.controllingField}
-            onChange={(e) =>
-              handleChange("controllingField")(
-                e as React.ChangeEvent<HTMLInputElement>
-              )
-            }
-            MenuProps={{
-              PaperProps: {
-                sx: {
-                  maxHeight: 400,
-                },
-              },
-            }}
-            fullWidth
-            displayEmpty
-            variant="outlined"
-            margin="dense"
-            disabled={isEditing}
-          >
-            <MenuItem value="">{t("COMMON.SELECT_DISTRICT")}</MenuItem>
-            {districts.length > 0 ? (
-              districts.map((district: any) => (
-                <MenuItem key={district.value} value={district.value}>
-                  {transformLabels(district.label)}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>{t("COMMON.NO_DISTRICTS")}</MenuItem>
+        {userRole === Role.CENTRAL_ADMIN && (
+          <MultipleSelectCheckmarks
+            names={states?.map(
+              (state) =>
+                state.label?.toLowerCase().charAt(0).toUpperCase() +
+                state.label?.toLowerCase().slice(1)
             )}
-          </Select>
+            codes={states?.map((state) => state.value)}
+            tagName={t("FACILITATORS.STATE")}
+            selectedCategories={initialValues.stateLabel ? [initialValues.stateLabel] : [selectedState]}
+            onCategoryChange={handleStateChangeWrapper}
+            cohortIds={states?.map((state) => state.cohortId)}
+            disabled={isEditing}
+            // overall={!inModal}
+            width="290px"
+           // defaultValue={defaultStates?.label}
+          />
         )}
+        {!(formData.controllingField === "All") && !initialValues.controllingField && (
+  <>
+  <FormControl fullWidth sx={{ marginTop: "8px" }}>
+ {!disabledDistrict && (<InputLabel id="district-label" >District</InputLabel>)} 
+  <Select
+  labelId="district-label"
+    label={!disabledDistrict?"District": null}
+      value={formData.controllingField!=="" && formData.controllingField? formData.controllingField : "district"}
+      onChange={(e) =>
+        handleChange("controllingField")(
+          e as React.ChangeEvent<HTMLInputElement>
+        )
+      }
+       sx={{ marginTop: "8px" }}
+      MenuProps={{
+        PaperProps: {
+          sx: {
+            maxHeight: 400,
+          },
+        },
+      }}
+      fullWidth
+      // variant="outlined"
+      // margin="dense"
+      disabled={disabledDistrict}
+    >
+      {/* Default MenuItem */}
+      {disabledDistrict && (<MenuItem value="district">District</MenuItem>)}
+      
+      {/* District Options */}
+      {districts.length > 0 && !initialValues.controllingField ? (
+        districts.map((district: any) => (
+          <MenuItem key={district.value} value={district.value}>
+            {transformLabels(district.label)}
+          </MenuItem>
+        ))
+      ) : (
+        <MenuItem value="no_districts" disabled>
+          {t("COMMON.NO_DISTRICTS")}
+        </MenuItem>
+      )}
+    </Select>
+    </FormControl>
+
+  
+  </>
+)}
+
+          {initialValues.controllingField && !(formData.controllingField === "All") &&( <FormControl fullWidth disabled>
+      <InputLabel id="district-label"  sx={{ marginTop: "8px" }}>District</InputLabel>
+      <Select
+        labelId="district-label"
+        id="disabled-select"
+        value={initialValues.controllingFieldLabel}
+        label="District"
+        fullWidth            sx={{ marginTop: "8px" }}
+        // variant="outlined"
+        //     margin="dense"
+
+      >
+        <MenuItem value={initialValues.controllingFieldLabel}>{initialValues.controllingFieldLabel}</MenuItem>
+      </Select>
+    </FormControl>)}
         {errors.controllingField && (
           <Typography variant="caption" color="error">
             {errors.controllingField}
@@ -379,7 +510,15 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       <Divider />
       <DialogActions sx={{ p: 2 }}>
         <Button
-          onClick={onClose}
+          onClick={() => {
+            {
+              setSelectedState("")
+              setDefaultStates("")
+              setDistricts([])
+              setDisabledDistrict(true)
+              onClose();
+            }
+          }}
           sx={{
             border: "none",
             color: "secondary",

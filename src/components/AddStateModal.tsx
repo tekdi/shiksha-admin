@@ -57,6 +57,7 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
     /^[a-zA-Z]+(?:\s[a-zA-Z]+)*$/.test(input);
 
   const isValidCode = (input: string) => /^[A-Z]{1,3}$/.test(input);
+  const isEditing = !!initialValues.name;
 
   const handleChange = (field: string, value: string) => {
     if (field === "name") {
@@ -148,6 +149,8 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
           onChange={(e) => handleChange("value", e.target.value.toUpperCase())}
           error={!!errors.value}
           helperText={errors.value}
+          disabled={isEditing}
+
         />
         <Box display="flex" alignItems="center" mt={2}>
           <InfoOutlinedIcon color="primary" sx={{ mr: 1 }} />

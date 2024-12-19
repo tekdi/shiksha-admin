@@ -1,4 +1,5 @@
 import { store } from "@/store/store";
+import { Role } from "@/utils/app.constant";
 import { DataType, SortDirection } from "ka-table";
 
 interface ColumnConfig {
@@ -169,9 +170,44 @@ export const getStateDataMaster = (t: any, isMobile: boolean) => {
       titleKey: t("TABLE_TITLE.UPDATED_DATE").toUpperCase(),
       width: 130,
     },
+    
   ];
+  // if (typeof window !== "undefined" && window.localStorage) {
+  //   const adminInfo = localStorage.getItem("adminInfo");
+  //   let userInfo;
 
-  return generateColumns(t, configs, isMobile);
+  //   if (adminInfo && adminInfo !== "undefined") {
+  //     userInfo = JSON.parse(adminInfo || "{}");
+  //   }
+  //   console.log("userInfo", userInfo);
+  // // Conditionally add the "actions" column if isActiveYear is true
+  // if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
+  //   configs.push({
+  //     key: "actions",
+  //     titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+  //     width: 160,
+  //   });
+  // }
+  // }
+  if (typeof window !== "undefined" && window.localStorage) {
+    const adminInfo = localStorage.getItem("adminInfo");
+    let userInfo;
+
+    if (adminInfo && adminInfo !== "undefined") {
+      userInfo = JSON.parse(adminInfo || "{}");
+    }
+    console.log("userInfo", userInfo);
+  // Conditionally add the "actions" column if isActiveYear is true
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
+    configs.push({
+      key: "actions",
+      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+      width: 160,
+    });
+  }
+}
+return generateColumns(t, configs, isMobile);
+
 };
 
 export const getDistrictTableData = (t: any, isMobile: boolean) => {
@@ -203,13 +239,22 @@ export const getDistrictTableData = (t: any, isMobile: boolean) => {
       width: 130,
     },
   ];
+  if (typeof window !== "undefined" && window.localStorage) {
+    const adminInfo = localStorage.getItem("adminInfo");
+    let userInfo;
+
+    if (adminInfo && adminInfo !== "undefined") {
+      userInfo = JSON.parse(adminInfo || "{}");
+    }
+    console.log("userInfo", userInfo);
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear) {
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
       width: 160,
     });
+  }
   }
 
   return generateColumns(t, configs, isMobile);
@@ -241,12 +286,22 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
       width: 130,
     },
   ];
-  if (isActiveYear && !isArchived) {
+  if (typeof window !== "undefined" && window.localStorage) {
+    const adminInfo = localStorage.getItem("adminInfo");
+    let userInfo;
+
+    if (adminInfo && adminInfo !== "undefined") {
+      userInfo = JSON.parse(adminInfo || "{}");
+    }
+    console.log("userInfo", userInfo);
+  // Conditionally add the "actions" column if isActiveYear is true
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN ) {
     configs.push({
       key: "actions",
-      titleKey: "TABLE_TITLE.ACTIONS",
+      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
       width: 160,
     });
+  }
   }
 
   return generateColumns(t, configs, isMobile);

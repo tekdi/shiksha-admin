@@ -30,6 +30,8 @@
     "BACK": "Back",
     "CANCEL": "Cancel",
     "ARE_YOU_SURE_DELETE": "There are {{block}} active blocks in this district you cannot delete it.",
+    "ARE_YOU_SURE_DELETE_STATE": "There are {{district}} active districts in this state you cannot delete it.",
+
     "NO_ACTIVE_BLOCKS_DELETE": "There are no active blocks in this district. Do you want to delete it?",
     "ARE_YOU_SURE_DELETE_BLOCK": "There are {{centerCount}} active centers in this block you cannot delete it",
     "NO_ACTIVE_CENTERS_DELETE": "There are no active centers in this block. Do you want to delete it?",
@@ -142,7 +144,9 @@
     "ACCESS_DENIED": "Access Denied",
     "YOU_DONT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE": "You don't have access to this page",
     "RETURN_TO_LOGIN": "Return to Login",
-    "COHORT_CODE_EXISTS": "Code already exists"
+    "COHORT_CODE_EXISTS": "Code already exists",
+    "STATE_DUPLICATION_FAILURE":"State is already exists!",
+    "STATE_CREATION_FAILURE":"State creation failed"
 
   },
   "LOGIN_PAGE": {

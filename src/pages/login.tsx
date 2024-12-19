@@ -74,16 +74,51 @@ const LoginPage = () => {
       const preferredLang = localStorage.getItem("preferredLanguage") || "en";
       setLanguage(preferredLang);
       setLang(preferredLang);
+      const storedUserData =   localStorage.getItem("adminInfo");
 
       const token = localStorage.getItem("token");
       if (token) {
         const { locale } = router; 
         if(locale)
         {
-        router.push("/centers", undefined, { locale: locale });
+          let role;
+          if(storedUserData)
+          {
+            role=JSON.parse(
+              storedUserData
+            );
+            if(role?.role === Role.SCTA || role?.role === Role.CCTA)
+            {
+              router.push("/course-planner", undefined, { locale: locale });
+            }
+            else if(role?.role === Role.CENTRAL_ADMIN)
+            {
+              router.push("/state", undefined, { locale: locale });
+            }
+            else
+            router.push("/centers", undefined, { locale: locale });
+
+          }
         }
         else
-        router.push("/centers");
+        {
+          let role;
+          if(storedUserData)
+          {
+            role=JSON.parse(storedUserData);
+            if(role?.role === Role.SCTA || role?.role === Role.CCTA)
+            {
+              router.push("/course-planner");
+            }
+            else if(role?.role === Role.CENTRAL_ADMIN)
+            {
+              router.push("/state");
+            }
+            else
+            router.push("/centers");
+
+          }
+        }
 
 
       }
@@ -174,10 +209,19 @@ const LoginPage = () => {
                   const { locale } = router; 
         if(locale)
         {
+          if(userInfo?.role === Role.CENTRAL_ADMIN)
+          router.push("/state", undefined, { locale: locale });
+        else
         router.push("/centers", undefined, { locale: locale });
         }
         else
-        router.push("/centers");
+        {
+          if(userInfo?.role === Role.CENTRAL_ADMIN)
+          router.push("/state");
+        else
+          router.push("/centers");
+
+        }
 
                 }
 
