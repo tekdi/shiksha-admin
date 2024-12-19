@@ -10,7 +10,7 @@ export interface FieldOption {
 
 export interface Field {
   name: string;
-  type: "text" | "numeric" | "drop_down" | "checkbox" | "radio" | "email";
+  type: "text" | "numeric" | "drop_down" | "checkbox" | "radio" | "email"| "file";
   label: string;
   order: string;
   coreField: number;
@@ -27,7 +27,7 @@ export interface Field {
   pattern?: string | null;
   maxLength?: number | null;
   minLength?: number | null;
-  fieldId: string;
+  fieldId: any;
   required?: boolean;
   default: string | number;
   isRequired?: boolean;

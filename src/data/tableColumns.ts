@@ -142,7 +142,7 @@ export const getCenterTableData = (t: any, isMobile: boolean, isArchived:any) =>
 };
 
 //master data
-export const getStateDataMaster = (t: any, isMobile: boolean) => {
+export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) => {
   const configs: ColumnConfig[] = [
     {
       key: "label",
@@ -198,7 +198,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean) => {
     }
     console.log("userInfo", userInfo);
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
@@ -210,7 +210,7 @@ return generateColumns(t, configs, isMobile);
 
 };
 
-export const getDistrictTableData = (t: any, isMobile: boolean) => {
+export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any) => {
   const configs: ColumnConfig[] = [
     {
       key: "label",
@@ -248,7 +248,7 @@ export const getDistrictTableData = (t: any, isMobile: boolean) => {
     }
     console.log("userInfo", userInfo);
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
@@ -295,7 +295,7 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
     }
     console.log("userInfo", userInfo);
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN ) {
+  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived ) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),

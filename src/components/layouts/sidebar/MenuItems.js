@@ -2,6 +2,8 @@ import masterIcon from "../../../../public/images/database.svg";
 import centerIcon from "../../../../public/images/centers.svg";
 import dashboardIcon from "../../../../public/images/dashboard.svg";
 import userIcon from "../../../../public/images/group.svg";
+import programIcon from "../../../../public/images/programIcon.svg";
+
 import coursePlannerIcon from "../../../../public/images/event_available.svg";
 import { store } from "@/store/store";
 import { Role } from "@/utils/app.constant";
@@ -13,6 +15,11 @@ const Menuitems = [
     title: "SIDEBAR.CENTERS",
     icon: centerIcon,
     href: ["/centers"],
+  },
+  {
+    title: "SIDEBAR.MANAGE_PROGRAM",
+    icon: programIcon,
+    href: ["/programs"],
   },
   {
     title: "SIDEBAR.MANAGE_USERS",
@@ -96,7 +103,9 @@ export const getFilteredMenuItems = () => {
       return Menuitems.filter(
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
-          item.title !== "SIDEBAR.WORKSPACE"
+          item.title !== "SIDEBAR.WORKSPACE" &&
+          item.title !== "SIDEBAR.MANAGE_PROGRAM"
+
       );
     }
     if (
