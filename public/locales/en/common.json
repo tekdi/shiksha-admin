@@ -143,7 +143,6 @@
     "YOU_DONT_HAVE_PERMISSION_TO_ACCESS_THIS_PAGE": "You don't have access to this page",
     "RETURN_TO_LOGIN": "Return to Login",
     "COHORT_CODE_EXISTS": "Code already exists"
-
   },
   "LOGIN_PAGE": {
     "USERNAME": "Username",
@@ -198,8 +197,7 @@
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SCTA":"State Content Team Associate",
-
+    "SCTA": "State Content Team Associate",
 
     "WORKSPACE": "Workspace"
   },
@@ -272,12 +270,12 @@
     "FACILITATORS": "Facilitators Requisites",
     "NO_DATA": "No data available for Facilitators Requisites",
     "DOWNLOAD_SAMPLE_CSV": "Download Sample CSV",
-    "BOARDS":"Boards",
-    "SELECT_MEDIUM":"Select Medium",
-    "SELECT_GRADE":"Select Grade",
-    "SELECT_TYPE":"Select Type",
-    "CLEAR_SELECTION":"Clear Selection",
-    "SELECT_ALL_MESSSAGE":"Select Medium, Grade, and Type"
+    "BOARDS": "Boards",
+    "SELECT_MEDIUM": "Select Medium",
+    "SELECT_GRADE": "Select Grade",
+    "SELECT_TYPE": "Select Type",
+    "CLEAR_SELECTION": "Clear Selection",
+    "SELECT_ALL_MESSSAGE": "Select Medium, Grade, and Type"
   },
   "MASTER": {
     "STATE": "States",
@@ -299,7 +297,7 @@
     "DISTRICT_CODE": "District Code",
     "BLOCK_CODE": "Block Code",
     "CODE": "Code",
-    "MASTER":"Master"
+    "MASTER": "Master"
   },
   "CENTERS": {
     "CENTER": "center",
@@ -409,7 +407,8 @@
     "LIFE_SKILLS": "Life Skills",
     "BOARD": "Board",
     "MEDIUM": "Medium",
-    "GRADE": "Grade"
+    "GRADE": "Grade",
+    "CREATE_USERNAME": "Create Username"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -456,16 +455,15 @@
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
     "COURSE": "Course"
-
   },
 
   "CONTENT_CREATOR_REVIEWER": {
     "CONTENT_CREATOR": "Content Creator",
     "CONTENT_REVIEWER": "Content Reviewer",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SEARCH_CONTENT_CREATOR":"Search content creator...",
-    "EDIT_CONTENT_CREATOR":"Edit content creator",
-    "CREATE_CONTENT_CREATOR":"Create content creator",
-    "EDIT_CONTENT_REVIEWER":"Edit content reviewer"
+    "SEARCH_CONTENT_CREATOR": "Search content creator...",
+    "EDIT_CONTENT_CREATOR": "Edit content creator",
+    "CREATE_CONTENT_CREATOR": "Create content creator",
+    "EDIT_CONTENT_REVIEWER": "Edit content reviewer"
   }
 }
