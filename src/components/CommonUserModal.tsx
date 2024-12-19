@@ -238,7 +238,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if (userType === FormContextType.TEACHER) {
             const newResponse = {
               ...response,
-              fields: response?.fields
+              fields: response?.fields,
             };
             const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
               newResponse,
@@ -402,7 +402,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             father_name: apiBody?.father_name,
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),
+            username: apiBody?.username,
           };
+
           const customFields = apiBody?.customFields;
           console.log(customFields);
           const object = {
