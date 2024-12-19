@@ -238,7 +238,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if (userType === FormContextType.TEACHER) {
             const newResponse = {
               ...response,
-              fields: response?.fields
+              fields: response?.fields,
             };
             const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
               newResponse,
