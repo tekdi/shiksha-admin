@@ -16,6 +16,16 @@ export const getFormRead = async (
   try {
     if (typeof window !== "undefined" && window.localStorage) {
       const token = localStorage.getItem("token");
+
+      // Construct headers conditionally
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      if (contextType !== "TENANT") {
+        headers.tenantId = TENANT_ID;
+      }
+
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/form/read`,
         {
@@ -28,10 +38,7 @@ export const getFormRead = async (
               ?.map(([key, value]) => `${key}=${value}`)
               .join("&");
           },
-          headers: {
-            tenantId: TENANT_ID,
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         }
       );
 
@@ -51,6 +58,7 @@ export const getFormRead = async (
     // throw error;
   }
 };
+
 
 export const createUser = async (userData: any): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/create`;

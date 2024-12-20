@@ -410,7 +410,13 @@
     "BOARD": "Board",
     "MEDIUM": "Medium",
     "GRADE": "Grade",
-    "CREATE_USERNAME": "Create Username"
+    "CREATE_USERNAME": "Create Username",
+    "DESCRIPTION":"Description",
+    "PROGRAM_NAME":"Program Name",
+    "PROGRAM_DESCRIPTION":"Program Description",
+    "PROGRAM_TYPE":"Program Type",
+    "PROGRAM_HEAD_NAME":"Program Head Name",
+    "PROGRAM_IMAGE":"Program Image"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -463,9 +469,23 @@
     "CONTENT_CREATOR": "Content Creator",
     "CONTENT_REVIEWER": "Content Reviewer",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SEARCH_CONTENT_CREATOR": "Search content creator...",
-    "EDIT_CONTENT_CREATOR": "Edit content creator",
-    "CREATE_CONTENT_CREATOR": "Create content creator",
-    "EDIT_CONTENT_REVIEWER": "Edit content reviewer"
+    "SEARCH_CONTENT_CREATOR":"Search content creator...",
+    "EDIT_CONTENT_CREATOR":"Edit content creator",
+    "CREATE_CONTENT_CREATOR":"Create content creator",
+    "EDIT_CONTENT_REVIEWER":"Edit content reviewer"
+  },
+
+
+  "PROGRAM_MANAGEMENT": {
+    "PROGRAMS": "Programs",
+    "CREATE_PROGRAM": "Create Program",
+    "EDIT_PROGRAM": "Edit Program",
+    "DELETE_PROGRAM": "Delete Program",
+    "SEARCH_PROGRAM": "Search Program...",
+    "NO_PROGRAMS_FOUND": "No Program Found",
+    "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
+    "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!"
+
+
   }
 }
