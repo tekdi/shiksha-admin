@@ -139,15 +139,17 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         <Typography
   sx={{
     mt: 1,
-    overflow: "hidden", 
+    overflow: "hidden",
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 3, 
     textOverflow: "ellipsis",
-     whiteSpace: "nowrap", 
     fontFamily: "Poppins",
     fontWeight: 400,
     fontSize: "14px",
     lineHeight: "20px",
     letterSpacing: "0.25px",
-    width: "200px", 
+    width: "100%", // Ensures it fits the container
   }}
 >
   {description}
