@@ -484,7 +484,8 @@
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",
     "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
-    "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!"
+    "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
+    "PROGRAM_ALREADY_EXISTS": "Program Already Exists!"
 
 
   }

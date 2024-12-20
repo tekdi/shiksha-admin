@@ -1,5 +1,7 @@
+import { showToastMessage } from "@/components/Toastify";
 import { get, patch, deleteApi } from "./RestClient";
 import { post } from "./RestClient";
+import axios from "axios";
 
 export const getProgramList = async (
 ): Promise<any> => {
@@ -13,7 +15,8 @@ export const getProgramList = async (
   }
 };
 
-export const createProgram = async (programData: FormData): Promise<any> => {
+export const createProgram = async (programData: FormData,   t?:any
+  ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/create`;
   try {
     const headers = {
@@ -25,6 +28,11 @@ export const createProgram = async (programData: FormData): Promise<any> => {
     );
     return response?.data?.result;
   } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 409) {
+        showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_ALREADY_EXISTS"), "error");
+     } 
+    }
     console.error("Error in creating user", error);
     throw error;
   }
