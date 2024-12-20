@@ -137,18 +137,17 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
         {/* Program Description */}
         <Typography
-  // variant="body2"
-  // color="text.secondary"
   sx={{
-    mb: 1.5,          // margin-bottom: 1.5 (theme spacing)
-    mt: 1,            // margin-top: 1 (theme spacing)
+    mt: 1,
     overflow: "hidden", 
     textOverflow: "ellipsis",
-    fontFamily: 'Poppins',
+     whiteSpace: "nowrap", 
+    fontFamily: "Poppins",
     fontWeight: 400,
-    fontSize: '14px',
-    lineHeight: '20px',
-    letterSpacing: '0.25px',
+    fontSize: "14px",
+    lineHeight: "20px",
+    letterSpacing: "0.25px",
+    width: "200px", 
   }}
 >
   {description}
