@@ -81,7 +81,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose }) => {
 
       formData.append("programImages", binaryFile as Blob, fileName);
 
-      const result = await createProgram(formData);
+      const result = await createProgram(formData, t);
       showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"), "success");
 
       setFetchPrograms(!fetchPrograms);
