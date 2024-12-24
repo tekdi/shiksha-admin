@@ -239,6 +239,13 @@ const State: React.FC = () => {
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
     setSortBy(["name", sortOrder]);
     setSelectedSort(event.target.value);
+    queryClient.invalidateQueries({
+      queryKey: [
+        QueryKeys.FIELD_OPTION_READ,          
+      "STATE",
+      searchKeyword
+    ],
+    });
   };
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
