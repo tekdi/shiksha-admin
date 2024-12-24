@@ -340,7 +340,7 @@ const State: React.FC = () => {
     try {
       if (fieldId) {
       //  const isUpdating = selectedState !== null;
-        const response = await createOrUpdateOption(fieldId, newEntity);
+        const response = await createOrUpdateOption(fieldId, newEntity, t);
         const queryParameters = {
           name: name,
           type: CohortTypes.STATE,
