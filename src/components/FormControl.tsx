@@ -64,10 +64,10 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
     }
 
     const selectedCodes = selectedNames?.map(
-      (name) => codes[names.indexOf(name)]
+      (name) => codes[names?.indexOf(name)]
     );
     const selectedCohortId = selectedNames?.map(
-      (name) => cohortIds[names.indexOf(name)]
+      (name) => cohortIds?.[names?.indexOf(name)]
     );
     console.log("selectedCohortId",selectedCohortId);
 //const selectedCohortId="";
