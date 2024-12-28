@@ -49,8 +49,8 @@ const RecursiveAccordion = ({ data }: { data: any[] }) => {
                     marginBottom: '0.75rem',
                     fontWeight: 'bold', 
                     borderBottom: '1px solid #ddd',
-                    paddingBottom: '4px',
                     paddingLeft: '4px',
+                    padding:'16px'
                   }}
                 >
                   {node.name}
