@@ -112,6 +112,7 @@ export enum CohortTypes {
   COHORT = "COHORT",
   BLOCK = "BLOCK",
   DISTRICT = "DISTRICT",
+  STATE = "STATE"
 }
 
 export enum FormValues {

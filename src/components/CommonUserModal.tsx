@@ -225,9 +225,7 @@ console.log("userType",userType, FormContextType.CONTENT_CREATOR)
           if (userType === FormContextType.TEACHER) {
             const newResponse = {
               ...response,
-              fields: response?.fields?.filter(
-                (field: any) => field.name !== "no_of_clusters"
-              ),
+              fields: response?.fields
             };
             const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
               newResponse,

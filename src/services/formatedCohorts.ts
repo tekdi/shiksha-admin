@@ -48,23 +48,35 @@ export const formatedDistricts = async () => {
       controllingfieldfk: adminState.code,
       fieldName: "districts",
     };
+
     const optionReadResponse = await getStateBlockDistrictList(object);
     //console.log(blockFieldId)
     const result = optionReadResponse?.result?.values;
     console.log(cohortDetails)
-    console.log(result)
-    const matchedCohorts = result?.map((value: any) => {
+    const uniqueResults = result.reduce((acc: any, current: any) => {
+      const isDuplicate = acc.some((item: any) => item.label === current.label);
+      if (!isDuplicate) {
+          acc.push(current);
+      }
+      return acc;
+  }, [] as typeof result);
+  
+  console.log(uniqueResults);  
+    const matchedCohorts = uniqueResults?.map((value: any) => {
       const cohortMatch = cohortDetails.find((cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase());
       return cohortMatch ? { ...value } : null;
     }).filter(Boolean);
+
+   
+
     return matchedCohorts;
-    // console.log(matchedCohorts);
 
   } catch (error) {
-    console.log('Error in getting Channel Details', error);
+    console.error("Error in getting District Details", error);
     return error;
   }
 };
+
 
 
 export const formatedBlocks = async (districtCode: string) => {
@@ -117,3 +129,6 @@ export const formatedBlocks = async (districtCode: string) => {
     return error;
   }
 };
+
+
+
