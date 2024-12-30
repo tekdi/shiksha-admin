@@ -17,7 +17,7 @@ const useNotification = () => {
       const userDetails = await getUserDetailsInfo(userId, false);
       console.log("API Response:", userDetails);
 
-      const deviceId = userDetails?.userData?.deviceId;
+      const deviceId = userDetails?.userData?.deviceId?.[0];
 
       console.log("Device ID from API:", deviceId);
 
