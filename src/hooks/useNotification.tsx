@@ -17,18 +17,19 @@ const useNotification = () => {
       const userDetails = await getUserDetailsInfo(userId, false);
       console.log("API Response:", userDetails);
 
-      const deviceId = userDetails?.userData?.deviceId;
+      const deviceIds = userDetails?.userData?.deviceId;
 
-      console.log("Device ID from API:", deviceId);
+      console.log("Device ID from API:", deviceIds);
 
-      if (deviceId) {
+      if (deviceIds && deviceIds.length > 0) {
+        const recipients = Array.isArray(deviceIds) ? deviceIds : [deviceIds];
         const result = await sendCredentialService({
           isQueue: false,
           context: "USER",
           key: key,
         replacements: replacements,
           push: {
-            receipients: [deviceId],
+            receipients: recipients, 
           },
         });
 
