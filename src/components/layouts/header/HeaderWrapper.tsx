@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "@/components/layouts/header/Header";
 import { useTheme } from "@mui/material/styles";
-import { Box, useMediaQuery } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 const HeaderWrapper = () => {
   const [isSidebarOpen, setSidebarOpen] = React.useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
@@ -11,7 +11,7 @@ const HeaderWrapper = () => {
   return (
     <Header
       sx={{
-        zIndex: -1,
+        zIndex: 0,
         width: isSidebarOpen && lgUp ? "78%" : "100%",
         paddingLeft: isSidebarOpen && lgUp ? "265px" : "",
         backgroundColor: "#4d4639",
