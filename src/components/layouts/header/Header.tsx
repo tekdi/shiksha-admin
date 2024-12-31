@@ -1,4 +1,4 @@
-import React, {  useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import FeatherIcon from "feather-icons-react";
 import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -10,17 +10,23 @@ import TranslateIcon from "@mui/icons-material/Translate";
 import Menu from "@mui/material/Menu";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/router";
-import deleteIcon from '../../../../public/images/Language_icon.png';
+import deleteIcon from "../../../../public/images/Language_icon.png";
 
 import { useTranslation } from "next-i18next";
 import { createTheme, useTheme } from "@mui/material/styles";
 import Profile from "./Profile";
 import { AcademicYear } from "@/utils/Interfaces";
 import useStore from "@/store/store";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 import { Role } from "@/utils/app.constant";
 
-const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
+const Header = ({
+  sx,
+  customClass,
+  toggleMobileSidebar,
+  position,
+  showIcon,
+}: any) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [lang, setLang] = useState("");
@@ -47,12 +53,17 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
       const storedList = localStorage.getItem("academicYearList");
       try {
         const parsedList = storedList ? JSON.parse(storedList) : [];
-        const modifiedList = parsedList.map((item: { isActive: any; session: any; }) => {
-          if (item.isActive) {
-            return { ...item, session: `${item.session} (${t('COMMON.ACTIVE')})` };
+        const modifiedList = parsedList.map(
+          (item: { isActive: any; session: any }) => {
+            if (item.isActive) {
+              return {
+                ...item,
+                session: `${item.session} (${t("COMMON.ACTIVE")})`,
+              };
+            }
+            return item;
           }
-          return item;
-        }); 
+        );
         setAcademicYearList(modifiedList);
         const selectedAcademicYearId = localStorage.getItem("academicYearId");
         setSelectedSessionId(selectedAcademicYearId ?? "");
@@ -64,11 +75,9 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     }
   }, [setLanguage]);
 
-
-
   useEffect(() => {
-    const storedUserData=localStorage.getItem("adminInfo")
-    if(storedUserData){
+    const storedUserData = localStorage.getItem("adminInfo");
+    if (storedUserData) {
       const userData = JSON.parse(storedUserData);
       setUserRole(userData.role);
     }
@@ -86,36 +95,27 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     setIsActiveYearSelected(isActive);
 
     queryClient.clear();
- // window.location.reload();
- const storedUserData = JSON.parse(
-  localStorage.getItem("adminInfo") || "{}"
-);
+    // window.location.reload();
+    const storedUserData = JSON.parse(
+      localStorage.getItem("adminInfo") || "{}"
+    );
     // window.location.href = (storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)?"/course-planner":"/centers";
-    const { locale } = router; 
-    if(storedUserData?.role === Role.SCTA || storedUserData?.role === Role.CCTA)
-    {
-      if(locale)
-    router.push("/course-planner", undefined, { locale: locale });
-       else
-       router.push("/course-planner");
-    }
-    else{
-      if(locale)
-      {
-        if(storedUserData?.role === Role.CENTRAL_ADMIN)
-        router.push("/state", undefined, { locale: locale });
-        else
-        router.push("/centers", undefined, { locale: locale });
-
+    const { locale } = router;
+    if (
+      storedUserData?.role === Role.SCTA ||
+      storedUserData?.role === Role.CCTA
+    ) {
+      if (locale) router.push("/course-planner", undefined, { locale: locale });
+      else router.push("/course-planner");
+    } else {
+      if (locale) {
+        if (storedUserData?.role === Role.CENTRAL_ADMIN)
+          router.push("/state", undefined, { locale: locale });
+        else router.push("/centers", undefined, { locale: locale });
+      } else {
+        if (storedUserData?.role === Role.CENTRAL_ADMIN) router.push("/state");
+        else router.push("/centers");
       }
-    else
-    {
-      if(storedUserData?.role === Role.CENTRAL_ADMIN)
-      router.push("/state");
-      else
-      router.push("/centers");
-
-    }
     }
   };
 
@@ -156,13 +156,13 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             display: {
               lg: "none",
               xs: "flex",
-              '@media (max-width: 600px)': {
+              "@media (max-width: 600px)": {
                 padding: "0px",
-              }
+              },
             },
           }}
         >
-          <FeatherIcon icon="menu" size="20" />
+          {showIcon === false ? "" : <FeatherIcon icon="menu" size="20" />}
         </IconButton>
         {/* ------------------------------------------- */}
         {/* Search Dropdown */}
@@ -175,36 +175,38 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
 
         <Box flexGrow={1} />
 
-        
-       {userRole !== Role.CCTA && userRole !== Role.SCTA && userRole!=="" &&(<Box sx={{ flexBasis: "20%" }}>
-          {/* <FormControl className="drawer-select" sx={{ width: '100%' }}> */}
-          <Select
-            onChange={handleSelectChange}
-            value={selectedSessionId}
-            className="select-languages"
-            displayEmpty
-            sx={{
-              borderRadius: "0.5rem",
-              // color: theme.palette.warning['200'],
-              width: "100%",
-              marginBottom: "0rem",
-              height: "30px",
-              color: "#fff",
-              border: "1px solid #fff",
-              "& .MuiSvgIcon-root": {
-                color: "#fff",
-              },
-            }}
-          >
-            {academicYearList.map(({ id, session }) => (
-              <MenuItem key={id} value={id}>
-                {session}
-              </MenuItem>
-            ))}
-          </Select>
-          {/* </FormControl> */}
-        </Box>)}
-
+        {userRole !== Role.CCTA &&
+          userRole !== Role.SCTA &&
+          userRole !== "" && (
+            <Box sx={{ flexBasis: "20%" }}>
+              {/* <FormControl className="drawer-select" sx={{ width: '100%' }}> */}
+              <Select
+                onChange={handleSelectChange}
+                value={selectedSessionId}
+                className="select-languages"
+                displayEmpty
+                sx={{
+                  borderRadius: "0.5rem",
+                  // color: theme.palette.warning['200'],
+                  width: "100%",
+                  marginBottom: "0rem",
+                  height: "30px",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  "& .MuiSvgIcon-root": {
+                    color: "#fff",
+                  },
+                }}
+              >
+                {academicYearList.map(({ id, session }) => (
+                  <MenuItem key={id} value={id}>
+                    {session}
+                  </MenuItem>
+                ))}
+              </Select>
+              {/* </FormControl> */}
+            </Box>
+          )}
 
         <Box
           sx={{
@@ -217,7 +219,7 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             height: "20px",
             width: "35px",
             borderRadius: "10px",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
           onClick={handleClick}
         >
@@ -232,13 +234,7 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
             <TranslateIcon />
 
           </IconButton> */}
-          <Image src={deleteIcon} alt="" 
-          width={22}
-          />
-
-
-
-
+          <Image src={deleteIcon} alt="" width={22} />
         </Box>
         <Menu
           id="long-menu"
@@ -290,6 +286,7 @@ Header.propTypes = {
   position: PropTypes.string,
   toggleSidebar: PropTypes.func,
   toggleMobileSidebar: PropTypes.func,
+  showIcon: PropTypes.bool,
 };
 
 export default Header;
