@@ -95,8 +95,10 @@ const LoginPage = () => {
             {
               router.push("/state", undefined, { locale: locale });
             }
-            else
-            router.push("/centers", undefined, { locale: locale });
+            else if (role?.role === Role.ADMIN || role?.role === Role.CENTRAL_ADMIN ) 
+            {
+              router.push("/centers", undefined, { locale: locale });
+            }
 
           }
         }
@@ -170,10 +172,13 @@ const LoginPage = () => {
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
         if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
-          const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
-          showToastMessage(errorMessage, "error");
-          localStorage.removeItem("token");
-        } else {
+          // const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
+          // showToastMessage(errorMessage, "error");
+          //localStorage.removeItem("token");
+          router.push({
+            pathname: '/unauthorized',
+            query: { role: userInfo?.role }, // Pass your query parameters here
+          });        } else {
           setAdminInformation(userInfo);
           const getAcademicYearList = async () => {
             const academicYearList: AcademicYear[] = await getAcademicYear();
