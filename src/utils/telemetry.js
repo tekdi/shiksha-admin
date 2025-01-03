@@ -31,7 +31,7 @@ const telemetryConfig = {
     (typeof window !== "undefined" && localStorage.getItem("id")) ||
     "Anonymous",
   sid: generateUUID(),
-  batchsize: 30,
+  batchsize: 5,
   mode: "",
   host: hostURL, //TODO: Change this host and endpoint properly
   endpoint: "/v1/telemetry",
