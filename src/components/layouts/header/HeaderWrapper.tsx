@@ -12,11 +12,10 @@ const HeaderWrapper = () => {
     <Header
       sx={{
         zIndex: 0,
-        width: isSidebarOpen && lgUp ? "78%" : "100%",
+        width: "100%",
         paddingLeft: isSidebarOpen && lgUp ? "265px" : "",
         backgroundColor: "#4d4639",
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-        // paddingBottom: "1rem",
       }}
       toggleMobileSidebar={() => setMobileSidebarOpen(true)}
       showIcon={false}
