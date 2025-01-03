@@ -460,6 +460,14 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           };
           telemetryFactory.interact(telemetryInteract);
         } else {
+          if(apiBody?.name)
+          {
+            apiBody.name = apiBody?.name.trim();
+          }
+          if(apiBody?.father_name)
+          {
+            apiBody.father_name = apiBody?.father_name.trim();
+          }
           const response = await createUser(apiBody);
           console.log(response);
           if (response) {
