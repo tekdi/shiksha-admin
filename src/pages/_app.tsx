@@ -21,7 +21,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
-import { TelemetryEventType } from "@/utils/app.constant";
+import { Role, TelemetryEventType } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import RouteGuard from "@/components/RouteGuard";
 
@@ -44,6 +44,28 @@ function App({ Component, pageProps }: AppProps) {
 
    
   }, [router]);
+
+  useEffect(() => {
+    let userInfo;
+
+   
+    if (typeof window !== "undefined" && window.localStorage) {
+      const adminInfo = localStorage.getItem("adminInfo");
+      if (adminInfo && adminInfo !== "undefined") {
+        userInfo = JSON.parse(adminInfo || "{}");
+      }
+
+    }
+    if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA && router.pathname !== "/unauthorized" &&  router.pathname !== "/login" &&  router.pathname !== "/logout") {
+      router.push({
+        pathname: '/unauthorized',
+        query: { role: userInfo?.role }, 
+      });
+    }
+   
+  },[router]);
+
+ 
   useEffect(() => {
     // Initialize GA only once
     if (!window.GA_INITIALIZED) {
