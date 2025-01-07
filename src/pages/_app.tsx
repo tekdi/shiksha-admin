@@ -46,25 +46,33 @@ function App({ Component, pageProps }: AppProps) {
   }, [router]);
 
   useEffect(() => {
-    let userInfo;
-
-   
-    if (typeof window !== "undefined" && window.localStorage) {
-      const adminInfo = localStorage.getItem("adminInfo");
-      if (adminInfo && adminInfo !== "undefined") {
-        userInfo = JSON.parse(adminInfo || "{}");
-      }
-
-    }
-    if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA && router.pathname !== "/unauthorized" &&  router.pathname !== "/login" &&  router.pathname !== "/logout") {
+    if (typeof window === "undefined" || !window.localStorage) return; // Exit early if not in browser
+  
+    const adminInfo = localStorage.getItem("adminInfo");
+  
+    if (!adminInfo || adminInfo === "undefined") return; 
+  
+    const userInfo = JSON.parse(adminInfo);
+  
+    const restrictedRoles = [
+      Role.ADMIN,
+      Role.CENTRAL_ADMIN,
+      Role.SCTA,
+      Role.CCTA
+    ];
+  
+    const restrictedPaths = ["/unauthorized", "/login", "/logout"];
+    const isRestrictedRole = !restrictedRoles.includes(userInfo?.role);
+    const isRestrictedPath = !restrictedPaths.includes(router.pathname);
+  
+    if (isRestrictedRole && isRestrictedPath) {
       router.push({
         pathname: '/unauthorized',
-        query: { role: userInfo?.role }, 
+        query: { role: userInfo?.role },
       });
     }
-   
-  },[router]);
-
+  }, [router]);
+  
  
   useEffect(() => {
     // Initialize GA only once
