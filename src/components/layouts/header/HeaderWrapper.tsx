@@ -11,7 +11,6 @@ const HeaderWrapper = () => {
   return (
     <Header
       sx={{
-        zIndex: 0,
         width: "100%",
         paddingLeft: isSidebarOpen && lgUp ? "265px" : "",
         backgroundColor: "#4d4639",
