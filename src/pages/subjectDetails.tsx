@@ -205,7 +205,7 @@ const SubjectDetails = () => {
 
     if (subjects) {
       try {
-        const parsedData = JSON.parse(subjects);
+        const parsedData = JSON.parse(subjects)?.sort();
         setSubject(parsedData);
       } catch (error) {
         console.error("Failed to parse subjects from localStorage:", error);
@@ -460,7 +460,7 @@ const SubjectDetails = () => {
           (course: any) => course.courseTypeName === type
         );
 
-        const matchingSubjects = matchedCourse ? matchedCourse.subjects : [];
+        const matchingSubjects = matchedCourse ? matchedCourse.subjects.sort() : [];
 
         setSubject(matchingSubjects);
         localStorage.setItem(

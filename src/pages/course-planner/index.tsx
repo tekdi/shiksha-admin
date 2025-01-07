@@ -68,7 +68,7 @@ const Foundation = () => {
 
         if (role === "Central Admin CCTA") {
           // Get all states and their names
-          const stateNames = states.map((state: any) => state.name);
+          const stateNames = states.map((state: any) => state.name)?.sort();
           setStateNames(stateNames);
           setState(stateNames);
 
