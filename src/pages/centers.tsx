@@ -119,7 +119,7 @@ const Center: React.FC = () => {
   const [pageLimit, setPageLimit] = useState(Numbers.TEN);
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [pagination, setPagination] = useState(true);
-  const [sortBy, setSortBy] = useState(["createdAt", "asc"]);
+  const [sortBy, setSortBy] = useState(["name", "asc"]);
   const [selectedStateCode, setSelectedStateCode] = useState("");
   const [selectedDistrictCode, setSelectedDistrictCode] = useState("");
   const [selectedBlockCode, setSelectedBlockCode] = useState("");
