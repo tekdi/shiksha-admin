@@ -21,7 +21,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
-import { TelemetryEventType } from "@/utils/app.constant";
+import { Role, TelemetryEventType } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import RouteGuard from "@/components/RouteGuard";
 
@@ -44,6 +44,36 @@ function App({ Component, pageProps }: AppProps) {
 
    
   }, [router]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.localStorage) return; // Exit early if not in browser
+  
+    const adminInfo = localStorage.getItem("adminInfo");
+  
+    if (!adminInfo || adminInfo === "undefined") return; 
+  
+    const userInfo = JSON.parse(adminInfo);
+  
+    const restrictedRoles = [
+      Role.ADMIN,
+      Role.CENTRAL_ADMIN,
+      Role.SCTA,
+      Role.CCTA
+    ];
+  
+    const restrictedPaths = ["/unauthorized", "/login", "/logout"];
+    const isRestrictedRole = !restrictedRoles.includes(userInfo?.role);
+    const isRestrictedPath = !restrictedPaths.includes(router.pathname);
+  
+    if (isRestrictedRole && isRestrictedPath) {
+      router.push({
+        pathname: '/unauthorized',
+        query: { role: userInfo?.role },
+      });
+    }
+  }, [router]);
+  
+ 
   useEffect(() => {
     // Initialize GA only once
     if (!window.GA_INITIALIZED) {
