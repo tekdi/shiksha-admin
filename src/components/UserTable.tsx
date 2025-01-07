@@ -162,7 +162,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [cohortsFetched, setCohortsFetched] = useState(false);
   const { t } = useTranslation();
   const [pageSize, setPageSize] = React.useState<string | number>("10");
-  const [sortBy, setSortBy] = useState(["createdAt", "asc"]);
+  const [sortBy, setSortBy] = useState(["name", "asc"]);
   const [sortByForCohortMemberList, setsortByForCohortMemberList] = useState([
     "name",
     SORT.ASCENDING,
