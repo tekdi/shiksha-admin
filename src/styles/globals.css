@@ -191,3 +191,8 @@ p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-con
 lib-editor .h-100vh{
   overflow-y: auto !important;
 }
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 16px !important;
+  color: #1E1B16; /* Adjust icon size */
+}
