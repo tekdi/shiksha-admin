@@ -410,16 +410,25 @@ export const filterAndMapAssociations = (
 };
 
 
-export const dataURLToBlob = (dataURL: any): Blob => {
-  const [header, base64Data] = dataURL.split(',');
-  const mimeType = header.match(/:(.*?);/)[1];
-  const binary = atob(base64Data);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) {
-    array.push(binary.charCodeAt(i));
-  }
-  return new Blob([new Uint8Array(array)], { type: mimeType });
-}
+export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
+  return dataURLs.map((dataURL) => {
+    console.log("dataURL", dataURL);
+    const [header, base64Data] = dataURL.split(",");
+    const mimeTypeMatch = header.match(/:(.*?);/);
+    if (!mimeTypeMatch) {
+      throw new Error("Invalid data URL format");
+    }
+    const mimeType = mimeTypeMatch[1];
+    console.log("base64Data", base64Data);
+    const binary = atob(base64Data);
+    const array = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      array[i] = binary.charCodeAt(i);
+    }
+    return new Blob([array], { type: mimeType });
+  });
+};
+
 
 
 export const getFilenameFromDataURL = (dataURL: string): string | null => {

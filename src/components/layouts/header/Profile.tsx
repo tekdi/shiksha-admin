@@ -433,7 +433,6 @@ const Profile = () => {
           </Box>
         </Box>
       </Menu>
-      {console.log(adminInfo?.role)}
       {openEditModal && (
         <CommonUserModal
           open={openEditModal}

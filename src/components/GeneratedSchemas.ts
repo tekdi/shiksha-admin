@@ -112,11 +112,13 @@ export const GenerateSchemaAndUiSchema = (
          fieldUiSchema["ui:widget"] = "CustomRadioWidget";
         break;
         case "file":
-          fieldSchema.type = "string"; // Represent file data as a string
-          // fieldSchema.title =  "Upload File";
-           fieldSchema.format =  "file";
-          fieldSchema.format = "data-url"; // Indicate the file upload format
-          fieldUiSchema["ui:widget"] = "file"; // Use the 'file' widget for uploads
+          fieldSchema.type = "array";
+    fieldSchema.items = {
+      type: "string",
+      format: "data-url", // Represents files as base64-encoded strings
+    };
+    fieldUiSchema["ui:widget"] = "files"; // Use the 'file' widget
+  
           if (field?.hint) {
             fieldUiSchema["ui:help"] = t(`FORM.${field?.hint}`);
           }

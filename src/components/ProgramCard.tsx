@@ -14,18 +14,26 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import appLogo from "../../public/images/Logo.svg";
-import { deleteProgram, updateProgram } from "@/services/ProgramServices";
+
+
+import { deleteProgram, getProgramList, updateProgram } from "@/services/ProgramServices";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { showToastMessage } from "./Toastify";
 import { useTranslation } from "next-i18next";
-
+import { getFormRead } from "@/services/CreateUserService";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination } from "swiper/modules";
 interface ProgramCardProps {
   programId: string;
   programName: string;
   description: string;
-  imageUrl: string;
+  imageUrl: string[];
   status?: string;
 }
+const images = [appLogo];
 
 const ProgramCard: React.FC<ProgramCardProps> = ({
   programId,
@@ -73,6 +81,14 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
     }
   };
+  const handleMenuEdit = async() => {
+    // const result = await getProgramList()
+    // const formFields = await getFormRead("TENANT", "TENANT");
+
+    // const editProgram = result?.result.find((item: any) => item.tenantId === programId);
+     
+  //  setFormData(mapFields(formFields, editProgram));
+};
   return (
     <Card
       sx={{ width: "300px", height: "300px",  borderRadius: 2,  border: "1px solid #D0C5B4" }}
@@ -101,13 +117,25 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
       </Box>
       {/* Program Content */}
       <CardContent>
-        {imageUrl !== "No image available" ? (
+        {imageUrl[0] !== "No image available" ? (
+          <Swiper
+          modules={[Navigation, Pagination]}
+          spaceBetween={20}
+          slidesPerView={1}
+          navigation
+          pagination={{ clickable: true }}
+          loop={true}
+        >      {imageUrl.map((src, index) => (
+        <SwiperSlide key={index}>
           <CardMedia
             component="img"
             height={"150px"}
-            image={imageUrl}
+            image={src}
             alt={"program image"}
           />
+          </SwiperSlide>
+        ))}
+            </Swiper>
         ) : (
           <Image
             src={appLogo}
@@ -124,7 +152,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleMenuClose}>
+            <MenuItem onClick={handleMenuEdit}>
               <EditIcon fontSize="small" sx={{ mr: 1 }} />
               Edit Details
             </MenuItem>

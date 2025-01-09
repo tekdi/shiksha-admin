@@ -75,7 +75,7 @@ const ProgramList: React.FC = () => {
           domain: program.domain,
           status: program.status,
           description: program.description,
-          programImages: program.programImages?.[0] || "No image available",
+          programImages: program.programImages || ["No image available"],
           tenantId:program.tenantId
         }))
         .filter((program: any) => 
@@ -126,7 +126,7 @@ const ProgramList: React.FC = () => {
   ) => {
     setStatusValue(newValue);
   };
-const handleEdit = (rowData: any) => {};
+
   const handleDelete = (rowData: any) => {};
   
   const handleSortChange = async (event: SelectChangeEvent) => {
