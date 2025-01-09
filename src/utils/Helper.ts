@@ -431,12 +431,14 @@ export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
 
 
 
-export const getFilenameFromDataURL = (dataURL: string): string | null => {
-  // Check if the dataURL has a custom filename parameter
-  const matches = dataURL.match(/filename=([^;&]+)/); // Look for `filename` in the query
-  if (matches && matches[1]) {
-    return decodeURIComponent(matches[1]);
-  }
+export const getFilenameFromDataURL = (dataURLs: string[]): (string | null)[] => {
+  return dataURLs.map((dataURL) => {
+    // Check if the dataURL has a custom filename parameter
+    const matches = dataURL.match(/filename=([^;&]+)/); // Look for `filename` in the query
+    if (matches && matches[1]) {
+      return decodeURIComponent(matches[1]);
+    }
 
-  return null;
-}
+    return null;
+  });
+};

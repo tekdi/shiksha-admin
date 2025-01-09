@@ -73,7 +73,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         binaryFiles = dataURLToBlob(data?.formData?.programImages);
       }
       
-      const fileName = getFilenameFromDataURL(data?.formData?.programImages?.[0]) || 'image.png'; // Use the first image for the name
+      const fileName = getFilenameFromDataURL(data?.formData?.programImages) || 'image.png'; // Use the first image for the name
       delete data?.formData?.programImages;
       
       const formData = new FormData();
@@ -86,7 +86,8 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
       // Append each binary file to FormData
       if (binaryFiles) {
         binaryFiles.forEach((file, index) => {
-          const currentFileName = index === 0 ? fileName : `image_${index + 1}.png`; // Unique file names
+          
+          const currentFileName =  fileName[index] || `image_${index + 1}.png`; // Unique file names
           formData.append("programImages", file, currentFileName);
         });
       }
