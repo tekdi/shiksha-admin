@@ -14,7 +14,7 @@ import SimpleModal from "./SimpleModal";
 import { dataURLToBlob, getFilenameFromDataURL } from "@/utils/Helper";
 import { showToastMessage } from "./Toastify";
 import { getFormRead } from "@/services/CreateUserService";
-
+import path from 'path';
 interface AddProgramModalProps {
   open: boolean;
   onClose: () => void;
@@ -87,8 +87,8 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
       if (binaryFiles) {
         binaryFiles.forEach((file, index) => {
           
-          const currentFileName =  fileName[index] || `image_${index + 1}.png`; // Unique file names
-          formData.append("programImages", file, currentFileName);
+          const currentFileName =  fileName[index] || `image_${index + 1}${path.extname(fileName[index - 1] || '.png')}`; // Unique file names
+            formData.append("programImages", file, currentFileName);
         });
       }
       
