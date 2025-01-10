@@ -65,8 +65,7 @@ const ProgramList: React.FC = () => {
   useEffect(() => {
     const fetchProgramList = async () => {
       try {
-        const result = await getProgramList();
-        console.log("result", result?.result);
+        const result = await getProgramList(); 
         
         // Format the program list based on the searchKeyword
         const programSummaries = result?.result

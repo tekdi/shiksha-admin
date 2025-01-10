@@ -26,8 +26,7 @@ const ResourceList = () => {
         fetchedLearningResources.forEach((resource: { id: string }) => {
           resource.id = resource.id.toLowerCase();
         });
-
-        console.log(fetchedLearningResources);
+ 
 
         let contents = await fetchBulkContents(
           fetchedLearningResources?.map((item: any) => item.id)
@@ -42,8 +41,7 @@ const ResourceList = () => {
             ...item,
             type: contentType,
           };
-        });
-        console.log("contents", contents);
+        }); 
 
         const preRequisite = contents.filter(
           (item: any) => item.type === ResourceType.LEARNER_PRE_REQUISITE

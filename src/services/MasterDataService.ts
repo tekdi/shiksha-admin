@@ -201,12 +201,10 @@ export const createOrUpdateOption = async (
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/update/${fieldId}`;
 
-  console.log("API URL:", apiUrl);
-  console.log("Request Body:", { fieldParams });
+  
 
   try {
-    const response = await patch(apiUrl, { fieldParams });
-    console.log("api response", response?.data);
+    const response = await patch(apiUrl, { fieldParams }); 
     return response?.data;
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {

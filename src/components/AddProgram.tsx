@@ -53,8 +53,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
   ) => {
-    // event.preventDefault();
-    console.log("data?.formData", data);
+    // event.preventDefault(); 
     // Prepare FormData
     // const formData = new FormData(data);
     // // formData.append('name', programName);
@@ -97,8 +96,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
       showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"), "success");
 
       setFetchPrograms(!fetchPrograms);
-      onClose();
-      console.log("Program created successfully:", result);
+      onClose(); 
     } catch (error) {
       console.error("Error creating program:", error);
     }
@@ -113,13 +111,10 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         // const response2= await getFormRead(
         //   FormContext.USERS,
         //   userType
-        // );
-        // console.log("sortedFields", response);
+        // ); 
        const formFields = await getFormRead("TENANT", "TENANT");
 
-      
-        //    console.log(studentFormData)
-        // console.log("object",response);
+       
         if (formFields) {
          
           const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
@@ -127,8 +122,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
             t
           );
           setFormValue(formValues);
-          setSchema(schema);
-          console.log({ schema, uiSchema });
+          setSchema(schema); 
           setUiSchema(uiSchema);
         }
       } catch (error) {
@@ -137,8 +131,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
     };
     getAddUserFormData();
   }, [i18n.language]);
-  const handleChange = (event: any) => {
-    console.log("Form data changed:", event?.target?.files?.[0]);
+  const handleChange = (event: any) => { 
   };
   const handleError = (errors: any) => {
     console.log("Form errors:", errors);
@@ -190,10 +183,8 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         onSubmit={handleSubmit}
         // onChange={handleChange}
         onChange={({ formData }) => {
-          // setFormData(formData);
-          console.log({ formData })
-          if (formData.programImages instanceof File) {
-            console.log({ formData })
+          // setFormData(formData); 
+          if (formData.programImages instanceof File) { 
             // setFile(formData.fileInput); // Update the file state when the form data changes
           }
         }}

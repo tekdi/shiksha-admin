@@ -148,8 +148,7 @@ export const updateCohortMemberStatus = async ({
     const response = await put(apiUrl, {
       status: memberStatus,
       statusReason,
-    });
-    console.log('data', response?.data);
+    }); 
     return response?.data;
   } catch (error) {
     console.error('error in attendance report api ', error);

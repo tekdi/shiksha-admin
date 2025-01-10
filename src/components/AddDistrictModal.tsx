@@ -102,8 +102,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
             if(userData?.role===Role.CENTRAL_ADMIN)
        {
 
-        const result= await formatedStates();
-         console.log("result", result)
+        const result= await formatedStates(); 
          setStates(result)
          setStateCode(result[0]?.value);
          setStateParentId(result[0]?.cohortId);
@@ -122,8 +121,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
             controllingField: statesField.code,
           }));
         }
-      } catch (error) {
-        console.log(error);
+      } catch (error) { 
       }
     };
     if (open) {
@@ -210,8 +208,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
           ...prev,
           controllingField: selectedCodes[0],
         }));
-        setStateParentId(cohortIdOfState);
-        console.log("cohortIdOfState",cohortIdOfState);
+        setStateParentId(cohortIdOfState); 
     }
      catch (error) {
       console.log(error);

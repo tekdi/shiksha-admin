@@ -65,7 +65,6 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     value: initialValues.value || "",
     controllingField: initialValues.controllingField || "",
   });
-console.log("formData",initialValues);
   const [errors, setErrors] = useState<Record<string, string | null>>({});
   const [districts, setDistricts] = useState<
     { value: string; label: string; cohortId: string | null }[]
@@ -92,7 +91,6 @@ console.log("formData",initialValues);
       try {
         if (userRole === Role.CENTRAL_ADMIN) {
           const result = await formatedStates();
-          console.log("result", result[0]?.value);
           setStates(result);
           setStateCode(result[0]?.value);
           setDefaultStates(result[0]);
@@ -187,8 +185,7 @@ console.log("formData",initialValues);
     }
   };
   const getFilteredCohortData = async () => {
-    try {
-      console.log("stateCode", stateCode);
+    try { 
       const reqParams = {
         limit: 0,
         offset: 0,
@@ -228,10 +225,7 @@ console.log("formData",initialValues);
               (district: { label: string }) =>
                 district?.label?.toLowerCase() ===
                 transformedName?.toLowerCase()
-            );
-            console.log("districtsOptionRead", districtsOptionRead);
-            console.log("matchingDistrict", matchingDistrict);
-            console.log("cohortDetails", cohortDetails);
+            ); 
 
             return {
               label: transformedName,
@@ -246,8 +240,7 @@ console.log("formData",initialValues);
         )
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
-        );
-      console.log("filteredDistrictData", filteredDistrictData);
+        ); 
       setDistricts(filteredDistrictData);
     } catch (error) {
       setDistricts([]);
@@ -363,8 +356,7 @@ console.log("formData",initialValues);
 
       onClose();
     }
-  };
-  console.log("formData.controllingField", formData.controllingField);
+  }; 
   if(formData.controllingField==="")
   {
     console.log("trueeee")

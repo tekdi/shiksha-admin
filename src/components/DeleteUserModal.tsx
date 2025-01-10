@@ -42,8 +42,7 @@ const DeleteUserModal: React.FC<DeleteUserModalProps> = ({
   userId,
   userName,
   userType
-}) => {
-  console.log(centers)
+}) => { 
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const reasons = [

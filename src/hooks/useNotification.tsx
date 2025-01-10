@@ -10,16 +10,14 @@ const useNotification = () => {
       // if (!userId) {
       //   console.error("User ID is not found in local storage.");
       //   return;
-      // }
-      console.log("dvicce id", userId);
+      // } 
       
 
-      const userDetails = await getUserDetailsInfo(userId, false);
-      console.log("API Response:", userDetails);
+      const userDetails = await getUserDetailsInfo(userId, false); 
 
       const deviceIds = userDetails?.userData?.deviceId;
 
-      console.log("Device ID from API:", deviceIds);
+     
 
       if (deviceIds && deviceIds.length > 0) {
         const recipients = Array.isArray(deviceIds) ? deviceIds : [deviceIds];

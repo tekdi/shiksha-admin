@@ -85,8 +85,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
 
   userType,
   reAssignModal = false,
-}) => {
-  console.log(selectedState.length);
+}) => { 
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [singleState, setSingleState] = useState<boolean>(true);

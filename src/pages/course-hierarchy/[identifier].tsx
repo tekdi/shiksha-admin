@@ -114,7 +114,7 @@ export default function CourseHierarchy() {
         const hierarchyData = hierarchyResponse?.data?.result?.content;
         setCourseHierarchyData([hierarchyData]);
 
-        console.log('hierarchyData:', hierarchyData);
+         
 
         return hierarchyResponse;
       } catch (error) {

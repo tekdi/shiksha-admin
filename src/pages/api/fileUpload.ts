@@ -7,7 +7,7 @@ export const config = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    console.log('req.url ====>', req.url)
+    
   if (req.method === 'POST') {
     try {
       // Create a new Headers object to ensure valid header types

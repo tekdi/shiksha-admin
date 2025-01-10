@@ -161,8 +161,7 @@ const LoginPage = () => {
         userId = localStorage.getItem(Storage.USER_ID);
       }
       const fieldValue = true;
-      if (userId) {
-        console.log("true");
+      if (userId) { 
         const response = await getUserDetailsInfo(userId, fieldValue);
 
         const userInfo = response?.userData;

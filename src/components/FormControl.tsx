@@ -68,8 +68,7 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
     );
     const selectedCohortId = selectedNames?.map(
       (name) => cohortIds?.[names?.indexOf(name)]
-    );
-    console.log("selectedCohortId",selectedCohortId);
+    ); 
 //const selectedCohortId="";
     onCategoryChange(selectedNames, selectedCodes, selectedCohortId);
   };

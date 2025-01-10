@@ -253,8 +253,7 @@ const Center: React.FC = () => {
       //     JSON.stringify(data.sort),
       //   ],
       //   queryFn: () => getCohortList(data),
-      // });
-      console.log(resp)
+      // }); 
       if (resp) {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
@@ -266,8 +265,7 @@ const Center: React.FC = () => {
           cohortIds?.map(async (cohortId: string) => {
             return await getCohortMemberlistData(cohortId);
           })
-        );
-        console.log(result)
+        ); 
         const finalResult = result
           ?.filter((cohort: any) => cohort.type === "COHORT")
         finalResult?.forEach((item: any, index: number) => {
@@ -297,8 +295,7 @@ const Center: React.FC = () => {
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
-        });
-        console.log(resultData)
+        }); 
         setCohortData(resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
@@ -515,8 +512,7 @@ const Center: React.FC = () => {
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query };
-    console.log(selected)
+    const newQuery = { ...router.query }; 
     if (newQuery.center) {
       delete newQuery.center;
     }
@@ -530,8 +526,7 @@ const Center: React.FC = () => {
 
     setSelectedDistrictStore(selected[0])
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
-      if (filters.status) {
-        console.log("true...")
+      if (filters.status) { 
         setFilters({
           states: selectedStateCode,
           status: filters.status,
@@ -597,8 +592,7 @@ const Center: React.FC = () => {
     }
     if (newQuery.block) {
       delete newQuery.block;
-    }
-    console.log(code?.join(","))
+    } 
 
 
 
@@ -748,8 +742,7 @@ const Center: React.FC = () => {
 
   };
 
-  const handleSearch = (keyword: string) => {
-    console.log("keyword", keyword?.length);
+  const handleSearch = (keyword: string) => { 
     setPageOffset(Numbers.ZERO);
     setPageCount(Numbers.ONE);
     if (keyword?.length > 3) {
@@ -916,9 +909,7 @@ const Center: React.FC = () => {
       const fieldSchema = schemaProperties[fieldKey];
       const fieldId = fieldSchema?.fieldId;
 
-      console.log(
-        `FieldID: ${fieldId}, FieldValue: ${JSON.stringify(fieldSchema)}, type: ${typeof fieldValue}`
-      );
+       
 
       if (fieldId === null || fieldId === "null") {
         if (typeof fieldValue !== "object") {
@@ -1093,8 +1084,7 @@ const Center: React.FC = () => {
       console.error("No members available for this cohort.");
       return;
     }
-
-    console.log(`${type} members clicked`, count, `for cohort`, cohortId);
+ 
 
     try {
       let data = {
@@ -1151,13 +1141,11 @@ const Center: React.FC = () => {
         //   `learners?state=${urlData.stateCode}&district=${urlData.districtCode}&block=${urlData.blockCode}&status=${urlData.type}`
         // );
       }
-
-      console.log("urlData", urlData);
+ 
     } catch (error) {
       console.log("Error handling member click:", error);
     }
-  };
-  console.log(cohortData);
+  }; 
 
   // props to send in header
   const userProps = {

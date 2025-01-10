@@ -84,8 +84,7 @@ export const getFilteredMenuItems = () => {
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    }
-    console.log("userInfo", userInfo);
+    } 
 
     if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace

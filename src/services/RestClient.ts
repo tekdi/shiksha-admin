@@ -5,8 +5,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 export async function get(
   url: string,
   headers: AxiosRequestConfig["headers"] = {},
-): Promise<AxiosResponse> {
-  console.log(url);
+): Promise<AxiosResponse> { 
   return axiosInstance.get(url, { headers });
 }
 
