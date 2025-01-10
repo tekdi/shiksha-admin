@@ -17,6 +17,7 @@ import { useTranslation } from "next-i18next";
 import { getDistrictsForState,getStateBlockDistrictList } from "@/services/MasterDataService";
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { transformLabel } from "@/utils/Helper";
+import { Status } from "@/utils/app.constant";
 interface AddSchoolModalProps {
   open: boolean;
   onClose: () => void;
@@ -72,7 +73,7 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
         offset: 0,
         filters: {
           type: type,
-          status: ["active"]
+          status: [Status.ACTIVE]
         },
         sort: ["name", "asc"],
       };
@@ -80,8 +81,6 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
       try {
         const response = await getCohortList(reqParams);
         setCohortData(response?.results?.cohortDetails);
-        console.log(`setCohortData`, response?.results?.cohortDetails);
-        console.log('type', type);
         return response?.results?.cohortDetails || [];
       } catch (error) {
         console.error("Error fetching cohort data", error);

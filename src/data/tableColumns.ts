@@ -82,10 +82,10 @@ export const getCenterTableData = (t: any, isMobile: boolean) => {
   const configs: ColumnConfig[] = [
     { key: "className", titleKey: "TABLE_TITLE.NAME", width: 250 },
     // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
-    { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
+    // { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
     { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 130 },
-    { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
+    // { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
 
     {
       key: "totalActiveMembers",

@@ -727,7 +727,7 @@ const Block: React.FC = () => {
                   onChange={handleClusterChange}
                 >
                   <MenuItem value="all">
-                    {t("All")}
+                    {t("COMMON.ALL")}
                   </MenuItem>
                   {matchedClusters?.map((districtDetail) => (
                     <MenuItem
