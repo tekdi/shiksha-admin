@@ -23,8 +23,7 @@ const generateColumns = (
     sortDirection: config.sortDirection,
     width: isMobile && config.width ? config.width : config.width || undefined,
     isSortable: config.isSortable,
-  }));
-  console.log("configs", newConfigs);
+  })); 
   return [...newConfigs];
 };
 
@@ -178,8 +177,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
 
   //   if (adminInfo && adminInfo !== "undefined") {
   //     userInfo = JSON.parse(adminInfo || "{}");
-  //   }
-  //   console.log("userInfo", userInfo);
+  //   } 
   // // Conditionally add the "actions" column if isActiveYear is true
   // if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
   //   configs.push({
@@ -195,8 +193,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    }
-    console.log("userInfo", userInfo);
+    } 
   // Conditionally add the "actions" column if isActiveYear is true
   if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
     configs.push({
@@ -245,8 +242,7 @@ export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    }
-    console.log("userInfo", userInfo);
+    } 
   // Conditionally add the "actions" column if isActiveYear is true
   if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
     configs.push({
@@ -292,8 +288,7 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    }
-    console.log("userInfo", userInfo);
+    } 
   // Conditionally add the "actions" column if isActiveYear is true
   if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived ) {
     configs.push({

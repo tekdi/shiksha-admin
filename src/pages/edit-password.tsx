@@ -30,8 +30,7 @@ const EditForgotPassword = () => {
   const handleResetPassword = async (newPassword: string) => {
 
     try {
-      const response = await resetPassword(newPassword);
-      console.log(response);
+      const response = await resetPassword(newPassword); 
       setForgotPassword(true);
     }
 

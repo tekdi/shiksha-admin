@@ -29,7 +29,7 @@ const Profile = () => {
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state?.adminInformation
   );
-  console.log(adminInformation);
+  
   const [submitValue, setSubmitValue] = React.useState<boolean>(false);
 
   const { t } = useTranslation();
@@ -81,7 +81,7 @@ const Profile = () => {
       );
 
       const getValue = (data: any, field: any) => {
-        console.log(data, field);
+        
         if (item.default) {
           return item.default;
         }
@@ -89,8 +89,7 @@ const Profile = () => {
           if (data[item.name] && item?.maxSelections > 1) {
             return [field?.value];
           } else if (item?.type === "checkbox") {
-            console.log(item);
-            console.log(String(field?.value).split(","));
+             
 
             return String(field?.value).split(",");
           } else {
@@ -103,10 +102,10 @@ const Profile = () => {
             return String(field?.value);
           } else {
             if (field?.value === "FEMALE" || field?.value === "MALE") {
-              console.log(true);
+              
               return field?.value?.toLowerCase();
             }
-            //  console.log()
+             
             return field?.value?.toLowerCase();
           }
         }
@@ -117,19 +116,19 @@ const Profile = () => {
           if (userData[item.name] && item?.maxSelections > 1) {
             initialFormData[item.name] = [userData[item.name]];
           } else if (item?.type === "checkbox") {
-            // console.log("checkbox")
+             
 
             initialFormData[item.name] = String(userData[item.name]).split(",");
           } else {
             initialFormData[item.name] = userData[item.name];
           }
         } else if (item?.type === "numeric") {
-          console.log(item?.name);
+           
           initialFormData[item.name] = Number(userData[item.name]);
         } else if (item?.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
         } else {
-          console.log(item.name);
+           
           if (userData[item.name]) {
             initialFormData[item.name] = userData[item.name];
           }
@@ -143,31 +142,29 @@ const Profile = () => {
       }
     });
 
-    console.log("initialFormData", initialFormData);
+     
     return initialFormData;
   };
   const handleEditClick = async (rowData: any) => {
     handleClose4();
     if (submitValue) {
       setSubmitValue(false);
-    }
-    console.log("Edit row:", rowData);
-
+    } 
     try {
       const fieldValue = true;
       const response = await getUserDetailsInfo(
         adminInformation?.userId,
         fieldValue
       );
-      // console.log(role);
+    
 
       let formFields;
       if (Role.STUDENT === adminInformation?.role) {
         formFields = await getFormRead("USERS", "STUDENT");
         setFormData(mapFields(formFields, response));
-        console.log("mapped formdata", formdata);
+         
       } else if (Role.TEACHER === adminInformation?.role) {
-        console.log("mapped formdata", formdata);
+        
 
         formFields = await getFormRead("USERS", "TEACHER");
         setFormData(mapFields(formFields, response));
@@ -180,8 +177,7 @@ const Profile = () => {
       }
       handleOpenEditModal();
 
-      console.log("response", response);
-      console.log("formFields", formFields);
+     
     } catch (error) {
       console.log(error);
     }

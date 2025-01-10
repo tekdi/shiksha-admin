@@ -47,8 +47,7 @@ export const getUserName = async (
   fieldValue: boolean = true
 ) => {
   try {
-    const userDetails = await getUserDetailsInfo(userId, fieldValue);
-    console.log("userDetails", userDetails);
+    const userDetails = await getUserDetailsInfo(userId, fieldValue); 
     return userDetails?.userData?.name; // Accessing the name property from userData
   } catch (error) {
     console.error("Error in fetching user name:", error);
@@ -127,8 +126,7 @@ export const capitalizeFirstLetterOfEachWordInArray = (
 ): string[] => {
   if (!arr) {
     return arr;
-  }
-  console.log(arr);
+  } 
   return arr?.map((str) =>
     str?.replace(/\b[a-z]/g, (char) => char.toUpperCase())
   );
@@ -158,8 +156,7 @@ export const getCurrentYearPattern = () => {
 };
 
 export const mapFields = (formFields: any, Details: any) => {
-  let initialFormData: any = {};
-  console.log("Details", Details);
+  let initialFormData: any = {}; 
 
   formFields.fields.forEach((item: any) => {
     const customFieldValue = Details?.customFields?.find(
@@ -229,8 +226,7 @@ export const mapFields = (formFields: any, Details: any) => {
       }
     }
   });
-
-  console.log("initialFormData", initialFormData);
+ 
   return initialFormData;
 };
 
@@ -411,15 +407,13 @@ export const filterAndMapAssociations = (
 
 
 export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
-  return dataURLs.map((dataURL) => {
-    console.log("dataURL", dataURL);
+  return dataURLs.map((dataURL) => { 
     const [header, base64Data] = dataURL.split(",");
     const mimeTypeMatch = header.match(/:(.*?);/);
     if (!mimeTypeMatch) {
       throw new Error("Invalid data URL format");
     }
-    const mimeType = mimeTypeMatch[1];
-    console.log("base64Data", base64Data);
+    const mimeType = mimeTypeMatch[1]; 
     const binary = atob(base64Data);
     const array = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {

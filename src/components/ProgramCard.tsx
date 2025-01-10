@@ -50,8 +50,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
     (state: any) => state.setFetchPrograms
   );
   const { t } = useTranslation();
-
-  console.log("programId:", programId);
+ 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -75,8 +74,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
     }
     catch(e)
-    {
-       console.log(e)
+    { 
        setAnchorEl(null);
 
     }

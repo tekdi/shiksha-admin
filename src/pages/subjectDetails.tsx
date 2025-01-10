@@ -258,9 +258,7 @@ const SubjectDetails = () => {
               name: item1.name,
               code: item1.code,
               associations: item1.associations,
-            }));
-          console.log(`commonMediumInState`, commonMediumInState);
-          console.log(`commonMediumInBoard`, commonMediumInBoard);
+            })); 
 
           const commonMediumData = findCommonAssociations(
             commonMediumInState,
@@ -333,15 +331,13 @@ const SubjectDetails = () => {
       type,
       store?.stateassociations,
       "code"
-    );
-    console.log(`commonTypeInState`, commonTypeInState);
+    ); 
     const commonTypeInBoard = filterAndMapAssociations(
       "courseType",
       type,
       boardAssociations,
       "code"
-    );
-    console.log(`commonTypeInBoard`, commonTypeInBoard);
+    ); 
     const storageMediumAssociations = localStorage.getItem("mediumAssociations");
     const localMediumAssociations = storageMediumAssociations
       ? JSON.parse(storageMediumAssociations)
@@ -351,10 +347,8 @@ const SubjectDetails = () => {
       type,
       localMediumAssociations,
       "code"
-    );
-    console.log(`mediumAssociations`, localMediumAssociations);
-
-    console.log(`commonTypeInMedium`, commonTypeInMedium);
+    ); 
+ 
     const storageGradeAssociations = localStorage.getItem("gradeAssociations");
     const localGradeAssociations = storageMediumAssociations
       ? JSON.parse(storageMediumAssociations)
@@ -378,9 +372,7 @@ const SubjectDetails = () => {
     const commonType3Data = findCommonAssociations(
       commonTypeData,
       commonType2Data
-    );
-
-    console.log(`commonTypeOverall`, commonType3Data);
+    ); 
     setTypeOptions(commonType3Data);
     setType(commonType3Data);
   };

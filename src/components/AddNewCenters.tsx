@@ -162,8 +162,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
   ) => {
-    const formData = data?.formData;
-    console.log("selectedBlockCohortId", selectedBlockCohortId);
+    const formData = data?.formData; 
     const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
     if (selectedBlockCohortId) {
       const parentId = selectedBlockCohortId;
@@ -361,8 +360,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
                     marginLeft: "10px",
                   }}
                   onClick={() => {
-                    setSubmittedButtonStatus(true);
-                    console.log("Submit button was clicked");
+                    setSubmittedButtonStatus(true); 
                   }}
                 >
                   {t("COMMON.CREATE")}

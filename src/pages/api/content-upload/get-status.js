@@ -21,8 +21,7 @@ export default async function handler(req, res) {
 
         await axios
           .request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
+          .then((response) => { 
             if (response?.data?.result?.content?.artifactUrl != null) {
               res.status(200).json({ doId, success: true });
             } else {

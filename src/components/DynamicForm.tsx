@@ -67,11 +67,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   };
 
   const handleError = (errors: any) => {
-    if (errors.length === 0) {
-      console.log("No errors");
+    if (errors.length === 0) { 
       // You can perform any additional action here when there are no errors
-    }
-    console.log("handle error1");
+    } 
     if (errors.length > 0) {
       const property = errors[0].property?.replace(/^root\./, "");
       const errorField = document.querySelector(
@@ -93,8 +91,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const handleSubmit = (
     event: IChangeEvent<any, RJSFSchema, any>,
     formEvent: React.FormEvent<any>
-  ) => {
-    console.log("Submit button clicked");
+  ) => { 
 
     onSubmit(event, formEvent);
   };
@@ -128,12 +125,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     console.log("errors", errors);
     errors.length === 0 ? setNoError(true) : setNoError(false);
 
-    console.log("schema", schema);
+ 
 
     return errors?.map((error: any) => {
       switch (error.name) {
-        case "required": {
-          console.log(submittedButtonStatus);
+        case "required": { 
           error.message = submittedButtonStatus
             ? t("FORM_ERROR_MESSAGES.THIS_IS_REQUIRED_FIELD")
             : "";
@@ -174,8 +170,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           break;
         }
         case "pattern": {
-          const pattern = error?.params?.pattern;
-          console.log(pattern);
+          const pattern = error?.params?.pattern; 
           const property = error.property.substring(1);
 
           switch (pattern) {

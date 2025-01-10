@@ -113,8 +113,7 @@ const UserTable: React.FC<UserTableProps> = ({
   searchPlaceholder,
   handleAddUserClick,
   parentState,
-}) => {
-  console.log(userType);
+}) => { 
   const [selectedState, setSelectedState] = React.useState<string[]>([]);
   const [blockMembershipIdList, setBlockMembershipIdList] = React.useState<
     string[]
@@ -211,7 +210,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [userId, setUserId] = useState();
 
   const [submitValue, setSubmitValue] = useState<boolean>(false);
-  console.log(selectedBlockCode);
+   
   const reassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.reassignButtonStatus
   );
@@ -258,8 +257,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const handleOpenAddLearnerModal = () => {
     setOpenAddLearnerModal(true);
   };
-  const handleModalSubmit = (value: boolean) => {
-    console.log("true");
+  const handleModalSubmit = (value: boolean) => { 
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
   };
   const handleCloseAddLearnerModal = () => {
@@ -375,8 +373,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedBlockCode("");
     setSelectedDistrictCode("");
     setSelectedState(selected);
-
-    console.log(selected[0]);
+ 
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_STATES")) {
       if (filters.status) setFilters({ status: [filters.status], role: role });
       else setFilters({ role: role });
@@ -391,18 +388,15 @@ const UserTable: React.FC<UserTableProps> = ({
         });
       else setFilters({ states: stateCodes, role: role });
     }
-
-    console.log("Selected categories:", typeof code[0]);
+ 
   };
   const handleFilterChange = async (
     event: React.SyntheticEvent,
     newValue: any
   ) => {
-    setStatusValue(newValue);
-    console.log(newValue);
+    setStatusValue(newValue); 
     setSelectedFilter(newValue);
-    if (newValue === Status.ACTIVE) {
-      console.log(true);
+    if (newValue === Status.ACTIVE) { 
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ACTIVE],
@@ -423,9 +417,7 @@ const UserTable: React.FC<UserTableProps> = ({
           ...restFilters,
         };
       });
-    }
-    console.log(filters);
-
+    } 
     const windowUrl = window.location.pathname;
     const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
@@ -446,8 +438,7 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query };
-    console.log(selected);
+    const newQuery = { ...router.query }; 
     if (newQuery.center) {
       delete newQuery.center;
     }
@@ -514,8 +505,7 @@ const UserTable: React.FC<UserTableProps> = ({
           role: role,
         });
       }
-    }
-    console.log("Selected categories:", selected);
+    } 
   };
   const handleBlockChange = (selected: string[], code: string[]) => {
     setSelectedCenterCode([]);
@@ -528,8 +518,7 @@ const UserTable: React.FC<UserTableProps> = ({
     }
     if (newQuery.block) {
       delete newQuery.block;
-    }
-    console.log(code?.join(","));
+    } 
 
     setSelectedBlock(selected);
     localStorage.setItem("selectedBlock", selected[0]);
@@ -588,12 +577,10 @@ const UserTable: React.FC<UserTableProps> = ({
           role: role,
         });
       }
-    }
-    console.log("Selected categories:", selected);
+    } 
   };
   const handleCenterChange = async (selected: string[], code: string[]) => {
-    if (code[0]) {
-      console.log(code[0]);
+    if (code[0]) { 
       router.replace({
         pathname: router.pathname,
         query: {
@@ -618,8 +605,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
     setSelectedCenter(selected);
     localStorage.setItem("selectedCenter", selected[0]);
-    setSelectedCenterStore(selected[0]);
-    console.log(selected[0]);
+    setSelectedCenterStore(selected[0]); 
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_CENTERS")) {
       setEnableCenterFilter(false);
       setSelectedCenterCode([]);
@@ -653,8 +639,7 @@ const UserTable: React.FC<UserTableProps> = ({
     }
   };
   const handleSortChange = async (event: SelectChangeEvent) => {
-    // let sort;
-    console.log(enableCenterFilter);
+    // let sort; 
     if (event.target?.value === "Z-A") {
       enableCenterFilter
         ? setsortByForCohortMemberList(["name", SORT.DESCENDING])
@@ -697,8 +682,7 @@ const UserTable: React.FC<UserTableProps> = ({
         (field: any) => field.fieldId === item.fieldId
       );
 
-      const getValue = (data: any, field: any) => {
-        console.log(data, field);
+      const getValue = (data: any, field: any) => { 
         if (item.default) {
           return item.default;
         }
@@ -716,11 +700,9 @@ const UserTable: React.FC<UserTableProps> = ({
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (field?.value === "FEMALE" || field?.value === "MALE") {
-              console.log(true);
+            if (field?.value === "FEMALE" || field?.value === "MALE") { 
               return field?.value?.toLowerCase();
-            }
-            //  console.log()
+            } 
             return field?.value?.toLowerCase();
           }
         }
@@ -735,13 +717,11 @@ const UserTable: React.FC<UserTableProps> = ({
           } else {
             initialFormData[item.name] = userData[item.name];
           }
-        } else if (item?.type === "numeric") {
-          console.log(item?.name);
+        } else if (item?.type === "numeric") { 
           initialFormData[item.name] = Number(userData[item.name]);
         } else if (item?.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
-        } else {
-          console.log(item.name);
+        } else { 
           if (userData[item.name]) {
             initialFormData[item.name] = userData[item.name];
           }
@@ -754,28 +734,24 @@ const UserTable: React.FC<UserTableProps> = ({
         }
       }
     });
-
-    console.log("initialFormData", initialFormData);
+ 
     return initialFormData;
   };
   const handleEdit = async (rowData: any) => {
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
     setUserName(rowData?.name);
-
-    console.log("Edit row:", rowData);
+ 
 
     try {
       const userId = rowData.userId;
       setUserId(userId);
       const fieldValue = true;
-      const response = await getUserDetailsInfo(userId, fieldValue);
-      console.log(role);
+      const response = await getUserDetailsInfo(userId, fieldValue); 
 
       let formFields;
       if (Role.STUDENT === role) {
         //  formFields = await getFormRead("USERS", "STUDENT");
-        setFormData(mapFields(studentFormData, response));
-        console.log("mapped formdata", formdata);
+        setFormData(mapFields(studentFormData, response)); 
       } else if (Role.TEACHER === role) {
         // formFields = await getFormRead("USERS", "TEACHER");
 
@@ -790,9 +766,7 @@ const UserTable: React.FC<UserTableProps> = ({
         setFormData(mapFields(contentCreatorFormData, response));
       }
       handleOpenAddLearnerModal();
-
-      console.log("response", response);
-      console.log("formFields", formFields);
+ 
     } catch (error) {
       console.log(error);
     }
@@ -800,33 +774,28 @@ const UserTable: React.FC<UserTableProps> = ({
 
   const handleDelete = (rowData: any) => {
     setIsDeleteModalOpen(true);
-    console.log(rowData);
+     
     setUserName(rowData?.name);
-    console.log(userName);
+ 
 
     setBlockMembershipIdList(rowData.blockMembershipIdList);
     setCenterMembershipIdList(rowData.centerMembershipIdList);
     setSelectedUserId(rowData.userId);
     if (userType === Role.TEAM_LEADERS) {
-      setUserCohorts(rowData.blocks);
-      console.log(userCohort);
+      setUserCohorts(rowData.blocks); 
     } else {
       setUserCohorts(rowData.centers);
     }
-    //const userData="";
-
-    console.log("Delete row:", rowData.userId);
+    //const userData=""; 
   };
 
   const handleReassignCohort = async (rowData: any) => {
-    // setIsDeleteModalOpen(true);
-    console.log(rowData);
+    // setIsDeleteModalOpen(true); 
     setSelectedUserId(rowData?.userId);
     setUserName(rowData?.name);
 
     setCohortId(rowData?.cohortIds);
-    setBlock(rowData?.blocks);
-    console.log(rowData?.districtValue);
+    setBlock(rowData?.blocks); 
 
     setDistrict(rowData?.districtValue);
     setDistrictCode(rowData?.districtCode);
@@ -843,8 +812,7 @@ const UserTable: React.FC<UserTableProps> = ({
     setIsReassignCohortModalOpen(true);
 
     //const userData="";
-    try {
-      console.log(userType, Role.TEAM_LEADER);
+    try { 
       if (userType !== "Team Leaders") {
         const getCentersObject = {
           limit: 0,
@@ -874,17 +842,15 @@ const UserTable: React.FC<UserTableProps> = ({
           fieldName: "blocks",
         };
         const response = await getStateBlockDistrictList(object);
-        //console.log(blockFieldId)
-        const result = response?.result?.values;
-        console.log(result);
+        
+        const result = response?.result?.values; 
         setBlocks(result);
       }
     } catch (error: any) {
       console.log(error);
     }
   };
-  const handleSearch = (keyword: string) => {
-    //  console.log(filters)
+  const handleSearch = (keyword: string) => { 
     setFilters((prevFilters) => ({
       ...prevFilters,
       name: keyword,
@@ -899,8 +865,7 @@ const UserTable: React.FC<UserTableProps> = ({
         let limit = pageLimit;
         let offset = pageOffset * limit;
         // const filters = { role: role , status:"active"};
-        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
-        console.log("filters", filters);
+        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
         if (filters.name) {
           offset = 0;
         }
@@ -924,9 +889,7 @@ const UserTable: React.FC<UserTableProps> = ({
         }
         const result = enableCenterFilter
           ? resp?.userDetails
-          : resp?.getUserDetails;
-        console.log(result);
-        console.log(resp?.totalCount);
+          : resp?.getUserDetails; 
         if (resp?.totalCount >= 15) {
           setPagination(true);
 
@@ -946,8 +909,7 @@ const UserTable: React.FC<UserTableProps> = ({
           //PageSizeSelectorFunction();
         }
 
-        setPageCount(Math.ceil(resp?.totalCount / pageLimit));
-        console.log(result);
+        setPageCount(Math.ceil(resp?.totalCount / pageLimit)); 
         let finalResult;
         if (enableCenterFilter) {
           finalResult = result?.map((user: any) => {
@@ -1059,8 +1021,7 @@ const UserTable: React.FC<UserTableProps> = ({
               // Programs: null,
             };
           });
-        }
-        console.log(finalResult);
+        } 
 
         if (filters?.name && resp?.getUserDetails) {
           const prioritizedResult = finalResult.sort((a: any, b: any) => {
@@ -1091,8 +1052,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
         console.log(error);
       }
-    };
-    console.log(data);
+    }; 
     if (
       selectedBlockCode !== "" ||
       (selectedDistrictCode !== "" && selectedBlockCode === "") ||
@@ -1114,7 +1074,6 @@ const UserTable: React.FC<UserTableProps> = ({
     enableCenterFilter,
     userType,
   ]);
-  console.log(selectedBlockStore);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -1157,15 +1116,14 @@ const UserTable: React.FC<UserTableProps> = ({
               )
               .map((cohort: Cohort) => cohort.cohortMembershipId);
             //  const cohortMembershipId=response?.result?.cohortData?.cohortMembershipId;
-            console.log(blockMembershipIdList);
-            console.log(cohortIds);
+           
 
             let finalArray;
             if (cohortNames?.length >= 1) {
               finalArray = capitalizeFirstLetterOfEachWordInArray(cohortNames);
             }
             //   const finalArray=capitalizeFirstLetterOfEachWordInArray(cohortNames)
-            console.log(finalArray);
+             
             return {
               ...user,
               centerMembershipIdList: centerMembershipIdList,
@@ -1185,7 +1143,7 @@ const UserTable: React.FC<UserTableProps> = ({
     fetchData();
   }, [data, cohortsFetched]);
 
-  console.log(userType);
+   
   useEffect(() => {
     const fetchData = () => {
       try {
@@ -1202,7 +1160,7 @@ const UserTable: React.FC<UserTableProps> = ({
             const stateField = JSON.parse(admin).customFields.find(
               (field: any) => field.label === "STATES"
             );
-            console.log(stateField.value, stateField.code);
+             
             if (!stateField.value.includes(",")) {
               setSelectedState([stateField.value]);
               setSelectedStateCode(stateField.code);
@@ -1215,9 +1173,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //   status:[statusValue],
               // }
 
-              // )
-              // console.log(selectedDistrict)
-              // console.log(selectedBlock)
+              // ) 
               // if( selectedDistrict.length===0 ||selectedDistrict[0]==="All Districts")
               // {
               //   const newQuery = { ...router.query };
@@ -1231,8 +1187,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //   if(newQuery.center)
               //   {
               //     delete newQuery.center;
-              //   }
-              //   console.log(newQuery)
+              //   } 
               //   router.replace({
               //     pathname: router.pathname,
               //     query: {
@@ -1240,8 +1195,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //     }
               //   });
 
-              // }
-              // console.log(selectedBlock)
+              // } 
               // if( selectedBlock.length===0 ||selectedBlock[0]==="All Blocks")
               // {
               //   const newQuery = { ...router.query };
@@ -1315,8 +1269,7 @@ const UserTable: React.FC<UserTableProps> = ({
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode, userType]);
   useEffect(() => {
-    const fetchData = () => {
-      // console.log(selectedCenter.length)
+    const fetchData = () => { 
       if (userType === Role.TEAM_LEADERS || userType === Role.CONTENT_CREATOR) {
         setEnableCenterFilter(false);
       } else {
@@ -1326,8 +1279,7 @@ const UserTable: React.FC<UserTableProps> = ({
             selectedCenter[0] === t("COMMON.ALL_CENTERS")
           ) {
             setEnableCenterFilter(false);
-          } else {
-            console.log(selectedCenterCode);
+          } else { 
 
             setEnableCenterFilter(true);
           }
@@ -1363,7 +1315,6 @@ const UserTable: React.FC<UserTableProps> = ({
     return [...getUserTableColumns(t, isMobile, isArchived)];
   }, [role, t, isMobile, isArchived]);
 
-  console.log(enableCenterFilter);
   // useEffect(() => {
   //   const { state, district, block, center } = router.query;
 
@@ -1388,9 +1339,9 @@ const UserTable: React.FC<UserTableProps> = ({
 
   //   // Handle replacement when only state and district codes are available
   //   if (selectedStateCode!=="" && selectedDistrictCode==="" && selectedBlockCode==="") {
-  //     console.log("true")
+ 
   //     const newQuery = { ...router.query };
-  //      console.log(newQuery)
+  //    
 
   //      if (newQuery.center) {
   //        delete newQuery.center;
@@ -1411,7 +1362,7 @@ const UserTable: React.FC<UserTableProps> = ({
   //    }
   //   if (selectedStateCode!=="" && selectedDistrictCode!=="" && selectedBlockCode==="") {
   //    const newQuery = { ...router.query };
-  //     console.log(newQuery)
+  // 
 
   //     if (newQuery.center) {
   //       delete newQuery.center;
@@ -1452,9 +1403,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
   //   // Handle replacement when state, district, block, and center are all selected
   //   if (selectedStateCode !==""&& selectedDistrictCode!=="" && selectedBlockCode!=="" && selectedCenter.length !== 0) {
-  //     console.log("heyyy")
-
-  //     console.log(selectedCenter);
+ 
   //     if (userType !== Role.TEAM_LEADERS) {
   //       router.replace({
   //         pathname: router.pathname,
@@ -1485,8 +1434,7 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const handleDeleteUser = async (category: string) => {
-    try {
-      console.log(selectedUserId);
+    try { 
       const userId = selectedUserId;
       const userData = {
         userData: {
@@ -1497,8 +1445,7 @@ const UserTable: React.FC<UserTableProps> = ({
       const cohortDeletionResponse = await deleteUser(userId, userData);
       if (cohortDeletionResponse) {
         deleteUserState ? setDeleteUserState(false) : setDeleteUserState(true);
-      }
-      console.log(blockMembershipIdList);
+      } 
       if (userType === Role.TEAM_LEADERS && blockMembershipIdList.length > 0) {
         blockMembershipIdList.forEach(async (item) => {
           const memberStatus = Status.ARCHIVED;
@@ -1524,8 +1471,7 @@ const UserTable: React.FC<UserTableProps> = ({
           });
         });
       }
-
-      console.log(centerMembershipIdList);
+ 
 
       // const response = await deleteUser(userId, userData);
       //   const memberStatus = Status.ARCHIVED;

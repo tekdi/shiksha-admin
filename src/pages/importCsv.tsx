@@ -232,10 +232,7 @@ const ImportCsv = () => {
 
           try {
             const response = await uploadCoursePlanner(csvFile, metaData);
-            console.log(
-              "Upload successful:",
-              response.result.solutionData.message
-            );
+            
 
             if (
               response.result.solutionData.message ===

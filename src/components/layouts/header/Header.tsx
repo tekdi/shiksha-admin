@@ -83,8 +83,7 @@ const Header = ({
     }
   }, []);
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setSelectedSessionId(event.target.value);
-    console.log("selected academic year id", event.target.value);
+    setSelectedSessionId(event.target.value); 
     localStorage.setItem("academicYearId", event.target.value);
     // Check if the selected academic year is active
     const selectedYear = academicYearList?.find(
@@ -128,15 +127,15 @@ const Header = ({
     }
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(event);
+  
     setAnchorEl(event.currentTarget);
-    console.log(anchorEl);
+    
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
   const handleMenuItemClick = (newLocale: any) => {
-    console.log(newLocale);
+    
     setLanguage(newLocale);
     if (typeof window !== "undefined" && window.localStorage) {
       localStorage.setItem("preferredLanguage", newLocale);

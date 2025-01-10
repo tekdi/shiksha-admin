@@ -33,8 +33,7 @@ export const useLocationState = (
   onClose: () => void,
   userType?: any,
  reAssignModal?:boolean
-) => {
-  console.log(reAssignModal)
+) => { 
   
   const [states, setStates] = useState<FieldProp[]>([]);
   const [districts, setDistricts] = useState<FieldProp[]>([]);
@@ -66,8 +65,7 @@ export const useLocationState = (
   const [assignedTeamLeaderNames, setAssignedTeamLeaderNames] = useState([]);
 
   const handleStateChangeWrapper = useCallback(
-    async (selectedNames: string[], selectedCodes: string[]) => {
-      console.log("true", selectedCodes);
+    async (selectedNames: string[], selectedCodes: string[]) => { 
       try {
         setDistricts([]);
         setBlocks([]);
@@ -109,8 +107,7 @@ export const useLocationState = (
       if (selected[0] === "") {
         handleBlockChange([], []);
       }
-      try {
-        console.log(reAssignModal)
+      try { 
        
       //  if(!reAssignModal)
       //  {
@@ -126,7 +123,7 @@ export const useLocationState = (
         };
         const response = await getStateBlockDistrictList(object);
         setBlockFieldId(response?.result?.fieldId);
-        //console.log(blockFieldId)
+       
         const result = response?.result?.values;
         const blockResult=await formatedBlocks(selectedCodes[0])
         setBlocks(blockResult);
@@ -146,14 +143,11 @@ export const useLocationState = (
       }
       try {
         setAllCenters([]);
-
-        console.log(selectedStateCode, selectedDistrictCode);
-        console.log(userType);
+ 
         if (
           userType === FormContextType.TEAM_LEADER ||
           userType === FormContextType.ADMIN_CENTER
-        ) {
-          console.log("true");
+        ) { 
           const object = {
             limit: 0,
             offset: 0,
@@ -168,7 +162,7 @@ export const useLocationState = (
           };
           const response = await getCenterList(object);
           const getCohortDetails = response?.result?.results?.cohortDetails;
-          console.log(getCohortDetails)
+        
           const blockId = getCohortDetails?.map((item: any) => {
             if (item?.type === "BLOCK") {
               return item?.cohortId;
@@ -177,9 +171,8 @@ export const useLocationState = (
           const blockCohortId =  getCohortDetails?.find(
             (item: any) => item?.type === "BLOCK"
           )?.cohortId;
-          console.log(blockCohortId)
-          if (blockCohortId) {
-            console.log("blockId", blockId);
+         
+          if (blockCohortId) { 
             setSelectedBlockCohortId(blockCohortId);
           } else {
             console.log("No Block Id found");
@@ -230,14 +223,14 @@ export const useLocationState = (
             },
           };
           const response = await getCenterList(getCentersObject);
-          console.log(response?.result?.results?.cohortDetails[0].cohortId);
+          
           // setSelectedBlockCohortId(
           //   response?.result?.results?.cohortDetails[0].cohortId
           // );
           const blockCohortId =  response?.result?.results?.cohortDetails?.find(
             (item: any) => item?.type === "BLOCK"
           )?.cohortId;
-          console.log(blockCohortId)
+           
           setSelectedBlockCohortId(blockCohortId)
           //   const result = response?.result?.cohortDetails;
           const dataArray = response?.result?.results?.cohortDetails;
@@ -247,13 +240,10 @@ export const useLocationState = (
             .map((item: any) => ({
               cohortId: item?.cohortId,
               name: item?.name,
-            }));
-          console.log(dataArray);
+            })); 
           setAllCenters(cohortInfo);
         }
-
-
-                console.log(selected);
+ 
       } catch (error) {
         setAllCenters([]);
 
@@ -278,8 +268,7 @@ export const useLocationState = (
       setSelectedCenter([]);
       setSelectedState(selected);
       const stateCodes = code?.join(",");
-      setSelectedStateCode(stateCodes);
-      console.log("Selected categories:", typeof code[0]);
+      setSelectedStateCode(stateCodes); 
     },
     []
   );
@@ -290,8 +279,7 @@ export const useLocationState = (
       setSelectedCenter([]);
       setSelectedDistrict(selected);
       const districts = code?.join(",");
-      setSelectedDistrictCode(districts);
-      console.log("Selected categories:", districts);
+      setSelectedDistrictCode(districts); 
     },
     []
   );
@@ -302,8 +290,7 @@ export const useLocationState = (
       setSelectedBlock(selected);
       const blocks = code?.join(",");
       setSelectedBlockCode(blocks);
-      setdynamicFormForBlock(true);
-      console.log("Selected categories:", blocks);
+      setdynamicFormForBlock(true); 
     },
     []
   );
@@ -315,8 +302,7 @@ export const useLocationState = (
       const centers = code?.join(",");
       setSelectedCenterCode(centers);
       setDynamicForm(true);
-
-      console.log("Selected categories:", selected);
+ 
     },
     []
   );
@@ -363,8 +349,7 @@ export const useLocationState = (
           if (admin) {
             const stateField = JSON.parse(admin).customFields.find(
               (field: any) => field.label === "STATES"
-            );
-            console.log(stateField.value, stateField.code);
+            ); 
 
 
             if (!stateField.value.includes(",")) {
@@ -407,8 +392,7 @@ export const useLocationState = (
                 setSelectedStateCode(stateField.code)
 
                 const stateResponse = await getCenterList(StateObject);
-                const getCohortDetails = stateResponse?.result?.results?.cohortDetails;
-                console.log(getCohortDetails)
+                const getCohortDetails = stateResponse?.result?.results?.cohortDetails; 
                 const stateId = getCohortDetails?.map((item: any) => {
                   if (item?.type === "STATE") {
                     return item?.cohortId;
@@ -420,18 +404,15 @@ export const useLocationState = (
                   controllingfieldfk: stateField.code,
           
                   fieldName: "districts",
-                };
-                console.log(object);
+                }; 
                 const response = await getStateBlockDistrictList(object);
                 const result = response?.result?.values;
                 const districtResult= await formatedDistricts();
-               
-                console.log(districtResult)
+                
                 setDistricts(districtResult);
                 if(reAssignModal)
                 {
-                const data = getStoredData();
-                console.log(data)
+                const data = getStoredData(); 
     setSelectedBlock([data.blocks]);
     setSelectedDistrict([data.districtValue] );
     setSelectedDistrictCode(data.districtCode);
@@ -445,8 +426,7 @@ export const useLocationState = (
         fieldName: "blocks",
       };
       const response = await getStateBlockDistrictList(object);
-      setBlockFieldId(response?.result?.fieldId);
-      //console.log(blockFieldId)
+      setBlockFieldId(response?.result?.fieldId); 
       const result = response?.result?.values;
       const blockResult=await formatedBlocks(data.districtCode)
       setBlocks(blockResult);
@@ -472,8 +452,7 @@ export const useLocationState = (
         .map((item: any) => ({
           cohortId: item?.cohortId,
           name: item?.name,
-        }));
-      console.log(dataArray);
+        })); 
       setAllCenters(cohortInfo);
     }
     }
@@ -482,8 +461,7 @@ export const useLocationState = (
       setSelectedDistrictCode(districtResult[0]?.value);
      const blockResult = await formatedBlocks(
         districtResult[0]?.value
-      );
-      console.log(blockResult)
+      ); 
       if(blockResult?.message ==="Request failed with status code 404")
         {
           setBlocks([]);
@@ -517,8 +495,7 @@ export const useLocationState = (
                       },
                     };
                     const response = await getCenterList(object);
-                    const getCohortDetails = response?.result?.results?.cohortDetails;
-                    console.log(getCohortDetails)
+                    const getCohortDetails = response?.result?.results?.cohortDetails; 
                     const blockId = getCohortDetails?.map((item: any) => {
                       if (item?.type === "BLOCK") {
                         return item?.cohortId;
@@ -526,10 +503,8 @@ export const useLocationState = (
                     })
                     const blockCohortId =  getCohortDetails?.find(
                       (item: any) => item?.type === "BLOCK"
-                    )?.cohortId;
-                    console.log(blockCohortId)
-                    if (blockCohortId) {
-                      console.log("blockId", blockId);
+                    )?.cohortId; 
+                    if (blockCohortId) { 
                       setSelectedBlockCohortId(blockCohortId);
                     } else {
                       console.log("No Block Id found");
@@ -556,14 +531,12 @@ export const useLocationState = (
                       ],
                       queryFn: () => getCenterList(getCentersObject),
                     });
-                    // const response = await getCenterList(getCentersObject);
-                    console.log(centerResponse);
+                    // const response = await getCenterList(getCentersObject); 
                     // setSelectedBlockCohortId(
                     //   response?.result?.results?.cohortDetails[0].cohortId
                     // );
                     //   const result = response?.result?.cohortDetails;
-                    const dataArray = centerResponse?.result?.results?.cohortDetails;
-                    console.log(dataArray);
+                    const dataArray = centerResponse?.result?.results?.cohortDetails; 
       
                     const cohortInfo = dataArray
                       ?.filter((cohort: any) => cohort.type !== "BLOCK")
@@ -571,8 +544,7 @@ export const useLocationState = (
                         cohortId: item?.cohortId,
                         name: item?.name,
                       }));
-                    setAllCenters(cohortInfo);
-                    console.log("cohor", cohortInfo)
+                    setAllCenters(cohortInfo); 
                    setSelectedCenter([cohortInfo[0]?.name]);
                    setSelectedCenterCode(cohortInfo[0]?.cohortId);
 
@@ -594,14 +566,13 @@ export const useLocationState = (
               }]
              setStates(object2);
 
-          }
-          //console.log(JSON.parse(admin)?.customFields)
+          } 
           //  setAdminInfo(JSON.parse(admin))
         }
         // const result = response?.result?.values;
-        //console.log(result)
+        
         // setStates(result);
-        console.log(typeof states);
+       
       }} catch (error) {
         console.log(error);
       }
@@ -620,8 +591,7 @@ export const useLocationState = (
       }
     }
     return {}; // Return default if no data is found
-  };
-  console.log(stateDefaultValue)
+  }; 
   return {
     states,
     districts,
