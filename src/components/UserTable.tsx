@@ -27,7 +27,7 @@ import { Role, apiCatchingDuration } from "@/utils/app.constant";
 import { getFormRead } from "@/services/CreateUserService";
 import { showToastMessage } from "./Toastify";
 import { capitalizeFirstLetterOfEachWordInArray } from "../utils/Helper";
-import { getUserTableColumns, getTLTableColumns } from "@/data/tableColumns";
+import { getUserTableColumns, getTLTableColumns,getTeacherColumns } from "@/data/tableColumns";
 import { TablePagination, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/system";
 import CommonUserModal from "./CommonUserModal";
@@ -598,6 +598,7 @@ const UserTable: React.FC<UserTableProps> = ({
       ...prevFilters,
       name: keyword,
     }));
+    setPageOffset(0)
   };
 
   const fetchUserList = async () => {
@@ -609,9 +610,9 @@ const UserTable: React.FC<UserTableProps> = ({
       // const filters = { role: role , status:"active"};
       const sort = sortBy;
       console.log("filters", filters);
-      if (filters.name) {
-        offset = 0;
-      }
+      // if (filters.name) {
+      //   offset = 0;
+      // }
       let resp;
       if (enableCenterFilter) {
         resp = await cohortMemberList({
@@ -1037,9 +1038,11 @@ const UserTable: React.FC<UserTableProps> = ({
         </Box>
       ) : data?.length !== 0 && loading === false ? (
         <KaTableComponent
-          columns={
+         columns={
             role === Role.TEAM_LEADER
               ? getTLTableColumns(t, isMobile)
+              : role === Role.TEACHER
+              ? getTeacherColumns(t, isMobile)
               : getUserTableColumns(t, isMobile)
           }
           reassignCohort={handleReassignCohort}
