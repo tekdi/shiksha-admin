@@ -24,7 +24,7 @@ interface DynamicFormProps {
   onError: (errors: any) => void;
   showErrorList: boolean;
   id?: string; // Optional id prop
-
+  isProgramFields?:boolean
   widgets?: {
     [key: string]: React.FC<WidgetProps<any, RJSFSchema, any>>;
   };
@@ -44,9 +44,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   onError,
   customFields,
   children,
+  isProgramFields=false
 }) => {
   const { t } = useTranslation();
   const [localFormData, setLocalFormData] = useState(formData ?? {});
+  const [changedFormData, setChangedFormData] = useState( {});
+
   const submittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.submittedButtonStatus
   );
@@ -91,12 +94,42 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const handleSubmit = (
     event: IChangeEvent<any, RJSFSchema, any>,
     formEvent: React.FormEvent<any>
-  ) => { 
+  ) => {
+    if(isProgramFields)
+    {
+      event.formData=changedFormData
+
+    }
 
     onSubmit(event, formEvent);
   };
+  function getDifferences(obj1: any, obj2: any): any {
+    const differences: any = {};
+
+    for (const key in obj1) {
+        if (obj1[key] !== obj2[key]) {
+            differences[key] = obj1[key];
+        }
+    }
+
+    for (const key in obj2) {
+        if (!(key in obj1)) {
+            differences[key] = obj2[key];
+        }
+    }
+
+    return differences;
+}
 
   const handleChange = (event: IChangeEvent<any>) => {
+    console.log("event.formData",event.formData);
+    if(formData)
+    {    const differences = getDifferences(event?.formData, formData);
+      setChangedFormData(differences)
+    }
+    // console.log("differences", differences);
+
+
     const cleanAndReplace = (data: any) => {
       for (const key in data) {
         if (Array.isArray(data[key])) {

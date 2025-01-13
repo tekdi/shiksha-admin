@@ -100,6 +100,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
 
       if (isEditModal) {
         const programData = formData;
+
         const response = await updateProgram(programData, tenantId);
         showToastMessage(
           t("PROGRAM_MANAGEMENT.PROGRAM_UPDATED_SUCCESS"),
@@ -207,7 +208,6 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         // onChange={handleChange}
         onChange={({ formData }) => {
           // setFormData(formData);
-          console.log({ formData });
           if (formData.programImages instanceof File) {
             console.log({ formData });
             // setFile(formData.fileInput); // Update the file state when the form data changes
@@ -218,6 +218,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         showErrorList={true}
         customFields={customFields}
         formData={isEditModal ? formData : formValue}
+        isProgramFields={isEditModal ? true : false}
       >
         {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
       </DynamicForm>
