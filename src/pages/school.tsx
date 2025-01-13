@@ -292,10 +292,10 @@ const Block: React.FC = () => {
       const data = {
         limit: limit,
         offset: offset,
-        controllingfieldfk: selectedCluster || "",
         fieldName: "schools",
         optionName: searchKeyword || "",
         sort: sortBy,
+        ...(selectedCluster !== "all" && { controllingfieldfk: selectedCluster || "" }),
       };
 
       const response = await queryClient.fetchQuery({
@@ -366,12 +366,12 @@ const Block: React.FC = () => {
       dataType: DataType.String,
       width: "160",
     },
-    {
-      key: "updatedBy",
-      title: t("MASTER.UPDATED_BY"),
-      dataType: DataType.String,
-      width: "160",
-    },
+    // {
+    //   key: "updatedBy",
+    //   title: t("MASTER.UPDATED_BY"),
+    //   dataType: DataType.String,
+    //   width: "160",
+    // },
 
     {
       key: "createdAt",
@@ -379,12 +379,12 @@ const Block: React.FC = () => {
       dataType: DataType.String,
       width: "130",
     },
-    {
-      key: "updatedAt",
-      title: t("MASTER.UPDATED_AT"),
-      dataType: DataType.String,
-      width: "130",
-    },
+    // {
+    //   key: "updatedAt",
+    //   title: t("MASTER.UPDATED_AT"),
+    //   dataType: DataType.String,
+    //   width: "130",
+    // },
     {
       key: "actions",
       title: t("MASTER.ACTIONS"),
@@ -726,6 +726,9 @@ const Block: React.FC = () => {
                   value={selectedCluster}
                   onChange={handleClusterChange}
                 >
+                  <MenuItem value="all">
+                    {t("COMMON.ALL")}
+                  </MenuItem>
                   {matchedClusters?.map((districtDetail) => (
                     <MenuItem
                       key={districtDetail.value}

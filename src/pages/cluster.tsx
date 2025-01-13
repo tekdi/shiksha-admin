@@ -89,9 +89,9 @@ const State: React.FC = () => {
     { key: "label", title: t("MASTER.CLUSTER"), width: "160" },
     { key: "value", title: t("MASTER.CODE"), width: "160" },
     { key: "createdBy", title: t("MASTER.CREATED_BY"), width: "160" },
-    { key: "updatedBy", title: t("MASTER.UPDATED_BY"), width: "160" },
+    // { key: "updatedBy", title: t("MASTER.UPDATED_BY"), width: "160" },
     { key: "createdAt", title: t("MASTER.CREATED_AT"), width: "160" },
-    { key: "updatedAt", title: t("MASTER.UPDATED_AT"), width: "160" },
+    // { key: "updatedAt", title: t("MASTER.UPDATED_AT"), width: "160" },
     { key: "actions", title: t("MASTER.ACTIONS"), width: "160" },
   ];
 
