@@ -16,7 +16,7 @@ import { Theme } from "@mui/system";
 import Loader from "@/components/Loader";
 import useStore from "@/store/store";
 import ProgramCard from "./ProgramCard";
-import { getProgramList } from "@/services/ProgramServices";
+import { getProgramList, programSearch } from "@/services/ProgramServices";
 import loginImg from "../../public/images/login-image.jpg";
 import AddProgram from "./AddProgram";
 import useSubmittedButtonStore from "@/utils/useSharedState";
@@ -65,12 +65,33 @@ const ProgramList: React.FC = () => {
   useEffect(() => {
     const fetchProgramList = async () => {
       try {
-        const result = await getProgramList();
+        let programListObject ;
+        if(statusValue===Status.ACTIVE){
+          programListObject = {
+            limit: 200,
+            offset: 0,
+          filters: {
+            status: ["published", "draft"],
+          },
+          };
+        }
+        else
+        {
+          programListObject = {
+            limit:200,
+            offset: 0,
+          filters: {
+            status: ["archived"],
+          },
+          };
+        }
+        
+        const result=await programSearch(programListObject);
+        // const result = await getProgramList();
         console.log("result", result?.result);
         
         // Format the program list based on the searchKeyword
-        const programSummaries = result?.result
-        .map((program: any) => ({
+        const programSummaries = result?.getTenantDetails?.map((program: any) => ({
           name: program.name,
           domain: program.domain,
           status: program.status,
@@ -79,8 +100,8 @@ const ProgramList: React.FC = () => {
           tenantId:program.tenantId
         }))
         .filter((program: any) => 
-          program.name.toLowerCase().includes(searchKeyword.toLowerCase()) &&
-          program.status === statusValue  
+          program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
+        
         );
   
         const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
@@ -89,23 +110,26 @@ const ProgramList: React.FC = () => {
           } else if (selectedSort === "Z-A") {
             return b.name.localeCompare(a.name);  
           }
-          return 0;  
-        });
+          return a.name.localeCompare(b.name);
+                });
         
         setPrograms(sortedProgramSummaries);
         setFilteredPrograms(sortedProgramSummaries);
       } catch (error) {
+        setPrograms([])
+        setFilteredPrograms([]);
+
         console.error("Error fetching program list:", error);
       }
     };
   
     fetchProgramList();
-  }, [fetchPrograms]);  
+  }, [statusValue, fetchPrograms]);  
    
   useEffect(() => {
-    const programSummaries = programs.filter((program: any) => 
-    program.name.toLowerCase().includes(searchKeyword.toLowerCase()) &&
-    program.status === statusValue  
+
+   const  programSummaries = programs.filter((program: any) => 
+    program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
   );
 
   const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
@@ -119,7 +143,7 @@ const ProgramList: React.FC = () => {
   
   setFilteredPrograms(sortedProgramSummaries);
     
-  }, [ selectedSort, statusValue, searchKeyword]);  
+  }, [ selectedSort,  searchKeyword, programs]);  
   const handleFilterChange = async (
     event: React.SyntheticEvent,
     newValue: any

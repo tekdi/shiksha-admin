@@ -485,7 +485,17 @@
     "NO_PROGRAMS_FOUND": "No Program Found",
     "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
     "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
-    "PROGRAM_ALREADY_EXISTS": "Program Already Exists!"
+    "PROGRAM_ALREADY_EXISTS": "Program Already Exists!",
+    "DRAFT":"Draft",
+    "ARCHIVED":"Archived",
+    "PUBLISHED":"Published",
+    "UNPUBLISHED":"Unpublished",
+    "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
+    "PROGRAM_DRAFT": "Program is Draft",
+    "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!"
+
+
+
 
 
   }
