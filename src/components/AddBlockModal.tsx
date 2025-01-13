@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Select,
-  MenuItem,
-  Divider,
-  InputLabel,
-  FormControl,
-} from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { useTranslation } from "next-i18next";
-import { getDistrictsForState } from "@/services/MasterDataService";
 import { getCohortList } from "@/services/CohortService/cohortService";
-import { useQueryClient } from "@tanstack/react-query";
-import { CohortTypes, QueryKeys, Role } from "@/utils/app.constant";
 import { formatedStates } from "@/services/formatedCohorts";
+import { getDistrictsForState } from "@/services/MasterDataService";
+import { CohortTypes, QueryKeys, Role } from "@/utils/app.constant";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "next-i18next";
+import React, { useEffect, useState } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
 
 interface AddBlockModalProps {
@@ -42,7 +42,7 @@ interface AddBlockModalProps {
     value?: string;
     controllingField?: string;
     controllingFieldLabel?: string;
-    stateLabel?:string
+    stateLabel?: string
 
   };
   districtId?: string;
@@ -185,14 +185,14 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     }
   };
   const getFilteredCohortData = async () => {
-    try { 
+    try {
       const reqParams = {
         limit: 0,
         offset: 0,
         filters: {
           states: stateCode,
           type: CohortTypes.DISTRICT,
-          status:["active"]
+          status: ["active"]
 
         },
       };
@@ -225,7 +225,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
               (district: { label: string }) =>
                 district?.label?.toLowerCase() ===
                 transformedName?.toLowerCase()
-            ); 
+            );
 
             return {
               label: transformedName,
@@ -240,7 +240,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         )
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
-        ); 
+        );
       setDistricts(filteredDistrictData);
     } catch (error) {
       setDistricts([]);
@@ -248,7 +248,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     }
   };
   useEffect(() => {
-    if ( stateCode !== "" && stateCode) getFilteredCohortData();
+    if (stateCode !== "" && stateCode) getFilteredCohortData();
   }, [open, districtNameArr, stateCode]);
 
   function transformLabels(label: string) {
@@ -287,22 +287,22 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
   const handleChange =
     (field: keyof typeof formData) =>
-    async (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
-      let value = typeof e.target.value === "string" ? e.target.value : "";
+      async (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
+        let value = typeof e.target.value === "string" ? e.target.value : "";
 
-      if (field === "value") {
-        value = value.toUpperCase().slice(0, 3);
-      }
+        if (field === "value") {
+          value = value.toUpperCase().slice(0, 3);
+        }
 
-      setFormData((prev) => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
 
-      let errorMessage: string | null = validateField(field, value, "");
+        const errorMessage: string | null = validateField(field, value, "");
 
-      setErrors((prev) => ({
-        ...prev,
-        [field]: errorMessage,
-      }));
-    };
+        setErrors((prev) => ({
+          ...prev,
+          [field]: errorMessage,
+        }));
+      };
 
   const validateForm = () => {
     const newErrors = {
@@ -356,9 +356,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
       onClose();
     }
-  }; 
-  if(formData.controllingField==="")
-  {
+  };
+  if (formData.controllingField === "") {
     console.log("trueeee")
   }
   const isEditing = !!initialValues.name;
@@ -398,72 +397,72 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
             disabled={isEditing}
             // overall={!inModal}
             width="290px"
-           // defaultValue={defaultStates?.label}
+          // defaultValue={defaultStates?.label}
           />
         )}
         {!(formData.controllingField === "All") && !initialValues.controllingField && (
-  <>
-  <FormControl fullWidth sx={{ marginTop: "8px" }}>
- {!disabledDistrict && (<InputLabel id="district-label" >District</InputLabel>)} 
-  <Select
-  labelId="district-label"
-    label={!disabledDistrict?"District": null}
-      value={formData.controllingField!=="" && formData.controllingField? formData.controllingField : "district"}
-      onChange={(e) =>
-        handleChange("controllingField")(
-          e as React.ChangeEvent<HTMLInputElement>
-        )
-      }
-       sx={{ marginTop: "8px" }}
-      MenuProps={{
-        PaperProps: {
-          sx: {
-            maxHeight: 400,
-          },
-        },
-      }}
-      fullWidth
-      // variant="outlined"
-      // margin="dense"
-      disabled={disabledDistrict}
-    >
-      {/* Default MenuItem */}
-      {disabledDistrict && (<MenuItem value="district">District</MenuItem>)}
-      
-      {/* District Options */}
-      {districts.length > 0 && !initialValues.controllingField ? (
-        districts.map((district: any) => (
-          <MenuItem key={district.value} value={district.value}>
-            {transformLabels(district.label)}
-          </MenuItem>
-        ))
-      ) : (
-        <MenuItem value="no_districts" disabled>
-          {t("COMMON.NO_DISTRICTS")}
-        </MenuItem>
-      )}
-    </Select>
-    </FormControl>
+          <>
+            <FormControl fullWidth sx={{ marginTop: "8px" }}>
+              {!disabledDistrict && (<InputLabel id="district-label" >District</InputLabel>)}
+              <Select
+                labelId="district-label"
+                label={!disabledDistrict ? "District" : null}
+                value={formData.controllingField !== "" && formData.controllingField ? formData.controllingField : "district"}
+                onChange={(e) =>
+                  handleChange("controllingField")(
+                    e as React.ChangeEvent<HTMLInputElement>
+                  )
+                }
+                sx={{ marginTop: "8px" }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      maxHeight: 400,
+                    },
+                  },
+                }}
+                fullWidth
+                // variant="outlined"
+                // margin="dense"
+                disabled={disabledDistrict}
+              >
+                {/* Default MenuItem */}
+                {disabledDistrict && (<MenuItem value="district">District</MenuItem>)}
 
-  
-  </>
-)}
+                {/* District Options */}
+                {districts.length > 0 && !initialValues.controllingField ? (
+                  districts.map((district: any) => (
+                    <MenuItem key={district.value} value={district.value}>
+                      {transformLabels(district.label)}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="no_districts" disabled>
+                    {t("COMMON.NO_DISTRICTS")}
+                  </MenuItem>
+                )}
+              </Select>
+            </FormControl>
 
-          {initialValues.controllingField && !(formData.controllingField === "All") &&( <FormControl fullWidth disabled>
-      <InputLabel id="district-label"  sx={{ marginTop: "8px" }}>District</InputLabel>
-      <Select
-        labelId="district-label"
-        id="disabled-select"
-        value={initialValues.controllingFieldLabel}
-        label="District"
-        fullWidth            sx={{ marginTop: "8px" }}
-        // variant="outlined"
-        //     margin="dense"
 
-      >
-        <MenuItem value={initialValues.controllingFieldLabel}>{initialValues.controllingFieldLabel}</MenuItem>
-      </Select>
-    </FormControl>)}
+          </>
+        )}
+
+        {initialValues.controllingField && !(formData.controllingField === "All") && (<FormControl fullWidth disabled>
+          <InputLabel id="district-label" sx={{ marginTop: "8px" }}>District</InputLabel>
+          <Select
+            labelId="district-label"
+            id="disabled-select"
+            value={initialValues.controllingFieldLabel}
+            label="District"
+            fullWidth sx={{ marginTop: "8px" }}
+          // variant="outlined"
+          //     margin="dense"
+
+          >
+            <MenuItem value={initialValues.controllingFieldLabel}>{initialValues.controllingFieldLabel}</MenuItem>
+          </Select>
+        </FormControl>)}
         {errors.controllingField && (
           <Typography variant="caption" color="error">
             {errors.controllingField}

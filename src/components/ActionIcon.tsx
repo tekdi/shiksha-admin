@@ -1,16 +1,13 @@
-import React from "react";
+import { Box, Tooltip, useTheme } from "@mui/material";
 import { useTranslation } from "next-i18next";
-import { Box, Typography, Tooltip,useTheme } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React from "react";
+import cohortIcon from '../../public/images/apartment.svg';
 import deleteIcon from '../../public/images/deleteIcon.svg';
 import editIcon from '../../public/images/editIcon.svg';
-import cohortIcon from '../../public/images/apartment.svg';
 
-
-import Image from "next/image";
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
+import Image from "next/image";
 
 interface ActionCellProps {
   onEdit: (rowData: any) => void;

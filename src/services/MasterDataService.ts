@@ -225,7 +225,7 @@ export const updateCohort = async (
   cohortId: string,
   cohortDetails: any
 ): Promise<any> => {
-  let apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/update/${cohortId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/update/${cohortId}`;
 
   try {
     const response = await put(apiUrl, cohortDetails);

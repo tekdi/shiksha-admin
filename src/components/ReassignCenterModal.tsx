@@ -107,7 +107,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     setSelectedDistrictCode,
     setSelectedBlockCode,
   } = useLocationState(open, onClose, roleType, true);
-  let cohorts: Cohort[] = allCenters?.map(
+  const cohorts: Cohort[] = allCenters?.map(
     (cohort: { cohortId: any; name: string }) => ({
       name: cohort.name.toLowerCase(),
       id: cohort.cohortId,
@@ -336,7 +336,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           role: Role.TEAM_LEADER,
           status: [Status.ACTIVE],
         }; 
-        let sort = ["name", "asc"];
+        const sort = ["name", "asc"];
         let resp;
         try {
           resp = await cohortMemberList({ filters, sort });
@@ -377,13 +377,13 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
             (item: any) => item?.type === "BLOCK"
           )?.cohortId;
 
-          let unSelectedBlockCohortIds: string[] = [];
+          const unSelectedBlockCohortIds: string[] = [];
 
           unSelectedBlockCohortIds.push(previousBlockId);
-          let cohortCode = formattedBlocks
+          const cohortCode = formattedBlocks
             .filter((item: any) => item.label === checkedCenters[0])
             .map((item: any) => item.value);
-          let cohortIds = blocks
+          const cohortIds = blocks
             .filter((item: any) => item.value !== cohortCode[0])
             .map((item: any) => item.cohortId);
           cohortIds.push(previousBlockId);
@@ -466,7 +466,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
     // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
-  let filteredCohorts = cohorts?.filter((cohort) =>
+  const filteredCohorts = cohorts?.filter((cohort) =>
     cohort?.name?.toLowerCase().includes(searchInput)
   );
 
@@ -485,7 +485,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   // const filteredCBlocks = blocks?.filter((cohort: any) =>
   //   cohort.label.toLowerCase().includes(searchInput)
   // );
-  let filteredCBlocks = blocks
+  const filteredCBlocks = blocks
     ?.filter((cohort: any) => cohort.label.toLowerCase().includes(searchInput))
     .map((cohort: any) => ({
       label: cohort.label,
@@ -531,13 +531,13 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
         (item: any) => item?.type === "BLOCK"
       )?.cohortId;
 
-      let unSelectedBlockCohortIds: string[] = [];
+      const unSelectedBlockCohortIds: string[] = [];
  
       unSelectedBlockCohortIds.push(previousBlockId);
-      let cohortCode = formattedBlocks
+      const cohortCode = formattedBlocks
         .filter((item: any) => item.label === selectedBlockForTL)
         .map((item: any) => item.value);
-      let cohortIds = blocks
+      const cohortIds = blocks
         .filter((item: any) => item.value !== cohortCode)
         .map((item: any) => item.cohortId);
       cohortIds.push(previousBlockId);

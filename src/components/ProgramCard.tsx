@@ -85,7 +85,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   const handleMenuDelete = async () => {
     // setAnchorEl(null);
     try {
-      let tenantId = programId;
+      const tenantId = programId;
       const programData = {
         status: "archived",
       };
@@ -164,8 +164,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
   const handleStatusChange = async () => {
     try {
-      let tenantId = programId;
-      let statusValue =
+      const tenantId = programId;
+      const statusValue =
         status === Status.DRAFT ? Status.PUBLISHED : Status.DRAFT;
 
       const programData = {

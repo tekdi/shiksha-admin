@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         Body: body,
         ContentLength: ContentLength, // Ensure chunk length is set
       });
-      let response = await s3Client.send(command);
+      const response = await s3Client.send(command);
       if (response?.ETag) {
         response.ETag = response.ETag.replaceAll('"', "");
       }

@@ -4,22 +4,21 @@ import {
   customFields,
 } from "@/components/GeneratedSchemas";
 import SimpleModal from "@/components/SimpleModal";
-import { getFormRead } from "@/services/CreateUserService";
-import { CohortTypes, FormContext, FormContextType, TelemetryEventType, apiCatchingDuration } from "@/utils/app.constant";
+import { createCohort } from "@/services/CohortService/cohortService";
+import { CohortTypes, FormContextType, TelemetryEventType, apiCatchingDuration } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 import { Box, Button, Typography } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
-import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { i18n, useTranslation } from "next-i18next";
+import React, { useEffect, useState } from "react";
 import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
-import { showToastMessage } from "./Toastify";
-import { createCohort } from "@/services/CohortService/cohortService";
-import useSubmittedButtonStore from "@/utils/useSharedState";
 import FrameworkCategories from "./FrameworkCategories";
-import { useQuery } from "@tanstack/react-query";
-import { telemetryFactory } from "@/utils/telemetry";
+import { showToastMessage } from "./Toastify";
 
 interface CustomField {
   fieldId: string;
@@ -88,20 +87,20 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
   );
 
 
-  const { data:cohortFormData ,isLoading: cohortFormDataLoading, error :cohortFormDataError } = useQuery<any[]>({
-    queryKey: ["cohortFormData"],  
-    queryFn: () => Promise.resolve([]), 
+  const { data: cohortFormData, isLoading: cohortFormDataLoading, error: cohortFormDataError } = useQuery<any[]>({
+    queryKey: ["cohortFormData"],
+    queryFn: () => Promise.resolve([]),
     staleTime: apiCatchingDuration.GETREADFORM,
-    enabled: false, 
+    enabled: false,
   });
   const [stateDefaultValueForCenter, setStateDefaultValueForCenter] =
     useState<string>("");
-    const createCenterStatus = useSubmittedButtonStore(
-      (state: any) => state.createCenterStatus
-    );
-    const setCreateCenterStatus = useSubmittedButtonStore(
-      (state: any) => state.setCreateCenterStatus
-    );
+  const createCenterStatus = useSubmittedButtonStore(
+    (state: any) => state.createCenterStatus
+  );
+  const setCreateCenterStatus = useSubmittedButtonStore(
+    (state: any) => state.setCreateCenterStatus
+  );
   function removeHiddenFields(formResponse: any) {
     return {
       ...formResponse,
@@ -110,11 +109,10 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
   }
   useEffect(() => {
     if (!open) {
-    setShowForm(false)
+      setShowForm(false)
     }
-    else
-    {
-      
+    else {
+
     }
   }, [onClose, open]);
   useEffect(() => {
@@ -131,14 +129,14 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
         }
       }
       try {
-    //    const response = await getFormRead("cohorts", "cohort");
-        
+        //    const response = await getFormRead("cohorts", "cohort");
+
 
 
         if (cohortFormData) {
           const updatedFormResponse = removeHiddenFields(cohortFormData);
           if (updatedFormResponse) {
-            let { schema, uiSchema } = GenerateSchemaAndUiSchema(
+            const { schema, uiSchema } = GenerateSchemaAndUiSchema(
               updatedFormResponse,
               t
             );
@@ -152,7 +150,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
       }
     };
     getAddLearnerFormData();
-  }, [cohortFormData,i18n?.language]);
+  }, [cohortFormData, i18n?.language]);
 
   const handleDependentFieldsChange = () => {
     setShowForm(true);
@@ -162,7 +160,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
   ) => {
-    const formData = data?.formData; 
+    const formData = data?.formData;
     const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
     if (selectedBlockCohortId) {
       const parentId = selectedBlockCohortId;
@@ -230,8 +228,8 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
           const windowUrl = window.location.pathname;
           const cleanedUrl = windowUrl.replace(/^\//, '');
           const env = cleanedUrl.split("/")[0];
-      
-      
+
+
           const telemetryInteract = {
             context: {
               env: env,
@@ -245,8 +243,8 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
             },
           };
           telemetryFactory.interact(telemetryInteract);
-      
-          createCenterStatus? setCreateCenterStatus(false):setCreateCenterStatus(true)
+
+          createCenterStatus ? setCreateCenterStatus(false) : setCreateCenterStatus(true)
           setOpenAddNewCohort(false);
           onClose();
           localStorage.removeItem("BMGSData");
@@ -360,7 +358,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
                     marginLeft: "10px",
                   }}
                   onClick={() => {
-                    setSubmittedButtonStatus(true); 
+                    setSubmittedButtonStatus(true);
                   }}
                 >
                   {t("COMMON.CREATE")}

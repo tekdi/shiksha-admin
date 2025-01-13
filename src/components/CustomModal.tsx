@@ -1,16 +1,15 @@
-import React from "react";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
+  Button,
+  Divider,
+  IconButton,
   Modal,
   Typography,
-  Button,
-  IconButton,
-  Divider,
   useMediaQuery,
-  Theme,
   useTheme
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import React from "react";
 
 interface CustomModalProps {
   open: boolean;

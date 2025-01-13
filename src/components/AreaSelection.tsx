@@ -1,11 +1,10 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Role } from "@/utils/app.constant";
+import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
+import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
-import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
-import { useMediaQuery } from "@mui/material";
-import { FormContextType, Role } from "@/utils/app.constant";
 
 interface State {
   value: string;
@@ -91,7 +90,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   const [singleState, setSingleState] = useState<boolean>(true);
   const [stateValue, setStateValue] = useState<string>("");
   const [stateCode, setStateCode] = useState<string>("");
-  let isSmallScreen = useMediaQuery((theme: any) =>
+  const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("sm")
   );
   // isSmallScreen=isMobile?true: false;

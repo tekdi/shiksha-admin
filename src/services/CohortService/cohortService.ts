@@ -23,7 +23,7 @@ export interface UpdateCohortMemberStatusParams {
   membershipId: string | number;
 }
 export const getCohortList = async (data: cohortListData): Promise<any> => {
-  let apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/search`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/search`;
 
   try {
     const response = await post(apiUrl, data);
@@ -39,7 +39,7 @@ export const updateCohortUpdate = async (
   cohortDetails: any
 ): Promise<any> => {
   // const { name, status, type } = cohortDetails;
-  let apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/update/${userId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/update/${userId}`;
 
   try {
     const response = await put(apiUrl, cohortDetails);
@@ -56,7 +56,7 @@ export const getFormRead = async (
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/form/read?context=${context}&contextType=${contextType}`;
   try {
-    let response = await get(apiUrl);
+    const response = await get(apiUrl);
     const sortedFields = response?.data?.result.fields?.sort(
       (a: { order: string }, b: { order: string }) =>
         parseInt(a.order) - parseInt(b.order)

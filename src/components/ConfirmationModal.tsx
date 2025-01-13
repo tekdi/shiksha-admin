@@ -1,9 +1,8 @@
-import * as React from "react";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { Divider } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import { useTheme } from "@mui/material/styles";
+import * as React from "react";
 
 interface ConfirmationModalProps {
   message: string;
@@ -27,7 +26,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   handleCloseModal,
   disableDelete = false,
 }) => {
-  const theme = useTheme();
 
   const style = {
     position: "absolute",

@@ -157,7 +157,7 @@ export const getCurrentYearPattern = () => {
 };
 
 export const mapFields = (formFields: any, Details: any) => {
-  let initialFormData: any = {}; 
+  const initialFormData: any = {}; 
 
   formFields.fields.forEach((item: any) => {
     const customFieldValue = Details?.customFields?.find(

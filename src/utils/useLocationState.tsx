@@ -1,16 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
-import { useMediaQuery } from "@mui/material";
-import {
-  getStateBlockDistrictList,
-  getCenterList,
-} from "../services/MasterDataService"; // Update the import path as needed
-import { getCohortList } from "@/services/CohortService/cohortService";
-import { FormContextType, QueryKeys, Status, Role } from "./app.constant";
-import { useTranslation } from "next-i18next";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { cohortMemberList } from "@/services/UserList";
-import { firstLetterInUpperCase} from "@/utils/Helper";
+import { firstLetterInUpperCase } from "@/utils/Helper";
+import { useMediaQuery } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "next-i18next";
+import { useCallback, useEffect, useState } from "react";
+import {
+  getCenterList,
+  getStateBlockDistrictList,
+} from "../services/MasterDataService"; // Update the import path as needed
+import { FormContextType, QueryKeys, Role, Status } from "./app.constant";
 type FilterDetails = {
   role: any;
   status?: any;
@@ -185,7 +184,7 @@ export const useLocationState = (
     role: Role.TEAM_LEADER,
     status:[Status.ACTIVE]}
               
-                let sort= ["name", "asc"]
+                const sort= ["name", "asc"]
                 let resp;
                 try {
                   resp = await cohortMemberList({  filters, sort });

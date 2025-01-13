@@ -949,7 +949,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     }
     //delete cohort
     if (cohortIdForDelete) {
-      let cohortDetails = {
+      const cohortDetails = {
         status: Status.ARCHIVED,
       };
       const resp = await updateCohort(cohortIdForDelete, cohortDetails);

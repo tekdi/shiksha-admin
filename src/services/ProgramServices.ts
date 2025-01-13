@@ -68,7 +68,7 @@ export const deleteProgram = async ( tenantId: string): Promise<any> => {
 };
 
 export const programSearch = async (data: programListData): Promise<any> => {
-  let apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/search`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/search`;
 
   try {
     const response = await post(apiUrl, data);

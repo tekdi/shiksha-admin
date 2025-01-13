@@ -1,5 +1,5 @@
 import SearchBar from "@/components/layouts/header/SearchBar";
-import { formatedBlocks, formatedDistricts, formatedStates } from "@/services/formatedCohorts";
+import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";

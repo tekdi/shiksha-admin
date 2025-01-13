@@ -675,7 +675,7 @@ const UserTable: React.FC<UserTableProps> = ({
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    let initialFormData: any = {};
+    const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
@@ -862,7 +862,7 @@ const UserTable: React.FC<UserTableProps> = ({
       setLoading(true);
       try {
         const fields = ["age", "districts", "states", "blocks", "gender"];
-        let limit = pageLimit;
+        const limit = pageLimit;
         let offset = pageOffset * limit;
         // const filters = { role: role , status:"active"};
         const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
