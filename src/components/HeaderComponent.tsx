@@ -146,8 +146,7 @@ const HeaderComponent = ({
       //   controllingfieldfk: selectedCodes[0],
 
       //   fieldName: "districts",
-      // };
-      // console.log(object);
+      // }; 
       // const response = await getStateBlockDistrictList(object);
       const result = response?.result?.values;
 
@@ -237,8 +236,7 @@ const HeaderComponent = ({
       ],
       queryFn: () => getCenterList(getCentersObject),
     });
-    // const response = await getCenterList(getCentersObject);
-    console.log(response?.result?.results?.cohortDetails[0].cohortId);
+    // const response = await getCenterList(getCentersObject); 
     // setSelectedBlockCohortId(
     //   response?.result?.results?.cohortDetails[0].cohortId
     // );
@@ -250,8 +248,7 @@ const HeaderComponent = ({
       .map((item: any) => ({
         cohortId: item?.cohortId,
         name: item?.name,
-      }));
-    console.log(dataArray);
+      })); 
     setAllCenters(cohortInfo);
     handleBlockChange(selected, selectedCodes);
     const windowUrl = window.location.pathname;
@@ -300,16 +297,14 @@ const HeaderComponent = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const { state, district, center } = router.query;
-      console.log(router.asPath);
+      const { state, district, center } = router.query; 
       const fullPath = router.asPath;
 
       // Extract query parameters
-      const queryString = fullPath.split("?")[1]; // Get the part after '?'
-      console.log(queryString);
+      const queryString = fullPath.split("?")[1];  
       const params = new URLSearchParams(queryString);
       // const result= await formatedStates();
-      // console.log("result", result)
+     
       // setStates(result)
       // Check if 'block' is present
       const hasBlock = params.has("block");
@@ -330,7 +325,7 @@ const HeaderComponent = ({
             const stateField = JSON.parse(admin).customFields.find(
               (field: any) => field.label === "STATES"
             );
-            console.log(stateField.value, stateField.code);
+                
             if (stateField.value.includes(",")) {
               console.log("The value contains more than one item.");
               setStateDefaultValue(t("COMMON.ALL_STATES"));
@@ -354,8 +349,7 @@ const HeaderComponent = ({
               //   controllingfieldfk: stateField.code,
 
               //   fieldName: "districts",
-              // };
-              // console.log(object);
+              // }; 
               // const response = await getStateBlockDistrictList(object);
               const result = response?.result?.values;
               const districtResult = await formatedDistricts();
@@ -371,8 +365,7 @@ const HeaderComponent = ({
                 setSelectedDistrictStore(districtResult[0]?.label);
                 blockResult = await formatedBlocks(
                   districtResult[0]?.value
-                );
-                console.log(blockResult)
+                ); 
                 if (blockResult?.message === "Request failed with status code 404") {
                   setBlocks([]);
                 }
@@ -450,15 +443,12 @@ const HeaderComponent = ({
                 ],
                 queryFn: () => getCenterList(getCentersObject),
               });
-              // const response = await getCenterList(getCentersObject);
-              console.log(centerResponse);
+              // const response = await getCenterList(getCentersObject); 
               // setSelectedBlockCohortId(
               //   response?.result?.results?.cohortDetails[0].cohortId
               // );
               //   const result = response?.result?.cohortDetails;
-              const dataArray = centerResponse?.result?.results?.cohortDetails;
-              console.log(dataArray);
-
+              const dataArray = centerResponse?.result?.results?.cohortDetails; 
               const cohortInfo = dataArray
                 ?.filter((cohort: any) => cohort.type !== "BLOCK")
                 .map((item: any) => ({
@@ -466,16 +456,13 @@ const HeaderComponent = ({
                   name: item?.name,
                 }));
               setAllCenters(cohortInfo);
-
-              console.log(dataArray);
-              console.log(userType);
+ 
               if (
                 !hasCenter &&
                 !hasBlock &&
                 !hasDistrict &&
                 userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
-              ) {
-                console.log(hasCenter);
+              ) { 
                 setSelectedCenter([t("COMMON.ALL_CENTERS")]);
                 //  setSelectedCenterCode([cohortInfo[0]?.cohortId])
                 //   localStorage.setItem('selectedCenter',cohortInfo[0]?.name )
@@ -491,8 +478,7 @@ const HeaderComponent = ({
                   },
                 });
               }
-
-              console.log(cohortInfo);
+ 
             }
 
             const object = [
@@ -504,8 +490,7 @@ const HeaderComponent = ({
             setStates(object);
           }
         }
-        //  setStates(result);
-        console.log(typeof states);
+        //  setStates(result); 
       } catch (error) {
         console.log(error);
       }
@@ -516,7 +501,7 @@ const HeaderComponent = ({
     }
   }, [shouldFetchDistricts, userType]);
   const handleChange = (event: React.SyntheticEvent, newValue: any) => {
-    console.log(newValue);
+   
     setStatusValue(newValue);
   };
 
@@ -554,8 +539,7 @@ const HeaderComponent = ({
         try {
           const blockResult = await formatedBlocks(
             district?.toString()
-          );
-          console.log(blockResult.message)
+          ); 
           if (blockResult.message === "Request failed with status code 404") {
             setBlocks([]);
 
@@ -563,8 +547,7 @@ const HeaderComponent = ({
           else
             setBlocks(blockResult);
         }
-        catch {
-          //  console.log("hii")
+        catch { 
         }
 
       }
@@ -580,8 +563,7 @@ const HeaderComponent = ({
       }
 
 
-      if (center) {
-        console.log(center);
+      if (center) { 
 
         setSelectedCenterCode([center.toString()]);
         // setSelectedCenter([selectedCenterStore])

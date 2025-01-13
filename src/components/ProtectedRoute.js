@@ -8,8 +8,7 @@ const ProtectedRoute = ({ children }) => {
   let user;
   const router = useRouter();
   const { loading } = useAuth();
-
-  console.log(user, loading);
+ 
   useEffect(() => {
     let user;
     if (typeof window !== "undefined" && window.localStorage) {

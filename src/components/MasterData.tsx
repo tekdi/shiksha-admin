@@ -192,8 +192,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       const userData = JSON.parse(storedUserData);
       setUserRole(userData.role);
     }
-  }, []);
-  console.log("setStateCode", stateCode); 
+  }, []); 
   useEffect(() => {
     const fetchUserDetail = async () => {
       let userId: any;
@@ -212,7 +211,6 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
         );
         if (userRole === Role.CENTRAL_ADMIN) {
           const result = await formatedStates();
-          console.log("result", result);
           setStates(result);
           setStateCode(result[0]?.value);
           // if(stateParentId!=="")
@@ -297,9 +295,7 @@ if (stateCode) {
       //   queryFn: () => getCohortList(reqParams),
       // });
       const response = await getCohortList(reqParams);
-      const cohortDetails = response?.results?.cohortDetails || [];
-console.log("cohortDetails",cohortDetails);
-console.log("cohortDetails",districtsOptionRead);
+      const cohortDetails = response?.results?.cohortDetails || []; 
       const filteredDistrictData = cohortDetails
         .map(
           (districtDetail: {
@@ -347,8 +343,7 @@ console.log("cohortDetails",districtsOptionRead);
       setDistrictData(filteredDistrictData);
       const totalCount = filteredDistrictData.length;
       setPaginationCount(totalCount);
-      setPageCount(Math.ceil(totalCount / pageLimit));
-      console.log("filteredDistrictData", filteredDistrictData);
+      setPageCount(Math.ceil(totalCount / pageLimit)); 
       setLoading(false);
     } catch (error) {
       console.error("Error fetching and filtering cohort districts", error);
@@ -549,8 +544,7 @@ console.log("cohortDetails",districtsOptionRead);
         )
         .filter((block: { name: string }) =>
           blockNameArr.includes(block.name?.toLowerCase())
-        );
-        console.log("filteredBlockData", filteredBlockData.length);
+        ); 
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
 
@@ -633,8 +627,7 @@ console.log("cohortDetails",districtsOptionRead);
       transformedData = districtData.map((item) => ({
         ...item,
         label: transformLabels(item.label),
-      }));
-      console.log("transformedData", transformedData)
+      })); 
       return transformedData.slice(startIndex, endIndex);
     } else {
       transformedData = blockData?.map((item) => ({
@@ -689,8 +682,7 @@ console.log("cohortDetails",districtsOptionRead);
 
     const selectedDistrictData = districtData.find(
       (district) => district.value === selectedDistrict
-    );
-// console.log("selectedDistrictData",selectedDistrictData)
+    ); 
 setSelectedDistrictLabel(selectedDistrictData?.label||"");
 
     const cohortId = selectedDistrictData?.cohortId as any | null;
@@ -760,8 +752,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     }
   }, [blockNameArr, searchKeyword, pageLimit, pageOffset, selectedDistrict]);
 
-  const handleEdit = (rowData: any) => {
-    console.log("rowData", rowData)
+  const handleEdit = (rowData: any) => { 
    cohortType === CohortTypes.BLOCK? setModalOpen(true): setDistrictModalOpen(true);
     const cohortIdForEDIT = rowData.cohortId;
     setCohortIdForEdit(cohortIdForEDIT);
@@ -1066,9 +1057,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     stateParentId?: string,
     stateCodeForCreate?: string
    
-  ) => {
-    console.log("stateCodeForCreate",stateCodeForCreate);
-    console.log("stateParentId",stateParentId);
+  ) => { 
 
     const fieldId = type === "block" ? blocksFieldId : districtFieldId;
     const toastSuccessMessage =
@@ -1273,8 +1262,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
       });
-      setBlockData([]);
-      console.log("cohortIdOfState",cohortIdOfState);
+      setBlockData([]); 
       // setStateParentId(cohortIdOfState);
       if(selectedCodes[0]!==stateCode)
       setDistrictData([]);
@@ -1349,8 +1337,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           fieldId?: string,
           districtId?: string,
           stateCode?: string
-        ) => {
-          console.log("stateCode", stateCode);
+        ) => { 
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               "block",

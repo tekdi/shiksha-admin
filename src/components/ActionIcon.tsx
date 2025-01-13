@@ -87,8 +87,6 @@ const ActionIcon: React.FC<ActionCellProps> = ({
       <Tooltip title={t("COMMON.DELETE")}>
         <Box
           onClick={() => {
-          
-            console.log(rowData)
 
             onDelete(rowData);
             const windowUrl = window.location.pathname;

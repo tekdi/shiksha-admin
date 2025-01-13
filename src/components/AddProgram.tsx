@@ -61,8 +61,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
   ) => {
-    // event.preventDefault();
-    console.log("data?.formData", data);
+    // event.preventDefault(); 
     // Prepare FormData
     // const formData = new FormData(data);
     // // formData.append('name', programName);
@@ -142,8 +141,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
             t
           );
           setFormValue(formValues);
-          setSchema(schema);
-          console.log({ schema, uiSchema });
+          setSchema(schema); 
           setUiSchema(uiSchema);
         }
       } catch (error) {
@@ -152,8 +150,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
     };
     getAddUserFormData();
   }, [i18n.language]);
-  const handleChange = (event: any) => {
-    console.log("Form data changed:", event?.target?.files?.[0]);
+  const handleChange = (event: any) => { 
   };
   const handleError = (errors: any) => {
     console.log("Form errors:", errors);

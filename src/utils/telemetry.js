@@ -1,6 +1,5 @@
 import { generateUUID, getDeviceId } from "./Helper";
-const hostURL = process.env.NEXT_PUBLIC_TELEMETRY_URL;
-console.log(hostURL);
+const hostURL = process.env.NEXT_PUBLIC_TELEMETRY_URL; 
 let CsTelemetryModule;
 let EkTelemetry;
 let jQuery;
@@ -46,8 +45,7 @@ if (typeof window !== "undefined") {
 
 export const telemetryFactory = {
   init: () => {
-    if (typeof window !== "undefined") {
-      console.log("EkTelemetry", EkTelemetry);
+    if (typeof window !== "undefined") { 
       if (!CsTelemetryModule.instance.isInitialised) {
         CsTelemetryModule.instance.init({});
         CsTelemetryModule.instance.telemetryService.initTelemetry({

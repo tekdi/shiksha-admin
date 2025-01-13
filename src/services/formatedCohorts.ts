@@ -49,10 +49,8 @@ export const formatedDistricts = async () => {
       fieldName: "districts",
     };
 
-    const optionReadResponse = await getStateBlockDistrictList(object);
-    //console.log(blockFieldId)
-    const result = optionReadResponse?.result?.values;
-    console.log(cohortDetails)
+    const optionReadResponse = await getStateBlockDistrictList(object); 
+    const result = optionReadResponse?.result?.values; 
     const uniqueResults = result.reduce((acc: any, current: any) => {
       const isDuplicate = acc.some((item: any) => item.label === current.label);
       if (!isDuplicate) {
@@ -60,8 +58,7 @@ export const formatedDistricts = async () => {
       }
       return acc;
   }, [] as typeof result);
-  
-  console.log(uniqueResults);  
+   
     const matchedCohorts = uniqueResults?.map((value: any) => {
       const cohortMatch = cohortDetails.find((cohort: any) => cohort?.name?.toLowerCase() === value?.label?.toLowerCase());
       return cohortMatch ? { ...value } : null;
@@ -109,8 +106,7 @@ export const formatedBlocks = async (districtCode: string) => {
     const optionReadResponse = await getStateBlockDistrictList(object);
     const result = optionReadResponse?.result?.values;
 
-    console.log(cohortDetails);
-    console.log(result);
+   
 
     const matchedCohorts = result
       ?.map((value: any) => {
@@ -161,8 +157,7 @@ export const formatedStates = async () => {
     localStorage.setItem("stateFieldId", StateFieldId);
     const result = optionReadResponse?.result?.values;
 
-    console.log(cohortDetails);
-    console.log(result);
+    
 
     const matchedCohorts = result
       ?.map((value: any) => {

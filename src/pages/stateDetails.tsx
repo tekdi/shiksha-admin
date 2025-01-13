@@ -106,7 +106,7 @@ const StateDetails = () => {
                 }}
                 onClick={() => {
                   handleBoardClick(board.code, board.name);
-                  console.log(board);
+                   
                 }}
               >
                 <Box>

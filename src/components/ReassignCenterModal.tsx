@@ -112,9 +112,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       name: cohort.name.toLowerCase(),
       id: cohort.cohortId,
     })
-  );
-  console.log(blockCode);
-  console.log(selectedBlock);
+  ); 
   const names = cohortData.map((item: any) => item.name);
   const setReassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setReassignButtonStatus
@@ -181,13 +179,10 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           centers?.split(",").map((center: any) => center?.trim()?.toLowerCase())
         );
     }
-  }, [blockName, centers, open]);
-  console.log(checkedCenters);
-  console.log(centers);
+  }, [blockName, centers, open]); 
 
   const { getNotification } = useNotification();
-  const handleReassign = async () => {
-    console.log("TL_DISTRICT_UPDATE",selectedDistrict[0] , districtName)
+  const handleReassign = async () => { 
 
     try {
       let selectedData;
@@ -217,9 +212,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           )
           .map((center) => center!.label);
       }
-
-      console.log(blocks);
-      console.log(selectedData);
+ 
 
       let payload;
       if (userType !== Role.TEAM_LEADERS) {
@@ -234,21 +227,18 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         let customFields;
 
         
-        if (selectedBlock[0] !== blockName) {
-          console.log("TL_DISTRICT_UPDATE",selectedDistrict[0] , districtName)
+        if (selectedBlock[0] !== blockName) { 
 
           const userDetails = await getUserDetailsInfo(userId);
           if(userType === Role.FACILITATORS){
 
           getNotification(selectedTLUserID, "FACILITATOR_BLOCK_UPDATE");
-
-          console.log(selectedTLUserID ,"FACILITATOR_BLOCK_UPDATE");
+ 
           
         }
           const blockField = userDetails?.userData?.customFields.find(
             (field: any) => field.label === "BLOCKS"
-          );
-          console.log(checkedCenters);
+          ); 
           customFields = [
             {
               fieldId: blockField.fieldId,
@@ -258,8 +248,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         
 
 
-          if (selectedDistrict[0] !== districtName) {
-            console.log("TL_DISTRICT_UPDATE",selectedDistrict[0] , districtName)
+          if (selectedDistrict[0] !== districtName) { 
             const userDetails = await getUserDetailsInfo(userId);
              if(userType === Role.TEAM_LEADERS){
 
@@ -282,8 +271,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
               },
             ];
           }
-          else {
-            console.log("TL_BLOCK_REASSIGNMENT")
+          else { 
              getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
           }
         }
@@ -314,8 +302,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                     if (selectedBlock[0] !== blockName) {
                       getNotification(userId, "FACILITATOR_BLOCK_UPDATE");
 
-                    }
-            console.log("TL_DISTRICT_UPDATE",selectedDistrict[0] , districtName)
+                    } 
             getNotification(userId, "FACILITATOR_DISTRICT_UPDATE");
 
           }
@@ -348,8 +335,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           cohortId: selectedBlockCohortId,
           role: Role.TEAM_LEADER,
           status: [Status.ACTIVE],
-        };
-        console.log(filters);
+        }; 
         let sort = ["name", "asc"];
         let resp;
         try {
@@ -422,8 +408,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
               fieldId: blockField.fieldId,
               value: cohortCode,
             },
-          ];
-          console.log(selectedBlockCode, checkedCenters[0]);
+          ]; 
           if (selectedDistrict[0] !== districtName) {
             customFields = [
               {
@@ -449,8 +434,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
             ? setReassignButtonStatus(false)
             : setReassignButtonStatus(true);
 
-            if (selectedDistrict[0] !== districtName) {
-              console.log("TL_DISTRICT_UPDATE",selectedDistrict[0] , districtName)
+            if (selectedDistrict[0] !== districtName) { 
                if(userType === Role.TEAM_LEADERS){
   
             getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
@@ -515,9 +499,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
         .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(' ')
     : ''
-}));
-console.log(filteredCBlocks)
-console.log(formattedBlocks)
+})); 
 
   const handleToggle2 = (centerName: string) => {
     if (checkedCenters.includes(centerName)) {
@@ -531,8 +513,7 @@ console.log(formattedBlocks)
   };
 
   const wrappedHandleReassignAction = async () => {
-    try {
-      console.log(selectedTLUserID);
+    try { 
       // await handleDeleteAction();
       const previousBlockObject = {
         limit: 0,
@@ -551,8 +532,7 @@ console.log(formattedBlocks)
       )?.cohortId;
 
       let unSelectedBlockCohortIds: string[] = [];
-
-      console.log(previousBlockId);
+ 
       unSelectedBlockCohortIds.push(previousBlockId);
       let cohortCode = formattedBlocks
         .filter((item: any) => item.label === selectedBlockForTL)

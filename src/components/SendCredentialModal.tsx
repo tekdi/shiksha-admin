@@ -25,8 +25,7 @@ const SendCredentialModal: React.FC<SendCredentialModalProps> = ({
  // isLearnerAdded,
   userType,
   handleBackAction
-}) => {
-  console.log(email)
+}) => { 
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const style = {

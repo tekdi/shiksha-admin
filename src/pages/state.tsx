@@ -89,7 +89,7 @@ const State: React.FC = () => {
     }
   }, []);
   const fetchStateData = async () => {
-    console.log("here we are")
+     
     try {
       const limit = pageLimit;
       const offset = pageOffset * limit;
@@ -181,7 +181,7 @@ const State: React.FC = () => {
         );
       setStateData(filteredStateData);
       const totalCount = filteredStateData.length;
-      console.log("totalCount", totalCount);
+       
       setPaginationCount(totalCount);
       setPageCount(Math.ceil(totalCount / pageLimit));
       setLoading(false);
@@ -209,8 +209,7 @@ const State: React.FC = () => {
   //   setSelectedStateForEdit(rowData);
   //   setAddStateModalOpen(true);
   // };
-  const handleEdit = (rowData: any) => {
-    console.log("rowData", rowData)
+  const handleEdit = (rowData: any) => { 
    setSelectedStateForEdit(rowData);
     setAddStateModalOpen(true);
     const cohortIdForEDIT = rowData.cohortId;
@@ -230,8 +229,7 @@ const State: React.FC = () => {
   const handleDelete = (rowData: StateDetail) => {
     setSelectedStateForDelete(rowData);
     setCohortIdForDelete(rowData?.cohortId);
-    setConfirmationDialogOpen(true);
-    console.log("Delete row:", rowData.value);
+    setConfirmationDialogOpen(true); 
     setStateValueForDelete(rowData.value);
   };
   const handleSortChange = async (event: SelectChangeEvent) => {
