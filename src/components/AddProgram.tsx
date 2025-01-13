@@ -29,7 +29,6 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
   isEditModal = false,
   tenantId,
 }) => {
-  console.log("formData-----", formData);
   const [programName, setProgramName] = useState("");
   const [domainName, setDomainName] = useState("");
   const [formValue, setFormValue] = useState<any>();
@@ -101,7 +100,6 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
 
       if (isEditModal) {
         const programData = formData;
-        console.log("formData-----", formData);
 
         const response = await updateProgram(programData, tenantId);
         showToastMessage(
@@ -143,7 +141,6 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
             formFields,
             t
           );
-          console.log("formValues", formValues);
           setFormValue(formValues);
           setSchema(schema); 
           setUiSchema(uiSchema);
@@ -211,7 +208,6 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         // onChange={handleChange}
         onChange={({ formData }) => {
           // setFormData(formData);
-          console.log("formadatacahange" ,formData );
           if (formData.programImages instanceof File) {
             console.log({ formData });
             // setFile(formData.fileInput); // Update the file state when the form data changes
