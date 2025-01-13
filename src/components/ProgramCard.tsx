@@ -22,6 +22,7 @@ import {
   convertAllImagesToDataUrls,
   convertImageToDataURL,
   mapFields,
+  firstLetterInUpperCase
 } from "@/utils/Helper";
 
 import {
@@ -243,6 +244,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
             <Typography
               variant="h6"
               ml={2}
+              mt={2}
               component="div"
               sx={{
                 fontFamily: "Poppins",
@@ -252,7 +254,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
                 letterSpacing: "0.15px",
               }}
             >
-              {programName}
+              {firstLetterInUpperCase(programName)}
             </Typography>
             {status !== Status.ARCHIVED && (
               <Typography
