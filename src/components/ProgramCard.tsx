@@ -22,7 +22,7 @@ import {
   convertAllImagesToDataUrls,
   convertImageToDataURL,
   mapFields,
-  firstLetterInUpperCase
+  firstLetterInUpperCase,
 } from "@/utils/Helper";
 
 import {
@@ -126,26 +126,32 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
     // const editProgram = result?.result.find((item: any) => item.tenantId === programId);
     const formData = mapFields(formFields, result?.getTenantDetails[0]);
-   
-     if (formData?.programImages?.length > 0) {const updatedImages = await Promise.all(
-      formData?.programImages?.map(async (imagePath: any, index: any) => {
-        const response = await fetch(`/api/get-image-dataurl?imageUrl=${encodeURIComponent(imagePath)}`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch Data URL for image at index ${index}`);
-        }
-        
-        const data = await response.json();
+
+    if (formData?.programImages?.length > 0) {
+      const updatedImages = await Promise.all(
+        formData?.programImages?.map(async (imagePath: any, index: any) => {
+          const response = await fetch(
+            `/api/get-image-dataurl?imageUrl=${encodeURIComponent(imagePath)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch Data URL for image at index ${index}`
+            );
+          }
+
+          const data = await response.json();
           console.log("dataurl", data);
-        return data.dataUrl;  
-      })
-    );
-  
-    // Update the formData with the Data URLs
-    formData.programImages = updatedImages;} 
-      setEditFormData(formData);
-      setOpenAddNewProgram(true);
-      setAnchorEl(null);
+          return data.dataUrl;
+        })
+      );
+
+      // Update the formData with the Data URLs
+      formData.programImages = updatedImages;
+    }
+    setEditFormData(formData);
+    setOpenAddNewProgram(true);
+    setAnchorEl(null);
     // }
     // convertImageToDataURL(
     //   formData?.programImages[0],
@@ -154,7 +160,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
     //   }
     // );
   };
-   console.log("setEditFormData", editFormData)
+  console.log("setEditFormData", editFormData);
 
   const handleStatusChange = async () => {
     try {
