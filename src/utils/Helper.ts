@@ -3,6 +3,7 @@ import { getUserDetailsInfo } from "../services/UserList";
 import { Role, FormContextType, FormValues, InputTypes } from "./app.constant";
 import { State } from "./Interfaces";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from 'axios';
 
 interface Value {
   value: string;
@@ -436,3 +437,60 @@ export const getFilenameFromDataURL = (dataURLs: string[]): (string | null)[] =>
     return null;
   });
 };
+const convertImageUrlToDataUrl = async (imageUrl: string): Promise<string> => {
+  try {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+    return `data:image/png;base64,${base64}`;
+  } catch (error) {
+    console.error('Error converting image URL to Data URL:', error);
+    throw new Error('Failed to convert image to data URL');
+  }
+};
+
+export default async ({req, res}: any) => {
+  const { imageUrl } = req.query;
+
+  if (!imageUrl) {
+    return res.status(400).json({ error: 'Image URL is required' });
+  }
+
+  try {
+    const dataUrl = await convertImageUrlToDataUrl(imageUrl);
+    res.status(200).json({ dataUrl });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to convert image' });
+  }
+};
+
+export const convertAllImagesToDataUrls = async (imageUrls: string[]) => {
+  const dataUrls: string[] = [];
+
+  for (const imageUrl of imageUrls) {
+    const dataUrl = await convertImageUrlToDataUrl(imageUrl);
+    dataUrls.push(dataUrl);
+  }
+
+  return dataUrls;
+};
+
+
+export function convertImageToDataURL(imagePath: string, callback: any) {
+  // Fetch the image as a blob
+  fetch(imagePath)
+      .then(response => response.blob())
+      .then(blob => {
+          // Create a FileReader to convert the blob into a Data URL
+          const reader = new FileReader();
+          
+          reader.onloadend = function() {
+              // This is the Data URL of the image
+              const dataUrl = reader.result;
+              callback(dataUrl);  // Call the callback with the Data URL
+          };
+          
+          // Read the blob as a Data URL
+          reader.readAsDataURL(blob);
+      })
+      .catch(error => console.error("Error converting image:", error));
+}

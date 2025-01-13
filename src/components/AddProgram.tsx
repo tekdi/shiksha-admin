@@ -3,7 +3,7 @@ import {
   GenerateSchemaAndUiSchema,
   customFields,
 } from "@/components/GeneratedSchemas";
-import { createProgram } from "@/services/ProgramServices";
+import { createProgram, updateProgram } from "@/services/ProgramServices";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { Box, Button } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
@@ -14,13 +14,21 @@ import SimpleModal from "./SimpleModal";
 import { dataURLToBlob, getFilenameFromDataURL } from "@/utils/Helper";
 import { showToastMessage } from "./Toastify";
 import { getFormRead } from "@/services/CreateUserService";
-import path from 'path';
+import path from "path";
 interface AddProgramModalProps {
   open: boolean;
   onClose: () => void;
   isEditModal?: boolean;
+  formData?: any;
+  tenantId?: any;
 }
-const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModal=false}) => {
+const AddProgram: React.FC<AddProgramModalProps> = ({
+  open,
+  onClose,
+  formData,
+  isEditModal = false,
+  tenantId,
+}) => {
   const [programName, setProgramName] = useState("");
   const [domainName, setDomainName] = useState("");
   const [formValue, setFormValue] = useState<any>();
@@ -64,45 +72,55 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
     // // }
 
     try {
-
       let binaryFiles: Blob[] | undefined;
 
       if (data?.formData?.programImages) {
         // Assuming programImages is an array of data URLs
         binaryFiles = dataURLToBlob(data?.formData?.programImages);
       }
-      
-      const fileName = getFilenameFromDataURL(data?.formData?.programImages) || 'image.png'; // Use the first image for the name
+
+      const fileName =
+        getFilenameFromDataURL(data?.formData?.programImages) || "image.png"; // Use the first image for the name
       delete data?.formData?.programImages;
-      
+
       const formData = new FormData();
       for (const key in data?.formData) {
         if (data?.formData.hasOwnProperty(key)) {
           formData.append(key, data?.formData[key]);
         }
       }
-      
+
       // Append each binary file to FormData
       if (binaryFiles) {
         binaryFiles.forEach((file, index) => {
-          
-          const currentFileName =  fileName[index] || `image_${index + 1}${path.extname(fileName[index - 1] || '.png')}`; // Unique file names
-            formData.append("programImages", file, currentFileName);
+          const currentFileName = fileName[index] || `image_${index + 1}.png`; // Unique file names
+          formData.append("programImages", file, currentFileName);
         });
       }
-      
 
-      const result = await createProgram(formData, t);
-      showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"), "success");
+      if (isEditModal) {
+        const programData = formData;
+        const response = await updateProgram(programData, tenantId);
+        showToastMessage(
+          t("PROGRAM_MANAGEMENT.PROGRAM_UPDATED_SUCCESS"),
+          "success"
+        );
+      } else {
+        const result = await createProgram(formData, t);
+        showToastMessage(
+          t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"),
+          "success"
+        );
+      }
 
       setFetchPrograms(!fetchPrograms);
-      onClose(); 
+      onClose();
     } catch (error) {
       console.error("Error creating program:", error);
     }
   };
   useEffect(() => {
-    const getAddUserFormData = async() => {
+    const getAddUserFormData = async () => {
       try {
         // const response: FormData = await getFormRead(
         //   FormContext.USERS,
@@ -111,12 +129,13 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         // const response2= await getFormRead(
         //   FormContext.USERS,
         //   userType
-        // ); 
-       const formFields = await getFormRead("TENANT", "TENANT");
+        // );
+        // console.log("sortedFields", response);
+        const formFields = await getFormRead("TENANT", "TENANT");
 
-       
+        //    console.log(studentFormData)
+        // console.log("object",response);
         if (formFields) {
-         
           const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
             formFields,
             t
@@ -141,7 +160,11 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
       open={open}
       onClose={onClose}
       showFooter={true}
-      modalTitle={t("PROGRAM_MANAGEMENT.CREATE_PROGRAM")}
+      modalTitle={
+        isEditModal
+          ? t("PROGRAM_MANAGEMENT.EDIT_PROGRAM")
+          : t("PROGRAM_MANAGEMENT.CREATE_PROGRAM")
+      }
       footer={
         <Box display="flex" justifyContent="flex-end">
           <Button
@@ -169,9 +192,9 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
             }}
             color="primary"
             // disabled={!submitButtonEnable}
-            onClick={() => { }}
+            onClick={() => {}}
           >
-            {true ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
+            {!isEditModal ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
           </Button>
         </Box>
       }
@@ -183,8 +206,10 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         onSubmit={handleSubmit}
         // onChange={handleChange}
         onChange={({ formData }) => {
-          // setFormData(formData); 
-          if (formData.programImages instanceof File) { 
+          // setFormData(formData);
+          console.log({ formData });
+          if (formData.programImages instanceof File) {
+            console.log({ formData });
             // setFile(formData.fileInput); // Update the file state when the form data changes
           }
         }}
@@ -192,7 +217,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({ open, onClose , isEditModa
         // widgets={{}}
         showErrorList={true}
         customFields={customFields}
-        formData={formValue}
+        formData={isEditModal ? formData : formValue}
       >
         {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
       </DynamicForm>

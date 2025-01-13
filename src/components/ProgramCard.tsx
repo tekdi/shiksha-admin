@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,9 +14,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import appLogo from "../../public/images/Logo.svg";
+import { Status } from "@/utils/app.constant";
+import shareIcon from "../../public/images/share_windows.svg";
+import shareIconPublish from "../../public/images/share_publish.svg";
 
+import {
+  convertAllImagesToDataUrls,
+  convertImageToDataURL,
+  mapFields,
+} from "@/utils/Helper";
 
-import { deleteProgram, getProgramList, updateProgram } from "@/services/ProgramServices";
+import {
+  deleteProgram,
+  getProgramList,
+  programSearch,
+  updateProgram,
+} from "@/services/ProgramServices";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { showToastMessage } from "./Toastify";
 import { useTranslation } from "next-i18next";
@@ -26,6 +39,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
+import AddProgram from "./AddProgram";
+
 interface ProgramCardProps {
   programId: string;
   programName: string;
@@ -40,7 +55,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   programName,
   description,
   imageUrl,
-  status
+  status,
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const fetchPrograms = useSubmittedButtonStore(
@@ -50,7 +65,11 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
     (state: any) => state.setFetchPrograms
   );
   const { t } = useTranslation();
- 
+  const [editFormData, setEditFormData] = useState<any>([]);
+  const [openAddNewProgram, setOpenAddNewProgram] =
+    React.useState<boolean>(false);
+
+  console.log("programId:", programId);
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -58,135 +77,340 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  const handleMenuDelete = async() => {
+  const handleCloseAddProgram = () => {
+    setOpenAddNewProgram(false);
+    // setSubmittedButtonStatus(false);
+  };
+  const handleMenuDelete = async () => {
     // setAnchorEl(null);
-    try{
-      let tenantId=programId
-      const programData={
-        "status":"archived"
+    try {
+      let tenantId = programId;
+      const programData = {
+        status: "archived",
+      };
+      const response = await updateProgram(programData, tenantId);
 
-      }
-     const response=await updateProgram(programData,tenantId);
-
-     setFetchPrograms(!fetchPrograms)
-     setAnchorEl(null);
-     showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_DELETED_SUCCESS"), "success");
-
-    }
-    catch(e)
-    { 
-       setAnchorEl(null);
-
+      setFetchPrograms(!fetchPrograms);
+      setAnchorEl(null);
+      showToastMessage(
+        t("PROGRAM_MANAGEMENT.PROGRAM_DELETED_SUCCESS"),
+        "success"
+      );
+    } catch (e) {
+      console.log(e);
+      setAnchorEl(null);
     }
   };
-  const handleMenuEdit = async() => {
-    // const result = await getProgramList()
-    // const formFields = await getFormRead("TENANT", "TENANT");
+  const fetchDataUrl = async (imageUrl: string) => {
+    const response = await fetch(
+      `/api/convert-image?imageUrl=${encodeURIComponent(imageUrl)}`
+    );
+    const data = await response.json();
+    return data.dataUrl;
+  };
+
+  const handleMenuEdit = async () => {
+    const programSearchObject = {
+      limit: 200,
+      offset: 0,
+      filters: {
+        tenantId: programId,
+
+        status: ["published", "draft"],
+      },
+    };
+    const result = await programSearch(programSearchObject);
+    console.log(result?.getTenantDetails[0]);
+    const formFields = await getFormRead("TENANT", "TENANT");
 
     // const editProgram = result?.result.find((item: any) => item.tenantId === programId);
-     
-  //  setFormData(mapFields(formFields, editProgram));
-};
+    const formData = mapFields(formFields, result?.getTenantDetails[0]);
+    //  formData?.programImages.forEach(async (imageUrl: any) => {
+    //   const dataUrl = await fetchDataUrl(imageUrl);
+    //   console.log("dataUrl",dataUrl);
+    // });
+
+    console.log("formData", formData);
+    //  const imageBlobs =  blobToDataURLs(formData.programImages);
+
+    if (formData?.programImages) {
+      const img = document.createElement("img");
+      img.id = "myImage";
+      img.crossOrigin = "anonymous";
+      img.src = "https://program-image-qa.s3.ap-south-1.amazonaws.com/31a5ae81-691e-469d-9beb-87fb44485076.png";
+      document.body.appendChild(img);
+
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        // canvas.style.display = "none";
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+
+        const dataUrl = canvas.toDataURL("image/png");
+        console.log("dataUrl", dataUrl); // Data URL of the image
+      };
+
+      // const response = await fetch(`/api/getSignedUrl?fileKey=31a5ae81-691e-469d-9beb-87fb44485076.png`);
+      // const data = await response.json();
+      // // if (data.signedUrl) {
+      //   console.log("====", data.signedUrl);
+
+      // const img = document.createElement("img");
+      // img.id = "myImage";
+      // img.crossOrigin = "anonymous";
+      // img.src = data.signedUrl;
+      // "https://program-image-qa.s3.ap-south-1.amazonaws.com/31a5ae81-691e-469d-9beb-87fb44485076.png";
+      // img.hidden = true;
+      // const canvas = document.createElement("canvas");
+      // // canvas.style.display = "none";
+      // document.body.appendChild(img);
+      // img.onload = function () {
+      //   const ctx = canvas.getContext("2d");
+      //   canvas.width = img.width;
+      //   canvas.height = img.height;
+      //   ctx?.drawImage(img, 0, 0);
+
+      //   // Get the Data URL from the canvas
+      //   const dataUrl = canvas.toDataURL("image/png");
+      //   console.log("dataUrl", dataUrl);
+
+      //   setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
+      //   setOpenAddNewProgram(true);
+      //   setAnchorEl(null);
+      // };
+      // convertImageToDataUrl(data.signedUrl);
+      // }
+
+      setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
+      setOpenAddNewProgram(true);
+      setAnchorEl(null);
+    } else {
+      setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
+      setOpenAddNewProgram(true);
+      setAnchorEl(null);
+    }
+    // convertImageToDataURL(
+    //   formData?.programImages[0],
+    //   function (dataUrl: string) {
+    //     console.log("Image as Data URL:", dataUrl);
+    //   }
+    // );
+  };
+   console.log("setEditFormData", editFormData)
+
+  const handleStatusChange = async () => {
+    try {
+      let tenantId = programId;
+      let statusValue =
+        status === Status.DRAFT ? Status.PUBLISHED : Status.DRAFT;
+
+      const programData = {
+        status: statusValue,
+      };
+      const response = await updateProgram(programData, tenantId);
+
+      setFetchPrograms(!fetchPrograms);
+      setAnchorEl(null);
+      if (statusValue === Status.DRAFT) {
+        showToastMessage(t("PROGRAM_MANAGEMENT.PROGRAM_DRAFT"), "success");
+      } else if (statusValue === Status.PUBLISHED) {
+        showToastMessage(
+          t("PROGRAM_MANAGEMENT.PROGRAM_PUBLISHED_SUCCESS"),
+          "success"
+        );
+      }
+    } catch (e) {
+      console.log(e);
+      setAnchorEl(null);
+    }
+  };
+
   return (
-    <Card
-      sx={{ width: "300px", height: "300px",  borderRadius: 2,  border: "1px solid #D0C5B4" }}
-    >
-      {/* Program Image */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Typography 
-  variant="h6" 
-  ml={2} 
-  component="div"
-  sx={{
-    fontFamily: 'Poppins',
-    fontWeight: 500,
-    fontSize: '16px',
-    lineHeight: '24px',
-    letterSpacing: '0.15px',
-  }}
->
-  {programName}
-</Typography>
-
-        {/* Menu Button */}
-        <IconButton aria-label="settings" onClick={handleMenuOpen}>
-          <MoreVertIcon />
-        </IconButton>
-      </Box>
-      {/* Program Content */}
-      <CardContent>
-        {imageUrl[0] !== "No image available" ? (
-          <Swiper
-          modules={[Navigation, Pagination]}
-          spaceBetween={20}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          loop={true}
-        >      {imageUrl.map((src, index) => (
-        <SwiperSlide key={index}>
-          <CardMedia
-            component="img"
-            height={"150px"}
-            image={src}
-            alt={"program image"}
-          />
-          </SwiperSlide>
-        ))}
-            </Swiper>
-        ) : (
-          <Image
-            src={appLogo}
-            alt="App Logo"
-            style={{ width: "200px", height: "150px" }}
-          />
-        )}
-
+    <>
+      <Card
+        sx={{
+          width: "300px",
+          height: "300px",
+          borderRadius: 2,
+          border: "1px solid #D0C5B4",
+        }}
+      >
+        {/* Program Image */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          {/* Program Name */}
+          <Box>
+            <Typography
+              variant="h6"
+              ml={2}
+              component="div"
+              sx={{
+                fontFamily: "Poppins",
+                fontWeight: 500,
+                fontSize: "16px",
+                lineHeight: "24px",
+                letterSpacing: "0.15px",
+              }}
+            >
+              {programName}
+            </Typography>
+            {status !== Status.ARCHIVED && (
+              <Typography
+                variant="h6"
+                ml={2}
+                component="div"
+                sx={{
+                  fontFamily: "Poppins",
+                  fontWeight: 500,
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                  letterSpacing: "0.15px",
+                  color:
+                    status === Status.DRAFT
+                      ? "#987100"
+                      : status === Status.PUBLISHED
+                        ? "#1A8825"
+                        : "black",
+                }}
+              >
+                {status === Status.DRAFT
+                  ? t("PROGRAM_MANAGEMENT.DRAFT")
+                  : status === Status.PUBLISHED
+                    ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                    : t("PROGRAM_MANAGEMENT.ARCHIVED")}
+              </Typography>
+            )}
+          </Box>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleMenuEdit}>
-              <EditIcon fontSize="small" sx={{ mr: 1 }} />
-              Edit Details
-            </MenuItem>
-            <MenuItem onClick={handleMenuDelete}>
-              <DeleteIcon fontSize="small" sx={{ mr: 1, color: "red" }} />
-              <Typography color="red">Delete Program</Typography>
-            </MenuItem>
-          </Menu>
+          {/* Menu Button */}
+          {status !== Status.ARCHIVED && (
+            <IconButton aria-label="settings" onClick={handleMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+          )}
         </Box>
+        {/* Program Content */}
+        <CardContent>
+          {imageUrl[0] !== "No image available" ? (
+            <Swiper
+              modules={[Navigation, Pagination]}
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              loop={true}
+            >
+              {" "}
+              {imageUrl.map((src, index) => (
+                <SwiperSlide key={index}>
+                  <CardMedia
+                    component="img"
+                    height={"150px"}
+                    image={src}
+                    alt={"program image"}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <Image
+              src={appLogo}
+              alt="App Logo"
+              style={{ width: "200px", height: "150px" }}
+            />
+          )}
 
-        {/* Program Description */}
-        <Typography
-  sx={{
-    mt: 1,
-    overflow: "hidden",
-    display: "-webkit-box",
-    WebkitBoxOrient: "vertical",
-    WebkitLineClamp: 3, 
-    textOverflow: "ellipsis",
-    fontFamily: "Poppins",
-    fontWeight: 400,
-    fontSize: "14px",
-    lineHeight: "20px",
-    letterSpacing: "0.25px",
-    width: "100%", // Ensures it fits the container
-  }}
->
-  {description}
-</Typography>
+          {status !== Status.ARCHIVED && (
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              {/* Program Name */}
 
-        {/* Program ID */}
-        {/* <Typography variant="caption" display="block" color="text.secondary" sx={{ fontStyle: "italic" }}>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleMenuEdit}>
+                  <EditIcon fontSize="small" sx={{ mr: 1 }} />
+                  {t("PROGRAM_MANAGEMENT.EDIT_PROGRAM")}
+                </MenuItem>
+                {status !== Status.ARCHIVED && (
+                  <MenuItem onClick={handleStatusChange}>
+                    <Image
+                      src={
+                        status === Status.DRAFT ? shareIconPublish : shareIcon
+                      }
+                      alt=""
+                    />
+                    <Typography
+                      sx={{
+                        ml: 1,
+                        color:
+                          status === Status.DRAFT
+                            ? "#1A8825"
+                            : status === Status.PUBLISHED
+                              ? "#987100"
+                              : "black",
+                      }}
+                    >
+                      {status === Status.DRAFT
+                        ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                        : status === Status.PUBLISHED
+                          ? t("PROGRAM_MANAGEMENT.UNPUBLISHED")
+                          : t("PROGRAM_MANAGEMENT.ARCHIVED")}
+                    </Typography>
+                  </MenuItem>
+                )}
+                <MenuItem onClick={handleMenuDelete}>
+                  <DeleteIcon fontSize="small" sx={{ mr: 1, color: "red" }} />
+                  <Typography color="red">
+                    {" "}
+                    {t("PROGRAM_MANAGEMENT.DELETE_PROGRAM")}
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          )}
+
+          {/* Program Description */}
+          <Typography
+            sx={{
+              mt: 1,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              textOverflow: "ellipsis",
+              fontFamily: "Poppins",
+              fontWeight: 400,
+              fontSize: "14px",
+              lineHeight: "20px",
+              letterSpacing: "0.25px",
+              width: "100%", // Ensures it fits the container
+            }}
+          >
+            {description}
+          </Typography>
+
+          {/* Program ID */}
+          {/* <Typography variant="caption" display="block" color="text.secondary" sx={{ fontStyle: "italic" }}>
           Program ID: {programId}
         </Typography> */}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      {
+        <AddProgram
+          open={openAddNewProgram}
+          onClose={handleCloseAddProgram}
+          formData={editFormData}
+          isEditModal={true}
+          tenantId={programId}
+        />
+      }
+    </>
   );
 };
 
