@@ -125,70 +125,25 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
     const formFields = await getFormRead("TENANT", "TENANT");
 
     // const editProgram = result?.result.find((item: any) => item.tenantId === programId);
-    // const formData = mapFields(formFields, result?.getTenantDetails[0]);
-    //  formData?.programImages.forEach(async (imageUrl: any) => {
-    //   const dataUrl = await fetchDataUrl(imageUrl);
-    //   console.log("dataUrl",dataUrl);
-    // });
-
-    // console.log("formData", formData);
-    //  const imageBlobs =  blobToDataURLs(formData.programImages);
-
-    // if (formData?.programImages) {
-    //   const img = document.createElement("img");
-    //   img.id = "myImage";
-    //   img.crossOrigin = "anonymous";
-    //   img.src = "https://program-image-qa.s3.ap-south-1.amazonaws.com/31a5ae81-691e-469d-9beb-87fb44485076.png";
-    //   document.body.appendChild(img);
-
-    //   img.onload = function () {
-    //     const canvas = document.createElement("canvas");
-    //     // canvas.style.display = "none";
-    //     const ctx = canvas.getContext("2d");
-    //     canvas.width = img.width;
-    //     canvas.height = img.height;
-    //     ctx?.drawImage(img, 0, 0);
-
-    //     const dataUrl = canvas.toDataURL("image/png");
-    //     console.log("dataUrl", dataUrl); // Data URL of the image
-    //   };
-
-      // const response = await fetch(`/api/getSignedUrl?fileKey=31a5ae81-691e-469d-9beb-87fb44485076.png`);
-      // const data = await response.json();
-      // // if (data.signedUrl) {
-      //   console.log("====", data.signedUrl);
-
-      // const img = document.createElement("img");
-      // img.id = "myImage";
-      // img.crossOrigin = "anonymous";
-      // img.src = data.signedUrl;
-      // "https://program-image-qa.s3.ap-south-1.amazonaws.com/31a5ae81-691e-469d-9beb-87fb44485076.png";
-      // img.hidden = true;
-      // const canvas = document.createElement("canvas");
-      // // canvas.style.display = "none";
-      // document.body.appendChild(img);
-      // img.onload = function () {
-      //   const ctx = canvas.getContext("2d");
-      //   canvas.width = img.width;
-      //   canvas.height = img.height;
-      //   ctx?.drawImage(img, 0, 0);
-
-      //   // Get the Data URL from the canvas
-      //   const dataUrl = canvas.toDataURL("image/png");
-      //   console.log("dataUrl", dataUrl);
-
-      //   setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
-      //   setOpenAddNewProgram(true);
-      //   setAnchorEl(null);
-      // };
-      // convertImageToDataUrl(data.signedUrl);
-      // }
-
-    //   setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
-    //   setOpenAddNewProgram(true);
-    //   setAnchorEl(null);
-    // } else {
-      setEditFormData(mapFields(formFields, result?.getTenantDetails[0]));
+    const formData = mapFields(formFields, result?.getTenantDetails[0]);
+   
+     if (formData?.programImages?.length > 0) {const updatedImages = await Promise.all(
+      formData?.programImages?.map(async (imagePath: any, index: any) => {
+        const response = await fetch(`/api/get-image-dataurl?imageUrl=${encodeURIComponent(imagePath)}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch Data URL for image at index ${index}`);
+        }
+        
+        const data = await response.json();
+          console.log("dataurl", data);
+        return data.dataUrl;  
+      })
+    );
+  
+    // Update the formData with the Data URLs
+    formData.programImages = updatedImages;} 
+      setEditFormData(formData);
       setOpenAddNewProgram(true);
       setAnchorEl(null);
     // }
