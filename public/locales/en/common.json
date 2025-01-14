@@ -492,7 +492,12 @@
     "UNPUBLISHED":"Unpublished",
     "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
     "PROGRAM_DRAFT": "Program is Draft",
-    "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!"
+    "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
+    "SURE_PROGRAM_PUBLISHED":"Are you sure to Published program",
+    "SURE_PROGRAM_DRAFT":"Are you sure to revert back program into draft",
+    "SURE_PROGRAM_DELETE":"Are you sure to delete program"
+
+
 
 
 
