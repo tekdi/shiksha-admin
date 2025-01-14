@@ -17,6 +17,7 @@ const customTheme = extendTheme({
           "100": "#F3F5F8",
           "200": "#FFFFFF",
           "300": "#EEEEEE",
+          "400": "#ddd",
         },
         success: {
           main: "#1A8825",
