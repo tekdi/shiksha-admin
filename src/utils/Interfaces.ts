@@ -1,3 +1,7 @@
+import { IChangeEvent } from "@rjsf/core";
+import { RJSFSchema, RegistryFieldsType, WidgetProps } from "@rjsf/utils";
+import  { ReactNode } from "react";
+
 export interface State {
   value: string;
   label: string;
@@ -220,3 +224,25 @@ export interface CentralizedModalProps {
   handleSkipButton?: () => void;
   icon?: boolean;
 }
+export interface DynamicFormProps {
+  schema: any;
+  uiSchema: object;
+  formData?: object;
+  onSubmit: (
+    data: IChangeEvent<any, RJSFSchema, any>,
+    event: React.FormEvent<any>
+  ) => void | Promise<void>;
+  onChange: (event: IChangeEvent<any>) => void;
+  onError: (errors: any) => void;
+  showErrorList: boolean;
+  id?: string; // Optional id prop
+  isProgramFields?:boolean
+  widgets?: {
+    [key: string]: React.FC<WidgetProps<any, RJSFSchema, any>>;
+  };
+  customFields: {
+    [key: string]: React.FC<RegistryFieldsType<any, RJSFSchema, any>>;
+  };
+  children?: ReactNode;
+}
+

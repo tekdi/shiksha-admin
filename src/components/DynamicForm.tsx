@@ -11,28 +11,9 @@ import MultiSelectDropdown from "./form/MultiSelectDropdown";
 const FormWithMaterialUI = withTheme(MaterialUITheme);
 import { getCurrentYearPattern } from "@/utils/Helper";
 import CustomNumberWidget from './CustomNumberWidget';
+import CustomImageWidget from "./form/CustomImageWidget";
+import {DynamicFormProps} from '../utils/Interfaces'
 
-interface DynamicFormProps {
-  schema: any;
-  uiSchema: object;
-  formData?: object;
-  onSubmit: (
-    data: IChangeEvent<any, RJSFSchema, any>,
-    event: React.FormEvent<any>
-  ) => void | Promise<void>;
-  onChange: (event: IChangeEvent<any>) => void;
-  onError: (errors: any) => void;
-  showErrorList: boolean;
-  id?: string; // Optional id prop
-  isProgramFields?:boolean
-  widgets?: {
-    [key: string]: React.FC<WidgetProps<any, RJSFSchema, any>>;
-  };
-  customFields: {
-    [key: string]: React.FC<RegistryFieldsType<any, RJSFSchema, any>>;
-  };
-  children?: ReactNode;
-}
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
   id,
@@ -66,6 +47,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     MultiSelectCheckboxes: MultiSelectCheckboxes,
     CustomRadioWidget: CustomRadioWidget,
     CustomNumberWidget: CustomNumberWidget,
+    files: CustomImageWidget
 
   };
 
@@ -213,6 +195,13 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               );
               break;
             }
+            case '^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$':
+               {
+                error.message = t(
+                  "FORM_ERROR_MESSAGES.NUMBER_AND_SPECIAL_CHARACTERS_NOT_ALLOWED"
+                );
+                break;
+              }
             case "^[0-9]{10}$": {
               if (
                 schema.properties?.[property]?.validation?.includes("mobile")

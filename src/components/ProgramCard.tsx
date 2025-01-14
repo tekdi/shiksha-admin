@@ -14,7 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import appLogo from "../../public/images/Logo.svg";
-import { Status } from "@/utils/app.constant";
+import { Role, Status } from "@/utils/app.constant";
 import shareIcon from "../../public/images/share_windows.svg";
 import shareIconPublish from "../../public/images/share_publish.svg";
 
@@ -48,6 +48,7 @@ interface ProgramCardProps {
   description: string;
   imageUrl: string[];
   status?: string;
+  userRole?: string
 }
 const images = [appLogo];
 
@@ -57,6 +58,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   description,
   imageUrl,
   status,
+  userRole
+
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const fetchPrograms = useSubmittedButtonStore(
@@ -246,7 +249,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
           </Box>
 
           {/* Menu Button */}
-          {status !== Status.ARCHIVED && (
+          {status !== Status.ARCHIVED &&  userRole === Role.CENTRAL_ADMIN && (
             <IconButton aria-label="settings" onClick={handleMenuOpen}>
               <MoreVertIcon />
             </IconButton>

@@ -427,7 +427,7 @@ export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
 
 
 export const getFilenameFromDataURL = (dataURLs: string[]): (string | null)[] => {
-  return dataURLs.map((dataURL) => {
+  return dataURLs?.map((dataURL) => {
     // Check if the dataURL has a custom filename parameter
     const matches = dataURL.match(/filename=([^;&]+)/); // Look for `filename` in the query
     if (matches && matches[1]) {
