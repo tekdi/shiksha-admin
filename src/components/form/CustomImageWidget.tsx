@@ -1,7 +1,10 @@
 import { RJSFSchema, RegistryFieldsType, WidgetProps } from "@rjsf/utils";
 import { FormControl, FormGroup, FormLabel, OutlinedInput } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 const CustomImageWidget = ({ value = [], onChange, label }: WidgetProps<any, RJSFSchema, any>) => {
+  const theme = useTheme<any>();
+
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
       if (files && files.length > 0) {
@@ -69,8 +72,8 @@ const CustomImageWidget = ({ value = [], onChange, label }: WidgetProps<any, RJS
                   position: 'absolute',
                   top: '5%',
                   right: '5%',
-                  background: 'red',
-                  color: 'white',
+                  background:  theme.palette.error.main,
+                  color: theme.palette.warning.A400,
                   border: 'none',
                   borderRadius: '50%',
                   width: '20%',
