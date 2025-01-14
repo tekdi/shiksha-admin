@@ -208,6 +208,7 @@ const ProgramList: React.FC = () => {
               // domain={program.domain}
               status={program.status}
               imageUrl={program.programImages || loginImg}
+              userRole={userRole}
             />
           ))}
           {filteredPrograms.length === 0 && (<Typography ml="40%">
