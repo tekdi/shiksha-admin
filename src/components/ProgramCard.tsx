@@ -41,6 +41,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import AddProgram from "./AddProgram";
+import ConfirmationModal from "./ConfirmationModal";
 
 interface ProgramCardProps {
   programId: string;
@@ -48,7 +49,7 @@ interface ProgramCardProps {
   description: string;
   imageUrl: string[];
   status?: string;
-  userRole?: string
+  userRole?: string;
 }
 const images = [appLogo];
 
@@ -58,8 +59,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   description,
   imageUrl,
   status,
-  userRole
-
+  userRole,
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const fetchPrograms = useSubmittedButtonStore(
@@ -72,6 +72,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   const [editFormData, setEditFormData] = useState<any>([]);
   const [openAddNewProgram, setOpenAddNewProgram] =
     React.useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [selectedMenu, setSelectedMenu] = useState<any>();
 
   console.log("programId:", programId);
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -164,6 +166,20 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
     // );
   };
   console.log("setEditFormData", editFormData);
+  const handleCloseModel = () => {
+    setModalOpen(false);
+  };
+
+  const handleStatusModal = () => {
+    setSelectedMenu(2);
+    setAnchorEl(null);
+    setModalOpen(true);
+  };
+  const handleDeleteModal = () => {
+    setSelectedMenu(3);
+    setAnchorEl(null);
+    setModalOpen(true);
+  };
 
   const handleStatusChange = async () => {
     try {
@@ -191,7 +207,15 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
       setAnchorEl(null);
     }
   };
-
+  const getMessage = () => {
+    if (modalOpen)
+      return selectedMenu === 2
+        ? status === Status.DRAFT
+          ? t("PROGRAM_MANAGEMENT.SURE_TO_PUBLISH_PROGRAM")
+          : t("PROGRAM_MANAGEMENT.SURE_TO_REVERT_PROGRAM")
+        : t("PROGRAM_MANAGEMENT.SURE_PROGRAM_DELETE");
+    return "";
+  };
   return (
     <>
       <Card
@@ -249,7 +273,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
           </Box>
 
           {/* Menu Button */}
-          {status !== Status.ARCHIVED &&  userRole === Role.CENTRAL_ADMIN && (
+          {status !== Status.ARCHIVED && userRole === Role.CENTRAL_ADMIN && (
             <IconButton aria-label="settings" onClick={handleMenuOpen}>
               <MoreVertIcon />
             </IconButton>
@@ -304,7 +328,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
                   {t("PROGRAM_MANAGEMENT.EDIT_PROGRAM")}
                 </MenuItem>
                 {status !== Status.ARCHIVED && (
-                  <MenuItem onClick={handleStatusChange}>
+                  <MenuItem onClick={handleStatusModal}>
                     <Image
                       src={
                         status === Status.DRAFT ? shareIconPublish : shareIcon
@@ -330,7 +354,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
                     </Typography>
                   </MenuItem>
                 )}
-                <MenuItem onClick={handleMenuDelete}>
+                <MenuItem onClick={handleDeleteModal}>
                   <DeleteIcon fontSize="small" sx={{ mr: 1, color: "red" }} />
                   <Typography color="red">
                     {" "}
@@ -367,15 +391,31 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         </Typography> */}
         </CardContent>
       </Card>
-      {
-        <AddProgram
-          open={openAddNewProgram}
-          onClose={handleCloseAddProgram}
-          formData={editFormData}
-          isEditModal={true}
-          tenantId={programId}
-        />
-      }
+
+      <AddProgram
+        open={openAddNewProgram}
+        onClose={handleCloseAddProgram}
+        formData={editFormData}
+        isEditModal={true}
+        tenantId={programId}
+      />
+      <ConfirmationModal
+        message={getMessage()}
+        handleAction={
+          selectedMenu === 2 ? handleStatusChange : handleMenuDelete
+        }
+        buttonNames={{
+          primary:
+            selectedMenu === 2
+              ? status === Status.DRAFT
+                ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                : t("PROGRAM_MANAGEMENT.DRAFT")
+              : t("COMMON.DELETE"),
+          secondary: t("COMMON.CANCEL"),
+        }}
+        handleCloseModal={handleCloseModel}
+        modalOpen={modalOpen}
+      />
     </>
   );
 };
