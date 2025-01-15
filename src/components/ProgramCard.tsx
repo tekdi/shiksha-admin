@@ -221,7 +221,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
       <Card
         sx={{
           width: "300px",
-          height: "300px",
+          height: "330px",
           borderRadius: 2,
           border: "1px solid #D0C5B4",
         }}
@@ -282,7 +282,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         {/* Program Content */}
         <CardContent>
           {imageUrl[0] !== "No image available" ? (
-            <Swiper
+            <Box className="swiper-container">
+               <Swiper
               modules={[Navigation, Pagination]}
               spaceBetween={20}
               slidesPerView={1}
@@ -295,13 +296,18 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
                 <SwiperSlide key={index}>
                   <CardMedia
                     component="img"
-                    height={"150px"}
                     image={src}
                     alt={"program image"}
+                    style={{ height: "150px", objectFit: "contain" }}
+
+                    
                   />
+                  
                 </SwiperSlide>
               ))}
             </Swiper>
+            </Box>
+           
           ) : (
             <Image
               src={appLogo}
