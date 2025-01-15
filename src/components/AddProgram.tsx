@@ -18,6 +18,7 @@ import path from "path";
 
 import ConfirmationModal from "./ConfirmationModal";
 import { Status } from "@/utils/app.constant";
+import { on } from "events";
 interface AddProgramModalProps {
   open: boolean;
   onClose: () => void;
@@ -36,11 +37,17 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
   status
 }) => {
   const [programName, setProgramName] = useState("");
+  const [statusCreation, setStatusCreation] = useState("");
+
   const [domainName, setDomainName] = useState("");
   const [formValue, setFormValue] = useState<any>();
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [alertChangesModal, setAlertChangesModal] = useState<boolean>(false);
+  const [isChangedAnyField, setIsChangedAnyField] = useState<boolean>(false);
+
+
 
   const [programLogo, setProgramLogo] = useState<File | null>(null);
   const { t, i18n } = useTranslation();
@@ -115,7 +122,8 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         );
         setModalOpen(false)
       } else {
-        const result = await createProgram(formData, t);
+        formData.append("status", statusCreation)      
+          const result = await createProgram(formData, t);
         showToastMessage(
           t("PROGRAM_MANAGEMENT.PROGRAM_CREATED_SUCCESS"),
           "success"
@@ -167,12 +175,24 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
   const handleCloseModel = () => {
     setModalOpen(false);
   };
+  const handleClose = () => {
+    setAlertChangesModal(false)
+  };
+  
+  const handleCloseAlert = () => {
+if(isChangedAnyField && !isEditModal)
+{
+  setAlertChangesModal(true)
+}
+else
+onClose();
+ };
   return (
     
     <>
     <SimpleModal
       open={open}
-      onClose={onClose}
+      onClose={handleCloseAlert}
       showFooter={true}
       modalTitle={
         isEditModal
@@ -181,7 +201,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
       }
       footer={
         <Box display="flex" justifyContent="flex-end">
-          <Button
+          {isEditModal &&(<Button
             onClick={onClose}
             sx={{
               color: "secondary",
@@ -192,7 +212,26 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
             variant="outlined"
           >
             {t("COMMON.CANCEL")}
-          </Button>
+          </Button>)}
+          {!isEditModal &&(<Button
+            variant="outlined"
+            type="submit"
+            form={isEditModal&& status=== Status.PUBLISHED? "":"dynamic-form"} // Add this line
+            sx={{
+              fontSize: "14px",
+              fontWeight: "500",
+              width: "auto",
+              height: "40px",
+              marginLeft: "10px",
+            }}
+            // disabled={!submitButtonEnable}
+            onClick={() => {
+              setStatusCreation(Status.DRAFT)
+            }}
+          >
+            { t("PROGRAM_MANAGEMENT.SAVE_AS_DRAFT") }
+          </Button>)
+          }
           <Button
             variant="contained"
             type="submit"
@@ -211,9 +250,12 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
               {
                 setModalOpen(true);
               }
+              else{
+                setStatusCreation(Status.PUBLISHED)
+              }
             }}
           >
-            {!isEditModal ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
+            {!isEditModal ? t("PROGRAM_MANAGEMENT.PUBLISH")  : t("COMMON.UPDATE")}
           </Button>
         </Box>
       }
@@ -224,12 +266,26 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         uiSchema={uiSchema}
         onSubmit={handleSubmit}
         // onChange={handleChange}
-        onChange={({ formData }) => {
+        onChange={(event: IChangeEvent<any>) => {
+          console.log( "event", event.formData );
+          const areAllValuesUndefinedOrEmptyArray =(obj: any)  =>
+          Object.values(obj).every(
+            (value: any) => value === undefined || (Array.isArray(value) && value.length === 0)
+          );
+          console.log("obj",areAllValuesUndefinedOrEmptyArray( event.formData)); // Output: true
+           if(areAllValuesUndefinedOrEmptyArray( event.formData))
+           {
+            setIsChangedAnyField(false)
+
+           }
+           else
+           setIsChangedAnyField(true)
+
+
           // setFormData(formData);
-          if (formData.programImages instanceof File) {
-            console.log({ formData });
-            // setFile(formData.fileInput); // Update the file state when the form data changes
-          }
+          // if (formData.programImages instanceof File) {
+          //   // setFile(formData.fileInput); // Update the file state when the form data changes
+          // }
         }}
         onError={handleError}
         // widgets={{}}
@@ -252,6 +308,17 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         handleCloseModal={handleCloseModel}
         modalOpen={modalOpen}
         isDynamicForm={true}
+      />
+       <ConfirmationModal
+        message={ t("PROGRAM_MANAGEMENT.CONTINUE_PROGRAM")}
+        handleAction={()=>{onClose()}}
+        buttonNames={{
+          primary:t("PROGRAM_MANAGEMENT.DISCARD_CHANGES"),
+            
+          secondary:t("COMMON.CONTINUE"),
+        }}
+        handleCloseModal={handleClose}
+        modalOpen={alertChangesModal}
       />
     </>
   );

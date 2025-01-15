@@ -48,7 +48,7 @@ const ProgramList: React.FC = () => {
   const [openAddNewProgram, setOpenAddNewProgram] =
     React.useState<boolean>(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [statusValue, setStatusValue] = useState(Status.ACTIVE);
+  const [statusValue, setStatusValue] = useState(Status.PUBLISHED);
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -71,12 +71,21 @@ const ProgramList: React.FC = () => {
         setLoading(true)
 
         let programListObject ;
-        if(statusValue===Status.ACTIVE){
+        if(statusValue===Status.PUBLISHED){
           programListObject = {
             limit: 200,
             offset: 0,
           filters: {
-            status: ["published", "draft"],
+            status: ["published"],
+          },
+          };
+        }
+      else if(statusValue===Status.DRAFT){
+          programListObject = {
+            limit: 200,
+            offset: 0,
+          filters: {
+            status: ["draft"],
           },
           };
         }
@@ -156,7 +165,7 @@ const ProgramList: React.FC = () => {
     newValue: any
   ) => {
     setStatusValue(newValue);
-    if (newValue === Status.ACTIVE) { 
+    if (newValue === Status.PUBLISHED) { 
      
       setIsArchived(false);
     } else if (newValue === Status.ARCHIVED) {
@@ -204,7 +213,7 @@ const ProgramList: React.FC = () => {
         handleAddUserClick={handleAddProgramClick}
         handleDelete={handleDelete}
         handleFilterChange={handleFilterChange} 
-
+        isProgramPage={true}
       >
          {loading ? (
             <Box
