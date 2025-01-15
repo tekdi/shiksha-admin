@@ -57,7 +57,7 @@ const EditForgotPassword = () => {
       if(locale)
       {
         if(storedUserData?.role === Role.CENTRAL_ADMIN)
-        router.push("/state", undefined, { locale: locale });
+        router.push("/programs", undefined, { locale: locale });
         else
         router.push("/centers", undefined, { locale: locale });
 
@@ -65,7 +65,7 @@ const EditForgotPassword = () => {
     else
     {
       if(storedUserData?.role === Role.CENTRAL_ADMIN)
-      router.push("/state");
+      router.push("/programs");
       else
       router.push("/centers");
 
