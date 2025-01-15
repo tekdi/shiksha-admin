@@ -15,12 +15,17 @@ import { dataURLToBlob, getFilenameFromDataURL } from "@/utils/Helper";
 import { showToastMessage } from "./Toastify";
 import { getFormRead } from "@/services/CreateUserService";
 import path from "path";
+
+import ConfirmationModal from "./ConfirmationModal";
+import { Status } from "@/utils/app.constant";
 interface AddProgramModalProps {
   open: boolean;
   onClose: () => void;
   isEditModal?: boolean;
   formData?: any;
   tenantId?: any;
+  status?:string
+  
 }
 const AddProgram: React.FC<AddProgramModalProps> = ({
   open,
@@ -28,12 +33,14 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
   formData,
   isEditModal = false,
   tenantId,
+  status
 }) => {
   const [programName, setProgramName] = useState("");
   const [domainName, setDomainName] = useState("");
   const [formValue, setFormValue] = useState<any>();
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const [programLogo, setProgramLogo] = useState<File | null>(null);
   const { t, i18n } = useTranslation();
@@ -106,6 +113,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
           t("PROGRAM_MANAGEMENT.PROGRAM_UPDATED_SUCCESS"),
           "success"
         );
+        setModalOpen(false)
       } else {
         const result = await createProgram(formData, t);
         showToastMessage(
@@ -156,7 +164,12 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
   const handleError = (errors: any) => {
     console.log("Form errors:", errors);
   };
+  const handleCloseModel = () => {
+    setModalOpen(false);
+  };
   return (
+    
+    <>
     <SimpleModal
       open={open}
       onClose={onClose}
@@ -183,7 +196,7 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
           <Button
             variant="contained"
             type="submit"
-            form={"dynamic-form"} // Add this line
+            form={isEditModal&& status=== Status.PUBLISHED? "":"dynamic-form"} // Add this line
             sx={{
               fontSize: "14px",
               fontWeight: "500",
@@ -193,7 +206,12 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
             }}
             color="primary"
             // disabled={!submitButtonEnable}
-            onClick={() => {}}
+            onClick={() => {
+              if(isEditModal&& status=== Status.PUBLISHED)
+              {
+                setModalOpen(true);
+              }
+            }}
           >
             {!isEditModal ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
           </Button>
@@ -223,6 +241,19 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
       </DynamicForm>
     </SimpleModal>
+    <ConfirmationModal
+        message={ t("PROGRAM_MANAGEMENT.SURE_PUBLISH_PROGRAM_UPDATE")}
+        
+        buttonNames={{
+          primary:t("COMMON.UPDATE"),
+            
+          secondary: t("COMMON.CANCEL"),
+        }}
+        handleCloseModal={handleCloseModel}
+        modalOpen={modalOpen}
+        isDynamicForm={true}
+      />
+    </>
   );
 };
 

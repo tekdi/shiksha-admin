@@ -11,6 +11,7 @@ interface ConfirmationModalProps {
   handleCloseModal: () => void;
   modalOpen: boolean;
   disableDelete?: boolean; // New prop to disable the delete button
+  isDynamicForm?:boolean
 }
 
 interface ButtonNames {
@@ -25,6 +26,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   buttonNames,
   handleCloseModal,
   disableDelete = false,
+  isDynamicForm=false
 }) => {
 
   const style = {
@@ -81,7 +83,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               {buttonNames.secondary}
             </Button>
           )}
-          {buttonNames.primary && (
+          {buttonNames.primary && !isDynamicForm  &&(
             <Button
               sx={{
                 width: "auto",
@@ -99,6 +101,24 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                   handleCloseModal();
                 }
               }}
+              disabled={disableDelete}
+            >
+              {buttonNames.primary}
+            </Button>
+          )}
+          {buttonNames.primary && isDynamicForm  &&(
+            <Button
+              sx={{
+                width: "auto",
+                height: "40px",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+              type="submit"
+              form="dynamic-form"
+              variant="contained"
+              color="primary"
+              
               disabled={disableDelete}
             >
               {buttonNames.primary}
