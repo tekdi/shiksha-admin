@@ -415,7 +415,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
           primary:
             selectedMenu === 2
               ? status === Status.DRAFT
-                ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                ? t("PROGRAM_MANAGEMENT.PUBLISH")
                 : t("PROGRAM_MANAGEMENT.MARK_AS_DRAFT")
               : t("COMMON.DELETE"),
           secondary: t("COMMON.CANCEL"),

@@ -487,7 +487,7 @@
     "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
     "PROGRAM_ALREADY_EXISTS": "Program Already Exists!",
     "DRAFT":"Draft",
-    "MARK_AS_DRAFT":"Mark as Draft",
+    "MARK_AS_DRAFT":"Yes, Unpublish",
     "ARCHIVED":"Archived",
     "PUBLISHED":"Published",
     "PUBLISH":"Publish",
@@ -497,7 +497,7 @@
     "PROGRAM_DRAFT": "Program is Draft",
     "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
     "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program",
-    "SURE_TO_REVERT_PROGRAM":"Are you sure to revert back program into draft",
+    "SURE_TO_REVERT_PROGRAM":"Are you sure you want to unpublish this program, It will be marked as a draft ",
     "SURE_PROGRAM_DELETE":"Are you sure to delete this program",
 "SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it"
 
