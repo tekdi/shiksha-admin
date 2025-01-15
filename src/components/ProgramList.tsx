@@ -55,6 +55,9 @@ const ProgramList: React.FC = () => {
   const fetchPrograms = useSubmittedButtonStore(
     (state: any) => state.fetchPrograms
   );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
+  );
   useEffect(() => {
     const storedUserData = localStorage.getItem("adminInfo");
     if (storedUserData) {
@@ -149,7 +152,15 @@ const ProgramList: React.FC = () => {
     newValue: any
   ) => {
     setStatusValue(newValue);
-  };
+    if (newValue === Status.ACTIVE) { 
+     
+      setIsArchived(false);
+    } else if (newValue === Status.ARCHIVED) {
+      
+      setIsArchived(true);
+    } else {
+      setIsArchived(false);
+  }};
 
   const handleDelete = (rowData: any) => {};
   

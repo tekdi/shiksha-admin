@@ -353,7 +353,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
                       }}
                     >
                       {status === Status.DRAFT
-                        ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                        ? t("PROGRAM_MANAGEMENT.PUBLISH")
                         : status === Status.PUBLISHED
                           ? t("PROGRAM_MANAGEMENT.UNPUBLISHED")
                           : t("PROGRAM_MANAGEMENT.ARCHIVED")}
@@ -404,6 +404,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         formData={editFormData}
         isEditModal={true}
         tenantId={programId}
+        status={status}
       />
       <ConfirmationModal
         message={getMessage()}
@@ -415,7 +416,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
             selectedMenu === 2
               ? status === Status.DRAFT
                 ? t("PROGRAM_MANAGEMENT.PUBLISHED")
-                : t("PROGRAM_MANAGEMENT.DRAFT")
+                : t("PROGRAM_MANAGEMENT.MARK_AS_DRAFT")
               : t("COMMON.DELETE"),
           secondary: t("COMMON.CANCEL"),
         }}

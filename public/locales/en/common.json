@@ -479,24 +479,27 @@
   "PROGRAM_MANAGEMENT": {
     "PROGRAMS": "Programs",
     "CREATE_PROGRAM": "Create Program",
-    "EDIT_PROGRAM": "Edit Program",
-    "DELETE_PROGRAM": "Delete Program",
+    "EDIT_PROGRAM": "Edit",
+    "DELETE_PROGRAM": "Delete",
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",
     "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
     "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
     "PROGRAM_ALREADY_EXISTS": "Program Already Exists!",
     "DRAFT":"Draft",
+    "MARK_AS_DRAFT":"Mark as Draft",
     "ARCHIVED":"Archived",
     "PUBLISHED":"Published",
-    "UNPUBLISHED":"Unpublished",
+    "PUBLISH":"Publish",
+
+    "UNPUBLISHED":"Unpublish",
     "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
     "PROGRAM_DRAFT": "Program is Draft",
     "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
     "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program",
     "SURE_TO_REVERT_PROGRAM":"Are you sure to revert back program into draft",
-    "SURE_PROGRAM_DELETE":"Are you sure to delete this program"
-
+    "SURE_PROGRAM_DELETE":"Are you sure to delete this program",
+"SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it"
 
 
 
