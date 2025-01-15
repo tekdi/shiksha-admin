@@ -68,6 +68,8 @@ const ProgramList: React.FC = () => {
   useEffect(() => {
     const fetchProgramList = async () => {
       try {
+        setLoading(true)
+
         let programListObject ;
         if(statusValue===Status.ACTIVE){
           programListObject = {
@@ -118,10 +120,12 @@ const ProgramList: React.FC = () => {
         
         setPrograms(sortedProgramSummaries);
         setFilteredPrograms(sortedProgramSummaries);
+        setLoading(false)
+
       } catch (error) {
         setPrograms([])
         setFilteredPrograms([]);
-
+        setLoading(false)
         console.error("Error fetching program list:", error);
       }
     };
@@ -202,7 +206,18 @@ const ProgramList: React.FC = () => {
         handleFilterChange={handleFilterChange} 
 
       >
-        <Box
+         {loading ? (
+            <Box
+              width={"100%"}
+              id="check"
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"center"}
+            >
+              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+            </Box>
+          ) :
+       ( <Box
           sx={{
             display: "flex",
             flexWrap: "wrap",
@@ -226,7 +241,8 @@ const ProgramList: React.FC = () => {
             {t("PROGRAM_MANAGEMENT.NO_PROGRAMS_FOUND")}
           </Typography>)
           }
-        </Box>
+        </Box>)
+}
       </HeaderComponent>
       <AddProgram
             open={openAddNewProgram}
