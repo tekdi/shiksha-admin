@@ -93,7 +93,7 @@ const LoginPage = () => {
             }
             else if(role?.role === Role.CENTRAL_ADMIN)
             {
-              router.push("/state", undefined, { locale: locale });
+              router.push("/programs", undefined, { locale: locale });
             }
             else if (role?.role === Role.ADMIN || role?.role === Role.CENTRAL_ADMIN ) 
             {
@@ -114,7 +114,7 @@ const LoginPage = () => {
             }
             else if(role?.role === Role.CENTRAL_ADMIN)
             {
-              router.push("/state");
+              router.push("/programs");
             }
             else
             router.push("/centers");
@@ -214,14 +214,14 @@ const LoginPage = () => {
         if(locale)
         {
           if(userInfo?.role === Role.CENTRAL_ADMIN)
-          router.push("/state", undefined, { locale: locale });
+          router.push("/programs", undefined, { locale: locale });
         else
         router.push("/centers", undefined, { locale: locale });
         }
         else
         {
           if(userInfo?.role === Role.CENTRAL_ADMIN)
-          router.push("/state");
+          router.push("/programs");
         else
           router.push("/centers");
 

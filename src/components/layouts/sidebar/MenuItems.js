@@ -103,7 +103,7 @@ export const getFilteredMenuItems = () => {
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
           item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "SIDEBAR.MANAGE_PROGRAM"
+          item.title !== "PROGRAM_MANAGEMENT.PROGRAMS"
 
       );
     }
