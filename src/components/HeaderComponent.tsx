@@ -83,6 +83,7 @@ const HeaderComponent = ({
   selectedCenterCode,
   setSelectedCenterCode,
   setSelectedStateCode,
+  isProgramPage=false
 }: any) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -648,11 +649,28 @@ const HeaderComponent = ({
                           : "inherit",
                     }}
                   >
-                    {t("COMMON.ACTIVE")}
+                    { isProgramPage ? t("PROGRAM_MANAGEMENT.PUBLISHED"):t("COMMON.ACTIVE")}
                   </Box>
                 }
-                value={Status.ACTIVE}
+                value={isProgramPage ?Status.PUBLISHED:Status.ACTIVE}
               />
+              {isProgramPage &&(<Tab
+                label={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      color:
+                        statusValue === Status.ACTIVE
+                          ? theme.palette.primary["100"]
+                          : "inherit",
+                    }}
+                  >
+                    {t("PROGRAM_MANAGEMENT.DRAFTS")}
+                  </Box>
+                }
+                value={Status.DRAFT}
+              />)}
               <Tab
                 label={
                   <Box

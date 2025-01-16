@@ -479,7 +479,9 @@
   "PROGRAM_MANAGEMENT": {
     "PROGRAMS": "Programs",
     "CREATE_PROGRAM": "Create Program",
-    "EDIT_PROGRAM": "Edit",
+    "EDIT_PROGRAM": "Edit Program",
+    "EDIT": "Edit",
+
     "DELETE_PROGRAM": "Delete",
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",
@@ -494,12 +496,16 @@
 
     "UNPUBLISHED":"Unpublish",
     "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
-    "PROGRAM_DRAFT": "Program is Draft",
+    "PROGRAM_DRAFT": "Program marked as a Draft",
     "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
-    "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program",
-    "SURE_TO_REVERT_PROGRAM":"Are you sure you want to unpublish this program, It will be marked as a draft ",
-    "SURE_PROGRAM_DELETE":"Are you sure to delete this program",
-"SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it"
+    "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program?",
+    "SURE_TO_REVERT_PROGRAM":"Are you sure you want to unpublish this program, It will be marked as a draft? ",
+    "SURE_PROGRAM_DELETE":"Are you sure to delete this program?",
+"SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it?",
+"SAVE_AS_DRAFT":"Save as Draft",
+"CONTINUE_PROGRAM":"Do you want to continue  or discard the changes?",
+"DRAFTS":"Drafts",
+"DISCARD_CHANGES":"Discard Changes"
 
 
 

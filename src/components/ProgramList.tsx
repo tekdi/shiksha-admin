@@ -20,6 +20,7 @@ import { getProgramList, programSearch } from "@/services/ProgramServices";
 import loginImg from "../../public/images/login-image.jpg";
 import AddProgram from "./AddProgram";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import {  limit } from "@/utils/app.constant";
 
 interface Program {
   tenantId: string;
@@ -48,7 +49,7 @@ const ProgramList: React.FC = () => {
   const [openAddNewProgram, setOpenAddNewProgram] =
     React.useState<boolean>(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [statusValue, setStatusValue] = useState(Status.ACTIVE);
+  const [statusValue, setStatusValue] = useState(Status.PUBLISHED);
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -71,19 +72,28 @@ const ProgramList: React.FC = () => {
         setLoading(true)
 
         let programListObject ;
-        if(statusValue===Status.ACTIVE){
+        if(statusValue===Status.PUBLISHED){
           programListObject = {
-            limit: 200,
+            limit,
             offset: 0,
           filters: {
-            status: ["published", "draft"],
+            status: [Status.PUBLISHED],
+          },
+          };
+        }
+      else if(statusValue===Status.DRAFT){
+          programListObject = {
+            limit,
+            offset: 0,
+          filters: {
+            status: [Status.DRAFT],
           },
           };
         }
         else
         {
           programListObject = {
-            limit:200,
+            limit,
             offset: 0,
           filters: {
             status: ["archived"],
@@ -156,7 +166,7 @@ const ProgramList: React.FC = () => {
     newValue: any
   ) => {
     setStatusValue(newValue);
-    if (newValue === Status.ACTIVE) { 
+    if (newValue === Status.PUBLISHED) { 
      
       setIsArchived(false);
     } else if (newValue === Status.ARCHIVED) {
@@ -204,7 +214,7 @@ const ProgramList: React.FC = () => {
         handleAddUserClick={handleAddProgramClick}
         handleDelete={handleDelete}
         handleFilterChange={handleFilterChange} 
-
+        isProgramPage={true}
       >
          {loading ? (
             <Box

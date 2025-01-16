@@ -331,7 +331,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
               >
                 <MenuItem onClick={handleMenuEdit}>
                   <EditIcon fontSize="small" sx={{ mr: 1 }} />
-                  {t("PROGRAM_MANAGEMENT.EDIT_PROGRAM")}
+                  {t("PROGRAM_MANAGEMENT.EDIT")}
                 </MenuItem>
                 {status !== Status.ARCHIVED && (
                   <MenuItem onClick={handleStatusModal}>
