@@ -164,8 +164,9 @@ const AddProgram: React.FC<AddProgramModalProps> = ({
         console.error("Error fetching form data:", error);
       }
     };
+    if(open)
     getAddUserFormData();
-  }, [i18n.language]);
+  }, [i18n.language, open]);
   const handleChange = (event: any) => { 
   };
   const handleError = (errors: any) => {
@@ -259,7 +260,7 @@ onClose();
         </Box>
       }
     >
-      <DynamicForm
+     {schema && (<DynamicForm
         id="dynamic-form"
         schema={schema}
         uiSchema={uiSchema}
@@ -293,8 +294,11 @@ onClose();
         formData={isEditModal ? formData : formValue}
         isProgramFields={isEditModal ? true : false}
       >
+     
         {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
       </DynamicForm>
+     )
+}
     </SimpleModal>
     <ConfirmationModal
         message={ t("PROGRAM_MANAGEMENT.SURE_PUBLISH_PROGRAM_UPDATE")}

@@ -141,7 +141,7 @@ const ProgramList: React.FC = () => {
     };
   
     fetchProgramList();
-  }, [statusValue, fetchPrograms]);  
+  }, [statusValue, fetchPrograms, searchKeyword]);  
    
   useEffect(() => {
 
