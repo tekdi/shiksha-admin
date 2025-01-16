@@ -53,6 +53,7 @@ export enum SORT {
 }
 
 export enum Storage {
+  USER_DATA = "userData",
   NAME = "name",
   USER_ID = "userId",
 }

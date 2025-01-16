@@ -416,7 +416,22 @@
     "PROGRAM_DESCRIPTION":"Program Description",
     "PROGRAM_TYPE":"Program Type",
     "PROGRAM_HEAD_NAME":"Program Head Name",
-    "PROGRAM_IMAGE":"Program Image"
+    "PROGRAM_IMAGE":"Program Image",
+    "PREFERRED_LANGUAGE": "Preferred Language",
+    "FIRST_NAME": "First Name",
+    "MIDDLE_NAME_OR_FATHER_NAME": "Middle Name or Father Name",
+    "LAST_NAME": "Last Name",
+    "MOTHER_NAME": "Mother Name",
+    "DATE_OF_BIRTH": "Date of Birth",
+    "NAME_OF_GUARDIAN": "Name of Guardian",
+    "RELATION_WITH_GUARDIAN": "Relation with Guardian",
+    "PHONE_NUMBER": "Phone Number",
+    "DOES_THIS_PHONE_BELONG_TO_YOU": "Does This Phone Belong to You?",
+    "HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE": "Highest Educational Qualification or Last Passed Grade",
+    "WHAT_IS_YOUR_PREFERRED_MODE_OF_LEARNING": "What is Your Preferred Mode of Learning?",
+    "ARE_YOU_CURRENTLY_WORKING_IF_YES_CHOOSE_THE_DOMAIN": "Are You Currently Working? If Yes, Choose the Domain",
+    "HAVE_YOU_RECEIVE_ANY_PRIOR_TRAINING": "Have You Received Any Prior Training?",
+    "WHAT_DO_YOU_WANT_TO_BECOME": "What do you want to become?"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",

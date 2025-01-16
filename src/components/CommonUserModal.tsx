@@ -14,6 +14,7 @@ import { sendCredentialService } from "@/services/NotificationService";
 import {
   firstLetterInUpperCase,
   generateUsernameAndPassword,
+  getUserFullName,
 } from "@/utils/Helper";
 import { FormData } from "@/utils/Interfaces";
 import {
@@ -484,7 +485,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     : "onTeamLeaderCreated";
 
               if (typeof window !== "undefined" && window.localStorage) {
-                creatorName = localStorage.getItem("name");
+                creatorName = getUserFullName();
               }
               let replacements: { [key: string]: string };
               replacements = {}; 

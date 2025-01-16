@@ -1,6 +1,6 @@
 import FingerprintJS from "fingerprintjs2";
 import { getUserDetailsInfo } from "../services/UserList";
-import { Role, FormContextType, FormValues, InputTypes } from "./app.constant";
+import { Role, FormContextType, FormValues, InputTypes, Storage } from "./app.constant";
 import { State } from "./Interfaces";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from 'axios';
@@ -48,13 +48,33 @@ export const getUserName = async (
   fieldValue: boolean = true
 ) => {
   try {
-    const userDetails = await getUserDetailsInfo(userId, fieldValue); 
+    const userDetails = await getUserDetailsInfo(userId, fieldValue);
     return userDetails?.userData?.name; // Accessing the name property from userData
   } catch (error) {
     console.error("Error in fetching user name:", error);
     return null;
   }
 };
+
+
+export const getUserFullName = (user?: { firstName?: string, lastName: string, name?: string }): string => {
+  let userData;
+  if (user) {
+    userData = user;
+  } else {
+    userData = localStorage.getItem(Storage.USER_DATA);
+    userData = JSON.parse(userData || "{}");
+  }
+
+  if (userData?.firstName) {
+    const lastName = userData?.lastName || "";
+    return `${userData.firstName} ${lastName}`;
+  } else if (userData?.name) {
+    return userData.name;
+  }
+
+  return '';
+}
 
 export const getDeviceId = () => {
   return new Promise((resolve) => {
@@ -127,7 +147,7 @@ export const capitalizeFirstLetterOfEachWordInArray = (
 ): string[] => {
   if (!arr) {
     return arr;
-  } 
+  }
   return arr?.map((str) =>
     str?.replace(/\b[a-z]/g, (char) => char.toUpperCase())
   );
@@ -157,7 +177,7 @@ export const getCurrentYearPattern = () => {
 };
 
 export const mapFields = (formFields: any, Details: any) => {
-  const initialFormData: any = {}; 
+  const initialFormData: any = {};
 
   formFields.fields.forEach((item: any) => {
     const customFieldValue = Details?.customFields?.find(
@@ -227,7 +247,7 @@ export const mapFields = (formFields: any, Details: any) => {
       }
     }
   });
- 
+
   return initialFormData;
 };
 
@@ -408,13 +428,13 @@ export const filterAndMapAssociations = (
 
 
 export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
-  return dataURLs.map((dataURL) => { 
+  return dataURLs.map((dataURL) => {
     const [header, base64Data] = dataURL.split(",");
     const mimeTypeMatch = header.match(/:(.*?);/);
     if (!mimeTypeMatch) {
       throw new Error("Invalid data URL format");
     }
-    const mimeType = mimeTypeMatch[1]; 
+    const mimeType = mimeTypeMatch[1];
     const binary = atob(base64Data);
     const array = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
@@ -448,7 +468,7 @@ const convertImageUrlToDataUrl = async (imageUrl: string): Promise<string> => {
   }
 };
 
-export default async ({req, res}: any) => {
+export default async ({ req, res }: any) => {
   const { imageUrl } = req.query;
 
   if (!imageUrl) {
@@ -478,19 +498,19 @@ export const convertAllImagesToDataUrls = async (imageUrls: string[]) => {
 export function convertImageToDataURL(imagePath: string, callback: any) {
   // Fetch the image as a blob
   fetch(imagePath)
-      .then(response => response.blob())
-      .then(blob => {
-          // Create a FileReader to convert the blob into a Data URL
-          const reader = new FileReader();
-          
-          reader.onloadend = function() {
-              // This is the Data URL of the image
-              const dataUrl = reader.result;
-              callback(dataUrl);  // Call the callback with the Data URL
-          };
-          
-          // Read the blob as a Data URL
-          reader.readAsDataURL(blob);
-      })
-      .catch(error => console.error("Error converting image:", error));
+    .then(response => response.blob())
+    .then(blob => {
+      // Create a FileReader to convert the blob into a Data URL
+      const reader = new FileReader();
+
+      reader.onloadend = function () {
+        // This is the Data URL of the image
+        const dataUrl = reader.result;
+        callback(dataUrl);  // Call the callback with the Data URL
+      };
+
+      // Read the blob as a Data URL
+      reader.readAsDataURL(blob);
+    })
+    .catch(error => console.error("Error converting image:", error));
 }
