@@ -17,6 +17,7 @@ import bgyoutube from "../assets/images/bgYouTube.svg";
 
 
 
+export const limit: number = 200;
 
 
 export enum Role {

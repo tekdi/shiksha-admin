@@ -20,6 +20,7 @@ import { getProgramList, programSearch } from "@/services/ProgramServices";
 import loginImg from "../../public/images/login-image.jpg";
 import AddProgram from "./AddProgram";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import {  limit } from "@/utils/app.constant";
 
 interface Program {
   tenantId: string;
@@ -73,26 +74,26 @@ const ProgramList: React.FC = () => {
         let programListObject ;
         if(statusValue===Status.PUBLISHED){
           programListObject = {
-            limit: 200,
+            limit,
             offset: 0,
           filters: {
-            status: ["published"],
+            status: [Status.PUBLISHED],
           },
           };
         }
       else if(statusValue===Status.DRAFT){
           programListObject = {
-            limit: 200,
+            limit,
             offset: 0,
           filters: {
-            status: ["draft"],
+            status: [Status.DRAFT],
           },
           };
         }
         else
         {
           programListObject = {
-            limit:200,
+            limit,
             offset: 0,
           filters: {
             status: ["archived"],
