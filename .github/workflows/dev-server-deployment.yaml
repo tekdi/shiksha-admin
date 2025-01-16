@@ -2,7 +2,7 @@ name: Deployment on the Tekdi DEV Server
 on:
   push:
     branches:
-      - release-1.0.0
+      - release-1.1.0
 jobs:
   TEKDI-QA-DEPLOYMENT:
     runs-on: ubuntu-latest
