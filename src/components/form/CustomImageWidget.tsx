@@ -60,7 +60,7 @@ const CustomImageWidget = ({ value = [], onChange, label }: WidgetProps<any, RJS
                 alt={`Uploaded Preview ${index}`}
                 style={{
                   width: '100%',
-                  height: 'auto',
+                  height: '100%',
                   borderRadius: '5px',
                   border: '1px solid'+theme.palette.secondary[400],
                 }}
