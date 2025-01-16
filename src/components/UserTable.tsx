@@ -124,6 +124,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const router = useRouter();
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
+    const {  center } = router.query;
 
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
@@ -194,8 +195,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedCenter, setSelectedCenter] = useState<string[]>([]);
   const [selectedCenterCode, setSelectedCenterCode] = useState<string[]>([]);
 
-  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(false);
-
+  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(center ? true : false);
+console.log("setEnableCenterFilter", enableCenterFilter)
   const isMobile: boolean = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -856,6 +857,16 @@ const UserTable: React.FC<UserTableProps> = ({
       name: keyword,
     }));
   };
+  useEffect(() => {
+    if(center)
+    setEnableCenterFilter(true);
+  else
+  setEnableCenterFilter(false);
+
+    
+  }, [
+    center
+  ]);
 
   useEffect(() => {
     const fetchUserList = async () => {
@@ -911,7 +922,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
         setPageCount(Math.ceil(resp?.totalCount / pageLimit)); 
         let finalResult;
-        if (enableCenterFilter) {
+        if (enableCenterFilter || center) {
           finalResult = result?.map((user: any) => {
             const ageField = user?.customField?.find(
               (field: any) => field?.label === "AGE"
@@ -1133,6 +1144,9 @@ const UserTable: React.FC<UserTableProps> = ({
             };
           })
         );
+        console.log("data", data)
+        console.log("newData", newData)
+
         setData(newData);
         setCohortsFetched(true);
       } catch (error: any) {
@@ -1275,8 +1289,8 @@ const UserTable: React.FC<UserTableProps> = ({
       } else {
         if (selectedCenter.length !== 0) {
           if (
-            selectedCenter[0] === "" ||
-            selectedCenter[0] === t("COMMON.ALL_CENTERS")
+            (selectedCenter[0] === "" ||
+            selectedCenter[0] === t("COMMON.ALL_CENTERS")) && !center
           ) {
             setEnableCenterFilter(false);
           } else { 

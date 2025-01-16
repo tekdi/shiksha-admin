@@ -554,13 +554,43 @@ const HeaderComponent = ({
       }
 
 
-      if (block) {
+      if (state && district && block) {
         setSelectedBlockCode(block.toString());
         console.log(selectedBlockCode);
         // setSelectedBlock([selectedBlockStore])
         setSelectedBlock([localStorage.getItem("selectedBlock")]);
         if (!localStorage.getItem("selectedBlock"))
           setSelectedBlock([selectedBlockStore]);
+
+           
+          const getCentersObject = {
+            limit: 0,
+            offset: 0,
+            filters: {
+              // "type":"COHORT",
+              status: ["active"],
+              states: state.toString(),
+              districts: district.toString(),
+              blocks: block.toString(),
+              // "name": selected[0]
+            },
+          };
+          const response = await getCenterList(getCentersObject)
+           
+          // const response = await getCenterList(getCentersObject); 
+          // setSelectedBlockCohortId(
+          //   response?.result?.results?.cohortDetails[0].cohortId
+          // );
+          //   const result = response?.result?.cohortDetails;
+          const dataArray = response?.result?.results?.cohortDetails;
+      
+          const cohortInfo = dataArray
+            ?.filter((cohort: any) => cohort.type !== "BLOCK")
+            .map((item: any) => ({
+              cohortId: item?.cohortId,
+              name: item?.name,
+            })); 
+          setAllCenters(cohortInfo);
       }
 
 
