@@ -83,6 +83,16 @@ interface CohortDetails {
   params?: any;
 }
 
+interface Option {
+  value: string; // Adjust type based on your actual data structure
+  label: string;
+}
+
+interface CohortDetail {
+  name: string; // Adjust type based on your actual data structure
+  [key: string]: any; // To accommodate additional properties if needed
+}
+
 const Center: React.FC = () => {
   // use hooks
   const { t } = useTranslation();
@@ -339,11 +349,36 @@ const Center: React.FC = () => {
   const getAddCenterFormData = async () => {
     try {
       const response = await getFormRead("cohorts", "cohort");
+
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          type: "SCHOOL",
+          status: ["active"]
+        },
+        sort: ["name", "asc"],
+      };
+
+      const Schoolresponse = await getCohortList(reqParams);
+      console.log(Schoolresponse?.results?.cohortDetails.length,"choolresponse?.results?.cohortDetails--------");
+      console.log(response?.fields[0]?.options.length,"response?.fields[0]?.options----");
+      
+      
+
+      const options: Option[] = response?.fields[0]?.options || [];
+      const cohortDetails: CohortDetail[] = Schoolresponse?.results?.cohortDetails || [];
+
+      const filteredOptions: Option[] = options.filter((option: Option) =>
+        cohortDetails.some((cohort: CohortDetail) => cohort.name === option.label)
+      );      
+
       if (response) {
-        setCenterFormData(response);
+        response.fields[0].options = filteredOptions;
 
         const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
 
+        setCenterFormData(response);
         setSchema(schema);
         setUiSchema(uiSchema);
       } else {
