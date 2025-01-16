@@ -1,0 +1,23 @@
+name: Deployment on the Pratham-QA Frontend Server
+on:
+  workflow_dispatch:
+jobs:
+  PRATHAM-QA-DEPLOYMENT:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy Stack
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_NAME_QA }}
+          username: ${{ secrets.USERNAME_QA }}
+          key: ${{ secrets.EC2_SSH_KEY_QA }}
+          port: ${{ secrets.PORT_QA }}
+          script: |
+            cd ${{ secrets.TARGET_DIR_QA }}
+            if [ -f .env ]; then
+            rm .env
+            fi
+            echo "${{ secrets.QA_ENV }}" > .env
+            ls -ltra
+            ./deploy.sh
