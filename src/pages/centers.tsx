@@ -84,13 +84,13 @@ interface CohortDetails {
 }
 
 interface Option {
-  value: string; // Adjust type based on your actual data structure
+  value: string; 
   label: string;
 }
 
 interface CohortDetail {
-  name: string; // Adjust type based on your actual data structure
-  [key: string]: any; // To accommodate additional properties if needed
+  name: string; 
+  [key: string]: any; 
 }
 
 const Center: React.FC = () => {
@@ -351,11 +351,11 @@ const Center: React.FC = () => {
       const response = await getFormRead("cohorts", "cohort");
 
       const reqParams = {
-        limit: 0,
+        limit: Numbers.ZERO,
         offset: 0,
         filters: {
-          type: "SCHOOL",
-          status: ["active"]
+          type: CohortTypes.SCHOOL,
+          status: [Status.ACTIVE]
         },
         sort: ["name", "asc"],
       };

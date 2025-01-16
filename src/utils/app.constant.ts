@@ -76,6 +76,7 @@ export enum Numbers {
 export enum CohortTypes {
   COHORT = "COHORT",
   BLOCK = "BLOCK",
+  SCHOOL = "SCHOOL",
 }
 
 export enum FormValues {
