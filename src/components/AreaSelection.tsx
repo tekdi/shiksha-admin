@@ -5,6 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
 import React, { useState } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
+import { useRouter } from "next/router";
 
 interface State {
   value: string;
@@ -85,6 +86,10 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   userType,
   reAssignModal = false,
 }) => { 
+  const router = useRouter();
+
+  const {  center } = router.query;
+
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [singleState, setSingleState] = useState<boolean>(true);
@@ -240,6 +245,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                   selectedCategories={selectedCenter}
                   onCategoryChange={handleCenterChangeWrapper}
                   disabled={
+                   (center&& !inModal)?false:
                     selectedBlock.length === 0 ||
                     selectedBlock[0] === t("COMMON.ALL_BLOCKS") ||
                     (selectedBlock?.length > 0 && allCenters?.length === 0)
