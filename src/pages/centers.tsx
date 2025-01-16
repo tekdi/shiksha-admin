@@ -361,8 +361,6 @@ const Center: React.FC = () => {
       };
 
       const Schoolresponse = await getCohortList(reqParams);
-      console.log(Schoolresponse?.results?.cohortDetails.length,"choolresponse?.results?.cohortDetails--------");
-      console.log(response?.fields[0]?.options.length,"response?.fields[0]?.options----");
       
       
 
