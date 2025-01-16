@@ -2,7 +2,7 @@ name: Deployment on the Pratham-QA Frontend Server
 on:
   workflow_dispatch:
 jobs:
-  PRATHAM-QA-DEPLOYMENT:
+  deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
