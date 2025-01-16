@@ -1,4 +1,4 @@
-name: Deployment on the Pratham-dev Frontend Server
+name: Deployment on the Pratham-QA Frontend Server
 on:
   workflow_dispatch:
 jobs:
@@ -9,15 +9,15 @@ jobs:
       - name: Deploy Stack
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_NAME_DEV }}
-          username: ${{ secrets.USERNAME_DEV }}
-          key: ${{ secrets.EC2_SSH_KEY_DEV }}
-          port: ${{ secrets.PORT_DEV }}
+          host: ${{ secrets.HOST_NAME_QA }}
+          username: ${{ secrets.USERNAME_QA }}
+          key: ${{ secrets.EC2_SSH_KEY_QA }}
+          port: ${{ secrets.PORT_QA }}
           script: |
-            cd ${{ secrets.TARGET_DIR_DEV }}
+            cd ${{ secrets.TARGET_DIR_QA }}
             if [ -f .env ]; then
             rm .env
             fi
-            echo "${{ secrets.DEV_ENV }}" > .env
+            echo "${{ secrets.QA_ENV }}" > .env
             ls -ltra
             ./deploy.sh
