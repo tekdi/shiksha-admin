@@ -426,60 +426,63 @@ const UserTable: React.FC<UserTableProps> = ({
 
     setSelectedSort(event.target?.value as string);
   };
-  const mapFields = (formFields: any, response: any) => {
-    console.log("formFields", formFields);
-    console.log("response", response);
-
+ const mapFields = (formFields: any, response: any) => {
     let initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
         (field: any) => field.fieldId === item.fieldId
       );
-
       const getValue = (data: any, field: any) => {
-        if (item.default) return item.default;
-        if (!field) return undefined;
-
-        if (item.isMultiSelect) {
-          if (data[item.name] && item.maxSelections > 1) return [field.value];
-          if (item.type === "checkbox") return String(field.value).split(",");
-          return field.value?.toLowerCase();
-        } else {
-          if (item.type === "numeric") return parseInt(String(field.value), 10);
-          if (item.type === "text") return String(field.value);
-          if (field.value === "FEMALE" || field.value === "MALE") {
-            return field.value.toLowerCase();
+        if (item.default) {
+          return item.default;
+        }
+        if (item?.isMultiSelect) {
+          if (data[item.name] && item?.maxSelections > 1) {
+            return [field?.value];
+          } else if (item?.type === "checkbox") {
+            return String(field?.code).split(",");
+          } else {
+            return field?.code?.toLowerCase();
           }
-          return field.value?.toLowerCase();
+        } else {
+          if (item?.type === "numeric") {
+            return parseInt(String(field?.value));
+          } else if (item?.type === "text") {
+            return String(field?.value);
+          } else {
+            if (field?.value === "FEMALE" || field?.value === "MALE") {
+              return field?.value?.toLowerCase();
+            }
+            return field?.value?.toLowerCase();
+          }
         }
       };
-
-      if (item.coreField && userData[item.name] !== undefined) {
-        if (item.isMultiSelect) {
-          if (userData[item.name] && item.maxSelections > 1) {
+      if (item.coreField) {
+        if (item?.isMultiSelect) {
+          if (userData[item.name] && item?.maxSelections > 1) {
             initialFormData[item.name] = [userData[item.name]];
-          } else if (item.type === "checkbox") {
+          } else if (item?.type === "checkbox") {
             initialFormData[item.name] = String(userData[item.name]).split(",");
           } else {
             initialFormData[item.name] = userData[item.name];
           }
-        } else if (item.type === "numeric") {
+        } else if (item?.type === "numeric") {
           initialFormData[item.name] = Number(userData[item.name]);
-        } else if (item.type === "text" && userData[item.name]) {
+        } else if (item?.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
         } else {
-          initialFormData[item.name] = userData[item.name];
+          if (userData[item.name]) {
+            initialFormData[item.name] = userData[item.name];
+          }
         }
-      } else if (!item.coreField && customFieldValue) {
+      } else {
         const fieldValue = getValue(userData, customFieldValue);
-        if (fieldValue !== undefined) {
+        if (fieldValue) {
           initialFormData[item.name] = fieldValue;
         }
       }
     });
-
-    console.log("initialFormData", initialFormData);
     return initialFormData;
   };
  
@@ -731,7 +734,7 @@ const UserTable: React.FC<UserTableProps> = ({
               user.name.slice(1).toLowerCase(),
             role: user.role,
             //  gender: user.gender,
-            mobile: user.mobile === "NaN" ? "-" : user.mobile,
+            mobile: user.mobile === "NaN" || null ? "-" : user.mobile,
             age: ageField ? ageField.value : "-",
             district: districtField
               ? districtField.value + " , " + blockField.value

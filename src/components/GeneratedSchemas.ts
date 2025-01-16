@@ -108,6 +108,7 @@ export const GenerateSchemaAndUiSchema = (
       case "time":
         fieldSchema.type = "string";
         fieldSchema.format = "time";
+        fieldUiSchema["ui:widget"] = "time"; // Set the widget to 'time'break;
         break;
       case "date": // New case for date
         fieldSchema.type = "string";

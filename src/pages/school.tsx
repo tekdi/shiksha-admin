@@ -408,6 +408,7 @@ const Block: React.FC = () => {
   const handleClusterChange = async (event: SelectChangeEvent<string>) => {
     const selectedCluster = event.target.value;
     setSelectedCluster(selectedCluster);
+    setPageOffset(0)
   };
 
   const handleEdit = (rowData: any) => {
