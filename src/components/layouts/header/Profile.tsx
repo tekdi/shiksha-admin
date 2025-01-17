@@ -258,7 +258,7 @@ const Profile = () => {
               }
             }}
           >
-            <Typography
+            {userName!=="undefined" &&(<Typography
               variant="body1"
               fontWeight="400"
               sx={{
@@ -271,7 +271,7 @@ const Profile = () => {
               }}
             >
               {t("COMMON.HI", { name: firstLetterInUpperCase(userName ?? "") })}
-            </Typography>
+            </Typography>)}
 
             <FeatherIcon icon="chevron-down" size="20" />
           </Box>
@@ -303,7 +303,7 @@ const Profile = () => {
         {/* <Box
           sx={{ backgroundColor: "#F8EFE7", height: "56px", width: "100%" }}
         ></Box> */}
-        <Box
+       { adminInfo?.name && (<Box
           sx={{ display: "flex", justifyContent: "center", marginTop: "-25px" }}
         >
           <Box
@@ -328,7 +328,7 @@ const Profile = () => {
 
 
           </Box>
-        </Box>
+        </Box>)}
 
         <Box
           sx={{
