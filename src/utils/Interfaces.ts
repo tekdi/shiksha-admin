@@ -96,8 +96,7 @@ export interface CoursePlannerMetaData {
 
 export interface GetTargetedSolutionsParams {
   subject: string;
-  state: string;
-
+  // state: string;
   medium: string;
   class: string;
   board: string;
