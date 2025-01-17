@@ -7,16 +7,16 @@ import React, { useEffect } from "react";
 
 import { getFormRead } from "@/services/CreateUserService";
 import { getUserDetailsInfo } from "@/services/UserList";
-import { Storage } from "@/utils/app.constant";
-import { firstLetterInUpperCase } from "@/utils/Helper";
+import { firstLetterInUpperCase, getUserFullName } from "@/utils/Helper";
+import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import EditIcon from '@mui/icons-material/Edit';
 import LogoutIcon from "@mui/icons-material/Logout";
 import MailIcon from "@mui/icons-material/Mail";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { Box, Button, Divider, Menu, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import { telemetryFactory } from "@/utils/telemetry";
-import EditIcon from '@mui/icons-material/Edit';
+
 const Profile = () => {
   const [anchorEl4, setAnchorEl4] = React.useState<null | HTMLElement>(null);
   const [profileClick, setProfileClick] = React.useState<boolean>(false);
@@ -29,7 +29,7 @@ const Profile = () => {
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state?.adminInformation
   );
-  console.log(adminInformation);
+
   const [submitValue, setSubmitValue] = React.useState<boolean>(false);
 
   const { t } = useTranslation();
@@ -73,7 +73,7 @@ const Profile = () => {
   };
 
   const mapFields = (formFields: any, response: any) => {
-    let initialFormData: any = {};
+    const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
@@ -81,7 +81,7 @@ const Profile = () => {
       );
 
       const getValue = (data: any, field: any) => {
-        console.log(data, field);
+
         if (item.default) {
           return item.default;
         }
@@ -89,8 +89,7 @@ const Profile = () => {
           if (data[item.name] && item?.maxSelections > 1) {
             return [field?.value];
           } else if (item?.type === "checkbox") {
-            console.log(item);
-            console.log(String(field?.value).split(","));
+
 
             return String(field?.value).split(",");
           } else {
@@ -103,10 +102,10 @@ const Profile = () => {
             return String(field?.value);
           } else {
             if (field?.value === "FEMALE" || field?.value === "MALE") {
-              console.log(true);
+
               return field?.value?.toLowerCase();
             }
-            //  console.log()
+
             return field?.value?.toLowerCase();
           }
         }
@@ -117,19 +116,19 @@ const Profile = () => {
           if (userData[item.name] && item?.maxSelections > 1) {
             initialFormData[item.name] = [userData[item.name]];
           } else if (item?.type === "checkbox") {
-            // console.log("checkbox")
+
 
             initialFormData[item.name] = String(userData[item.name]).split(",");
           } else {
             initialFormData[item.name] = userData[item.name];
           }
         } else if (item?.type === "numeric") {
-          console.log(item?.name);
+
           initialFormData[item.name] = Number(userData[item.name]);
         } else if (item?.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
         } else {
-          console.log(item.name);
+
           if (userData[item.name]) {
             initialFormData[item.name] = userData[item.name];
           }
@@ -143,7 +142,7 @@ const Profile = () => {
       }
     });
 
-    console.log("initialFormData", initialFormData);
+
     return initialFormData;
   };
   const handleEditClick = async (rowData: any) => {
@@ -151,24 +150,18 @@ const Profile = () => {
     if (submitValue) {
       setSubmitValue(false);
     }
-    console.log("Edit row:", rowData);
-
     try {
       const fieldValue = true;
       const response = await getUserDetailsInfo(
         adminInformation?.userId,
         fieldValue
       );
-      // console.log(role);
 
       let formFields;
       if (Role.STUDENT === adminInformation?.role) {
         formFields = await getFormRead("USERS", "STUDENT");
         setFormData(mapFields(formFields, response));
-        console.log("mapped formdata", formdata);
       } else if (Role.TEACHER === adminInformation?.role) {
-        console.log("mapped formdata", formdata);
-
         formFields = await getFormRead("USERS", "TEACHER");
         setFormData(mapFields(formFields, response));
       } else if (Role.TEAM_LEADER === adminInformation?.role) {
@@ -180,19 +173,16 @@ const Profile = () => {
       }
       handleOpenEditModal();
 
-      console.log("response", response);
-      console.log("formFields", formFields);
+
     } catch (error) {
       console.log(error);
     }
   };
 
   const getUserName = () => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const name = localStorage.getItem(Storage.NAME);
-      setUserName(name);
-    }
+      setUserName(getUserFullName());
   };
+
   const handleCloseAddLearnerModal = () => {
     setOpenEditModal(false);
   };
@@ -207,7 +197,7 @@ const Profile = () => {
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const admin = localStorage.getItem("adminInfo");
-      if (admin && admin !== "undefined") setAdminInfo(JSON?.parse(admin)||{});
+      if (admin && admin !== "undefined") setAdminInfo(JSON?.parse(admin) || {});
     }
   }, []);
 
@@ -394,7 +384,7 @@ const Profile = () => {
           </Box>
 
           <Divider sx={{ color: "#D0C5B4" }} />
-          <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center", '@media (max-width: 434px)': { flexDirection: 'column', justifyContent: 'center', alignItems: 'center'   }  }}>
+          <Box sx={{ px: "20px", display: "flex", gap: "10px", justifyContent: "space-between", alignItems: "center", '@media (max-width: 434px)': { flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }}>
             <Button
               fullWidth
               variant="outlined"
@@ -423,7 +413,7 @@ const Profile = () => {
                 backgroundColor: "#FDBE16",
                 border: "0.6px solid #1E1B16",
                 my: "20px",
-                '@media (max-width: 434px)': { my: '0px', mb:'20px' }
+                '@media (max-width: 434px)': { my: '0px', mb: '20px' }
               }}
               endIcon={<LogoutIcon />}
             >
@@ -433,7 +423,6 @@ const Profile = () => {
           </Box>
         </Box>
       </Menu>
-      {console.log(adminInfo?.role)}
       {openEditModal && (
         <CommonUserModal
           open={openEditModal}
