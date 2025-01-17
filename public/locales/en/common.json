@@ -424,7 +424,7 @@
     "TO_TIME": "To Time",
     "CLUSTER_NAME_REQUIRED": "Cluster Name Required",
     "SCHOOL_CODE_NOT_UNIQUE": "School Code Not Unique",
-    "Grade":"Grade"
+    "GRADE":"Grade"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
