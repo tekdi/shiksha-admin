@@ -14,6 +14,7 @@ import FullLayout from "@/components/layouts/FullLayout";
 import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
 import customTheme from "../styles/customTheme";
 import "./../styles/style.css";
+import Head from 'next/head';
 
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
@@ -21,7 +22,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
-import { Role, TelemetryEventType } from "@/utils/app.constant";
+import { Role, TelemetryEventType, metaTags } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import RouteGuard from "@/components/RouteGuard";
 
@@ -137,23 +138,30 @@ function App({ Component, pageProps }: AppProps) {
   ));
 
   return (
-    <QueryClientProvider client={client}>
+    <>
+    <Head>
+        <title>{metaTags?.title}</title>
+      
+      </Head>
+      <QueryClientProvider client={client}>
 
-    <AuthProvider>
-        <CssVarsProvider theme={customTheme}>
+<AuthProvider>
+    <CssVarsProvider theme={customTheme}>
 
-        <RouteGuard>{renderComponent()}</RouteGuard>
+    <RouteGuard>{renderComponent()}</RouteGuard>
 
-          <ToastContainer
-            position="bottom-left"
-            autoClose={3000}
-            stacked={false}
-          />
-        </CssVarsProvider>
-      </AuthProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        stacked={false}
+      />
+    </CssVarsProvider>
+  </AuthProvider>
+  <ReactQueryDevtools initialIsOpen={false} />
 
-    </QueryClientProvider>
+</QueryClientProvider>
+    </>
+   
   );
 }
 

@@ -18,7 +18,10 @@ import bgyoutube from "../assets/images/bgYouTube.svg";
 
 
 export const limit: number = 200;
-
+export const metaTags = {
+  title: 'Pratham Admin Management App'
+ 
+};
 
 export enum Role {
   STUDENT = "Student",
