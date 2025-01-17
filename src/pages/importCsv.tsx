@@ -174,7 +174,7 @@ const ImportCsv = () => {
       const metaData: CoursePlannerMetaData = {
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: localStorage.getItem("selectedState") || tstore?.state,
+        // state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         type: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,

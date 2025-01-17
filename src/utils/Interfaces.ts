@@ -87,10 +87,9 @@ export interface CohortMemberList {
 export interface CoursePlannerMetaData {
   subject: string;
   class: string;
-  state: any;
+  // state: any;
   board: string;
   type: string;
-
   medium: string;
 }
 
