@@ -4,7 +4,7 @@ on:
     branches:
       - release-1.1.0
 jobs:
-  TEKDI-QA-DEPLOYMENT:
+  TEKDI-DEV-DEPLOYMENT:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
