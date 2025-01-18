@@ -83,7 +83,6 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
         console.log('frameworks', frameworks)
         console.log('getBoards', getBoards)
 
-        //filter common board by mapping boards with stateAssociation
         if (getBoards) {
           setBoardOptions(getBoards);
         }
