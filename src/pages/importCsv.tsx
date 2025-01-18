@@ -104,7 +104,7 @@ const ImportCsv = () => {
       const updatedResponse = await getTargetedSolutions({
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: localStorage.getItem("selectedState") || tstore?.state,
+        // state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         courseType: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,
