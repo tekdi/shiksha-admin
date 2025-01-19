@@ -20,7 +20,7 @@ export const GenerateSchemaAndUiSchema = (
     dependencies: {},
   };
   const uiSchema: UiSchema = {}; //form ui schema
-  let formValues: any = {};
+  const formValues: any = {};
    formData?.fields?.forEach(field => {
     if (field.isHidden === true) {
         field.isEditable = false;

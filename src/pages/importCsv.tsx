@@ -1,26 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Button,
-  IconButton,
-  CircularProgress,
-  useMediaQuery,
-  useTheme,
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import FilterSearchBar from "@/components/FilterSearchBar";
-import { useRouter } from "next/router";
-import cardData from "@/data/cardData";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import AttachmentIcon from "@mui/icons-material/Attachment";
 import FileUploadDialog from "@/components/FileUploadDialog";
-import { useTranslation } from "next-i18next";
 import Loader from "@/components/Loader";
-import { CoursePlannerMetaData } from "@/utils/Interfaces";
+import { showToastMessage } from "@/components/Toastify";
 import {
   getSolutionDetails,
   getTargetedSolutions,
@@ -28,22 +8,31 @@ import {
   getUserProjectTemplate,
   uploadCoursePlanner,
 } from "@/services/coursePlanner";
-import { showToastMessage } from "@/components/Toastify";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import KeyboardBackspaceOutlinedIcon from "@mui/icons-material/KeyboardBackspaceOutlined";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import dayjs from "dayjs";
-import { Role } from "@/utils/app.constant";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
-import Papa from "papaparse";
+import { monthColors, Role } from "@/utils/app.constant";
+import { CoursePlannerMetaData } from "@/utils/Interfaces";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
-import LinkIcon from "@mui/icons-material/Link";
-import { monthColors } from "@/utils/app.constant";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from "@mui/material";
+import dayjs from "dayjs";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useRouter } from "next/router";
+import Papa from "papaparse";
+import { useCallback, useEffect, useState } from "react";
 
 const ImportCsv = () => {
   const router = useRouter();
@@ -75,7 +64,7 @@ const ImportCsv = () => {
       const response = await getTargetedSolutions({
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: localStorage.getItem("selectedState") || tstore?.state,
+        // state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         courseType: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,
@@ -115,7 +104,7 @@ const ImportCsv = () => {
       const updatedResponse = await getTargetedSolutions({
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: localStorage.getItem("selectedState") || tstore?.state,
+        // state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         courseType: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,
@@ -185,7 +174,7 @@ const ImportCsv = () => {
       const metaData: CoursePlannerMetaData = {
         subject: tstore?.taxonomySubject,
         class: tstore?.taxonomyGrade,
-        state: localStorage.getItem("selectedState") || tstore?.state,
+        // state: localStorage.getItem("selectedState") || tstore?.state,
         board: tstore?.board,
         type: tstore?.taxonomyType,
         medium: tstore?.taxonomyMedium,

@@ -1,11 +1,11 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Role } from "@/utils/app.constant";
+import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
+import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
-import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
-import { useMediaQuery } from "@mui/material";
-import { FormContextType, Role } from "@/utils/app.constant";
+import { useRouter } from "next/router";
 
 interface State {
   value: string;
@@ -86,12 +86,16 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   userType,
   reAssignModal = false,
 }) => { 
+  const router = useRouter();
+
+  const {  center } = router.query;
+
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const [singleState, setSingleState] = useState<boolean>(true);
   const [stateValue, setStateValue] = useState<string>("");
   const [stateCode, setStateCode] = useState<string>("");
-  let isSmallScreen = useMediaQuery((theme: any) =>
+  const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("sm")
   );
   // isSmallScreen=isMobile?true: false;
@@ -241,6 +245,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                   selectedCategories={selectedCenter}
                   onCategoryChange={handleCenterChangeWrapper}
                   disabled={
+                   (center&& !inModal)?false:
                     selectedBlock.length === 0 ||
                     selectedBlock[0] === t("COMMON.ALL_BLOCKS") ||
                     (selectedBlock?.length > 0 && allCenters?.length === 0)

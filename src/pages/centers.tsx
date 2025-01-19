@@ -669,7 +669,7 @@ const Center: React.FC = () => {
 
   const handleActionForDelete = async () => {
     if (selectedCohortId) {
-      let cohortDetails = {
+      const cohortDetails = {
         status: Status.ARCHIVED,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
@@ -833,7 +833,7 @@ const Center: React.FC = () => {
       const cohortName = rowData?.name;
       setInputName(cohortName);
 
-      let data = {
+      const data = {
         filters: {
           cohortId: cohortId,
         },
@@ -902,7 +902,7 @@ const Center: React.FC = () => {
     const formData = data?.formData;
     const schemaProperties = schema.properties;
 
-    let apiBody: any = {
+    const apiBody: any = {
       customFields: [],
     };
     Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
@@ -953,7 +953,7 @@ const Center: React.FC = () => {
         showToastMessage(t("CENTERS.NO_COHORT_ID_SELECTED"), "error");
         return;
       }
-      let cohortDetails = {
+      const cohortDetails = {
         name: (formData?.name).toLowerCase(),
         updatedBy: localStorage.getItem('userId'),
         customFields: customFields,
@@ -1087,7 +1087,7 @@ const Center: React.FC = () => {
  
 
     try {
-      let data = {
+      const data = {
         limit: 0,
         offset: 0,
         filters: {

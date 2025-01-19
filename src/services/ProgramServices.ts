@@ -2,7 +2,11 @@ import { showToastMessage } from "@/components/Toastify";
 import { get, patch, deleteApi } from "./RestClient";
 import { post } from "./RestClient";
 import axios from "axios";
-
+export interface programListData {
+  limit?: Number;
+  offset?: Number;
+  filters?: any;
+}
 export const getProgramList = async (
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/read`;
@@ -60,5 +64,17 @@ export const deleteProgram = async ( tenantId: string): Promise<any> => {
   } catch (error) {
     console.error("Error in creating user", error);
     throw error;
+  }
+};
+
+export const programSearch = async (data: programListData): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/search`;
+
+  try {
+    const response = await post(apiUrl, data);
+    return response?.data?.result;
+  } catch (error) {
+    console.error("Error in Getting cohort List Details", error);
+    return error;
   }
 };

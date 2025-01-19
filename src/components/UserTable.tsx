@@ -2,58 +2,57 @@ import DeleteUserModal from "@/components/DeleteUserModal";
 import HeaderComponent from "@/components/HeaderComponent";
 import PageSizeSelector from "@/components/PageSelector";
 import {
+  getContentCreatorTableColumns,
+  getTLTableColumns,
+  getUserTableColumns,
+} from "@/data/tableColumns";
+import { updateCohortMemberStatus } from "@/services/CohortService/cohortService";
+import { getFormRead } from "@/services/CreateUserService";
+import {
+  getCenterList,
+  getStateBlockDistrictList,
+} from "@/services/MasterDataService";
+import useStore from "@/store/store";
+import {
   FormContextType,
+  Role,
   SORT,
   Status,
   TelemetryEventType,
+  apiCatchingDuration,
 } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
+import useSubmittedButtonStore from "@/utils/useSharedState";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { DataType, SortDirection } from "ka-table/enums";
+import { Theme } from "@mui/system";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
-import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
-import glass from "../../public/images/empty_hourglass.svg";
 import KaTableComponent from "../components/KaTableComponent";
 import Loader from "../components/Loader";
 import { deleteUser } from "../services/DeleteUser";
 import { getCohortList } from "../services/GetCohortList";
 import {
-  userList,
-  getUserDetailsInfo,
   cohortMemberList,
+  getUserDetailsInfo,
+  userList,
 } from "../services/UserList";
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import { Role, apiCatchingDuration } from "@/utils/app.constant";
-import { getFormRead } from "@/services/CreateUserService";
-import { showToastMessage } from "./Toastify";
 import {
   capitalizeFirstLetterOfEachWordInArray,
   firstLetterInUpperCase,
+  getUserFullName,
 } from "../utils/Helper";
-import {
-  getUserTableColumns,
-  getTLTableColumns,
-  getContentCreatorTableColumns,
-} from "@/data/tableColumns";
-import { TablePagination, useMediaQuery } from "@mui/material";
-import { Theme } from "@mui/system";
 import CommonUserModal from "./CommonUserModal";
-import { useQuery } from "@tanstack/react-query";
 import ReassignCenterModal from "./ReassignCenterModal";
-import {
-  getCenterList,
-  getStateBlockDistrictList,
-} from "@/services/MasterDataService";
-import { updateCohortMemberStatus } from "@/services/CohortService/cohortService";
-import useSubmittedButtonStore from "@/utils/useSharedState";
-import { useRouter } from "next/router";
-import { telemetryFactory } from "@/utils/telemetry";
-import useStore from "@/store/store";
+import { showToastMessage } from "./Toastify";
 type UserDetails = {
   userId: any;
   username: any;
@@ -124,6 +123,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const router = useRouter();
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
+    const {  center } = router.query;
 
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
@@ -194,8 +194,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedCenter, setSelectedCenter] = useState<string[]>([]);
   const [selectedCenterCode, setSelectedCenterCode] = useState<string[]>([]);
 
-  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(false);
-
+  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(center ? true : false);
+console.log("setEnableCenterFilter", enableCenterFilter)
   const isMobile: boolean = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -675,7 +675,7 @@ const UserTable: React.FC<UserTableProps> = ({
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    let initialFormData: any = {};
+    const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
@@ -856,13 +856,23 @@ const UserTable: React.FC<UserTableProps> = ({
       name: keyword,
     }));
   };
+  useEffect(() => {
+    if(center)
+    setEnableCenterFilter(true);
+  else
+  setEnableCenterFilter(false);
+
+    
+  }, [
+    center
+  ]);
 
   useEffect(() => {
     const fetchUserList = async () => {
       setLoading(true);
       try {
         const fields = ["age", "districts", "states", "blocks", "gender"];
-        let limit = pageLimit;
+        const limit = pageLimit;
         let offset = pageOffset * limit;
         // const filters = { role: role , status:"active"};
         const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
@@ -911,7 +921,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
         setPageCount(Math.ceil(resp?.totalCount / pageLimit)); 
         let finalResult;
-        if (enableCenterFilter) {
+        if (enableCenterFilter || center) {
           finalResult = result?.map((user: any) => {
             const ageField = user?.customField?.find(
               (field: any) => field?.label === "AGE"
@@ -989,8 +999,9 @@ const UserTable: React.FC<UserTableProps> = ({
               username: user.username,
               status: user.status,
               name:
-                user.name.charAt(0).toUpperCase() +
-                user.name.slice(1).toLowerCase(),
+                // user.name.charAt(0).toUpperCase() +
+                // user.name.slice(1).toLowerCase(),
+                getUserFullName(user) ?? "-",
               role: user.role,
               //  gender: user.gender,
               mobile: user.mobile === "NaN" ? "-" : user?.mobile,
@@ -1133,6 +1144,9 @@ const UserTable: React.FC<UserTableProps> = ({
             };
           })
         );
+        console.log("data", data)
+        console.log("newData", newData)
+
         setData(newData);
         setCohortsFetched(true);
       } catch (error: any) {
@@ -1275,8 +1289,8 @@ const UserTable: React.FC<UserTableProps> = ({
       } else {
         if (selectedCenter.length !== 0) {
           if (
-            selectedCenter[0] === "" ||
-            selectedCenter[0] === t("COMMON.ALL_CENTERS")
+            (selectedCenter[0] === "" ||
+            selectedCenter[0] === t("COMMON.ALL_CENTERS")) && !center
           ) {
             setEnableCenterFilter(false);
           } else { 

@@ -1,8 +1,10 @@
-name: Deployment on the Pratham-dev Frontend Server
+name: Deployment on the Tekdi DEV Server
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - release-1.1.0
 jobs:
-  PRATHAM-DEV-DEPLOYMENT:
+  TEKDI-DEV-DEPLOYMENT:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

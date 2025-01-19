@@ -416,7 +416,22 @@
     "PROGRAM_DESCRIPTION":"Program Description",
     "PROGRAM_TYPE":"Program Type",
     "PROGRAM_HEAD_NAME":"Program Head Name",
-    "PROGRAM_IMAGE":"Program Image"
+    "PROGRAM_IMAGE":"Program Image",
+    "PREFERRED_LANGUAGE": "Preferred Language",
+    "FIRST_NAME": "First Name",
+    "MIDDLE_NAME_OR_FATHER_NAME": "Middle Name or Father Name",
+    "LAST_NAME": "Last Name",
+    "MOTHER_NAME": "Mother Name",
+    "DATE_OF_BIRTH": "Date of Birth",
+    "NAME_OF_GUARDIAN": "Name of Guardian",
+    "RELATION_WITH_GUARDIAN": "Relation with Guardian",
+    "PHONE_NUMBER": "Phone Number",
+    "DOES_THIS_PHONE_BELONG_TO_YOU": "Does This Phone Belong to You?",
+    "HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE": "Highest Educational Qualification or Last Passed Grade",
+    "WHAT_IS_YOUR_PREFERRED_MODE_OF_LEARNING": "What is Your Preferred Mode of Learning?",
+    "ARE_YOU_CURRENTLY_WORKING_IF_YES_CHOOSE_THE_DOMAIN": "Are You Currently Working? If Yes, Choose the Domain",
+    "HAVE_YOU_RECEIVE_ANY_PRIOR_TRAINING": "Have You Received Any Prior Training?",
+    "WHAT_DO_YOU_WANT_TO_BECOME": "What do you want to become?"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -480,12 +495,36 @@
     "PROGRAMS": "Programs",
     "CREATE_PROGRAM": "Create Program",
     "EDIT_PROGRAM": "Edit Program",
-    "DELETE_PROGRAM": "Delete Program",
+    "EDIT": "Edit",
+
+    "DELETE_PROGRAM": "Delete",
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",
     "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
     "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
-    "PROGRAM_ALREADY_EXISTS": "Program Already Exists!"
+    "PROGRAM_ALREADY_EXISTS": "Program Already Exists!",
+    "DRAFT":"Draft",
+    "MARK_AS_DRAFT":"Yes, Unpublish",
+    "ARCHIVED":"Archived",
+    "PUBLISHED":"Published",
+    "PUBLISH":"Publish",
+
+    "UNPUBLISHED":"Unpublish",
+    "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
+    "PROGRAM_DRAFT": "Program marked as a Draft",
+    "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
+    "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program?",
+    "SURE_TO_REVERT_PROGRAM":"Are you sure you want to unpublish this program, It will be marked as a draft? ",
+    "SURE_PROGRAM_DELETE":"Are you sure to delete this program?",
+"SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it?",
+"SAVE_AS_DRAFT":"Save as Draft",
+"CONTINUE_PROGRAM":"Do you want to continue  or discard the changes?",
+"DRAFTS":"Drafts",
+"DISCARD_CHANGES":"Discard Changes"
+
+
+
+
 
 
   }

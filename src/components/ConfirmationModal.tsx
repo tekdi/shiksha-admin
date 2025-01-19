@@ -1,9 +1,8 @@
-import * as React from "react";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { Divider } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import { useTheme } from "@mui/material/styles";
+import * as React from "react";
 
 interface ConfirmationModalProps {
   message: string;
@@ -12,6 +11,7 @@ interface ConfirmationModalProps {
   handleCloseModal: () => void;
   modalOpen: boolean;
   disableDelete?: boolean; // New prop to disable the delete button
+  isDynamicForm?:boolean
 }
 
 interface ButtonNames {
@@ -26,8 +26,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   buttonNames,
   handleCloseModal,
   disableDelete = false,
+  isDynamicForm=false
 }) => {
-  const theme = useTheme();
 
   const style = {
     position: "absolute",
@@ -83,7 +83,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               {buttonNames.secondary}
             </Button>
           )}
-          {buttonNames.primary && (
+          {buttonNames.primary && !isDynamicForm  &&(
             <Button
               sx={{
                 width: "auto",
@@ -101,6 +101,24 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                   handleCloseModal();
                 }
               }}
+              disabled={disableDelete}
+            >
+              {buttonNames.primary}
+            </Button>
+          )}
+          {buttonNames.primary && isDynamicForm  &&(
+            <Button
+              sx={{
+                width: "auto",
+                height: "40px",
+                fontSize: "14px",
+                fontWeight: "500",
+              }}
+              type="submit"
+              form="dynamic-form"
+              variant="contained"
+              color="primary"
+              
               disabled={disableDelete}
             >
               {buttonNames.primary}

@@ -26,7 +26,7 @@ export const formatedDistricts = async () => {
     localStorage.getItem("adminInfo") || "{}"
   ).customFields.find(
     (field: any) => field.label === "STATES"
-  );;
+  );
   try {
     const reqParams = {
       limit: 0,

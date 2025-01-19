@@ -16,10 +16,11 @@ import { Theme } from "@mui/system";
 import Loader from "@/components/Loader";
 import useStore from "@/store/store";
 import ProgramCard from "./ProgramCard";
-import { getProgramList } from "@/services/ProgramServices";
+import { getProgramList, programSearch } from "@/services/ProgramServices";
 import loginImg from "../../public/images/login-image.jpg";
 import AddProgram from "./AddProgram";
 import useSubmittedButtonStore from "@/utils/useSharedState";
+import {  limit } from "@/utils/app.constant";
 
 interface Program {
   tenantId: string;
@@ -48,12 +49,15 @@ const ProgramList: React.FC = () => {
   const [openAddNewProgram, setOpenAddNewProgram] =
     React.useState<boolean>(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [statusValue, setStatusValue] = useState(Status.ACTIVE);
+  const [statusValue, setStatusValue] = useState(Status.PUBLISHED);
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
   const fetchPrograms = useSubmittedButtonStore(
     (state: any) => state.fetchPrograms
+  );
+  const setIsArchived = useSubmittedButtonStore(
+    (state: any) => state.setIsArchived
   );
   useEffect(() => {
     const storedUserData = localStorage.getItem("adminInfo");
@@ -65,11 +69,44 @@ const ProgramList: React.FC = () => {
   useEffect(() => {
     const fetchProgramList = async () => {
       try {
-        const result = await getProgramList(); 
+        setLoading(true)
+
+        let programListObject ;
+        if(statusValue===Status.PUBLISHED){
+          programListObject = {
+            limit,
+            offset: 0,
+          filters: {
+            status: [Status.PUBLISHED],
+          },
+          };
+        }
+      else if(statusValue===Status.DRAFT){
+          programListObject = {
+            limit,
+            offset: 0,
+          filters: {
+            status: [Status.DRAFT],
+          },
+          };
+        }
+        else
+        {
+          programListObject = {
+            limit,
+            offset: 0,
+          filters: {
+            status: ["archived"],
+          },
+          };
+        }
+        
+        const result=await programSearch(programListObject);
+        // const result = await getProgramList();
+        console.log("result", result?.result);
         
         // Format the program list based on the searchKeyword
-        const programSummaries = result?.result
-        .map((program: any) => ({
+        const programSummaries = result?.getTenantDetails?.map((program: any) => ({
           name: program.name,
           domain: program.domain,
           status: program.status,
@@ -78,8 +115,8 @@ const ProgramList: React.FC = () => {
           tenantId:program.tenantId
         }))
         .filter((program: any) => 
-          program.name.toLowerCase().includes(searchKeyword.toLowerCase()) &&
-          program.status === statusValue  
+          program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
+        
         );
   
         const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
@@ -88,23 +125,28 @@ const ProgramList: React.FC = () => {
           } else if (selectedSort === "Z-A") {
             return b.name.localeCompare(a.name);  
           }
-          return 0;  
-        });
+          return a.name.localeCompare(b.name);
+                });
         
         setPrograms(sortedProgramSummaries);
         setFilteredPrograms(sortedProgramSummaries);
+        setLoading(false)
+
       } catch (error) {
+        setPrograms([])
+        setFilteredPrograms([]);
+        setLoading(false)
         console.error("Error fetching program list:", error);
       }
     };
   
     fetchProgramList();
-  }, [fetchPrograms]);  
+  }, [statusValue, fetchPrograms, searchKeyword]);  
    
   useEffect(() => {
-    const programSummaries = programs.filter((program: any) => 
-    program.name.toLowerCase().includes(searchKeyword.toLowerCase()) &&
-    program.status === statusValue  
+
+   const  programSummaries = programs.filter((program: any) => 
+    program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
   );
 
   const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
@@ -118,13 +160,21 @@ const ProgramList: React.FC = () => {
   
   setFilteredPrograms(sortedProgramSummaries);
     
-  }, [ selectedSort, statusValue, searchKeyword]);  
+  }, [ selectedSort,  searchKeyword, programs]);  
   const handleFilterChange = async (
     event: React.SyntheticEvent,
     newValue: any
   ) => {
     setStatusValue(newValue);
-  };
+    if (newValue === Status.PUBLISHED) { 
+     
+      setIsArchived(false);
+    } else if (newValue === Status.ARCHIVED) {
+      
+      setIsArchived(true);
+    } else {
+      setIsArchived(false);
+  }};
 
   const handleDelete = (rowData: any) => {};
   
@@ -164,9 +214,20 @@ const ProgramList: React.FC = () => {
         handleAddUserClick={handleAddProgramClick}
         handleDelete={handleDelete}
         handleFilterChange={handleFilterChange} 
-
+        isProgramPage={true}
       >
-        <Box
+         {loading ? (
+            <Box
+              width={"100%"}
+              id="check"
+              display={"flex"}
+              flexDirection={"column"}
+              alignItems={"center"}
+            >
+              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+            </Box>
+          ) :
+       ( <Box
           sx={{
             display: "flex",
             flexWrap: "wrap",
@@ -183,13 +244,15 @@ const ProgramList: React.FC = () => {
               // domain={program.domain}
               status={program.status}
               imageUrl={program.programImages || loginImg}
+              userRole={userRole}
             />
           ))}
           {filteredPrograms.length === 0 && (<Typography ml="40%">
             {t("PROGRAM_MANAGEMENT.NO_PROGRAMS_FOUND")}
           </Typography>)
           }
-        </Box>
+        </Box>)
+}
       </HeaderComponent>
       <AddProgram
             open={openAddNewProgram}

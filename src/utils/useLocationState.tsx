@@ -1,16 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
-import { useMediaQuery } from "@mui/material";
-import {
-  getStateBlockDistrictList,
-  getCenterList,
-} from "../services/MasterDataService"; // Update the import path as needed
-import { getCohortList } from "@/services/CohortService/cohortService";
-import { FormContextType, QueryKeys, Status, Role } from "./app.constant";
-import { useTranslation } from "next-i18next";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { cohortMemberList } from "@/services/UserList";
-import { firstLetterInUpperCase} from "@/utils/Helper";
+import { firstLetterInUpperCase } from "@/utils/Helper";
+import { useMediaQuery } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "next-i18next";
+import { useCallback, useEffect, useState } from "react";
+import {
+  getCenterList,
+  getStateBlockDistrictList,
+} from "../services/MasterDataService"; // Update the import path as needed
+import { FormContextType, QueryKeys, Role, Status } from "./app.constant";
 type FilterDetails = {
   role: any;
   status?: any;
@@ -32,9 +31,9 @@ export const useLocationState = (
   open: boolean,
   onClose: () => void,
   userType?: any,
- reAssignModal?:boolean
-) => { 
-  
+  reAssignModal?: boolean
+) => {
+
   const [states, setStates] = useState<FieldProp[]>([]);
   const [districts, setDistricts] = useState<FieldProp[]>([]);
   const [blocks, setBlocks] = useState<FieldProp[]>([]);
@@ -43,13 +42,13 @@ export const useLocationState = (
   const isMediumScreen = useMediaQuery("(max-width:986px)");
   const [selectedState, setSelectedState] = useState<string[]>([]);
   const [selectedStateCode, setSelectedStateCode] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState<string[]>( []);
+  const [selectedDistrict, setSelectedDistrict] = useState<string[]>([]);
   const [selectedDistrictCode, setSelectedDistrictCode] = useState("");
   const [selectedCenter, setSelectedCenter] = useState<string[]>([]);
   const [dynamicForm, setDynamicForm] = useState<any>(true);
   const [dynamicFormForBlock, setdynamicFormForBlock] = useState<any>(true);
 
-  const [selectedBlock, setSelectedBlock] = useState<string[]>( []);
+  const [selectedBlock, setSelectedBlock] = useState<string[]>([]);
   const [selectedBlockCode, setSelectedBlockCode] = useState("");
   const [selectedCenterCode, setSelectedCenterCode] = useState("");
   const [selectedBlockCohortId, setSelectedBlockCohortId] = useState("");
@@ -65,7 +64,7 @@ export const useLocationState = (
   const [assignedTeamLeaderNames, setAssignedTeamLeaderNames] = useState([]);
 
   const handleStateChangeWrapper = useCallback(
-    async (selectedNames: string[], selectedCodes: string[]) => { 
+    async (selectedNames: string[], selectedCodes: string[]) => {
       try {
         setDistricts([]);
         setBlocks([]);
@@ -107,14 +106,14 @@ export const useLocationState = (
       if (selected[0] === "") {
         handleBlockChange([], []);
       }
-      try { 
-       
-      //  if(!reAssignModal)
-      //  {
-          setBlocks([]);
-         setAllCenters([]);
-  
-        
+      try {
+
+        //  if(!reAssignModal)
+        //  {
+        setBlocks([]);
+        setAllCenters([]);
+
+
         setSelectedDistrictCode(selectedCodes[0]);
         setSelectedBlockCohortId("");
         const object = {
@@ -123,9 +122,9 @@ export const useLocationState = (
         };
         const response = await getStateBlockDistrictList(object);
         setBlockFieldId(response?.result?.fieldId);
-       
+
         const result = response?.result?.values;
-        const blockResult=await formatedBlocks(selectedCodes[0])
+        const blockResult = await formatedBlocks(selectedCodes[0])
         setBlocks(blockResult);
         //setBlocks(result);
       } catch (error) {
@@ -143,11 +142,11 @@ export const useLocationState = (
       }
       try {
         setAllCenters([]);
- 
+
         if (
           userType === FormContextType.TEAM_LEADER ||
           userType === FormContextType.ADMIN_CENTER
-        ) { 
+        ) {
           const object = {
             limit: 0,
             offset: 0,
@@ -162,52 +161,52 @@ export const useLocationState = (
           };
           const response = await getCenterList(object);
           const getCohortDetails = response?.result?.results?.cohortDetails;
-        
+
           const blockId = getCohortDetails?.map((item: any) => {
             if (item?.type === "BLOCK") {
               return item?.cohortId;
             }
           })
-          const blockCohortId =  getCohortDetails?.find(
+          const blockCohortId = getCohortDetails?.find(
             (item: any) => item?.type === "BLOCK"
           )?.cohortId;
-         
-          if (blockCohortId) { 
+
+          if (blockCohortId) {
             setSelectedBlockCohortId(blockCohortId);
           } else {
             console.log("No Block Id found");
           }
 
 
-          const filters: FilterDetails=
-  {
-    cohortId:blockCohortId,
-    role: Role.TEAM_LEADER,
-    status:[Status.ACTIVE]}
-              
-                let sort= ["name", "asc"]
-                let resp;
-                try {
-                  resp = await cohortMemberList({  filters, sort });
-                } catch (apiError) {
-                  console.log("API call failed, proceeding to else block");
-                  resp = null;
-                }
-                if(resp?.userDetails)
-                 {
+          const filters: FilterDetails =
+          {
+            cohortId: blockCohortId,
+            role: Role.TEAM_LEADER,
+            status: [Status.ACTIVE]
+          }
 
-                 // onClose();
-                 // setcreateTLAlertModal(true)
-                  setAssignedTeamLeader(resp?.userDetails?.length)
-               //   setSelectedBlockForTL(selectedBlock[0])
-               const userNames = resp?.userDetails?.map((user: any) => firstLetterInUpperCase(user.name));
-               //setSelectedTLUserID(userId)
-                 setAssignedTeamLeaderNames(userNames)
-                 }
-                 else{
-                  setAssignedTeamLeader("");
-                  setAssignedTeamLeaderNames([])
-                 }
+          const sort = ["name", "asc"]
+          let resp;
+          try {
+            resp = await cohortMemberList({ filters, sort });
+          } catch (apiError) {
+            console.log("API call failed, proceeding to else block");
+            resp = null;
+          }
+          if (resp?.userDetails) {
+
+            // onClose();
+            // setcreateTLAlertModal(true)
+            setAssignedTeamLeader(resp?.userDetails?.length)
+            //   setSelectedBlockForTL(selectedBlock[0])
+            const userNames = resp?.userDetails?.map((user: any) => firstLetterInUpperCase(user.name));
+            //setSelectedTLUserID(userId)
+            setAssignedTeamLeaderNames(userNames)
+          }
+          else {
+            setAssignedTeamLeader("");
+            setAssignedTeamLeaderNames([])
+          }
 
         } else {
           const getCentersObject = {
@@ -223,14 +222,14 @@ export const useLocationState = (
             },
           };
           const response = await getCenterList(getCentersObject);
-          
+
           // setSelectedBlockCohortId(
           //   response?.result?.results?.cohortDetails[0].cohortId
           // );
-          const blockCohortId =  response?.result?.results?.cohortDetails?.find(
+          const blockCohortId = response?.result?.results?.cohortDetails?.find(
             (item: any) => item?.type === "BLOCK"
           )?.cohortId;
-           
+
           setSelectedBlockCohortId(blockCohortId)
           //   const result = response?.result?.cohortDetails;
           const dataArray = response?.result?.results?.cohortDetails;
@@ -240,10 +239,10 @@ export const useLocationState = (
             .map((item: any) => ({
               cohortId: item?.cohortId,
               name: item?.name,
-            })); 
+            }));
           setAllCenters(cohortInfo);
         }
- 
+
       } catch (error) {
         setAllCenters([]);
 
@@ -268,7 +267,7 @@ export const useLocationState = (
       setSelectedCenter([]);
       setSelectedState(selected);
       const stateCodes = code?.join(",");
-      setSelectedStateCode(stateCodes); 
+      setSelectedStateCode(stateCodes);
     },
     []
   );
@@ -279,7 +278,7 @@ export const useLocationState = (
       setSelectedCenter([]);
       setSelectedDistrict(selected);
       const districts = code?.join(",");
-      setSelectedDistrictCode(districts); 
+      setSelectedDistrictCode(districts);
     },
     []
   );
@@ -290,7 +289,7 @@ export const useLocationState = (
       setSelectedBlock(selected);
       const blocks = code?.join(",");
       setSelectedBlockCode(blocks);
-      setdynamicFormForBlock(true); 
+      setdynamicFormForBlock(true);
     },
     []
   );
@@ -302,7 +301,7 @@ export const useLocationState = (
       const centers = code?.join(",");
       setSelectedCenterCode(centers);
       setDynamicForm(true);
- 
+
     },
     []
   );
@@ -310,74 +309,73 @@ export const useLocationState = (
   useEffect(() => {
     if (!open) {
       setSelectedBlock([]);
-    if(!reAssignModal)
-      setSelectedDistrict([]);
+      if (!reAssignModal)
+        setSelectedDistrict([]);
       setSelectedState([]);
       setSelectedCenter([]);
-    setDynamicForm(false);
-    setdynamicFormForBlock(false);
+      setDynamicForm(false);
+      setdynamicFormForBlock(false);
     }
-    else
-    {
+    else {
       setDynamicForm(true);
       setdynamicFormForBlock(true);
     }
   }, [onClose, open]);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if(open){
-        const response = await queryClient.fetchQuery({
-          queryKey: [
-            QueryKeys.FIELD_OPTION_READ,
-            "states",
-          ],
-          queryFn: () =>
-            getStateBlockDistrictList({
-              fieldName: "states",
-            }),
-        });
-        // const object = {
-        //   fieldName: "states",
-        // };
-        // const response = await getStateBlockDistrictList(object);
-        setStateFieldId(response?.result?.fieldId);
+        if (open) {
+          const response = await queryClient.fetchQuery({
+            queryKey: [
+              QueryKeys.FIELD_OPTION_READ,
+              "states",
+            ],
+            queryFn: () =>
+              getStateBlockDistrictList({
+                fieldName: "states",
+              }),
+          });
+          // const object = {
+          //   fieldName: "states",
+          // };
+          // const response = await getStateBlockDistrictList(object);
+          setStateFieldId(response?.result?.fieldId);
 
-        if (typeof window !== "undefined" && window.localStorage) {
-          const admin = localStorage.getItem("adminInfo");
-          if (admin) {
-            const stateField = JSON.parse(admin).customFields.find(
-              (field: any) => field.label === "STATES"
-            ); 
+          if (typeof window !== "undefined" && window.localStorage) {
+            const admin = localStorage.getItem("adminInfo");
+            if (admin) {
+              const stateField = JSON.parse(admin).customFields.find(
+                (field: any) => field.label === "STATES"
+              );
 
 
-            if (!stateField.value.includes(",")) {
+              if (!stateField.value.includes(",")) {
 
-              const response2 = await queryClient.fetchQuery({
-                queryKey: [
-                  QueryKeys.FIELD_OPTION_READ,
-                  stateField.code,
-                  "districts",
-                ],
-                queryFn: () =>
-                  getStateBlockDistrictList({
-                    controllingfieldfk: stateField.code,
-                    fieldName: "districts",
-                  }),
-              });
-      
+                const response2 = await queryClient.fetchQuery({
+                  queryKey: [
+                    QueryKeys.FIELD_OPTION_READ,
+                    stateField.code,
+                    "districts",
+                  ],
+                  queryFn: () =>
+                    getStateBlockDistrictList({
+                      controllingfieldfk: stateField.code,
+                      fieldName: "districts",
+                    }),
+                });
 
-              // const object2 = {
-              //   controllingfieldfk: stateField.code,
-              //   fieldName: "districts",
-              // };
-              // const response2 = await getStateBlockDistrictList(object2);
-              setDistrictFieldId(response2?.result?.fieldId);
-              //setStateDefaultValue(t("COMMON.ALL_STATES"))
 
-              setStateDefaultValue(stateField.value);
-              localStorage.setItem('userStateName',stateField?.value )
+                // const object2 = {
+                //   controllingfieldfk: stateField.code,
+                //   fieldName: "districts",
+                // };
+                // const response2 = await getStateBlockDistrictList(object2);
+                setDistrictFieldId(response2?.result?.fieldId);
+                //setStateDefaultValue(t("COMMON.ALL_STATES"))
+
+                setStateDefaultValue(stateField.value);
+                localStorage.setItem('userStateName', stateField?.value)
 
                 setSelectedState([stateField.value]);
                 const StateObject = {
@@ -385,14 +383,14 @@ export const useLocationState = (
                   offset: 0,
                   filters: {
                     status: ["active"],
-                  
+
                     name: stateField.value,
                   },
                 };
                 setSelectedStateCode(stateField.code)
 
                 const stateResponse = await getCenterList(StateObject);
-                const getCohortDetails = stateResponse?.result?.results?.cohortDetails; 
+                const getCohortDetails = stateResponse?.result?.results?.cohortDetails;
                 const stateId = getCohortDetails?.map((item: any) => {
                   if (item?.type === "STATE") {
                     return item?.cohortId;
@@ -402,114 +400,33 @@ export const useLocationState = (
 
                 const object = {
                   controllingfieldfk: stateField.code,
-          
+
                   fieldName: "districts",
-                }; 
+                };
                 const response = await getStateBlockDistrictList(object);
                 const result = response?.result?.values;
-                const districtResult= await formatedDistricts();
-                
-                setDistricts(districtResult);
-                if(reAssignModal)
-                {
-                const data = getStoredData(); 
-    setSelectedBlock([data.blocks]);
-    setSelectedDistrict([data.districtValue] );
-    setSelectedDistrictCode(data.districtCode);
-    setSelectedBlockCode(data.blockCode);
-   // if(selectedDistrict.length!==0)
-    {
-     // setSelectedDistrictCode(selectedCodes[0]);
-     // setSelectedBlockCohortId("");
-      const object = {
-        controllingfieldfk:data.districtCode,
-        fieldName: "blocks",
-      };
-      const response = await getStateBlockDistrictList(object);
-      setBlockFieldId(response?.result?.fieldId); 
-      const result = response?.result?.values;
-      const blockResult=await formatedBlocks(data.districtCode)
-      setBlocks(blockResult);
-      const getCentersObject = {
-        limit: 0,
-        offset: 0,
-        filters: {
-          // "type":"COHORT",
-          status: ["active"],
-          states: stateField.code,
-          districts: data.districtCode,
-          blocks: data.blockCode
-          // "name": selected[0]
-        },
-      };
-      const centerResponse = await getCenterList(getCentersObject);
-     
-      //   const result = response?.result?.cohortDetails;
-      const dataArray = centerResponse?.result?.results?.cohortDetails;
+                const districtResult = await formatedDistricts();
 
-      const cohortInfo = dataArray
-        ?.filter((cohort: any) => cohort.type !== "BLOCK")
-        .map((item: any) => ({
-          cohortId: item?.cohortId,
-          name: item?.name,
-        })); 
-      setAllCenters(cohortInfo);
-    }
-    }
-    else{
-      setSelectedDistrict([districtResult[0]?.label]);
-      setSelectedDistrictCode(districtResult[0]?.value);
-     const blockResult = await formatedBlocks(
-        districtResult[0]?.value
-      ); 
-      if(blockResult?.message ==="Request failed with status code 404")
-        {
-          setBlocks([]);
-        }
-        else
-        {
-          setBlocks(blockResult);
-          if(blockResult?.message==="Request failed with status code 404")
+                setDistricts(districtResult);
+                if (reAssignModal) {
+                  const data = getStoredData();
+                  setSelectedBlock([data.blocks]);
+                  setSelectedDistrict([data.districtValue]);
+                  setSelectedDistrictCode(data.districtCode);
+                  setSelectedBlockCode(data.blockCode);
+                  // if(selectedDistrict.length!==0)
                   {
-                    setBlocks([]);
-                  }
-                  else{
-                    setSelectedBlock([blockResult[0]?.label]);
-                    setSelectedBlockCode(blockResult[0]?.value);
-                    const fieldObject = {
-                      controllingfieldfk: districtResult[0]?.value,
+                    // setSelectedDistrictCode(selectedCodes[0]);
+                    // setSelectedBlockCohortId("");
+                    const object = {
+                      controllingfieldfk: data.districtCode,
                       fieldName: "blocks",
                     };
-                    const fieldResponse = await getStateBlockDistrictList(fieldObject);
-                    setBlockFieldId(fieldResponse?.result?.fieldId);
-                     const object = {
-                      limit: 0,
-                      offset: 0,
-                      filters: {
-                        // "type": "COHORT",
-                        status: ["active"],
-                        // "states": selectedStateCode,
-                        // "districts": selectedDistrictCode,
-                        // "blocks": selectedCodes[0]
-                        name: blockResult[0]?.label,
-                      },
-                    };
-                    const response = await getCenterList(object);
-                    const getCohortDetails = response?.result?.results?.cohortDetails; 
-                    const blockId = getCohortDetails?.map((item: any) => {
-                      if (item?.type === "BLOCK") {
-                        return item?.cohortId;
-                      }
-                    })
-                    const blockCohortId =  getCohortDetails?.find(
-                      (item: any) => item?.type === "BLOCK"
-                    )?.cohortId; 
-                    if (blockCohortId) { 
-                      setSelectedBlockCohortId(blockCohortId);
-                    } else {
-                      console.log("No Block Id found");
-                    }
-
+                    const response = await getStateBlockDistrictList(object);
+                    setBlockFieldId(response?.result?.fieldId);
+                    const result = response?.result?.values;
+                    const blockResult = await formatedBlocks(data.districtCode)
+                    setBlocks(blockResult);
                     const getCentersObject = {
                       limit: 0,
                       offset: 0,
@@ -517,63 +434,141 @@ export const useLocationState = (
                         // "type":"COHORT",
                         status: ["active"],
                         states: stateField.code,
-                        districts: districtResult[0]?.value,
-                        blocks: blockResult[0]?.value,
+                        districts: data.districtCode,
+                        blocks: data.blockCode
                         // "name": selected[0]
                       },
                     };
-                    const centerResponse = await queryClient.fetchQuery({
-                      queryKey: [
-                        QueryKeys.FIELD_OPTION_READ,
-                        getCentersObject.limit,
-                        getCentersObject.offset,
-                        getCentersObject.filters,
-                      ],
-                      queryFn: () => getCenterList(getCentersObject),
-                    });
-                    // const response = await getCenterList(getCentersObject); 
-                    // setSelectedBlockCohortId(
-                    //   response?.result?.results?.cohortDetails[0].cohortId
-                    // );
+                    const centerResponse = await getCenterList(getCentersObject);
+
                     //   const result = response?.result?.cohortDetails;
-                    const dataArray = centerResponse?.result?.results?.cohortDetails; 
-      
+                    const dataArray = centerResponse?.result?.results?.cohortDetails;
+
                     const cohortInfo = dataArray
                       ?.filter((cohort: any) => cohort.type !== "BLOCK")
                       .map((item: any) => ({
                         cohortId: item?.cohortId,
                         name: item?.name,
                       }));
-                    setAllCenters(cohortInfo); 
-                   setSelectedCenter([cohortInfo[0]?.name]);
-                   setSelectedCenterCode(cohortInfo[0]?.cohortId);
-
-      
-  
+                    setAllCenters(cohortInfo);
                   }
+                }
+                else {
+                  setSelectedDistrict([districtResult[0]?.label]);
+                  setSelectedDistrictCode(districtResult[0]?.value);
+                  const blockResult = await formatedBlocks(
+                    districtResult[0]?.value
+                  );
+                  if (blockResult?.message === "Request failed with status code 404") {
+                    setBlocks([]);
+                  }
+                  else {
+                    setBlocks(blockResult);
+                    if (blockResult?.message === "Request failed with status code 404") {
+                      setBlocks([]);
+                    }
+                    else {
+                      setSelectedBlock([blockResult[0]?.label]);
+                      setSelectedBlockCode(blockResult[0]?.value);
+                      const fieldObject = {
+                        controllingfieldfk: districtResult[0]?.value,
+                        fieldName: "blocks",
+                      };
+                      const fieldResponse = await getStateBlockDistrictList(fieldObject);
+                      setBlockFieldId(fieldResponse?.result?.fieldId);
+                      const object = {
+                        limit: 0,
+                        offset: 0,
+                        filters: {
+                          // "type": "COHORT",
+                          status: ["active"],
+                          // "states": selectedStateCode,
+                          // "districts": selectedDistrictCode,
+                          // "blocks": selectedCodes[0]
+                          name: blockResult[0]?.label,
+                        },
+                      };
+                      const response = await getCenterList(object);
+                      const getCohortDetails = response?.result?.results?.cohortDetails;
+                      const blockId = getCohortDetails?.map((item: any) => {
+                        if (item?.type === "BLOCK") {
+                          return item?.cohortId;
+                        }
+                      })
+                      const blockCohortId = getCohortDetails?.find(
+                        (item: any) => item?.type === "BLOCK"
+                      )?.cohortId;
+                      if (blockCohortId) {
+                        setSelectedBlockCohortId(blockCohortId);
+                      } else {
+                        console.log("No Block Id found");
+                      }
 
-        }
-    }
+                      const getCentersObject = {
+                        limit: 0,
+                        offset: 0,
+                        filters: {
+                          // "type":"COHORT",
+                          status: ["active"],
+                          states: stateField.code,
+                          districts: districtResult[0]?.value,
+                          blocks: blockResult[0]?.value,
+                          // "name": selected[0]
+                        },
+                      };
+                      const centerResponse = await queryClient.fetchQuery({
+                        queryKey: [
+                          QueryKeys.FIELD_OPTION_READ,
+                          getCentersObject.limit,
+                          getCentersObject.offset,
+                          getCentersObject.filters,
+                        ],
+                        queryFn: () => getCenterList(getCentersObject),
+                      });
+                      // const response = await getCenterList(getCentersObject); 
+                      // setSelectedBlockCohortId(
+                      //   response?.result?.results?.cohortDetails[0].cohortId
+                      // );
+                      //   const result = response?.result?.cohortDetails;
+                      const dataArray = centerResponse?.result?.results?.cohortDetails;
+
+                      const cohortInfo = dataArray
+                        ?.filter((cohort: any) => cohort.type !== "BLOCK")
+                        .map((item: any) => ({
+                          cohortId: item?.cohortId,
+                          name: item?.name,
+                        }));
+                      setAllCenters(cohortInfo);
+                      setSelectedCenter([cohortInfo[0]?.name]);
+                      setSelectedCenterCode(cohortInfo[0]?.cohortId);
+
+
+
+                    }
+
+                  }
+                }
 
               }
-              else{
+              else {
                 setStateDefaultValue(t("COMMON.ALL_STATES"))
 
               }
-              const object2=[{
-                value:stateField.code,
-                label:stateField.value
+              const object2 = [{
+                value: stateField.code,
+                label: stateField.value
               }]
-             setStates(object2);
+              setStates(object2);
 
-          } 
-          //  setAdminInfo(JSON.parse(admin))
+            }
+            //  setAdminInfo(JSON.parse(admin))
+          }
+          // const result = response?.result?.values;
+
+          // setStates(result);
+
         }
-        // const result = response?.result?.values;
-        
-        // setStates(result);
-       
-      }} catch (error) {
+      } catch (error) {
         console.log(error);
       }
     };
@@ -591,7 +586,7 @@ export const useLocationState = (
       }
     }
     return {}; // Return default if no data is found
-  }; 
+  };
   return {
     states,
     districts,

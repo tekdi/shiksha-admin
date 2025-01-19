@@ -24,8 +24,6 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
   setShowForm,
 }) => {
   const [framework, setFramework] = useState<any[]>([]);
-  const [stateOption, setStateOption] = useState<any[]>([]);
-  const [stateAssociations, setStateAssociations] = useState<any[]>([]);
   const [boardOptions, setBoardOptions] = useState<any[]>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
@@ -81,33 +79,12 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
         setFramework(frameworks);
-        const getStates = getOptionsByCategory(frameworks, 'state');
-        
-        const matchingState = getStates.find(
-          (state: any) => state.name.toLowerCase() === userStateName?.toLowerCase()
-        );
-        if (matchingState) {
-          setStateOption([matchingState]);
-          setSelectedState(matchingState.name);
-          setStateAssociations(matchingState.associations); 
-        }
         const getBoards = getOptionsByCategory(frameworks, 'board'); 
+        console.log('frameworks', frameworks)
+        console.log('getBoards', getBoards)
 
-        //filter common board by mapping boards with stateAssociation
-        if (getBoards && matchingState) {
-          const commonBoards = getBoards
-            .filter((item1: { code: any }) =>
-              matchingState.associations.some(
-                (item2: { code: any; category: string }) =>
-                  item2.code === item1.code && item2.category === 'board'
-              )
-            )
-            .map((item1: { name: any; code: any; associations: any }) => ({
-              name: item1.name,
-              code: item1.code,
-              associations: item1.associations,
-            }));
-          setBoardOptions(commonBoards);
+        if (getBoards) {
+          setBoardOptions(getBoards);
         }
       } catch (error) {
         console.error('Error fetching board data:', error);
@@ -131,12 +108,6 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
       setBoardAssociations(boardAssociations);
 
       const commonMediumInState = getMedium
-        .filter((item1: { code: string }) =>
-          stateAssociations.some(
-            (item2: { code: string; category: string }) =>
-              item2.code === item1.code && item2.category === 'medium'
-          )
-        )
         .map((item1: { name: string; code: string; associations: any[] }) => ({
           name: item1.name,
           code: item1.code,
@@ -176,12 +147,6 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
       setMediumAssociations(mediumAssociations);
 
       const commonGradeInState = getGrades
-        .filter((item1: { code: string }) =>
-          stateAssociations.some(
-            (item2: { code: string; category: string }) =>
-              item2.code === item1.code && item2.category === 'gradeLevel'
-          )
-        )
         .map((item1: { name: string; code: string; associations: any[] }) => ({
           name: item1.name,
           code: item1.code,

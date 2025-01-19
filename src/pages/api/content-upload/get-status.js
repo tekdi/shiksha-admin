@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
         const axios = require("axios");
 
-        let config = {
+        const config = {
           method: "get",
           maxBodyLength: Infinity,
           url: `${baseURL}/api/content/v1/read/${doId}?fields=artifactUrl`,

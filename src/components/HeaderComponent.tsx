@@ -1,5 +1,5 @@
 import SearchBar from "@/components/layouts/header/SearchBar";
-import { formatedBlocks, formatedDistricts, formatedStates } from "@/services/formatedCohorts";
+import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
 import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";
@@ -83,6 +83,7 @@ const HeaderComponent = ({
   selectedCenterCode,
   setSelectedCenterCode,
   setSelectedStateCode,
+  isProgramPage=false
 }: any) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -553,13 +554,43 @@ const HeaderComponent = ({
       }
 
 
-      if (block) {
+      if (state && district && block) {
         setSelectedBlockCode(block.toString());
         console.log(selectedBlockCode);
         // setSelectedBlock([selectedBlockStore])
         setSelectedBlock([localStorage.getItem("selectedBlock")]);
         if (!localStorage.getItem("selectedBlock"))
           setSelectedBlock([selectedBlockStore]);
+
+           
+          const getCentersObject = {
+            limit: 0,
+            offset: 0,
+            filters: {
+              // "type":"COHORT",
+              status: ["active"],
+              states: state.toString(),
+              districts: district.toString(),
+              blocks: block.toString(),
+              // "name": selected[0]
+            },
+          };
+          const response = await getCenterList(getCentersObject)
+           
+          // const response = await getCenterList(getCentersObject); 
+          // setSelectedBlockCohortId(
+          //   response?.result?.results?.cohortDetails[0].cohortId
+          // );
+          //   const result = response?.result?.cohortDetails;
+          const dataArray = response?.result?.results?.cohortDetails;
+      
+          const cohortInfo = dataArray
+            ?.filter((cohort: any) => cohort.type !== "BLOCK")
+            .map((item: any) => ({
+              cohortId: item?.cohortId,
+              name: item?.name,
+            })); 
+          setAllCenters(cohortInfo);
       }
 
 
@@ -648,11 +679,28 @@ const HeaderComponent = ({
                           : "inherit",
                     }}
                   >
-                    {t("COMMON.ACTIVE")}
+                    { isProgramPage ? t("PROGRAM_MANAGEMENT.PUBLISHED"):t("COMMON.ACTIVE")}
                   </Box>
                 }
-                value={Status.ACTIVE}
+                value={isProgramPage ?Status.PUBLISHED:Status.ACTIVE}
               />
+              {isProgramPage &&(<Tab
+                label={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      color:
+                        statusValue === Status.ACTIVE
+                          ? theme.palette.primary["100"]
+                          : "inherit",
+                    }}
+                  >
+                    {t("PROGRAM_MANAGEMENT.DRAFTS")}
+                  </Box>
+                }
+                value={Status.DRAFT}
+              />)}
               <Tab
                 label={
                   <Box

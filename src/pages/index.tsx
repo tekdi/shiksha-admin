@@ -27,7 +27,7 @@ const Home: React.FC = () => {
         else
         {
           if(storedUserData?.role === Role.CENTRAL_ADMIN)
-          push("/state");
+          push("/programs");
           else
           push("/centers");
 

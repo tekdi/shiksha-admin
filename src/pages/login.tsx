@@ -74,50 +74,41 @@ const LoginPage = () => {
       const preferredLang = localStorage.getItem("preferredLanguage") || "en";
       setLanguage(preferredLang);
       setLang(preferredLang);
-      const storedUserData =   localStorage.getItem("adminInfo");
+      const storedUserData = localStorage.getItem("adminInfo");
 
       const token = localStorage.getItem("token");
       if (token) {
-        const { locale } = router; 
-        if(locale)
-        {
+        const { locale } = router;
+        if (locale) {
           let role;
-          if(storedUserData)
-          {
-            role=JSON.parse(
+          if (storedUserData) {
+            role = JSON.parse(
               storedUserData
             );
-            if(role?.role === Role.SCTA || role?.role === Role.CCTA)
-            {
+            if (role?.role === Role.SCTA || role?.role === Role.CCTA) {
               router.push("/course-planner", undefined, { locale: locale });
             }
-            else if(role?.role === Role.CENTRAL_ADMIN)
-            {
-              router.push("/state", undefined, { locale: locale });
+            else if (role?.role === Role.CENTRAL_ADMIN) {
+              router.push("/programs", undefined, { locale: locale });
             }
-            else if (role?.role === Role.ADMIN || role?.role === Role.CENTRAL_ADMIN ) 
-            {
+            else if (role?.role === Role.ADMIN || role?.role === Role.CENTRAL_ADMIN) {
               router.push("/centers", undefined, { locale: locale });
             }
 
           }
         }
-        else
-        {
+        else {
           let role;
-          if(storedUserData)
-          {
-            role=JSON.parse(storedUserData);
-            if(role?.role === Role.SCTA || role?.role === Role.CCTA)
-            {
+          if (storedUserData) {
+            role = JSON.parse(storedUserData);
+            if (role?.role === Role.SCTA || role?.role === Role.CCTA) {
               router.push("/course-planner");
             }
-            else if(role?.role === Role.CENTRAL_ADMIN)
-            {
-              router.push("/state");
+            else if (role?.role === Role.CENTRAL_ADMIN) {
+              router.push("/programs");
             }
             else
-            router.push("/centers");
+              router.push("/centers");
 
           }
         }
@@ -161,13 +152,15 @@ const LoginPage = () => {
         userId = localStorage.getItem(Storage.USER_ID);
       }
       const fieldValue = true;
-      if (userId) { 
+      if (userId) {
         const response = await getUserDetailsInfo(userId, fieldValue);
 
         const userInfo = response?.userData;
         //set user info in zustand store
         if (typeof window !== "undefined" && window.localStorage) {
-          localStorage.setItem("adminInfo", JSON.stringify(userInfo));
+          if (userInfo) {
+            localStorage.setItem("adminInfo", JSON.stringify(userInfo));
+          }
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);
         }
         if (userInfo?.role !== Role.ADMIN && userInfo?.role !== Role.CENTRAL_ADMIN && userInfo?.role !== Role.SCTA && userInfo?.role !== Role.CCTA) {
@@ -177,7 +170,8 @@ const LoginPage = () => {
           router.push({
             pathname: '/unauthorized',
             query: { role: userInfo?.role }, // Pass your query parameters here
-          });        } else {
+          });
+        } else {
           setAdminInformation(userInfo);
           const getAcademicYearList = async () => {
             const academicYearList: AcademicYear[] = await getAcademicYear();
@@ -199,33 +193,30 @@ const LoginPage = () => {
                 // router.push("/centers");
                 if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
                   window.location.href = "/course-planner";
-                  const { locale } = router; 
-                  if(locale)
-                  {
-                  router.push("/course-planner", undefined, { locale: locale });
+                  const { locale } = router;
+                  if (locale) {
+                    router.push("/course-planner", undefined, { locale: locale });
                   }
                   else
-                  router.push("/course-planner");
-          
+                    router.push("/course-planner");
+
                 }
                 else {
                   //window.location.href = "/centers";
-                  const { locale } = router; 
-        if(locale)
-        {
-          if(userInfo?.role === Role.CENTRAL_ADMIN)
-          router.push("/state", undefined, { locale: locale });
-        else
-        router.push("/centers", undefined, { locale: locale });
-        }
-        else
-        {
-          if(userInfo?.role === Role.CENTRAL_ADMIN)
-          router.push("/state");
-        else
-          router.push("/centers");
+                  const { locale } = router;
+                  if (locale) {
+                    if (userInfo?.role === Role.CENTRAL_ADMIN)
+                      router.push("/programs", undefined, { locale: locale });
+                    else
+                      router.push("/centers", undefined, { locale: locale });
+                  }
+                  else {
+                    if (userInfo?.role === Role.CENTRAL_ADMIN)
+                      router.push("/programs");
+                    else
+                      router.push("/centers");
 
-        }
+                  }
 
                 }
 
@@ -265,19 +256,23 @@ const LoginPage = () => {
               : localStorage.removeItem("refreshToken");
 
             const userResponse = await getUserId();
-            localStorage.setItem("userId", userResponse?.userId);
-            localStorage.setItem('userIdName', userResponse?.username);
-            // Update Zustand store
-            setUserId(userResponse?.userId || "");
 
-            if (userResponse?.userId) {
-              document.cookie = `authToken=${token}; path=/; secure; SameSite=Strict`;
-              document.cookie = `userId=${userResponse.userId}; path=/; secure; SameSite=Strict`;
+            if (userResponse) {
+              localStorage.setItem("userId", userResponse?.userId);
+              localStorage.setItem('userIdName', userResponse?.username);
+              // Update Zustand store
+              setUserId(userResponse?.userId || "");
+
+              if (userResponse?.userId) {
+                document.cookie = `authToken=${token}; path=/; secure; SameSite=Strict`;
+                document.cookie = `userId=${userResponse.userId}; path=/; secure; SameSite=Strict`;
+              }
+
+              localStorage.setItem("name", userResponse?.name);
+              localStorage.setItem(Storage.USER_DATA, JSON.stringify(userResponse));
+              const tenantId = userResponse?.tenantData?.[0]?.tenantId;
+              localStorage.setItem("tenantId", tenantId);
             }
-
-            localStorage.setItem("name", userResponse?.name);
-            const tenantId = userResponse?.tenantData?.[0]?.tenantId;
-            localStorage.setItem("tenantId", tenantId);
 
             await fetchUserDetail();
           }
@@ -364,7 +359,7 @@ const LoginPage = () => {
         px={'30px'}
         alignItems={'center'}
         width={'100% !important'}>
-      {!(isMobile || isMedium) && ( // Render only on desktop view
+        {!(isMobile || isMedium) && ( // Render only on desktop view
           <Grid
             sx={{
               '@media (max-width: 900px)': {
@@ -383,16 +378,16 @@ const LoginPage = () => {
               layout="responsive"
             />
           </Grid>
-      )}
-      <Grid
-        item
-        xs={12}
-        md={6}
-        display="flex"
-        alignItems="center"
-        
-      >
-        <Box
+        )}
+        <Grid
+          item
+          xs={12}
+          md={6}
+          display="flex"
+          alignItems="center"
+
+        >
+          <Box
             flexGrow={1}
             // display={'flex'}
             bgcolor={theme.palette.warning['A400']}
@@ -414,7 +409,7 @@ const LoginPage = () => {
               }
 
             }}
-        >
+          >
             <Box
               display="flex"
               flexDirection="column"
@@ -444,8 +439,8 @@ const LoginPage = () => {
                 </Box>
               </Box>
             </Box>
-          <form onSubmit={handleFormSubmit}>
-            {/* <Typography
+            <form onSubmit={handleFormSubmit}>
+              {/* <Typography
               variant="h4"
               gutterBottom
               textAlign="center"
@@ -453,130 +448,129 @@ const LoginPage = () => {
             >
               {t("LOGIN_PAGE.LOGIN")}
             </Typography> */}
-            <FormControl fullWidth margin="normal">
-              <Select
-                className="SelectLanguages"
-                value={language}
-                onChange={handleChange}
-                displayEmpty
-                sx={{
-                  borderRadius: "0.5rem",
-                  color: theme.palette.warning.A200,
-                  width: "117px",
-                  height: "32px",
-                  marginBottom: "0rem",
-                  fontSize: "14px",
-                }}
-              >
-                {config.languages.map((lang) => (
-                  <MenuItem value={lang.code} key={lang.code}>
-                    {lang.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              fullWidth
-              id="username"
-              InputLabelProps={{ shrink: true }}
-              label={t("LOGIN_PAGE.USERNAME")}
-              placeholder={t("LOGIN_PAGE.USERNAME_PLACEHOLDER")}
-              value={username}
-              onChange={handleUsernameChange}
-              error={usernameError}
-              margin="normal"
-            />
-            <TextField
-              fullWidth
-              type={showPassword ? "text" : "password"}
-              id="password"
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              label={t("LOGIN_PAGE.PASSWORD")}
-              placeholder={t("LOGIN_PAGE.PASSWORD_PLACEHOLDER")}
-              value={password}
-              onChange={handlePasswordChange}
-              error={passwordError}
-              margin="normal"
-              inputRef={passwordRef}
-            />
-
-            <Box
-              sx={{
-                fontSize: "14px",
-                fontWeight: "500",
-                color: theme.palette.secondary.main,
-                mt: 1,
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                window.open(
-                  `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`, "_self"
-                );
-              }}
-            >
-              {t("LOGIN_PAGE.FORGOT_PASSWORD")}
-            </Box>
-            {<Box
-              display="flex"
-              alignItems="center"
-              marginTop="1.2rem"
-              className="remember-me-checkbox"
-            >
-               <Checkbox
-                onChange={(e) => setRememberMe(e.target.checked)}                
-                checked={rememberMe}
-              />
-              <Typography
-                variant="body2"
-                onClick={() => {
-                  setRememberMe(!rememberMe);
-                  logEvent({
-                    action: "remember-me-button-clicked",
-                    category: "Login Page",
-                    label: `Remember Me ${
-                      rememberMe ? "Checked" : "Unchecked"
-                    }`,
-                  });
-                }}
-                sx={{
-                  cursor: "pointer",
-                  marginTop: "15px",
-                  color: theme.palette.warning[300],
-                }}
-              >
-                {t("LOGIN_PAGE.REMEMBER_ME")}
-              </Typography> 
-            </Box>}
-
-            <Box marginTop="2rem" textAlign="center">
-              <Button
-                variant="contained"
-                type="submit"
+              <FormControl fullWidth margin="normal">
+                <Select
+                  className="SelectLanguages"
+                  value={language}
+                  onChange={handleChange}
+                  displayEmpty
+                  sx={{
+                    borderRadius: "0.5rem",
+                    color: theme.palette.warning.A200,
+                    width: "117px",
+                    height: "32px",
+                    marginBottom: "0rem",
+                    fontSize: "14px",
+                  }}
+                >
+                  {config.languages.map((lang) => (
+                    <MenuItem value={lang.code} key={lang.code}>
+                      {lang.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
                 fullWidth
-                disabled={isButtonDisabled}
-                ref={loginButtonRef}
+                id="username"
+                InputLabelProps={{ shrink: true }}
+                label={t("LOGIN_PAGE.USERNAME")}
+                placeholder={t("LOGIN_PAGE.USERNAME_PLACEHOLDER")}
+                value={username}
+                onChange={handleUsernameChange}
+                error={usernameError}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                type={showPassword ? "text" : "password"}
+                id="password"
+                InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                label={t("LOGIN_PAGE.PASSWORD")}
+                placeholder={t("LOGIN_PAGE.PASSWORD_PLACEHOLDER")}
+                value={password}
+                onChange={handlePasswordChange}
+                error={passwordError}
+                margin="normal"
+                inputRef={passwordRef}
+              />
+
+              <Box
+                sx={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: theme.palette.secondary.main,
+                  mt: 1,
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  window.open(
+                    `${process.env.NEXT_PUBLIC_RESET_PASSWORD_URL}?redirectUrl=${window.location.origin}/login`, "_self"
+                  );
+                }}
               >
-                {t("LOGIN_PAGE.LOGIN")}
-              </Button>
-            </Box>
-          </form>
-        </Box>
+                {t("LOGIN_PAGE.FORGOT_PASSWORD")}
+              </Box>
+              {<Box
+                display="flex"
+                alignItems="center"
+                marginTop="1.2rem"
+                className="remember-me-checkbox"
+              >
+                <Checkbox
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  checked={rememberMe}
+                />
+                <Typography
+                  variant="body2"
+                  onClick={() => {
+                    setRememberMe(!rememberMe);
+                    logEvent({
+                      action: "remember-me-button-clicked",
+                      category: "Login Page",
+                      label: `Remember Me ${rememberMe ? "Checked" : "Unchecked"
+                        }`,
+                    });
+                  }}
+                  sx={{
+                    cursor: "pointer",
+                    marginTop: "15px",
+                    color: theme.palette.warning[300],
+                  }}
+                >
+                  {t("LOGIN_PAGE.REMEMBER_ME")}
+                </Typography>
+              </Box>}
+
+              <Box marginTop="2rem" textAlign="center">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  fullWidth
+                  disabled={isButtonDisabled}
+                  ref={loginButtonRef}
+                >
+                  {t("LOGIN_PAGE.LOGIN")}
+                </Button>
+              </Box>
+            </form>
+          </Box>
+        </Grid>
       </Grid>
-    </Grid>
     </>
   );
 };

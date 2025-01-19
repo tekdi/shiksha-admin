@@ -54,8 +54,7 @@ export const uploadCoursePlanner = async (
 
 export const getTargetedSolutions = async ({
   subject,
-  state,
-
+  // state,
   medium,
   class: className,
   board,
@@ -70,8 +69,7 @@ export const getTargetedSolutions = async ({
 
   const data = {
     subject,
-    state,
-
+    // state,
     medium,
     class: className,
     board,

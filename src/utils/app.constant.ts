@@ -17,7 +17,11 @@ import bgyoutube from "../assets/images/bgYouTube.svg";
 
 
 
-
+export const limit: number = 200;
+export const metaTags = {
+  title: 'Pratham Admin Management App'
+ 
+};
 
 export enum Role {
   STUDENT = "Student",
@@ -43,6 +47,8 @@ export enum Status {
   ACTIVE_LABEL = "Active",
   ALL_LABEL = "All",
   INACTIVE = "InActive",
+  PUBLISHED="published",
+  DRAFT="draft"
 }
 export enum SORT {
   ASCENDING = "asc",
@@ -50,6 +56,7 @@ export enum SORT {
 }
 
 export enum Storage {
+  USER_DATA = "userData",
   NAME = "name",
   USER_ID = "userId",
 }

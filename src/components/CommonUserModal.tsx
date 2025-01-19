@@ -4,6 +4,7 @@ import {
   customFields,
 } from "@/components/GeneratedSchemas";
 import SimpleModal from "@/components/SimpleModal";
+import useNotification from "@/hooks/useNotification";
 import {
   createUser,
   getFormRead,
@@ -13,6 +14,7 @@ import { sendCredentialService } from "@/services/NotificationService";
 import {
   firstLetterInUpperCase,
   generateUsernameAndPassword,
+  getUserFullName,
 } from "@/utils/Helper";
 import { FormData } from "@/utils/Interfaces";
 import {
@@ -20,10 +22,10 @@ import {
   FormContextType,
   Role,
   RoleId,
-  Status,
   TelemetryEventType,
-  apiCatchingDuration,
+  apiCatchingDuration
 } from "@/utils/app.constant";
+import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import {
@@ -42,13 +44,9 @@ import React, { useEffect, useState } from "react";
 import { TENANT_ID } from "../../app.config";
 import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
+import CustomModal from "./CustomModal";
 import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
-import { cohortMemberList } from "@/services/UserList";
-import CustomModal from "./CustomModal";
-import { setConfig } from "next/config";
-import { telemetryFactory } from "@/utils/telemetry";
-import useNotification from "@/hooks/useNotification";
 
 interface UserModalProps {
   open: boolean;
@@ -295,7 +293,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     if (result !== null) {
       const { username, password } = result;
 
-      let apiBody: any = {
+      const apiBody: any = {
         username: formData.email,
         password: password,
         tenantCohortRoleMapping: [
@@ -487,7 +485,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     : "onTeamLeaderCreated";
 
               if (typeof window !== "undefined" && window.localStorage) {
-                creatorName = localStorage.getItem("name");
+                creatorName = getUserFullName();
               }
               let replacements: { [key: string]: string };
               replacements = {}; 
