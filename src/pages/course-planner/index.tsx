@@ -225,8 +225,9 @@ const Foundation = () => {
                         border: "1px solid #D0C5B4",
                         borderRadius: "8px",
                         padding: "10px",
-                        display: "flex",
+                        display: "flex",  
                         justifyContent: "space-between",
+                        minHeight:'48px',
                         "&:hover": {
                           backgroundColor: "#D0C5B4",
                         },
@@ -242,9 +243,9 @@ const Foundation = () => {
                         }}
                       >
                         <FolderOutlinedIcon />
-                        <Typography>{board?.name}</Typography>
+                        <Typography className="two-line-text">{board?.name}</Typography>
                       </Box>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}> 
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();

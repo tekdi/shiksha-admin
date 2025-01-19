@@ -217,6 +217,13 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
             value={selectedBoard}
             defaultValue=""
             label="Board"
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: "240px",
+                },
+              },
+            }}
           >
             {boardOptions?.map((option: any) => (
               <MenuItem key={option.code} value={option.name}>
@@ -225,6 +232,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
             ))}
           </Select>
         </FormControl>
+
       )}
 
       {/* Medium dropdown */}
@@ -241,6 +249,13 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
           value={selectedMedium}
           defaultValue=""
           label="Medium"
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: "240px",
+              },
+            },
+          }}
         >
           {mediumOptions?.map((option) => (
             <MenuItem key={option.code} value={option.name}>
@@ -264,6 +279,13 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
           value={selectedGrade}
           defaultValue=""
           label="Grade"
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: "240px",
+              },
+            },
+          }}
         >
           {gradeOptions?.map((option) => (
             <MenuItem key={option.code} value={option.name}>
