@@ -478,7 +478,7 @@ const UserTable: React.FC<UserTableProps> = ({
         }
       } else {
         const fieldValue = getValue(userData, customFieldValue);
-        if (fieldValue) {
+        if (fieldValue !== "undefined") {          
           initialFormData[item.name] = fieldValue;
         }
       }
