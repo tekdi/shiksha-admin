@@ -136,7 +136,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
   const [blocksFieldId, setBlocksFieldId] = useState<string>(
     "4aab68ae-8382-43aa-a45a-e9b239319857"
   );
-  const [districtFieldId, setDistrictFieldId] = useState<string>("");
+  const [districtFieldId, setDistrictFieldId] = useState<string>("b61edfc6-3787-4079-86d3-37262bf23a9e");
   const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
   const [paginationCount, setPaginationCount] = useState<number>(0);
   const [pageSizeArray, setPageSizeArray] = useState<number[]>([5, 10, 20, 50]);
