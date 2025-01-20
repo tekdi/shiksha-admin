@@ -322,7 +322,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         const fieldSchema = schemaProperties[fieldKey];
         const fieldId = fieldSchema?.fieldId; 
 
-        if (fieldId === null || fieldId === "null") {
+        if (fieldId === null || fieldId === "null" || fieldKey==="gender") {
           if (typeof fieldValue !== "object") {
             apiBody[fieldKey] = fieldValue;
           }

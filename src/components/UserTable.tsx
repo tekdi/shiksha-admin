@@ -81,6 +81,7 @@ type FilterDetails = {
   blocks?: any;
   name?: any;
   cohortId?: any;
+  firstName?:any
 };
 interface CenterProp {
   cohortId: string;
@@ -853,7 +854,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   const handleSearch = (keyword: string) => { 
     setFilters((prevFilters) => ({
       ...prevFilters,
-      name: keyword,
+      firstName: keyword,
     }));
   };
   useEffect(() => {
