@@ -81,6 +81,7 @@ type FilterDetails = {
   blocks?: any;
   name?: any;
   cohortId?: any;
+  firstName?:any
 };
 interface CenterProp {
   cohortId: string;
@@ -853,7 +854,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   const handleSearch = (keyword: string) => { 
     setFilters((prevFilters) => ({
       ...prevFilters,
-      name: keyword,
+      firstName: keyword,
     }));
   };
   useEffect(() => {
@@ -943,8 +944,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               username: user?.username,
               status: user?.status,
               name:
-                user?.name?.charAt(0).toUpperCase() +
-                user?.name?.slice(1).toLowerCase(),
+                user?.firstName?.charAt(0).toUpperCase() +
+                user?.firstName?.slice(1).toLowerCase(),
               role: user.role,
               //  gender: user.gender,
               mobile: user.mobile === "NaN" ? "-" : user.mobile,
