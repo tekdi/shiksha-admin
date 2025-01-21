@@ -127,6 +127,11 @@ export const GenerateSchemaAndUiSchema = (
             fieldUiSchema['ui:options'] = { accept: field.pattern };
           }
           break;
+          case 'date':
+            fieldSchema.type = 'string';
+            fieldSchema.format = 'date';
+            fieldUiSchema['ui:widget'] = 'date';
+            break;
       default:
         break;
     }
