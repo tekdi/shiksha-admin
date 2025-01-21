@@ -29,14 +29,14 @@ export enum Role {
   TEAM_LEADER = "Team Leader",
   TEAM_LEADERS = "Team Leaders",
 
-  ADMIN = "State Admin MME",
-  CENTRAL_ADMIN = "Central Admin MME",
+  ADMIN = "State Admin",
+  CENTRAL_ADMIN = "Central Admin",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
   CONTENT_CREATOR = "Content Creator",
   CONTENT_REVIEWER = "Content Reviewer",
-  SCTA = "State Admin SCTA",
-  CCTA = "Central Admin CCTA"
+  SCTA = "State Content Team Associate (SCTA)",
+  CCTA = "Central Content Team Associate (CCTA)"
 
 }
 
