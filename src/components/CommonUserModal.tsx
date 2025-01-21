@@ -23,7 +23,8 @@ import {
   Role,
   RoleId,
   TelemetryEventType,
-  apiCatchingDuration
+  apiCatchingDuration,
+  fieldKeys
 } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
@@ -322,7 +323,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         const fieldSchema = schemaProperties[fieldKey];
         const fieldId = fieldSchema?.fieldId; 
 
-        if (fieldId === null || fieldId === "null") {
+        if (fieldId === null || fieldId === "null" || fieldKey===fieldKeys.GENDER) {
           if (typeof fieldValue !== "object") {
             apiBody[fieldKey] = fieldValue;
           }

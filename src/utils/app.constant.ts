@@ -210,3 +210,6 @@ export const ContentCardsTypes: FileType = {
   [ContentType.WEBM_VIDEO]: { name: "WEBM", imgPath: mp4, BgImgPath: bgmp4 },
   [ContentType.VND]: { name: "WEBM", imgPath: html, BgImgPath: bghtml },
 };
+export enum fieldKeys {
+  GENDER="gender"
+}
