@@ -58,6 +58,8 @@ interface UserModalProps {
   onSubmit: (submitValue: boolean) => void;
   userType: string;
   userName?: string;
+  emailFieldValue?:string
+  userNameFieldValue?:string
 }
 
 const CommonUserModal: React.FC<UserModalProps> = ({
@@ -69,7 +71,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   onSubmit,
   userType,
   userName,
+  emailFieldValue,
+  userNameFieldValue
 }) => { 
+  console.log("userName", emailFieldValue)
+  console.log("userName", userNameFieldValue)
+
+
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
   const [openModal, setOpenModal] = React.useState(false);
@@ -384,9 +392,20 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),
             username: apiBody?.username,
+            firstName:apiBody?.firstName,
+            middleName:apiBody?.middleName,
+            lastName:apiBody?.lastName
           };
 
           const customFields = apiBody?.customFields; 
+          if(emailFieldValue===userData.email)
+          {
+            delete userData.email;
+
+          }
+          if(userNameFieldValue===userData.username)
+          delete userData.username;
+
           const object = {
             userData: userData,
             customFields: customFields,
