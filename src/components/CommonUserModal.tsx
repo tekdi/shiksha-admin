@@ -394,7 +394,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             username: apiBody?.username,
             firstName:apiBody?.firstName,
             middleName:apiBody?.middleName,
-            lastName:apiBody?.lastName
+            lastName:apiBody?.lastName,
+            dob:apiBody?.dob,
+            gender:apiBody?.gender
           };
 
           const customFields = apiBody?.customFields; 

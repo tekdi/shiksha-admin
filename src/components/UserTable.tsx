@@ -963,10 +963,11 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               blocks: blockField
                 ? firstLetterInUpperCase(blockField?.value)
                 : "-",
-              gender: genderField
-                ? genderField?.value?.charAt(0)?.toUpperCase() +
-                  genderField?.value?.slice(1).toLowerCase()
+              gender: user?.gender
+                ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
+             
               //  createdAt: user?.createdAt,
               //  updatedAt: user?.updatedAt,
               createdBy: user?.createdBy,
@@ -1020,9 +1021,9 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               blocks: blockField
                 ? firstLetterInUpperCase(blockField?.value)
                 : "-",
-              gender: genderField
-                ? genderField.value?.charAt(0)?.toUpperCase() +
-                  genderField.value.slice(1).toLowerCase()
+                gender: user?.gender
+                ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
               createdAt: user.createdAt,
               updatedAt: user.updatedAt,
