@@ -562,7 +562,11 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         // onClose(); 
         if (error?.response?.data?.params?.err === "User already exist.") {
           showToastMessage(error?.response?.data?.params?.err, "error");
-        } else {
+        } 
+        else if (error?.response?.data?.params?.errmsg === "Email already exists") {
+          showToastMessage(error?.response?.data?.params?.errmsg, "error");
+        } 
+        else {
           showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
         }
       }
