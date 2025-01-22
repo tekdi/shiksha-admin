@@ -157,6 +157,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [pageOffset, setPageOffset] = useState(0);
   const [pageLimit, setPageLimit] = useState(10);
+  const [selectedUserEmail, setSelectedUserEmail] = useState("");
+  const [selectedUserUserName, setSelectedUserUserName] = useState("");
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [data, setData] = useState<UserDetails[]>([]);
   const [cohortsFetched, setCohortsFetched] = useState(false);
@@ -748,6 +750,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
       setUserId(userId);
       const fieldValue = true;
       const response = await getUserDetailsInfo(userId, fieldValue); 
+   setSelectedUserUserName(response?.userData?.username);
+   setSelectedUserEmail(response?.userData?.email);
 
       let formFields;
       if (Role.STUDENT === role) {
@@ -959,10 +963,11 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               blocks: blockField
                 ? firstLetterInUpperCase(blockField?.value)
                 : "-",
-              gender: genderField
-                ? genderField?.value?.charAt(0)?.toUpperCase() +
-                  genderField?.value?.slice(1).toLowerCase()
+              gender: user?.gender
+                ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
+             
               //  createdAt: user?.createdAt,
               //  updatedAt: user?.updatedAt,
               createdBy: user?.createdBy,
@@ -1016,9 +1021,9 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               blocks: blockField
                 ? firstLetterInUpperCase(blockField?.value)
                 : "-",
-              gender: genderField
-                ? genderField.value?.charAt(0)?.toUpperCase() +
-                  genderField.value.slice(1).toLowerCase()
+                gender: user?.gender
+                ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
               createdAt: user.createdAt,
               updatedAt: user.updatedAt,
@@ -1673,6 +1678,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
                 ? FormContextType.CONTENT_CREATOR
                 : FormContextType.TEAM_LEADER
         }
+        userNameFieldValue={selectedUserUserName}
+        emailFieldValue={selectedUserEmail}
       />
     </HeaderComponent>
   );
