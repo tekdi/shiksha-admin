@@ -678,6 +678,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
+    response.userData.phone_number=response.userData.mobile?response.userData.mobile:""
+
     const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;

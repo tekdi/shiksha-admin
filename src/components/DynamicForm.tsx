@@ -29,6 +29,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const [localFormData, setLocalFormData] = useState(formData ?? {});
+  console.log("localFormData", localFormData?.dob);
+
   const [changedFormData, setChangedFormData] = useState( {});
 
   const submittedButtonStatus = useSubmittedButtonStore(
@@ -143,6 +145,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
  
 
     return errors?.map((error: any) => {
+      console.log("error.name", error.name)
       switch (error.name) {
         case "required": { 
           error.message = submittedButtonStatus
@@ -182,6 +185,27 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               //  error.message = `Age should be greater than or equal to ${error?.params?.limit}`
             }
           }
+          break;
+        }
+        case "date": {
+          const property = error.property.substring(1);
+          console.log("property",property)
+          const currentDate = new Date();
+          if(localFormData?.dob)
+          {
+            console.log("localFormData?.dob",localFormData?.dob)
+            const dobDate = new Date(localFormData?.dob);
+            currentDate.setHours(0, 0, 0, 0);
+            dobDate.setHours(0, 0, 0, 0);
+        
+            if (dobDate >= currentDate) {
+              error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY")
+            }
+
+          }
+          // if (localFormData[property] === today) {
+          //   error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY");
+          // }
           break;
         }
         case "pattern": {
