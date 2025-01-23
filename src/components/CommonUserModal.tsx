@@ -386,7 +386,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         if (isEditModal && userId) { 
           const userData = {
             name: apiBody?.name,
-            mobile: apiBody?.mobile,
+            mobile: String(apiBody?.phone_number),
             father_name: apiBody?.father_name,
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),
@@ -395,7 +395,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             middleName:apiBody?.middleName,
             lastName:apiBody?.lastName,
             dob:apiBody?.dob,
-            gender:apiBody?.gender
+            gender:apiBody?.gender,
           };
 
           const customFields = apiBody?.customFields; 
@@ -467,6 +467,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if(apiBody?.father_name)
           {
             apiBody.father_name = apiBody?.father_name.trim();
+          }
+          if(apiBody?.phone_number)
+          {
+            apiBody.mobile = apiBody?.phone_number;
           }
           const response = await createUser(apiBody); 
           if (response) {

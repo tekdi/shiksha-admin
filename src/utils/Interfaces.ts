@@ -222,10 +222,14 @@ export interface CentralizedModalProps {
   handleSkipButton?: () => void;
   icon?: boolean;
 }
+export interface FormData {
+  dob?: string; 
+  [key: string]: any; 
+}
 export interface DynamicFormProps {
   schema: any;
   uiSchema: object;
-  formData?: object;
+  formData?: FormData;
   onSubmit: (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
