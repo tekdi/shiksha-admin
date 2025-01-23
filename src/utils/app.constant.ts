@@ -126,7 +126,8 @@ export enum FormValues {
   FEMALE = "FEMALE",
   MALE = "MALE",
   REGULAR = "REGULAR",
-  REMOTE = "REMOTE"
+  REMOTE = "REMOTE",
+  TRANSGENDER="TRANSGENDER"
 }
 
 export enum InputTypes {

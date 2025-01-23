@@ -703,7 +703,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (field?.value === "FEMALE" || field?.value === "MALE") { 
+            if (field?.value === "FEMALE" || field?.value === "MALE" || field?.value === "TRANSGENDER") { 
               return field?.value?.toLowerCase();
             } 
             return field?.value?.toLowerCase();
@@ -881,7 +881,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         let offset = pageOffset * limit;
         // const filters = { role: role , status:"active"};
         const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
-        if (filters.name) {
+        if (filters.firstName) {
           offset = 0;
         }
         let resp;

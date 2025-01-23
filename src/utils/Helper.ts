@@ -211,7 +211,8 @@ export const mapFields = (formFields: any, Details: any) => {
       } else {
         if (
           field?.value === FormValues.FEMALE ||
-          field?.value === FormValues.MALE
+          field?.value === FormValues.MALE||
+          field?.value === FormValues.TRANSGENDER
         ) {
           return field?.value?.toLowerCase();
         }

@@ -74,8 +74,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   emailFieldValue,
   userNameFieldValue
 }) => { 
-  console.log("userName", emailFieldValue)
-  console.log("userName", userNameFieldValue)
+  
 
 
   const [schema, setSchema] = React.useState<any>();
@@ -258,7 +257,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             setSchema(schema); 
             setUiSchema(uiSchema);
           } else {
-            console.log("true");
+            console.log("response---------", response);
             const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
             setSchema(schema); 
             setUiSchema(uiSchema);
@@ -515,7 +514,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 if (userType === FormContextType.STUDENT) {
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(creatorName),
-                    "{UserName}": username,
+                    "{UserName}": apiBody["username"],
                     "{LearnerName}": firstLetterInUpperCase(apiBody["firstName"]),
                     "{Password}": password,
                   };
