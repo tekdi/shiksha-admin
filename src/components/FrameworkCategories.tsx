@@ -75,11 +75,11 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
     const handleBMGS = async () => {
       // const userStateName = localStorage.getItem('stateName');
       try {
-        const userInfoString = localStorage.getItem('adminInfo');
-        const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
-        const boardField = userInfo?.customFields?.find((field: any) => field.label === "BOARD");
-        const boardValue = boardField ? boardField.value : null;
-        const userBoards = boardValue.split(",");
+        // const userInfoString = localStorage.getItem('adminInfo');
+        // const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
+        // const boardField = userInfo?.customFields?.find((field: any) => field.label === "BOARD");
+        // const boardValue = boardField ? boardField.value : null;
+        // const userBoards = boardValue.split(",");
         const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
@@ -88,12 +88,14 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
         console.log('frameworks', frameworks)
         console.log('getBoards', getBoards)
 
-        if (getBoards && userBoards) {
-          const normalizedUserBoards = userBoards.map((board: string) => board.toLowerCase());       
-          const matchingBoards = getBoards.filter((board: { name: string; }) =>
-            normalizedUserBoards.includes(board.name.toLowerCase())
-          );
-          setBoardOptions(matchingBoards);
+    if (getBoards) {
+          setBoardOptions(getBoards);
+          // if (getBoards && userBoards) {
+          //   const normalizedUserBoards = userBoards.map((board: string) => board.toLowerCase());       
+          //   const matchingBoards = getBoards.filter((board: { name: string; }) =>
+          //     normalizedUserBoards.includes(board.name.toLowerCase())
+          // );
+          // setBoardOptions(matchingBoards);
         }
       } catch (error) {
         console.error('Error fetching board data:', error);
