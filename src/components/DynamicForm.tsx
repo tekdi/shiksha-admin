@@ -213,19 +213,24 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           const property = error.property.substring(1);
 
           switch (pattern) {
-            case '^(?=.*[a-zA-Z])[a-zA-Z ]+$': {
+            case "^(?=.*[a-zA-Z])[a-zA-Z ]+$": {
               error.message = t(
                 "FORM_ERROR_MESSAGES.NUMBER_AND_SPECIAL_CHARACTERS_NOT_ALLOWED"
               );
               break;
             }
-            case '^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$':
-               {
-                error.message = t(
-                  "FORM_ERROR_MESSAGES.NUMBER_AND_SPECIAL_CHARACTERS_NOT_ALLOWED"
-                );
-                break;
-              }
+            case "^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$": {
+              error.message = t(
+                "FORM_ERROR_MESSAGES.NUMBER_AND_SPECIAL_CHARACTERS_NOT_ALLOWED"
+              );
+              break;
+            }
+            case "^[a-zA-Z0-9.@]+$": {
+              error.message = t(
+                "FORM_ERROR_MESSAGES.SPACE_AND_SPECIAL_CHARACTERS_NOT_ALLOWED"
+              );
+              break;
+            }
             case "^[0-9]{10}$": {
               if (
                 schema.properties?.[property]?.validation?.includes("mobile")
