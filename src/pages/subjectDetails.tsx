@@ -106,87 +106,6 @@ const SubjectDetails = () => {
           (term: any) => term.code === boardDetails
         );
         setSelectedBoard(board);
-
-        // // Get states options
-        // const getStates = getOptionsByCategory(frameworks, "state");
-
-        // const matchingState = getStates.find(
-        //   (state: any) => state.name === localStorage.getItem("selectedState")
-        // );
-
-        // if (matchingState) {
-        //   setStateassociations(matchingState?.associations);
-        //   const getBoards = await getOptionsByCategory(frameworks, "board");
-        //   if (getBoards && matchingState) {
-        //     const commonBoardsNew = await getBoards
-        //       .filter((item1: { code: any }) =>
-        //         matchingState.associations.some(
-        //           (item2: { code: any; category: string }) =>
-        //             item2.code === item1.code && item2.category === "board"
-        //         )
-        //       )
-        //       .map((item1: { name: any; code: any; associations: any }) => ({
-        //         name: item1.name,
-        //         code: item1.code,
-        //         associations: item1.associations,
-        //       }));
-
-        //     setNewAssociations(commonBoardsNew);
-
-        //     const commonBoards = await getBoards
-        //       .filter((item1: { code: any }) =>
-        //         matchingState?.associations?.some(
-        //           (item2: { code: any; category: string }) =>
-        //             item2.code === item1.code && item2.category === "board"
-        //         )
-        //       )
-        //       .map((item1: { name: any; code: any; associations: any }) => ({
-        //         name: item1.name,
-        //         code: item1.code,
-        //         associations: item1.associations,
-        //       }));
-
-        //     const stateBoardMapping = getStates.map((state: any) => {
-        //       const stateAssociations = state.associations || [];
-        //       const boards = getOptionsByCategory(frameworks, "board");
-
-        //       const associatedBoards = boards
-        //         .filter((board: { code: any }) =>
-        //           stateAssociations.some(
-        //             (assoc: { code: any; category: string }) =>
-        //               assoc.code === board.code && assoc.category === "board"
-        //           )
-        //         )
-        //         .map((board: { name: any; code: any }) => ({
-        //           name: board.name,
-        //           code: board.code,
-        //         }));
-
-        //       return {
-        //         stateName: state.name,
-        //         boards: associatedBoards,
-        //         associations: stateAssociations,
-        //       };
-        //     });
-
-        //     const selectedState = localStorage.getItem("selectedState");
-
-        //     const filteredState = stateBoardMapping.filter(
-        //       (state: any) => state.stateName === selectedState
-        //     );
-
-        //     // Log the result
-        //     if (filteredState) {
-        //       // Set the frameworks state
-        //       setFramework(frameworks);
-        //       setBoards(filteredState);
-        //       setSelectedBoard(filteredState);
-        //     } else {
-        //     }
-        //     //   }
-        //     // }
-        //   }
-        // }
       } catch (error) {
         console.error("Failed to fetch cohort search results:", error);
       }
@@ -227,20 +146,6 @@ const SubjectDetails = () => {
           );
 
           setBoardAssociations(boardAssociations);
-          // const commonMediumInState = getMedium
-          //   .filter((item1: { code: string }) =>
-          //     store?.stateassociations.some(
-          //       (item2: { code: string; category: string }) =>
-          //         item2.code === item1.code && item2.category === "medium"
-          //     )
-          //   )
-          //   .map(
-          //     (item1: { name: string; code: string; associations: any[] }) => ({
-          //       name: item1.name,
-          //       code: item1.code,
-          //       associations: item1.associations,
-          //     })
-          //   );
 
           const commonMediumInBoard = getMedium
             .filter((item1: { code: any }) =>
@@ -254,12 +159,6 @@ const SubjectDetails = () => {
               code: item1.code,
               associations: item1.associations,
             }));
-
-          // const commonMediumData = findCommonAssociations(
-          //   // commonMediumInState,
-          //   [],
-          //   commonMediumInBoard
-          // );
 
           setMediumOptions(commonMediumInBoard);
           setMedium(commonMediumInBoard);
@@ -285,13 +184,6 @@ const SubjectDetails = () => {
       "mediumAssociations",
       JSON.stringify(mediumAssociations)
     );
-
-    // const commonGradeInState = filterAndMapAssociations(
-    //   "gradeLevel",
-    //   getGrades,
-    //   store?.stateassociations,
-    //   "code"
-    // );
     const commonGradeInBoard = filterAndMapAssociations(
       "gradeLevel",
       getGrades,
@@ -305,10 +197,6 @@ const SubjectDetails = () => {
       "code"
     );
 
-    // const commonGradeInStateBoard = findCommonAssociations(
-    //   commonGradeInState,
-    //   commonGradeInBoard
-    // );
     const overAllCommonGrade = findCommonAssociations(
       commonGradeInBoard,
       commonGradeInMedium
@@ -328,53 +216,6 @@ const SubjectDetails = () => {
 
     const type = getOptionsByCategory(store?.framedata, "courseType");
 
-    // const commonTypeInState = filterAndMapAssociations(
-    //   "courseType",
-    //   type,
-    //   store?.stateassociations,
-    //   "code"
-    // );
-    // const commonTypeInBoard = filterAndMapAssociations(
-    //   "courseType",
-    //   type,
-    //   boardAssociations,
-    //   "code"
-    // );
-    // const storageMediumAssociations = localStorage.getItem("mediumAssociations");
-    // const localMediumAssociations = storageMediumAssociations
-    //   ? JSON.parse(storageMediumAssociations)
-    //   : mediumAssociations;
-    // const commonTypeInMedium = filterAndMapAssociations(
-    //   "courseType",
-    //   type,
-    //   localMediumAssociations,
-    //   "code"
-    // );
-
-    // const storageGradeAssociations = localStorage.getItem("gradeAssociations");
-    // const localGradeAssociations = storageMediumAssociations
-    //   ? JSON.parse(storageMediumAssociations)
-    //   : gradeAssociations;
-
-    // const commonTypeInGrade = filterAndMapAssociations(
-    //   "courseType",
-    //   type,
-    //   localGradeAssociations,
-    //   "code"
-    // );
-
-    // const commonTypeData = findCommonAssociations(
-    //   commonTypeInState,
-    //   commonTypeInBoard
-    // );
-    // const commonType2Data = findCommonAssociations(
-    //   commonTypeInMedium,
-    //   commonTypeInGrade
-    // );
-    // const commonType3Data = findCommonAssociations(
-    //   commonTypeData,
-    //   commonType2Data
-    // );
     setTypeOptions(type);
     setType(type);
   };
