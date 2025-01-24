@@ -976,6 +976,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               createdBy: user?.createdBy,
               updatedBy: user?.updatedBy,
               stateCode: stateField?.code,
+              dob: user.dob?user.dob: "-",
 
               districtCode: districtField?.code,
               blockCode: blockField?.code,
@@ -1007,6 +1008,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               userId: user.userId,
               username: user.username,
               status: user.status,
+              dob: user.dob ? user.dob : "-",
               name:
                 // user.name.charAt(0).toUpperCase() +
                 // user.name.slice(1).toLowerCase(),

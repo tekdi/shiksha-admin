@@ -483,7 +483,8 @@
     "ACTIVE_LEARNERS": "Active Learners",
     "ARCHIVED_LEARNERS": " Archived Learners",
     "CODE": "Code",
-    "DISTRICT": "District"
+    "DISTRICT": "District",
+    "DOB":"Date of Birth"
   },
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
