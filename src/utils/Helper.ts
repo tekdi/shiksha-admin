@@ -515,3 +515,12 @@ export function convertImageToDataURL(imagePath: string, callback: any) {
     })
     .catch(error => console.error("Error converting image:", error));
 }
+
+export const getLastDayDate= (): string => {
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 1); // Subtract 1 day
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Month is zero-indexed
+  const day = String(currentDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};

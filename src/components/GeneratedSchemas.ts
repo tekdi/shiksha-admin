@@ -2,7 +2,7 @@ import { UiSchema } from "@rjsf/utils";
 import { JSONSchema7 } from "json-schema";
 import NumberInputField from "./form/NumberInputField";
 import { FormData, Field, FieldOption } from "@/utils/Interfaces";
-import { getCurrentYearPattern } from "@/utils/Helper";
+import { getCurrentYearPattern, getLastDayDate } from "@/utils/Helper";
 export const customFields = {
   NumberInputField: NumberInputField,
 };
@@ -239,6 +239,10 @@ export const GenerateSchemaAndUiSchema = (
       }
       if (field?.validation?.includes('currentYear')) {
         fieldSchema.pattern = getCurrentYearPattern();
+      }
+      if (field?.validation?.includes('dob')) {
+        fieldSchema.minimum = '1900-01-01';
+        fieldSchema.maximum = getLastDayDate();
       }
       fieldSchema.validation = field.validation;
     }
