@@ -20,7 +20,7 @@ import {
   MenuItem,
   Card as MuiCard,
   Select,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -76,6 +76,7 @@ const SubjectDetails = () => {
   const setTaxanomySubject = coursePlannerStore(
     (state) => state.setTaxanomySubject
   );
+  const setTaxonomyBoard = taxonomyStore((state) => state.setBoard);
   const setTaxonomyMedium = taxonomyStore((state) => state.setTaxonomyMedium);
   const setTaxonomyGrade = taxonomyStore((state) => state.setTaxonomyGrade);
   const setTaxonomyType = taxonomyStore((state) => state.setTaxonomyType);
@@ -101,7 +102,9 @@ const SubjectDetails = () => {
       try {
         const frameworks = store?.framedata;
         const getBoards = await getOptionsByCategory(frameworks, "board");
-        const board = getBoards?.terms?.find((term: any) => term.code === boardDetails);
+        const board = getBoards?.terms?.find(
+          (term: any) => term.code === boardDetails
+        );
         setSelectedBoard(board);
 
         // // Get states options
@@ -250,7 +253,7 @@ const SubjectDetails = () => {
               name: item1.name,
               code: item1.code,
               associations: item1.associations,
-            })); 
+            }));
 
           // const commonMediumData = findCommonAssociations(
           //   // commonMediumInState,
@@ -278,7 +281,10 @@ const SubjectDetails = () => {
     const getGrades = getOptionsByCategory(store?.framedata, "gradeLevel");
     const mediumAssociations = getAssociationsByCodeNew(mediumOptions, medium);
     setMediumAssociations(mediumAssociations);
-    localStorage.setItem("mediumAssociations", JSON.stringify(mediumAssociations));
+    localStorage.setItem(
+      "mediumAssociations",
+      JSON.stringify(mediumAssociations)
+    );
 
     // const commonGradeInState = filterAndMapAssociations(
     //   "gradeLevel",
@@ -315,7 +321,10 @@ const SubjectDetails = () => {
   const fetchAndSetTypeData = (grade: any) => {
     const gradeAssociations = getAssociationsByCodeNew(gradeOptions, grade);
     setGradeAssociations(gradeAssociations);
-    localStorage.setItem("gradeAssociations", JSON.stringify(gradeAssociations));
+    localStorage.setItem(
+      "gradeAssociations",
+      JSON.stringify(gradeAssociations)
+    );
 
     const type = getOptionsByCategory(store?.framedata, "courseType");
 
@@ -324,13 +333,13 @@ const SubjectDetails = () => {
     //   type,
     //   store?.stateassociations,
     //   "code"
-    // ); 
+    // );
     // const commonTypeInBoard = filterAndMapAssociations(
     //   "courseType",
     //   type,
     //   boardAssociations,
     //   "code"
-    // ); 
+    // );
     // const storageMediumAssociations = localStorage.getItem("mediumAssociations");
     // const localMediumAssociations = storageMediumAssociations
     //   ? JSON.parse(storageMediumAssociations)
@@ -340,8 +349,8 @@ const SubjectDetails = () => {
     //   type,
     //   localMediumAssociations,
     //   "code"
-    // ); 
- 
+    // );
+
     // const storageGradeAssociations = localStorage.getItem("gradeAssociations");
     // const localGradeAssociations = storageMediumAssociations
     //   ? JSON.parse(storageMediumAssociations)
@@ -365,7 +374,7 @@ const SubjectDetails = () => {
     // const commonType3Data = findCommonAssociations(
     //   commonTypeData,
     //   commonType2Data
-    // ); 
+    // );
     setTypeOptions(type);
     setType(type);
   };
@@ -420,11 +429,11 @@ const SubjectDetails = () => {
                 )?.length &&
                 matchMedium?.associations.filter(
                   (item: any) => item.code === assoc.code
-                )?.length 
-                // &&
-                // matchGrade?.associations.filter(
-                //   (item: any) => item.code === assoc.code
-                // )?.length
+                )?.length
+              // &&
+              // matchGrade?.associations.filter(
+              //   (item: any) => item.code === assoc.code
+              // )?.length
             );
 
             const getSubjects = getOptionsByCategory(frameworks, "subject");
@@ -446,7 +455,9 @@ const SubjectDetails = () => {
           (course: any) => course.courseTypeName === type
         );
 
-        const matchingSubjects = matchedCourse ? matchedCourse.subjects.sort() : [];
+        const matchingSubjects = matchedCourse
+          ? matchedCourse.subjects.sort()
+          : [];
 
         setSubject(matchingSubjects);
         localStorage.setItem(
@@ -487,7 +498,12 @@ const SubjectDetails = () => {
     localStorage.removeItem("selectedMedium");
     localStorage.removeItem("selectedType");
     localStorage.removeItem("overallCommonSubjects");
-    setSubject([]);
+    setTaxonomySubject("");
+    setTaxonomyGrade("");
+    setTaxonomyMedium("");
+    setTaxonomyType("");
+    setTaxonomyBoard("");
+
     router.back();
   };
 
@@ -708,8 +724,8 @@ const SubjectDetails = () => {
           marginTop: "16px",
           marginBottom: "16px",
           gap: "5px",
-          width:'fit-content',
-          cursor:'pointer'
+          width: "fit-content",
+          cursor: "pointer",
         }}
         onClick={handleBackClick}
       >
