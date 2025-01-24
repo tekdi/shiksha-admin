@@ -56,6 +56,34 @@ export const getUserTableColumns = (t: any, isMobile: boolean, isArchived?:any) 
 
   return generateColumns(t, configs, isMobile);
 };
+export const getLearnerTableColumns = (t: any, isMobile: boolean, isArchived?:any) => {
+ 
+
+
+  const configs: ColumnConfig[] = [
+    { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
+    { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
+    { key: "mobile", titleKey: "TABLE_TITLE.MOBILE", width: 130 },
+    { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 160 },
+    // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130},
+    { key: "centers", titleKey: "TABLE_TITLE.CENTER", width: 130 },
+    { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 160 },
+    // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130, sortDirection: SortDirection.Ascend },
+    // { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 160, sortDirection: SortDirection.Ascend },
+    { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 160 },
+  ];
+  // Conditionally add the "actions" column if isActiveYear is true
+  if (isActiveYear && !isArchived) {
+    configs.push({
+      key: "actions",
+      titleKey: "TABLE_TITLE.ACTIONS",
+      width: 170,
+      isSortable: false,
+    });
+  }
+
+  return generateColumns(t, configs, isMobile);
+};
 
 export const getTLTableColumns = (t: any, isMobile: boolean, isArchived:any) => {
 

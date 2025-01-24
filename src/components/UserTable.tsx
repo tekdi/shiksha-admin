@@ -3,6 +3,7 @@ import HeaderComponent from "@/components/HeaderComponent";
 import PageSizeSelector from "@/components/PageSelector";
 import {
   getContentCreatorTableColumns,
+  getLearnerTableColumns,
   getTLTableColumns,
   getUserTableColumns,
 } from "@/data/tableColumns";
@@ -1333,6 +1334,11 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     }
     if (role === Role.CONTENT_CREATOR) {
       return getContentCreatorTableColumns(t, isMobile, isArchived);
+    }
+    if(role===Role.STUDENT)
+    {
+      return [...getLearnerTableColumns(t, isMobile, isArchived)];
+
     }
     return [...getUserTableColumns(t, isMobile, isArchived)];
   }, [role, t, isMobile, isArchived]);
