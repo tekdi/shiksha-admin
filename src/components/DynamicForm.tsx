@@ -187,7 +187,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           }
           break;
         }
-        // case "date": {
+        // case "dob": {
         //   const property = error.property.substring(1);
         //   console.log("property",property)
         //   const currentDate = new Date();
@@ -255,6 +255,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               );
               break;
             }
+            
             default: {
               const validRange = currentYearPattern.test(pattern);
               if (!validRange) {
