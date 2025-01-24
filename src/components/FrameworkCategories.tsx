@@ -39,7 +39,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
     const fieldsOfInterest = ['board', 'medium', 'grade', 'subject'];
     const fieldIds: { [key: string]: string } = {};
 
-    data.fields.forEach((field: { name: string; fieldId: string }) => {
+    data?.fields?.forEach((field: { name: string; fieldId: string }) => {
       if (fieldsOfInterest.includes(field.name)) {
         fieldIds[field.name] = field.fieldId;
       }
