@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 
 import { getFormRead } from "@/services/CreateUserService";
 import { getUserDetailsInfo } from "@/services/UserList";
-import { firstLetterInUpperCase, getUserFullName } from "@/utils/Helper";
+import { firstLetterInUpperCase, getInitials, getUserFullName } from "@/utils/Helper";
 import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import EditIcon from '@mui/icons-material/Edit';
@@ -316,8 +316,8 @@ const Profile = () => {
               color="white"
               sx={{ fontWeight: "bold", fontSize: "18px" }}
             >
-              {adminInfo?.name &&
-                `${adminInfo.name.split(" ")[0][0]}${adminInfo.name.split(" ").slice(-1)[0][0]}`}
+              {getInitials(userName)}
+            
             </Typography>
 
 
@@ -342,7 +342,7 @@ const Profile = () => {
               fontSize: "16px",
             }}
           >
-            {adminInfo?.name}
+            {userName}
           </Typography>
           <Typography
             variant="subtitle1"
