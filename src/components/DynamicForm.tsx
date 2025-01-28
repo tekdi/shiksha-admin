@@ -158,8 +158,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
    
     if (username && formData?.firstName && formData?.lastName  && role === FormContextType.STUDENT) {
       const userData = {
-        firstName: formData?.firstName,
-        lastName: formData?.lastName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
         username: username,
       }
       await validateUsername(userData)     
