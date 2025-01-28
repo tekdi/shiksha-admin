@@ -53,6 +53,7 @@ export const getTeacherColumns = (t: any, isMobile: boolean) => {
     // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130},
     { key: "centers", titleKey: "TABLE_TITLE.CENTER", width: 180 },
     { key: "program", titleKey: "TABLE_TITLE.PROGRAM", width: 180 },
+    { key: "supervisor", titleKey: "TABLE_TITLE.SUPERVISOR", width: 180 },
     // { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 160 },
     // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130, sortDirection: SortDirection.Ascend },
     // { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 160, sortDirection: SortDirection.Ascend },

@@ -727,6 +727,8 @@ const UserTable: React.FC<UserTableProps> = ({
          
           const programField = user?.customFields.find((field: any) => field.label === "PROGRAM");
           const program = programField?.value || "-";
+          const supervisorField = user?.customFields.find((field: any) => field.label === "SUPERVISOR");
+          const supervisor = supervisorField?.value || "-";
 
           return {
             userId: user.userId,
@@ -755,7 +757,8 @@ const UserTable: React.FC<UserTableProps> = ({
             stateCode: stateField?.code,
             districtCode: districtField?.code,
             blockCode: blockField?.code,
-            program :program
+            program :program,
+            supervisor : supervisor
             // centers: null,
             // Programs: null,
           };
