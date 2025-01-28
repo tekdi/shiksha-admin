@@ -117,9 +117,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     if(formData?.username && formData?.firstName && formData?.lastName && formData?.username!== event.formData?.username && role === FormContextType.STUDENT) 
     {
       const userData = {
-        firstName: formData?.firstName,
-        lastName: formData?.lastName,
-        username: event.formData?.username,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: event.formData.username,
       }
     
       await validateUsername(userData);
@@ -173,12 +173,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           if( role === FormContextType.STUDENT){
             setLocalFormData((prev: any) => ({
               ...prev,
-              username: formData.username ? formData.username :`${formData?.firstName}${formData?.lastName}`.toLowerCase(),
+              username: formData.username ? formData.username :`${formData.firstName}${formData.lastName}`.toLowerCase(),
             }));
             const userData = {
-              firstName: formData?.firstName,
-              lastName: formData?.lastName,
-              username: formData.username ? formData.username: `${formData?.firstName}${formData?.lastName}`.toLowerCase(),
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              username: formData.username ? formData.username: `${formData.firstName}${formData.lastName}`.toLowerCase(),
             }
             await validateUsername(userData)  
            
