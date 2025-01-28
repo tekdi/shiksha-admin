@@ -598,7 +598,28 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   };
 
   const handleChange = (event: IChangeEvent<any>) => {
-    console.log("Form data changed:", event.formData);
+    const { formData } = event;
+
+    if (!isEditModal) {
+      const { firstName, lastName, username } = formData;
+      if (firstName && lastName ) {
+        const updatedUsername = event.formData.username
+          ? username
+          : (firstName + lastName).toLowerCase()
+            
+           
+        const updatedFormData = {
+          ...formData,
+          // username: (firstName + lastName).toLowerCase(),
+        };
+
+        setFormValue(updatedFormData);
+      } else {
+        //setFormValue({ ...event.formData });
+      }
+    } else {
+      //setFormValue({ ...formData });
+    }
   };
   const handleError = (errors: any) => {
     console.log("Form errors:", errors);
@@ -634,7 +655,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       setSubmitButtonEnable(true);
     }
   }, [dynamicForm, dynamicFormForBlock, open]);
-
+  useEffect(() => {
+   
+   if(!open)
+   {
+       setFormValue({});
+   }
+  }, [open]);
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCheckedConfirmation(event.target.checked);
   };
@@ -783,6 +810,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 showErrorList={true}
                 customFields={customFields}
                 formData={formData}
+                role={userType}
+                isEdit={isEditModal}
+
               >
                 {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
               </DynamicForm>
@@ -802,6 +832,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   showErrorList={true}
                   customFields={customFields}
                   formData={formValue}
+                  role={userType}
+                  isEdit={isEditModal}
+
                 >
                   {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
                 </DynamicForm>
@@ -821,6 +854,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   customFields={customFields}
                   formData={formValue}
                   key={`${i18n.language}`}
+                  role={userType}
+                  isEdit={isEditModal}
                 >
                   {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
                 </DynamicForm>

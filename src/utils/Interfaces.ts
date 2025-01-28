@@ -224,6 +224,7 @@ export interface CentralizedModalProps {
 }
 export interface FormData {
   dob?: string; 
+  username?: string;
   [key: string]: any; 
 }
 export interface DynamicFormProps {
@@ -246,5 +247,7 @@ export interface DynamicFormProps {
     [key: string]: React.FC<RegistryFieldsType<any, RJSFSchema, any>>;
   };
   children?: ReactNode;
+  role?:any;
+  isEdit?:boolean
 }
 
