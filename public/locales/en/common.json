@@ -441,7 +441,9 @@
     "URDU":"Urdu",
     "DIVORCED/WIDOW":"Divorced/Widow",
     "GRADUATE":"Graduate",
-    "POST_GRADUATE":"Post Graduate"
+    "POST_GRADUATE":"Post Graduate",
+    "AVAILABLE_SUGGESTIONS":"Available suggestions:",
+    "USERNAME_ALREADY_EXIST":"This username already exists"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",

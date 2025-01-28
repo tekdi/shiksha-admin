@@ -13,6 +13,9 @@ import { getCurrentYearPattern } from "@/utils/Helper";
 import CustomNumberWidget from './CustomNumberWidget';
 import CustomImageWidget from "./form/CustomImageWidget";
 import {DynamicFormProps} from '../utils/Interfaces'
+import UsernameWithSuggestions from "./form/UsernameWithSuggestions";
+import { userNameExist } from "@/services/UserList";
+import { FormContextType } from "@/utils/app.constant";
 
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -25,12 +28,13 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   onError,
   customFields,
   children,
-  isProgramFields=false
+  isProgramFields=false,
+  role,
+  isEdit=false
 }) => {
   const { t } = useTranslation();
   const [localFormData, setLocalFormData] = useState(formData ?? {});
-  console.log("localFormData", localFormData?.dob);
-
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [changedFormData, setChangedFormData] = useState( {});
 
   const submittedButtonStatus = useSubmittedButtonStore(
@@ -49,7 +53,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     MultiSelectCheckboxes: MultiSelectCheckboxes,
     CustomRadioWidget: CustomRadioWidget,
     CustomNumberWidget: CustomNumberWidget,
-    files: CustomImageWidget
+    files: CustomImageWidget,
+    UsernameWithSuggestions: UsernameWithSuggestions as React.FC<
+    WidgetProps<any, RJSFSchema, any>
+  >,
 
   };
 
@@ -105,13 +112,23 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     return differences;
 }
 
-  const handleChange = (event: IChangeEvent<any>) => {
+  const handleChange = async(event: IChangeEvent<any>) => {
     console.log("event.formData",event.formData);
+    if(formData?.username && formData?.firstName && formData?.lastName && formData?.username!== event.formData?.username && role === FormContextType.STUDENT) 
+    {
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: event.formData.username,
+      }
+    
+      await validateUsername(userData);
+     
+    }
     if(formData)
     {    const differences = getDifferences(event?.formData, formData);
       setChangedFormData(differences)
     }
-    // console.log("differences", differences);
 
 
     const cleanAndReplace = (data: any) => {
@@ -135,6 +152,55 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     setUserEnteredEmail(cleanedFormData?.email);
     onChange({ ...event, formData: cleanedFormData });
   };
+
+
+  const handleUsernameBlur = async (username: string) => {
+   
+    if (username && formData?.firstName && formData?.lastName  && role === FormContextType.STUDENT) {
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: username,
+      }
+      await validateUsername(userData)     
+    }
+  };
+  const handleFirstLastNameBlur = async (lastName: string) => {
+    if (lastName && !isEdit && role === FormContextType.STUDENT) {
+      try {
+        // console.log('Username onblur called' ,formData);
+        if(formData?.firstName && formData?.lastName){
+          if( role === FormContextType.STUDENT){
+            setLocalFormData((prev: any) => ({
+              ...prev,
+              username: formData.username ? formData.username :`${formData.firstName}${formData.lastName}`.toLowerCase(),
+            }));
+            const userData = {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              username: formData.username ? formData.username: `${formData.firstName}${formData.lastName}`.toLowerCase(),
+            }
+            await validateUsername(userData)  
+           
+          }
+        }
+      } catch (error) {
+        setSuggestions([]);
+
+        console.error('Error validating username:', error);
+      }
+    }
+  };
+
+  const handleSuggestionSelect = (selectedUsername: string) => {
+ if( role === FormContextType.STUDENT)
+       setLocalFormData((prev: any) => ({
+        ...prev,
+        username: selectedUsername,
+      }));
+    setSuggestions([]);
+  };
+
 
   const transformErrors = (errors: any) => {
     const currentYearPattern = new RegExp(getCurrentYearPattern());
@@ -297,6 +363,17 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       return error;
     });
   };
+  const validateUsername = async (userData: { firstName: string; lastName: string; username: string }) => {
+    try {
+
+      const response = await userNameExist(userData);
+      setSuggestions([response?.suggestedUsername]);
+    } catch (error) {
+     setSuggestions([]);
+      console.error('Error validating username:', error);
+    }
+  };
+  
  useEffect(() => {
    
     const updatedFormData = Object.fromEntries(
@@ -321,6 +398,18 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         transformErrors={transformErrors}
         fields={customFields}
         id={id}
+        formContext={{
+          suggestions,
+          onSuggestionSelect: handleSuggestionSelect,
+        }}
+        onBlur={(field, value) => {
+          if (field === 'username') {
+            handleUsernameBlur(value);
+          }
+          if (field === 'root_lastName' || field === 'root_firstName') {
+           handleFirstLastNameBlur(value);
+          }
+        }}
       >
         <style>{`.rjsf-default-submit { display: none !important; }`}</style>
         {children}
