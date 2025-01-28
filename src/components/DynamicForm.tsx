@@ -121,8 +121,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         lastName: formData?.lastName,
         username: event.formData?.username,
       }
-      //         const response = await userNameExist(userData);
-      // setSuggestions([response?.suggestedUsername]);
+    
       await validateUsername(userData);
      
     }
@@ -130,7 +129,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     {    const differences = getDifferences(event?.formData, formData);
       setChangedFormData(differences)
     }
-    // console.log("differences", differences);
 
 
     const cleanAndReplace = (data: any) => {
@@ -170,7 +168,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const handleFirstLastNameBlur = async (lastName: string) => {
     if (lastName && !isEdit && role === FormContextType.STUDENT) {
       try {
-        console.log('Username onblur called' ,formData);
+        // console.log('Username onblur called' ,formData);
         if(formData?.firstName && formData?.lastName){
           if( role === FormContextType.STUDENT){
             setLocalFormData((prev: any) => ({

@@ -603,23 +603,22 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     if (!isEditModal) {
       const { firstName, lastName, username } = formData;
       if (firstName && lastName ) {
-        const updatedUsername = event.formData.username
-          ? username
-          : (firstName + lastName).toLowerCase()
+      
             
            
         const updatedFormData = {
-          ...formData,
-          // username: (firstName + lastName).toLowerCase(),
+        formData,
         };
 
         setFormValue(updatedFormData);
-      } else {
-        //setFormValue({ ...event.formData });
-      }
-    } else {
-      //setFormValue({ ...formData });
+      } 
+      // else {
+      //   //setFormValue({ ...event.formData });
+      // }
     }
+    //  else {
+    //   //setFormValue({ ...formData });
+    // }
   };
   const handleError = (errors: any) => {
     console.log("Form errors:", errors);
