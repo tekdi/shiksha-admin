@@ -520,7 +520,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     "{FirstName}": firstLetterInUpperCase(creatorName),
                     "{UserName}": apiBody["username"],
                     "{LearnerName}": firstLetterInUpperCase(apiBody["firstName"]),
-                    "{Password}": password,
+                    "{Password}":  apiBody["username"],
                   };
                 } else {
                   replacements = {
