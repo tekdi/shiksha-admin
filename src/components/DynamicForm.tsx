@@ -114,24 +114,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
   const handleChange = async(event: IChangeEvent<any>) => {
     console.log("event.formData",event.formData);
-    if(formData?.username && formData?.firstName && formData?.lastName && formData?.username!== event.formData?.username && role === FormContextType.STUDENT) 
-    {
-      const userData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        username: event.formData.username,
-      }
-    
-      await validateUsername(userData);
-     
-    }
-    if(formData)
+     if(formData)
     {    const differences = getDifferences(event?.formData, formData);
       setChangedFormData(differences)
     }
-
-
-    const cleanAndReplace = (data: any) => {
+     const cleanAndReplace = (data: any) => {
       for (const key in data) {
         if (Array.isArray(data[key])) {
           data[key] = Array.from(
@@ -150,6 +137,17 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
     setLocalFormData(cleanedFormData);
     setUserEnteredEmail(cleanedFormData?.email);
+    if(formData?.username && formData?.firstName && formData?.lastName && formData?.username!== event.formData?.username && role === FormContextType.STUDENT) 
+    {
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: event.formData.username,
+      }
+    
+      await validateUsername(userData);
+     
+    }
     onChange({ ...event, formData: cleanedFormData });
   };
 
