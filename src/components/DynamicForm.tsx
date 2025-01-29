@@ -16,6 +16,7 @@ import {DynamicFormProps} from '../utils/Interfaces'
 import UsernameWithSuggestions from "./form/UsernameWithSuggestions";
 import { userNameExist } from "@/services/UserList";
 import { FormContextType } from "@/utils/app.constant";
+import { customValidation } from "./FormValidation";
 
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -397,6 +398,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         transformErrors={transformErrors}
         fields={customFields}
         id={id}
+        customValidate={customValidation(schema, t)}
+
         formContext={{
           suggestions,
           onSuggestionSelect: handleSuggestionSelect,

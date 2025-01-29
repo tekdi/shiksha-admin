@@ -463,7 +463,9 @@
     "INVALID_EMAIL_FORMAT": "Invalid email format",
     "ENTER_VALID_EMAIL": "Enter a valid email address",
     "ENTER_VALID_MOBILE_NUMBER": "Enter a valid Mobile Number",
-    "SPACE_AND_SPECIAL_CHARACTERS_NOT_ALLOWED": "Space and special characters are not allowed"
+    "SPACE_AND_SPECIAL_CHARACTERS_NOT_ALLOWED": "Space and special characters are not allowed",
+    "DATE_MUST_BE_ON_OR_BEFORE": "Date must be on or before {{date}}",
+    "DATE_MUST_BE_ON_OR_AFTER": "Date must be on or after {{date}}"
   },
   "TABLE_TITLE": {
     "NAME": "Name",
