@@ -951,8 +951,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               username: user?.username,
               status: user?.status,
               name:
-                user?.firstName?.charAt(0).toUpperCase() +
-                user?.firstName?.slice(1).toLowerCase(),
+              getUserFullName(user) ?? "-",
+
               role: user.role,
               //  gender: user.gender,
               mobile: user.mobile === "NaN" ? "-" : user.mobile,

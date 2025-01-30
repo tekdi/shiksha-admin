@@ -386,7 +386,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         if (isEditModal && userId) { 
           const userData = {
             name: apiBody?.name,
-            mobile: String(apiBody?.phone_number),
+            mobile: apiBody?.mobile? apiBody?.mobile:String(apiBody?.phone_number),
             father_name: apiBody?.father_name,
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),
@@ -404,6 +404,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             delete userData.email;
 
           }
+          console.log("userNameFieldValue", userNameFieldValue, userData.username)
           if(userNameFieldValue===userData.username)
           delete userData.username;
 

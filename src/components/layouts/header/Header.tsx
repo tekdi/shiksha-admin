@@ -109,11 +109,36 @@ const Header = ({
     } else {
       if (locale) {
         if (storedUserData?.role === Role.CENTRAL_ADMIN)
-          router.push("/programs", undefined, { locale: locale });
-        else router.push("/centers", undefined, { locale: locale });
+        {
+          if(router.pathname==="/programs")
+          window.location.reload();
+           else
+           router.push("/programs", undefined, { locale: locale });
+
+        }
+        else
+        {
+          if(router.pathname==="/centers")
+          window.location.reload();
+          else
+          router.push("/centers", undefined, { locale: locale });
+        }
       } else {
-        if (storedUserData?.role === Role.CENTRAL_ADMIN) router.push("/programs");
-        else router.push("/centers");
+        if (storedUserData?.role === Role.CENTRAL_ADMIN) 
+        {
+          if(router.pathname==="/programs")
+          window.location.reload();
+            else
+          router.push("/programs");
+
+        }
+        else 
+        {
+          if(router.pathname==="/centers")
+          window.location.reload();
+                    else
+                   router.push("/centers")
+        }
       }
     }
   };
