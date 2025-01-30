@@ -82,7 +82,7 @@ type FilterDetails = {
   blocks?: any;
   name?: any;
   cohortId?: any;
-  firstName?:any
+  firstName?: any
 };
 interface CenterProp {
   cohortId: string;
@@ -114,7 +114,7 @@ const UserTable: React.FC<UserTableProps> = ({
   searchPlaceholder,
   handleAddUserClick,
   parentState,
-}) => { 
+}) => {
   const [selectedState, setSelectedState] = React.useState<string[]>([]);
   const [blockMembershipIdList, setBlockMembershipIdList] = React.useState<
     string[]
@@ -125,7 +125,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const router = useRouter();
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
-    const {  center } = router.query;
+  const { center } = router.query;
 
   const selectedBlockStore = useSubmittedButtonStore(
     (state: any) => state.selectedBlockStore
@@ -199,7 +199,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedCenterCode, setSelectedCenterCode] = useState<string[]>([]);
 
   const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(center ? true : false);
-console.log("setEnableCenterFilter", enableCenterFilter)
+  console.log("setEnableCenterFilter", enableCenterFilter)
   const isMobile: boolean = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -214,7 +214,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   const [userId, setUserId] = useState();
 
   const [submitValue, setSubmitValue] = useState<boolean>(false);
-   
+
   const reassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.reassignButtonStatus
   );
@@ -261,7 +261,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   const handleOpenAddLearnerModal = () => {
     setOpenAddLearnerModal(true);
   };
-  const handleModalSubmit = (value: boolean) => { 
+  const handleModalSubmit = (value: boolean) => {
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
   };
   const handleCloseAddLearnerModal = () => {
@@ -377,7 +377,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     setSelectedBlockCode("");
     setSelectedDistrictCode("");
     setSelectedState(selected);
- 
+
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_STATES")) {
       if (filters.status) setFilters({ status: [filters.status], role: role });
       else setFilters({ role: role });
@@ -392,15 +392,15 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         });
       else setFilters({ states: stateCodes, role: role });
     }
- 
+
   };
   const handleFilterChange = async (
     event: React.SyntheticEvent,
     newValue: any
   ) => {
-    setStatusValue(newValue); 
+    setStatusValue(newValue);
     setSelectedFilter(newValue);
-    if (newValue === Status.ACTIVE) { 
+    if (newValue === Status.ACTIVE) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: [Status.ACTIVE],
@@ -421,7 +421,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           ...restFilters,
         };
       });
-    } 
+    }
     const windowUrl = window.location.pathname;
     const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
@@ -442,7 +442,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     if (newQuery.center) {
       delete newQuery.center;
     }
@@ -509,7 +509,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           role: role,
         });
       }
-    } 
+    }
   };
   const handleBlockChange = (selected: string[], code: string[]) => {
     setSelectedCenterCode([]);
@@ -522,7 +522,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     }
     if (newQuery.block) {
       delete newQuery.block;
-    } 
+    }
 
     setSelectedBlock(selected);
     localStorage.setItem("selectedBlock", selected[0]);
@@ -581,10 +581,10 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           role: role,
         });
       }
-    } 
+    }
   };
   const handleCenterChange = async (selected: string[], code: string[]) => {
-    if (code[0]) { 
+    if (code[0]) {
       router.replace({
         pathname: router.pathname,
         query: {
@@ -609,7 +609,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
 
     setSelectedCenter(selected);
     localStorage.setItem("selectedCenter", selected[0]);
-    setSelectedCenterStore(selected[0]); 
+    setSelectedCenterStore(selected[0]);
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_CENTERS")) {
       setEnableCenterFilter(false);
       setSelectedCenterCode([]);
@@ -679,7 +679,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    response.userData.phone_number=response.userData.mobile?response.userData.mobile:""
+    response.userData.phone_number = response.userData.mobile ? response.userData.mobile : ""
 
     const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
@@ -688,7 +688,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         (field: any) => field.fieldId === item.fieldId
       );
 
-      const getValue = (data: any, field: any) => { 
+      const getValue = (data: any, field: any) => {
         if (item.default) {
           return item.default;
         }
@@ -706,9 +706,9 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (field?.value === "FEMALE" || field?.value === "MALE" || field?.value === "TRANSGENDER") { 
+            if (field?.value === "FEMALE" || field?.value === "MALE" || field?.value === "TRANSGENDER") {
               return field?.value?.toLowerCase();
-            } 
+            }
             return field?.value?.toLowerCase();
           }
         }
@@ -723,43 +723,45 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           } else {
             initialFormData[item.name] = userData[item.name];
           }
-        } else if (item?.type === "numeric") { 
+        } else if (item?.type === "numeric") {
           initialFormData[item.name] = Number(userData[item.name]);
         } else if (item?.type === "text" && userData[item.name]) {
           initialFormData[item.name] = String(userData[item.name]);
-        } else { 
+        } else {
           if (userData[item.name]) {
             initialFormData[item.name] = userData[item.name];
           }
         }
       } else {
-        const fieldValue = getValue(userData, customFieldValue);
+        if (customFieldValue) {
+          const fieldValue = getValue(userData, customFieldValue);
 
-        if (fieldValue) {
-          initialFormData[item.name] = fieldValue;
+          if (fieldValue) {
+            initialFormData[item.name] = fieldValue;
+          }
         }
       }
     });
- 
+
     return initialFormData;
   };
   const handleEdit = async (rowData: any) => {
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
     setUserName(rowData?.name);
- 
+
 
     try {
       const userId = rowData.userId;
       setUserId(userId);
       const fieldValue = true;
-      const response = await getUserDetailsInfo(userId, fieldValue); 
-   setSelectedUserUserName(response?.userData?.username);
-   setSelectedUserEmail(response?.userData?.email);
+      const response = await getUserDetailsInfo(userId, fieldValue);
+      setSelectedUserUserName(response?.userData?.username);
+      setSelectedUserEmail(response?.userData?.email);
 
       let formFields;
       if (Role.STUDENT === role) {
         //  formFields = await getFormRead("USERS", "STUDENT");
-        setFormData(mapFields(studentFormData, response)); 
+        setFormData(mapFields(studentFormData, response));
       } else if (Role.TEACHER === role) {
         // formFields = await getFormRead("USERS", "TEACHER");
 
@@ -774,7 +776,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         setFormData(mapFields(contentCreatorFormData, response));
       }
       handleOpenAddLearnerModal();
- 
+
     } catch (error) {
       console.log(error);
     }
@@ -782,15 +784,15 @@ console.log("setEnableCenterFilter", enableCenterFilter)
 
   const handleDelete = (rowData: any) => {
     setIsDeleteModalOpen(true);
-     
+
     setUserName(rowData?.name);
- 
+
 
     setBlockMembershipIdList(rowData.blockMembershipIdList);
     setCenterMembershipIdList(rowData.centerMembershipIdList);
     setSelectedUserId(rowData.userId);
     if (userType === Role.TEAM_LEADERS) {
-      setUserCohorts(rowData.blocks); 
+      setUserCohorts(rowData.blocks);
     } else {
       setUserCohorts(rowData.centers);
     }
@@ -803,7 +805,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     setUserName(rowData?.name);
 
     setCohortId(rowData?.cohortIds);
-    setBlock(rowData?.blocks); 
+    setBlock(rowData?.blocks);
 
     setDistrict(rowData?.districtValue);
     setDistrictCode(rowData?.districtCode);
@@ -820,7 +822,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     setIsReassignCohortModalOpen(true);
 
     //const userData="";
-    try { 
+    try {
       if (userType !== "Team Leaders") {
         const getCentersObject = {
           limit: 0,
@@ -850,27 +852,27 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           fieldName: "blocks",
         };
         const response = await getStateBlockDistrictList(object);
-        
-        const result = response?.result?.values; 
+
+        const result = response?.result?.values;
         setBlocks(result);
       }
     } catch (error: any) {
       console.log(error);
     }
   };
-  const handleSearch = (keyword: string) => { 
+  const handleSearch = (keyword: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       firstName: keyword,
     }));
   };
   useEffect(() => {
-    if(center)
-    setEnableCenterFilter(true);
-  else
-  setEnableCenterFilter(false);
+    if (center)
+      setEnableCenterFilter(true);
+    else
+      setEnableCenterFilter(false);
 
-    
+
   }, [
     center
   ]);
@@ -883,7 +885,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         const limit = pageLimit;
         let offset = pageOffset * limit;
         // const filters = { role: role , status:"active"};
-        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
+        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
         if (filters.firstName) {
           offset = 0;
         }
@@ -907,7 +909,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         }
         const result = enableCenterFilter
           ? resp?.userDetails
-          : resp?.getUserDetails; 
+          : resp?.getUserDetails;
         if (resp?.totalCount >= 15) {
           setPagination(true);
 
@@ -927,7 +929,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           //PageSizeSelectorFunction();
         }
 
-        setPageCount(Math.ceil(resp?.totalCount / pageLimit)); 
+        setPageCount(Math.ceil(resp?.totalCount / pageLimit));
         let finalResult;
         if (enableCenterFilter || center) {
           finalResult = result?.map((user: any) => {
@@ -959,8 +961,8 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               age: ageField ? ageField?.value : "-",
               district: districtField
                 ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
                 : "-",
               state: stateField ? stateField?.value : "-",
               blocks: blockField
@@ -970,13 +972,13 @@ console.log("setEnableCenterFilter", enableCenterFilter)
                 ? user?.gender?.charAt(0)?.toUpperCase() +
                 user?.gender?.slice(1).toLowerCase()
                 : "-",
-             
+
               //  createdAt: user?.createdAt,
               //  updatedAt: user?.updatedAt,
               createdBy: user?.createdBy,
               updatedBy: user?.updatedBy,
               stateCode: stateField?.code,
-              dob: user.dob?user.dob: "-",
+              dob: user.dob ? user.dob : "-",
 
               districtCode: districtField?.code,
               blockCode: blockField?.code,
@@ -1019,14 +1021,14 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               age: ageField ? ageField?.value : "-",
               district: districtField
                 ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
                 : "-",
               state: stateField ? stateField?.value : "-",
               blocks: blockField
                 ? firstLetterInUpperCase(blockField?.value)
                 : "-",
-                gender: user?.gender
+              gender: user?.gender
                 ? user?.gender?.charAt(0)?.toUpperCase() +
                 user?.gender?.slice(1).toLowerCase()
                 : "-",
@@ -1043,7 +1045,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               // Programs: null,
             };
           });
-        } 
+        }
 
         if (filters?.name && resp?.getUserDetails) {
           const prioritizedResult = finalResult.sort((a: any, b: any) => {
@@ -1074,7 +1076,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
 
         console.log(error);
       }
-    }; 
+    };
     if (
       selectedBlockCode !== "" ||
       (selectedDistrictCode !== "" && selectedBlockCode === "") ||
@@ -1138,14 +1140,14 @@ console.log("setEnableCenterFilter", enableCenterFilter)
               )
               .map((cohort: Cohort) => cohort.cohortMembershipId);
             //  const cohortMembershipId=response?.result?.cohortData?.cohortMembershipId;
-           
+
 
             let finalArray;
             if (cohortNames?.length >= 1) {
               finalArray = capitalizeFirstLetterOfEachWordInArray(cohortNames);
             }
             //   const finalArray=capitalizeFirstLetterOfEachWordInArray(cohortNames)
-             
+
             return {
               ...user,
               centerMembershipIdList: centerMembershipIdList,
@@ -1168,7 +1170,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     fetchData();
   }, [data, cohortsFetched]);
 
-   
+
   useEffect(() => {
     const fetchData = () => {
       try {
@@ -1185,7 +1187,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
             const stateField = JSON.parse(admin).customFields.find(
               (field: any) => field.label === "STATES"
             );
-             
+
             if (!stateField.value.includes(",")) {
               setSelectedState([stateField.value]);
               setSelectedStateCode(stateField.code);
@@ -1294,17 +1296,17 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode, userType]);
   useEffect(() => {
-    const fetchData = () => { 
+    const fetchData = () => {
       if (userType === Role.TEAM_LEADERS || userType === Role.CONTENT_CREATOR) {
         setEnableCenterFilter(false);
       } else {
         if (selectedCenter.length !== 0) {
           if (
             (selectedCenter[0] === "" ||
-            selectedCenter[0] === t("COMMON.ALL_CENTERS")) && !center
+              selectedCenter[0] === t("COMMON.ALL_CENTERS")) && !center
           ) {
             setEnableCenterFilter(false);
-          } else { 
+          } else {
 
             setEnableCenterFilter(true);
           }
@@ -1337,8 +1339,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     if (role === Role.CONTENT_CREATOR) {
       return getContentCreatorTableColumns(t, isMobile, isArchived);
     }
-    if(role===Role.STUDENT)
-    {
+    if (role === Role.STUDENT) {
       return [...getLearnerTableColumns(t, isMobile, isArchived)];
 
     }
@@ -1369,7 +1370,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
 
   //   // Handle replacement when only state and district codes are available
   //   if (selectedStateCode!=="" && selectedDistrictCode==="" && selectedBlockCode==="") {
- 
+
   //     const newQuery = { ...router.query };
   //    
 
@@ -1433,7 +1434,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
 
   //   // Handle replacement when state, district, block, and center are all selected
   //   if (selectedStateCode !==""&& selectedDistrictCode!=="" && selectedBlockCode!=="" && selectedCenter.length !== 0) {
- 
+
   //     if (userType !== Role.TEAM_LEADERS) {
   //       router.replace({
   //         pathname: router.pathname,
@@ -1464,7 +1465,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
   };
 
   const handleDeleteUser = async (category: string) => {
-    try { 
+    try {
       const userId = selectedUserId;
       const userData = {
         userData: {
@@ -1475,7 +1476,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
       const cohortDeletionResponse = await deleteUser(userId, userData);
       if (cohortDeletionResponse) {
         deleteUserState ? setDeleteUserState(false) : setDeleteUserState(true);
-      } 
+      }
       if (userType === Role.TEAM_LEADERS && blockMembershipIdList.length > 0) {
         blockMembershipIdList.forEach(async (item) => {
           const memberStatus = Status.ARCHIVED;
@@ -1501,7 +1502,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
           });
         });
       }
- 
+
 
       // const response = await deleteUser(userId, userData);
       //   const memberStatus = Status.ARCHIVED;
