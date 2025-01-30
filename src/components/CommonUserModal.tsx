@@ -351,9 +351,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               }
             } else {
               if (fieldId) {
+              
                 apiBody.customFields.push({
                   fieldId: fieldId,
-                  value: String(fieldValue),
+                  value: fieldValue?String(fieldValue):"",
                 });
               }
             }
