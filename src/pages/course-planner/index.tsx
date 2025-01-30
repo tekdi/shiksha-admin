@@ -64,11 +64,30 @@ const Foundation = () => {
         const framework = data?.result?.framework;
         setFramework(framework);
         setFramedata(framework);
-
-        // const states = await getOptionsByCategory(framework, "state");
+        const userInfoString = localStorage.getItem('adminInfo');
         const boards = await getOptionsByCategory(framework, "board");
         const boardNames = boards.map((board: any) => board)?.sort();
-        setBoards(boardNames);
+
+        const userInfo = userInfoString ? JSON.parse(userInfoString) : null;
+        const boardField = userInfo?.customFields?.find((field: any) => field.label === "BOARD");
+        const boardValue = boardField ? boardField.value : null;
+
+        if (boardValue !== null) {
+          const userBoards = boardValue.split(",");
+          if (userBoards && boardNames) {
+          const normalizedUserBoards = userBoards.map((board: string) => board.toLowerCase());       
+            const matchingBoards = boardNames.filter((board: { name: string; }) =>
+              normalizedUserBoards.includes(board.name.toLowerCase())
+            );
+            setBoards(matchingBoards);
+          }
+        } else if (boardNames) {
+          setBoards(boardNames);
+        }
+
+        // const states = await getOptionsByCategory(framework, "state");
+
+        // setBoards(boardNames);
         // if (role === "Central Admin CCTA") {
         //   // Get all states and their names
         //   const stateNames = states.map((state: any) => state.name)?.sort();

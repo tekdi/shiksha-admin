@@ -82,7 +82,7 @@ type FilterDetails = {
   blocks?: any;
   name?: any;
   cohortId?: any;
-  firstName?: any;
+  firstName?: any
 };
 interface CenterProp {
   cohortId: string;
@@ -198,10 +198,8 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedCenter, setSelectedCenter] = useState<string[]>([]);
   const [selectedCenterCode, setSelectedCenterCode] = useState<string[]>([]);
 
-  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(
-    center ? true : false
-  );
-  console.log("setEnableCenterFilter", enableCenterFilter);
+  const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(center ? true : false);
+  console.log("setEnableCenterFilter", enableCenterFilter)
   const isMobile: boolean = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -394,6 +392,7 @@ const UserTable: React.FC<UserTableProps> = ({
         });
       else setFilters({ states: stateCodes, role: role });
     }
+
   };
   const handleFilterChange = async (
     event: React.SyntheticEvent,
@@ -644,7 +643,7 @@ const UserTable: React.FC<UserTableProps> = ({
     }
   };
   const handleSortChange = async (event: SelectChangeEvent) => {
-    // let sort;
+    // let sort; 
     if (event.target?.value === "Z-A") {
       enableCenterFilter
         ? setsortByForCohortMemberList(["name", SORT.DESCENDING])
@@ -680,9 +679,7 @@ const UserTable: React.FC<UserTableProps> = ({
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    response.userData.phone_number = response.userData.mobile
-      ? response.userData.mobile
-      : "";
+    response.userData.phone_number = response.userData.mobile ? response.userData.mobile : ""
 
     const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
@@ -709,11 +706,7 @@ const UserTable: React.FC<UserTableProps> = ({
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (
-              field?.value === "FEMALE" ||
-              field?.value === "MALE" ||
-              field?.value === "TRANSGENDER"
-            ) {
+            if (field?.value === "FEMALE" || field?.value === "MALE" || field?.value === "TRANSGENDER") {
               return field?.value?.toLowerCase();
             }
             return field?.value?.toLowerCase();
@@ -740,10 +733,12 @@ const UserTable: React.FC<UserTableProps> = ({
           }
         }
       } else {
-        const fieldValue = getValue(userData, customFieldValue);
+        if (customFieldValue) {
+          const fieldValue = getValue(userData, customFieldValue);
 
-        if (fieldValue) {
-          initialFormData[item.name] = fieldValue;
+          if (fieldValue) {
+            initialFormData[item.name] = fieldValue;
+          }
         }
       }
     });
@@ -753,6 +748,7 @@ const UserTable: React.FC<UserTableProps> = ({
   const handleEdit = async (rowData: any) => {
     submitValue ? setSubmitValue(false) : setSubmitValue(true);
     setUserName(rowData?.name);
+
 
     try {
       const userId = rowData.userId;
@@ -780,6 +776,7 @@ const UserTable: React.FC<UserTableProps> = ({
         setFormData(mapFields(contentCreatorFormData, response));
       }
       handleOpenAddLearnerModal();
+
     } catch (error) {
       console.log(error);
     }
@@ -790,6 +787,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
     setUserName(rowData?.name);
 
+
     setBlockMembershipIdList(rowData.blockMembershipIdList);
     setCenterMembershipIdList(rowData.centerMembershipIdList);
     setSelectedUserId(rowData.userId);
@@ -798,11 +796,11 @@ const UserTable: React.FC<UserTableProps> = ({
     } else {
       setUserCohorts(rowData.centers);
     }
-    //const userData="";
+    //const userData=""; 
   };
 
   const handleReassignCohort = async (rowData: any) => {
-    // setIsDeleteModalOpen(true);
+    // setIsDeleteModalOpen(true); 
     setSelectedUserId(rowData?.userId);
     setUserName(rowData?.name);
 
@@ -869,9 +867,15 @@ const UserTable: React.FC<UserTableProps> = ({
     }));
   };
   useEffect(() => {
-    if (center) setEnableCenterFilter(true);
-    else setEnableCenterFilter(false);
-  }, [center]);
+    if (center)
+      setEnableCenterFilter(true);
+    else
+      setEnableCenterFilter(false);
+
+
+  }, [
+    center
+  ]);
 
   useEffect(() => {
     const fetchUserList = async () => {
@@ -949,15 +953,14 @@ const UserTable: React.FC<UserTableProps> = ({
               username: user?.username,
               status: user?.status,
               name: getUserFullName(user) ?? "-",
-
               role: user.role,
               //  gender: user.gender,
               mobile: user.mobile === "NaN" ? "-" : user.mobile,
               age: ageField ? ageField?.value : "-",
               district: districtField
                 ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
                 : "-",
               state: stateField ? stateField?.value : "-",
               blocks: blockField
@@ -965,7 +968,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 : "-",
               gender: user?.gender
                 ? user?.gender?.charAt(0)?.toUpperCase() +
-                  user?.gender?.slice(1).toLowerCase()
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
 
               //  createdAt: user?.createdAt,
@@ -1016,8 +1019,8 @@ const UserTable: React.FC<UserTableProps> = ({
               age: ageField ? ageField?.value : "-",
               district: districtField
                 ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
                 : "-",
               state: stateField ? stateField?.value : "-",
               blocks: blockField
@@ -1025,7 +1028,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 : "-",
               gender: user?.gender
                 ? user?.gender?.charAt(0)?.toUpperCase() +
-                  user?.gender?.slice(1).toLowerCase()
+                user?.gender?.slice(1).toLowerCase()
                 : "-",
               createdAt: user.createdAt,
               updatedAt: user.updatedAt,
@@ -1136,6 +1139,7 @@ const UserTable: React.FC<UserTableProps> = ({
               .map((cohort: Cohort) => cohort.cohortMembershipId);
             //  const cohortMembershipId=response?.result?.cohortData?.cohortMembershipId;
 
+
             let finalArray;
             if (cohortNames?.length >= 1) {
               finalArray = capitalizeFirstLetterOfEachWordInArray(cohortNames);
@@ -1151,8 +1155,8 @@ const UserTable: React.FC<UserTableProps> = ({
             };
           })
         );
-        console.log("data", data);
-        console.log("newData", newData);
+        console.log("data", data)
+        console.log("newData", newData)
 
         setData(newData);
         setCohortsFetched(true);
@@ -1163,6 +1167,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
     fetchData();
   }, [data, cohortsFetched]);
+
 
   useEffect(() => {
     const fetchData = () => {
@@ -1193,7 +1198,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //   status:[statusValue],
               // }
 
-              // )
+              // ) 
               // if( selectedDistrict.length===0 ||selectedDistrict[0]==="All Districts")
               // {
               //   const newQuery = { ...router.query };
@@ -1207,7 +1212,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //   if(newQuery.center)
               //   {
               //     delete newQuery.center;
-              //   }
+              //   } 
               //   router.replace({
               //     pathname: router.pathname,
               //     query: {
@@ -1215,7 +1220,7 @@ const UserTable: React.FC<UserTableProps> = ({
               //     }
               //   });
 
-              // }
+              // } 
               // if( selectedBlock.length===0 ||selectedBlock[0]==="All Blocks")
               // {
               //   const newQuery = { ...router.query };
@@ -1296,11 +1301,11 @@ const UserTable: React.FC<UserTableProps> = ({
         if (selectedCenter.length !== 0) {
           if (
             (selectedCenter[0] === "" ||
-              selectedCenter[0] === t("COMMON.ALL_CENTERS")) &&
-            !center
+              selectedCenter[0] === t("COMMON.ALL_CENTERS")) && !center
           ) {
             setEnableCenterFilter(false);
           } else {
+
             setEnableCenterFilter(true);
           }
           //setEnableCenterFilter(true);
@@ -1324,6 +1329,7 @@ const UserTable: React.FC<UserTableProps> = ({
     fetchData();
   }, [selectedCenter, selectedCenterCode]);
 
+
   const columns = useMemo(() => {
     if (role === Role.TEAM_LEADER) {
       return [...getTLTableColumns(t, isMobile, isArchived)];
@@ -1333,6 +1339,7 @@ const UserTable: React.FC<UserTableProps> = ({
     }
     if (role === Role.STUDENT) {
       return [...getLearnerTableColumns(t, isMobile, isArchived)];
+
     }
     return [...getUserTableColumns(t, isMobile, isArchived)];
   }, [role, t, isMobile, isArchived]);
@@ -1363,7 +1370,7 @@ const UserTable: React.FC<UserTableProps> = ({
   //   if (selectedStateCode!=="" && selectedDistrictCode==="" && selectedBlockCode==="") {
 
   //     const newQuery = { ...router.query };
-  //
+  //    
 
   //      if (newQuery.center) {
   //        delete newQuery.center;
@@ -1384,7 +1391,7 @@ const UserTable: React.FC<UserTableProps> = ({
   //    }
   //   if (selectedStateCode!=="" && selectedDistrictCode!=="" && selectedBlockCode==="") {
   //    const newQuery = { ...router.query };
-  //
+  // 
 
   //     if (newQuery.center) {
   //       delete newQuery.center;
@@ -1494,6 +1501,7 @@ const UserTable: React.FC<UserTableProps> = ({
         });
       }
 
+
       // const response = await deleteUser(userId, userData);
       //   const memberStatus = Status.ARCHIVED;
       //   const statusReason = selectedReason;
@@ -1558,6 +1566,8 @@ const UserTable: React.FC<UserTableProps> = ({
     setSelectedStateCode: setSelectedStateCode,
     showAddNew: !!isActiveYear,
   };
+
+
 
   return (
     <HeaderComponent {...userProps}>

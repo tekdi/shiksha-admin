@@ -159,6 +159,20 @@ const LoginPage = () => {
         //set user info in zustand store
         if (typeof window !== "undefined" && window.localStorage) {
           if (userInfo) {
+            if (userInfo?.customFields) {
+              const boardValues = userInfo.customFields
+                .filter((field: any) => field.label === "BOARD")
+                .flatMap((field: any) => field.value.split(","))
+                .map((board: string) => board.trim());
+
+              // Check if boardValues is not empty
+              if (boardValues.length > 0) {
+                console.log(boardValues);
+                localStorage.setItem("userSpecificBoard", JSON.stringify(boardValues));
+              } else {
+                console.log("No BOARD field found in customFields. Skipping localStorage update.");
+              }
+            }
             localStorage.setItem("adminInfo", JSON.stringify(userInfo));
           }
           localStorage.setItem("stateName", userInfo?.customFields[0]?.value);

@@ -296,7 +296,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       const { username, password } = result;
 
       const apiBody: any = {
-        username: formData.email,
+        username: userType === FormContextType.STUDENT ? username : formData.email,
         password: password,
         tenantCohortRoleMapping: [
           {
