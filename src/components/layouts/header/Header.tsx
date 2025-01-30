@@ -83,7 +83,7 @@ const Header = ({
     }
   }, []);
   const handleSelectChange = (event: SelectChangeEvent) => {
-    setSelectedSessionId(event.target.value); 
+    setSelectedSessionId(event.target.value);
     localStorage.setItem("academicYearId", event.target.value);
     // Check if the selected academic year is active
     const selectedYear = academicYearList?.find(
@@ -108,36 +108,20 @@ const Header = ({
       else router.push("/course-planner");
     } else {
       if (locale) {
-        if (storedUserData?.role === Role.CENTRAL_ADMIN)
-        {
-          if(router.pathname==="/programs")
-          window.location.reload();
-           else
-           router.push("/programs", undefined, { locale: locale });
-
-        }
-        else
-        {
-          if(router.pathname==="/centers")
-          window.location.reload();
-          else
-          router.push("/centers", undefined, { locale: locale });
+        if (storedUserData?.role === Role.CENTRAL_ADMIN) {
+          if (router.pathname === "/programs") window.location.reload();
+          else router.push("/programs", undefined, { locale: locale });
+        } else {
+          if (router.pathname === "/centers") window.location.reload();
+          else router.push("/centers", undefined, { locale: locale });
         }
       } else {
-        if (storedUserData?.role === Role.CENTRAL_ADMIN) 
-        {
-          if(router.pathname==="/programs")
-          window.location.reload();
-            else
-          router.push("/programs");
-
-        }
-        else 
-        {
-          if(router.pathname==="/centers")
-          window.location.reload();
-                    else
-                   router.push("/centers")
+        if (storedUserData?.role === Role.CENTRAL_ADMIN) {
+          if (router.pathname === "/programs") window.location.reload();
+          else router.push("/programs");
+        } else {
+          if (router.pathname === "/centers") window.location.reload();
+          else router.push("/centers");
         }
       }
     }
@@ -152,15 +136,12 @@ const Header = ({
     }
   };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-  
     setAnchorEl(event.currentTarget);
-    
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
   const handleMenuItemClick = (newLocale: any) => {
-    
     setLanguage(newLocale);
     if (typeof window !== "undefined" && window.localStorage) {
       localStorage.setItem("preferredLanguage", newLocale);
