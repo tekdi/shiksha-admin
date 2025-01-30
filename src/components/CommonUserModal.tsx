@@ -296,7 +296,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       const { username, password } = result;
 
       const apiBody: any = {
-        username: userType === FormContextType.STUDENT ? username : formData.email,
+        username:
+          userType === FormContextType.STUDENT ? username : formData.email,
         password: password,
         tenantCohortRoleMapping: [
           {
@@ -351,10 +352,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               }
             } else {
               if (fieldId) {
-              
                 apiBody.customFields.push({
                   fieldId: fieldId,
-                  value: fieldValue?String(fieldValue):"",
+                  value: fieldValue ? String(fieldValue) : "",
                 });
               }
             }
