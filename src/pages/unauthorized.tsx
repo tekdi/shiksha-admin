@@ -6,12 +6,24 @@ import Typography from '@mui/material/Typography';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const Unauthorized = () => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const router = useRouter();
+  useEffect(() => {
+    const handleBackButton = () => {
+      console.log("User pressed the browser back button");
+      localStorage.clear()
+    };
 
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, []);
   const { role } = router.query;
   return (
     <Box
