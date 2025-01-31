@@ -59,16 +59,15 @@ const UsernameWithSuggestions: React.FC<UsernameWidgetProps> = ({
         <div>
           {suggestions?.map((suggestion: any, index: number) => (
             <Box>
- <Typography variant="h6" color="error" gutterBottom>
-         {t('FORM.USERNAME_ALREADY_EXIST')}
-        </Typography>
-        <Typography variant="h6" color="textSecondary" gutterBottom>
-          {t('FORM.AVAILABLE_SUGGESTIONS')}
-
-        </Typography>             
-         <Typography
+              {value!=="" &&(<Typography variant="h6"  sx={{marginLeft:"12px", mt:"2px"}} color="error" gutterBottom>
+                {t('FORM.USERNAME_ALREADY_EXIST')}
+              </Typography>)}
+              <Typography variant="h6" m="2px"  sx={{marginLeft:"12px"}}color="textSecondary" gutterBottom>
+                {t('FORM.AVAILABLE_SUGGESTIONS')}
+              </Typography>
+              <Typography
                 onClick={() => onSuggestionSelect(suggestion)}
-                sx={{ cursor: 'pointer', color: 'green' }}
+                sx={{ cursor: 'pointer', color: 'green', marginLeft:"12px" }}
               >
                 {suggestion}
               </Typography>
