@@ -12,6 +12,7 @@ import {
 } from "@/services/CreateUserService";
 import { sendCredentialService } from "@/services/NotificationService";
 import {
+  calculateAge,
   firstLetterInUpperCase,
   generateUsernameAndPassword,
   getUserFullName,
@@ -82,8 +83,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
-
-  const messageKeyMap: Record<string, string> = {
+    const [originalSchema, setOriginalSchema] = React.useState(schema);
+   const messageKeyMap: Record<string, string> = {
     [FormContextType.STUDENT]: "LEARNERS.LEARNER_CREATED_SUCCESSFULLY",
     [FormContextType.TEACHER]: "FACILITATORS.FACILITATOR_CREATED_SUCCESSFULLY",
     [FormContextType.TEAM_LEADER]:
@@ -253,10 +254,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             setSchema(schema);
             setUiSchema(uiSchema);
           } else {
-            console.log("response---------", response);
             const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
             setSchema(schema);
             setUiSchema(uiSchema);
+            setOriginalSchema({ ...schema });
           }
         }
       } catch (error) {
@@ -602,7 +603,85 @@ const CommonUserModal: React.FC<UserModalProps> = ({
 
   const handleChange = (event: IChangeEvent<any>) => {
     const { formData } = event;
-
+    if(userType === FormContextType.STUDENT)
+    {
+    let newFormData = { ...formData };
+    console.log('Form data changed:', event.formData);
+    console.log('schema:', schema);
+    const dob = event.formData.dob;
+    const dependencyKeys = Object.keys(schema.dependencies)[0];
+    const dependentFields = schema?.dependencies?.dob?.properties;
+    // if (!isUsernameEdited) {
+    //   if (event.formData.firstName && event.formData.lastName) {
+    //     event.formData.username =
+    //       event.formData.firstName + event.formData.lastName;
+    //   } else {
+    //     event.formData.username = null;
+    //   }
+    // }
+    if (dob) {
+      const age = calculateAge(new Date(dob));
+      if (age >= 18) {
+        const newSchema = { ...schema };
+        const dependentFieldKeys = Object.keys(dependentFields);
+        newSchema.properties = Object.keys(newSchema.properties)
+          .filter((key) => !dependentFieldKeys.includes(key))
+          .reduce((acc: any, key) => {
+            acc[key] = newSchema.properties[key];
+            return acc;
+          }, {});
+        // Remove dependent fields from the formData
+        const updatedFormData = { ...event.formData };
+        dependentFieldKeys.forEach((key) => {
+          delete updatedFormData[key];
+        });
+        newSchema.dependencies = Object.keys(newSchema.dependencies)
+          .filter((key) => !dependentFieldKeys.includes(key))
+          .reduce((acc: any, key) => {
+            // Remove dependentFieldKeys from properties within dependencies
+            const filteredProperties = Object.keys(
+              newSchema.dependencies[key].properties
+            )
+              .filter((propKey) => !dependentFieldKeys.includes(propKey))
+              .reduce((nestedAcc: any, propKey) => {
+                nestedAcc[propKey] =
+                  newSchema.dependencies[key].properties[propKey];
+                return nestedAcc;
+              }, {});
+            // Add filtered dependencies back
+            acc[key] = { properties: filteredProperties };
+            return acc;
+          }, {});
+        setSchema(newSchema);
+        // setFormData(updatedFormData);
+        // setCustomFormData(updatedFormData);
+        newFormData = { ...updatedFormData };
+      } else if (age < 18) {
+        const newSchema = { ...originalSchema };
+        // Add dependent fields and reorder them in the schema
+        const reorderedFields: any[] = [];
+        const filteredFields = Object.keys(newSchema.properties).filter(
+          (key) => !Object.keys(dependentFields).includes(key)
+        );
+        filteredFields.forEach((key) => {
+          reorderedFields.push(key);
+          if (key === dependencyKeys) {
+            reorderedFields.push(...Object.keys(dependentFields));
+          }
+        });
+        newSchema.properties = reorderedFields.reduce((acc: any, key: any) => {
+          acc[key] = dependentFields[key] || newSchema.properties[key];
+          return acc;
+        }, {});
+        setSchema(newSchema);
+        // setFormData({ ...event.formData });
+        // setCustomFormData({ ...event.formData });
+        newFormData = { ...event.formData };
+      }
+    } else {
+      // setFormData(event.formData);
+    }
+  }
     if (!isEditModal) {
       const { firstName, lastName, username } = formData;
       if (firstName && lastName) {

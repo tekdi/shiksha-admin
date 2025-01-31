@@ -38,7 +38,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [changedFormData, setChangedFormData] = useState( {});
   const [isGetUserName, setIsGetUserName] = useState<boolean>(false);
-  const submittedButtonStatus = useSubmittedButtonStore(
+  const [storedSuggestions, setStoredSuggestions] = useState<string[]>([]);
+   const submittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.submittedButtonStatus
   );
   const setSubmittedButtonStatus = useSubmittedButtonStore(
@@ -138,12 +139,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
 
     setLocalFormData(cleanedFormData);
     setUserEnteredEmail(cleanedFormData?.email);
-    if(formData?.username && formData?.firstName && formData?.lastName && formData?.username!== event.formData?.username && role === FormContextType.STUDENT && formData?.username) 
-    {
-      
-      setIsGetUserName(false);
-      setSuggestions([]);
-     
+    if (event.formData?.username !== formData?.username && (formData?.username||formData?.username==="")) {
+      if (event.formData?.username !== '') {
+        setIsGetUserName(false);
+        setSuggestions([]);
+      } else setSuggestions(storedSuggestions);
     }
     onChange({ ...event, formData: cleanedFormData });
   };
@@ -364,6 +364,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       if (suggestions.length === 0) {
         const response = await userNameExist(userData);
         setSuggestions([response?.suggestedUsername]);
+        setStoredSuggestions([response?.suggestedUsername]);
         setIsGetUserName(false);
       }
      

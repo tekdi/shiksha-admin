@@ -114,6 +114,19 @@ export const GenerateSchemaAndUiSchema = (
         }));
          fieldUiSchema["ui:widget"] = "CustomRadioWidget";
         break;
+        // case "radio":
+        // fieldSchema.type = "string";
+        // fieldSchema.oneOf = [
+        //   { const: "", title: t("FORM.PLEASE_SELECT"), isHidden: true },
+        //   ...options?.map((opt: FieldOption) => ({
+        //   const: opt.value,
+        //   title:
+        //     t(`FORM.${opt.label}`) === `FORM.${opt.label}`
+        //       ? opt.label
+        //       : t(`FORM.${opt.label}`),
+        // }))];
+        //  fieldUiSchema["ui:widget"] = "CustomRadioWidget";
+        // break;
         case "file":
           fieldSchema.type = "array";
     fieldSchema.items = {
@@ -192,6 +205,29 @@ export const GenerateSchemaAndUiSchema = (
       }));
       fieldUiSchema["ui:widget"] = "select";
     }
+    // if (isMultiSelect && maxSelections === 1 && type === "drop_down") {
+    //   fieldSchema.type = "string";
+    //   fieldSchema.isDropdown = true;
+    
+    //   const processedOptions = [
+    //     { const: "", title:"", isHidden: true },
+    //     ...options?.map((opt: FieldOption) => ({
+    //       const: opt.value,
+    //       title:
+    //         t(`FORM.${opt.label}`) === `FORM.${opt.label}`
+    //           ? opt.label
+    //           : t(`FORM.${opt.label}`),
+    //     })),
+    //   ] // Filter hidden options
+    
+    //   // Ensure the default value is not the hidden option
+    //   fieldSchema.default =
+    //     processedOptions.length > 0 ? processedOptions[0].const : undefined;
+    
+    //   fieldSchema.oneOf = processedOptions;
+    //   fieldUiSchema["ui:widget"] = "select";
+    // }
+    
     if (!isMultiSelect && type === "drop_down") {
       fieldSchema.type = "string";
       fieldSchema.isDropdown = true;
@@ -249,6 +285,28 @@ export const GenerateSchemaAndUiSchema = (
       }
       fieldSchema.validation = field.validation;
     }
+    if (field.dependsOn) {
+      const dependencyField = field.dependsOn;
+
+      schema.dependencies = schema.dependencies || {};
+
+      schema.dependencies[dependencyField] =
+        schema.dependencies[dependencyField] ||
+        ({
+          properties: {},
+        } as JSONSchema7);
+
+      const dependencyObject = schema.dependencies[
+        dependencyField
+      ] as JSONSchema7;
+
+      dependencyObject.properties = {
+        ...dependencyObject.properties,
+        [name]: fieldSchema,
+      };
+
+      schema.dependencies[dependencyField] = dependencyObject;
+    } 
     if (schema !== undefined && schema.properties) {
       schema.properties[name] = fieldSchema;
       uiSchema[name] = fieldUiSchema;
