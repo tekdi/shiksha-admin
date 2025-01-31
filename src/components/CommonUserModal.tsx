@@ -606,10 +606,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     if(userType === FormContextType.STUDENT)
     {
     let newFormData = { ...formData };
-    console.log('Form data changed:', event.formData);
-    console.log('schema:', schema);
+   
     const dob = event.formData.dob;
-    const dependencyKeys = Object.keys(schema.dependencies)[0];
+    const dependencyKeys = Object.keys(schema?.dependencies)[0];
     const dependentFields = schema?.dependencies?.dob?.properties;
     // if (!isUsernameEdited) {
     //   if (event.formData.firstName && event.formData.lastName) {
@@ -678,9 +677,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         // setCustomFormData({ ...event.formData });
         newFormData = { ...event.formData };
       }
-    } else {
-      // setFormData(event.formData);
     }
+   
   }
     if (!isEditModal) {
       const { firstName, lastName, username } = formData;

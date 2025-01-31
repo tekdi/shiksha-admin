@@ -25,7 +25,6 @@ const UsernameWithSuggestions: React.FC<UsernameWidgetProps> = ({
   onChange,
   ...rest
 }) => {
-  console.log("value", value);        
   const { suggestions, onSuggestionSelect } = formContext;
   const { t } = useTranslation();
 
