@@ -539,3 +539,29 @@ export const calculateAge = (dob: any) => {
   }
   return age;
 };
+export const preserveLocalStorage = () => {
+  const keysToKeep = [
+    'preferredLanguage',
+    'mui-mode',
+    'mui-color-scheme-dark',
+    'mui-color-scheme-light',
+    'hasSeenTutorial',
+  ];
+
+  const valuesToKeep: { [key: string]: any } = {};
+
+  keysToKeep.forEach((key: string) => {
+    const value = localStorage.getItem(key);
+    if (value !== null) {
+      valuesToKeep[key] = value;
+    }
+  });
+
+  localStorage.clear();
+
+  keysToKeep.forEach((key: string) => {
+    if (valuesToKeep[key] !== undefined) {
+      localStorage.setItem(key, valuesToKeep[key]);
+    }
+  });
+};
