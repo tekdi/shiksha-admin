@@ -127,6 +127,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEACHER),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
+  // const {
+  //   data: mentorFormData,
+  //   isLoading: mentorFormDataLoading,
+  //   error: mentorFormDataErrror,
+  // } = useQuery<any>({
+  //   queryKey: ["mentorFormData"],
+  //   queryFn: () => getFormRead(FormContext.USERS, FormContextType.MENTOR),
+  //   staleTime: apiCatchingDuration.GETREADFORM,
+  // });
   const {
     data: studentFormData,
     isLoading: studentFormDataLoading,
@@ -299,7 +308,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       const apiBody: any = {
         username:
           userType === FormContextType.STUDENT ? username : formData.email,
-        password: password,
+        password:userType === FormContextType.STUDENT ? username : password,
+        
         tenantCohortRoleMapping: [
           {
             tenantId: TENANT_ID,
