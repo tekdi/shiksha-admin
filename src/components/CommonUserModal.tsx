@@ -538,7 +538,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
 
                   };
                 } else {
-                  debugger
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(apiBody["firstName"]),
                     "{UserName}": formData?.email,
