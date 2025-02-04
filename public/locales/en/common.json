@@ -199,9 +199,9 @@
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SCTA": "State Content Team Associate",
-
-    "WORKSPACE": "Workspace"
+    "SCTA":"State Content Team Associate",
+    "WORKSPACE": "Workspace",
+    "MANAGE_NOTIFICATION": "Manage Notifications"
   },
   "FACILITATORS": {
     "STATE": "State",

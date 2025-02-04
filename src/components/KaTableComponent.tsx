@@ -30,7 +30,7 @@ interface KaTableComponentProps {
   onEdit?: any;
   reassignCohort?: any;
   onChange?: any;
-  extraActions: {
+  extraActions?: {
     name: string;
     onClick: (rowData: any) => void;
     icon: React.ElementType;
