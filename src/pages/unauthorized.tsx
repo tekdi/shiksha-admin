@@ -1,3 +1,4 @@
+import { preserveLocalStorage } from '@/utils/Helper';
 import { Role } from '@/utils/app.constant';
 import WarningIcon from '@mui/icons-material/Warning';
 import { Link, useTheme } from '@mui/material';
@@ -13,36 +14,21 @@ const Unauthorized = () => {
   const theme = useTheme<any>();
   const router = useRouter();
   useEffect(() => {
-    const handleBackButton = () => {
-      console.log("User pressed the browser back button");
-    const keysToKeep = [
-      'preferredLanguage',
-      'mui-mode',
-      'mui-color-scheme-dark',
-      'mui-color-scheme-light',
-      'hasSeenTutorial',
-    ];
-    // Retrieve the values of the keys to keep
-    const valuesToKeep: { [key: string]: any } = {};
-    keysToKeep.forEach((key: string) => {
-      valuesToKeep[key] = localStorage.getItem(key);
-    });
+    const previousPage = localStorage.getItem('previousPage');
+    if(previousPage==="login"){
+    {const handleBackButton = () => {
+     
+    preserveLocalStorage();
+  
+  }
 
-    // Clear all local storage
-    localStorage.clear();
-
-    // Re-add the keys to keep with their values
-    keysToKeep.forEach((key: string) => {
-      if (valuesToKeep[key] !== null) {
-        // Check if the key exists and has a value
-        localStorage.setItem(key, valuesToKeep[key]);
-      }
-    })}
+    
         window.addEventListener("popstate", handleBackButton);
 
     return () => {
       window.removeEventListener("popstate", handleBackButton);
     };
+  }}
   }, []);
   const { role } = router.query;
   return (
