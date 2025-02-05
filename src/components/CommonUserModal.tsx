@@ -535,15 +535,18 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                       apiBody["firstName"]
                     ),
                     "{Password}": apiBody["username"],
+
                   };
                 } else {
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(apiBody["firstName"]),
                     "{UserName}": formData?.email,
                     "{Password}": password,
+                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
                   };
                 }
               }
+              
               const sendTo = {
                 //  receipients: [userEmail],
                 receipients:
