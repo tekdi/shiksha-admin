@@ -535,6 +535,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                       apiBody["firstName"]
                     ),
                     "{Password}": apiBody["username"],
+                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
 
                   };
                 } else {
