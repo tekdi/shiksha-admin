@@ -524,7 +524,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               if (typeof window !== "undefined" && window.localStorage) {
                 creatorName = getUserFullName();
               }
-              let replacements: { [key: string]: any };
+              let replacements: { [key: string]: string };
               replacements = {};
               if (creatorName) {
                 if (userType === FormContextType.STUDENT) {
@@ -542,11 +542,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     "{FirstName}": firstLetterInUpperCase(apiBody["firstName"]),
                     "{UserName}": formData?.email,
                     "{Password}": password,
-                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_MIDDLEWARE_URL,
+                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
                   };
                 }
               }
-              alert(process.env.NEXT_PUBLIC_TEACHER_MIDDLEWARE_URL)
               
               const sendTo = {
                 //  receipients: [userEmail],
