@@ -251,3 +251,9 @@ export interface DynamicFormProps {
   isEdit?:boolean
 }
 
+export interface BMGData {
+  board: { boardName: string };
+  medium: { mediumName: string };
+  grade: { gradeName: string };
+}
+

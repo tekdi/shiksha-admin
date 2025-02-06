@@ -265,12 +265,11 @@ export const getOptionsByCategory = (frameworks: any, categoryCode: string) => {
     (category: any) => category.code === categoryCode
   );
 
-  // Return the mapped terms
-  return category.terms.map((term: any) => ({
+  return category?.terms?.map((term: any) => ({
     name: term.name,
     code: term.code,
     associations: term.associations,
-  }));
+  })) || [];
 };
 
 interface Association {

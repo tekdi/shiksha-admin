@@ -36,7 +36,7 @@ import {
   GenerateSchemaAndUiSchema,
   customFields,
 } from "@/components/GeneratedSchemas";
-import { CustomField } from "@/utils/Interfaces";
+import { BMGData, CustomField } from "@/utils/Interfaces";
 import { showToastMessage } from "@/components/Toastify";
 import AddNewCenters from "@/components/AddNewCenters";
 import { getCenterTableData } from "@/data/tableColumns";
@@ -52,6 +52,8 @@ import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
 import axios from 'axios';
+import FrameworkCategories from "@/components/FrameworkCategories";
+
 type cohortFilterDetails = {
   type?: string;
   status?: any;
@@ -132,6 +134,10 @@ const Center: React.FC = () => {
   const isArchived = useSubmittedButtonStore(
     (state: any) => state.isArchived
   );
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [hiddenField, setHiddenField]= useState<string[]>([]);
+  const [updatedBMG, setUpdatedBMG] = useState<BMGData | null>(null);
+  
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
@@ -183,7 +189,7 @@ const Center: React.FC = () => {
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
     setSubmittedButtonStatus(false);
-
+    
   };
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -253,21 +259,21 @@ const Center: React.FC = () => {
       //     JSON.stringify(data.sort),
       //   ],
       //   queryFn: () => getCohortList(data),
-      // }); 
+      // });
       if (resp) {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
 
-        const cohortIds = result.map((item: any) => item.cohortId); // Extract cohort IDs
+        const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
         // Fetch member counts for each cohort
         const memberCounts = await Promise.all(
           cohortIds?.map(async (cohortId: string) => {
             return await getCohortMemberlistData(cohortId);
           })
-        ); 
+        );
         const finalResult = result
-          ?.filter((cohort: any) => cohort.type === "COHORT")
+        ?.filter((cohort: any) => cohort.type === "COHORT")
         finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
@@ -295,7 +301,7 @@ const Center: React.FC = () => {
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
-        }); 
+        });
         setCohortData(resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
@@ -325,6 +331,15 @@ const Center: React.FC = () => {
       console.error("Error fetching user list:", error);
     }
   };
+
+  function removeHiddenFields(formResponse: any) {
+    setHiddenField(formResponse?.fields.filter((field: any) => field.isHidden))
+    // console.log('hiddenFields', formResponse?.fields?.filter((field: any) => field.isHidden))
+    return {
+      ...formResponse,
+      fields: formResponse?.fields.filter((field: any) => !field.isHidden),
+    };
+  }
 
   const getFormData = async () => {
     try {
@@ -386,7 +401,8 @@ const Center: React.FC = () => {
     try {
       //const response = await getFormRead("cohorts", "cohort");
       if (cohortFormData) {
-        const { schema, uiSchema } = GenerateSchemaAndUiSchema(cohortFormData, t);
+        const updatedFormData = removeHiddenFields(cohortFormData);
+        const { schema, uiSchema } = GenerateSchemaAndUiSchema(updatedFormData,t);
 
         setSchema(schema);
         setUiSchema(uiSchema);
@@ -435,7 +451,7 @@ const Center: React.FC = () => {
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
+  
   };
 
   const PagesSelector = () => (
@@ -512,7 +528,7 @@ const Center: React.FC = () => {
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     if (newQuery.center) {
       delete newQuery.center;
     }
@@ -526,7 +542,7 @@ const Center: React.FC = () => {
 
     setSelectedDistrictStore(selected[0])
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
-      if (filters.status) { 
+      if (filters.status) {
         setFilters({
           states: selectedStateCode,
           status: filters.status,
@@ -592,7 +608,7 @@ const Center: React.FC = () => {
     }
     if (newQuery.block) {
       delete newQuery.block;
-    } 
+    }
 
 
 
@@ -739,10 +755,10 @@ const Center: React.FC = () => {
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
+  
   };
 
-  const handleSearch = (keyword: string) => { 
+  const handleSearch = (keyword: string) => {
     setPageOffset(Numbers.ZERO);
     setPageCount(Numbers.ONE);
     if (keyword?.length > 3) {
@@ -786,15 +802,15 @@ const Center: React.FC = () => {
       setIsArchived(true);
 
     } else if (newValue === Status.ALL_LABEL) {
-
+      
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: "",
       }));
       setIsArchived(false);
-
+    
     } else {
-
+      
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
@@ -900,16 +916,34 @@ const Center: React.FC = () => {
   ) => {
     setLoading(true);
     const formData = data?.formData;
+    const updatedFormData = {
+      ...formData,
+      board: updatedBMG?.board?.boardName || formData?.board,  
+      medium: updatedBMG?.medium?.mediumName || formData?.medium,
+      grade: updatedBMG?.grade?.gradeName || formData?.grade,
+    };
+    // console.log('formData', formData)
     const schemaProperties = schema.properties;
+    // console.log('schemaProperties', schemaProperties);
 
+    const mergeFormDataIntoSchema = (schemaProperties: any, fields: any[]) => {
+      const updatedSchema = { ...schemaProperties };
+      fields.forEach((field) => {
+        updatedSchema[field.name] = { ...field };
+      });
+        return updatedSchema;
+      };
+    
+    if(schemaProperties && hiddenField){ 
+    const updatedSchemaProperties = mergeFormDataIntoSchema(schemaProperties, hiddenField);
+    // console.log('updatedSchemaProperties',updatedSchemaProperties);
+    
     const apiBody: any = {
       customFields: [],
     };
-    Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
-      const fieldSchema = schemaProperties[fieldKey];
+    Object.entries(updatedFormData).forEach(([fieldKey, fieldValue]) => {
+      const fieldSchema = updatedSchemaProperties[fieldKey];
       const fieldId = fieldSchema?.fieldId;
-
-       
 
       if (fieldId === null || fieldId === "null") {
         if (typeof fieldValue !== "object") {
@@ -966,7 +1000,7 @@ const Center: React.FC = () => {
         const cleanedUrl = windowUrl.replace(/^\//, '');
         const env = cleanedUrl.split("/")[0];
 
-
+        
         const telemetryInteract = {
           context: {
             env: env,
@@ -991,8 +1025,8 @@ const Center: React.FC = () => {
           showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
         }
       }
-      else
-        showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
+      else 
+      showToastMessage(t("CENTERS.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);
@@ -1001,6 +1035,7 @@ const Center: React.FC = () => {
       setIsEditForm(false);
     }
   };
+};
 
   const handleAddUserClick = () => {
     const windowUrl = window.location.pathname;
@@ -1060,7 +1095,7 @@ const Center: React.FC = () => {
                   blocks: selectedBlockCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
-
+                
                 })
               }
             }
@@ -1074,7 +1109,7 @@ const Center: React.FC = () => {
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode]);
 
-
+  
   const handleMemberClick = async (
     type: "active" | "archived",
     count: number,
@@ -1084,7 +1119,7 @@ const Center: React.FC = () => {
       console.error("No members available for this cohort.");
       return;
     }
- 
+
 
     try {
       const data = {
@@ -1135,17 +1170,17 @@ const Center: React.FC = () => {
         );
       }
 
-
+     
       if (urlData) {
         // router.push(
         //   `learners?state=${urlData.stateCode}&district=${urlData.districtCode}&block=${urlData.blockCode}&status=${urlData.type}`
         // );
       }
- 
+    
     } catch (error) {
       console.log("Error handling member click:", error);
     }
-  }; 
+  };
 
   // props to send in header
   const userProps = {
@@ -1179,6 +1214,22 @@ const Center: React.FC = () => {
     setSelectedBlock: setSelectedBlock
   };
 
+  const handleDependentFieldsChange = () => {
+    setShowForm(true);
+    };
+
+    useEffect(() => {
+      const storedData = localStorage.getItem('BMGSData');
+      if (storedData) {
+        try {
+          const updatedForm = JSON.parse(storedData);
+          setUpdatedBMG(updatedForm)
+        } catch (error) {
+          console.error('Error parsing BMGSData from localStorage:', error);
+        }
+      }
+    }, [showForm]); 
+    
   return (
     <>
       <ProtectedRoute>
@@ -1186,13 +1237,13 @@ const Center: React.FC = () => {
           message={
             selectedRowData?.totalActiveMembers > 0
               ? t("CENTERS.YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS", {
-                activeMembers: `${selectedRowData?.totalActiveMembers}`,
-              })
+                  activeMembers: `${selectedRowData?.totalActiveMembers}`,
+                })
               : t("CENTERS.SURE_DELETE_CENTER") +
-              transformLabel(inputName) +
-              " " +
-              t("CENTERS.CENTER") +
-              "?"
+                transformLabel(inputName) +
+                " " +
+                t("CENTERS.CENTER") +
+                "?"
           }
           handleAction={handleActionForDelete}
           buttonNames={
@@ -1260,65 +1311,77 @@ const Center: React.FC = () => {
             modalTitle={t("COMMON.UPDATE_CENTER")}
           >
             {schema && uiSchema && (
-              <DynamicForm
-                schema={schema}
-                uiSchema={uiSchema}
-                onSubmit={handleUpdateAction}
-                onChange={handleChangeForm}
-                onError={handleError}
-                widgets={{}}
-                showErrorList={true}
-                customFields={customFields}
-                formData={editFormData}
-                id="update-center-form"
-              >
-                <Box
-                  style={{
-                    display: "flex",
-                    justifyContent: "right", // Centers the button horizontally
-                    marginTop: "20px", // Adjust margin as needed
-                  }}
-                  gap={2}
+              <>
+                <FrameworkCategories
+                  initialBoard={transformLabel(editFormData?.board)}
+                  initialMedium={transformLabel(editFormData?.medium)}
+                  initialGrade={transformLabel(editFormData?.grade)}
+                  customFormData={editFormData}
+                  onFieldsChange={handleDependentFieldsChange}
+                  setShowForm={setShowForm}
+                />
+
+              {showForm &&
+                <DynamicForm
+                  schema={schema}
+                  uiSchema={uiSchema}
+                  onSubmit={handleUpdateAction}
+                  onChange={handleChangeForm}
+                  onError={handleError}
+                  widgets={{}}
+                  showErrorList={true}
+                  customFields={customFields}
+                  formData={editFormData}
+                  id="update-center-form"
                 >
-                  <Button
-                    variant="outlined"
-                    type="submit"
-                    form="update-center-form" // Add this line
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      width: "auto",
-                      height: "40px",
-                      marginLeft: "10px",
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "right", // Centers the button horizontally
+                      marginTop: "20px", // Adjust margin as needed
                     }}
-                    onClick={onCloseEditForm}
+                    gap={2}
                   >
-                    {t("COMMON.CANCEL")}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    form="update-center-form" // Add this line
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      width: "auto",
-                      height: "40px",
-                      marginLeft: "10px",
-                    }}
-                    onClick={() => {
-                      setSubmittedButtonStatus(true);
-                    }}
-                  >
-                    {t("COMMON.UPDATE")}
-                  </Button>
-                </Box>
-              </DynamicForm>
+                    <Button
+                      variant="outlined"
+                      type="submit"
+                      form="update-center-form" // Add this line
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        width: "auto",
+                        height: "40px",
+                        marginLeft: "10px",
+                      }}
+                      onClick={onCloseEditForm}
+                    >
+                      {t("COMMON.CANCEL")}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      form="update-center-form" // Add this line
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        width: "auto",
+                        height: "40px",
+                        marginLeft: "10px",
+                      }}
+                      onClick={() => {
+                        setSubmittedButtonStatus(true);
+                      }}
+                    >
+                      {t("COMMON.UPDATE")}
+                    </Button>
+                  </Box>
+                </DynamicForm>
+              }
+              </>
             )}
           </SimpleModal>
         </HeaderComponent>
       </ProtectedRoute>
-
     </>
   );
 };
