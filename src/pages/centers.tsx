@@ -134,8 +134,8 @@ const Center: React.FC = () => {
   const isArchived = useSubmittedButtonStore(
     (state: any) => state.isArchived
   );
-  const [showForm, setShowForm] = useState(false);
-  const [hiddenField, setHiddenField]= useState([]);
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [hiddenField, setHiddenField]= useState<string[]>([]);
   const [updatedBMG, setUpdatedBMG] = useState<BMGData | null>(null);
   
   const setIsArchived = useSubmittedButtonStore(
@@ -264,7 +264,7 @@ const Center: React.FC = () => {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
 
-        const cohortIds = result.map((item: any) => item.cohortId); // Extract cohort IDs
+        const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
         // Fetch member counts for each cohort
         const memberCounts = await Promise.all(
@@ -337,7 +337,7 @@ const Center: React.FC = () => {
     // console.log('hiddenFields', formResponse?.fields?.filter((field: any) => field.isHidden))
     return {
       ...formResponse,
-      fields: formResponse.fields.filter((field: any) => !field.isHidden),
+      fields: formResponse?.fields.filter((field: any) => !field.isHidden),
     };
   }
 
