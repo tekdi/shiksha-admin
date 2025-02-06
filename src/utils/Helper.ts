@@ -265,12 +265,11 @@ export const getOptionsByCategory = (frameworks: any, categoryCode: string) => {
     (category: any) => category.code === categoryCode
   );
 
-  // Return the mapped terms
-  return category.terms.map((term: any) => ({
+  return category?.terms?.map((term: any) => ({
     name: term.name,
     code: term.code,
     associations: term.associations,
-  }));
+  })) || [];
 };
 
 interface Association {
@@ -538,4 +537,30 @@ export const calculateAge = (dob: any) => {
     return age - 1;
   }
   return age;
+};
+export const preserveLocalStorage = () => {
+  const keysToKeep = [
+    'preferredLanguage',
+    'mui-mode',
+    'mui-color-scheme-dark',
+    'mui-color-scheme-light',
+    'hasSeenTutorial',
+  ];
+
+  const valuesToKeep: { [key: string]: any } = {};
+
+  keysToKeep.forEach((key: string) => {
+    const value = localStorage.getItem(key);
+    if (value !== null) {
+      valuesToKeep[key] = value;
+    }
+  });
+
+  localStorage.clear();
+
+  keysToKeep.forEach((key: string) => {
+    if (valuesToKeep[key] !== undefined) {
+      localStorage.setItem(key, valuesToKeep[key]);
+    }
+  });
 };

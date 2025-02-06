@@ -5,6 +5,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Loader from "@/components/Loader";
 import { useTranslation } from "next-i18next";
 import { useQueryClient } from '@tanstack/react-query';
+import { preserveLocalStorage } from "@/utils/Helper";
 
 function Logout() {
   const router = useRouter();
@@ -25,29 +26,7 @@ function Logout() {
     userLogout();
     if (typeof window !== 'undefined' && window.localStorage) {
       // Specify the keys you want to keep
-      const keysToKeep = [
-        'preferredLanguage',
-        'mui-mode',
-        'mui-color-scheme-dark',
-        'mui-color-scheme-light',
-        'hasSeenTutorial',
-      ];
-      // Retrieve the values of the keys to keep
-      const valuesToKeep: { [key: string]: any } = {};
-      keysToKeep.forEach((key: string) => {
-        valuesToKeep[key] = localStorage.getItem(key);
-      });
-
-      // Clear all local storage
-      localStorage.clear();
-
-      // Re-add the keys to keep with their values
-      keysToKeep.forEach((key: string) => {
-        if (valuesToKeep[key] !== null) {
-          // Check if the key exists and has a value
-          localStorage.setItem(key, valuesToKeep[key]);
-        }
-      });
+     preserveLocalStorage();
     }
     queryClient.clear();
    router.replace("/login");

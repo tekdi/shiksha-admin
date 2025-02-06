@@ -25,7 +25,7 @@ import {
   IconButton,
   Typography,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useTranslation } from "next-i18next";
@@ -221,7 +221,6 @@ const ImportCsv = () => {
 
           try {
             const response = await uploadCoursePlanner(csvFile, metaData);
-            
 
             if (
               response.result.solutionData.message ===
@@ -237,9 +236,9 @@ const ImportCsv = () => {
               setSelectedFile(null);
               showToastMessage(t("COURSE_PLANNER.COURSE_NOT_CREATED"), "error");
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error("Upload failed:", error);
-            showToastMessage(t("COURSE_PLANNER.UPLOAD_FAILED"), "error");
+            showToastMessage(error?.response?.data?.params?.errmsg, "error");
           }
         },
         error: (error: any) => {

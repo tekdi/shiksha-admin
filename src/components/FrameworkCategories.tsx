@@ -13,12 +13,18 @@ import { FRAMEWORK_ID } from '../../app.config';
 import { findCommonAssociations, getAssociationsByName, getOptionsByCategory } from '@/utils/Helper';
 
 interface FrameworkCategoriesProps {
+  initialBoard?: string;  
+  initialMedium?: string;  
+  initialGrade?: string;
   customFormData: any;
   onFieldsChange: (fields: any) => void;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
+  initialBoard,  
+  initialMedium,
+  initialGrade,
   customFormData,
   onFieldsChange,
   setShowForm,
@@ -28,10 +34,10 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
   const [mediumOptions, setMediumOptions] = useState<any[]>([]);
   const [mediumAssociations, setMediumAssociations] = useState<any[]>([]);
-  const [selectedBoard, setSelectedBoard] = useState<string>('');
-  const [selectedMedium, setSelectedMedium] = useState<string>('');
+  const [selectedBoard, setSelectedBoard] = useState<string>(initialBoard || '');
+  const [selectedMedium, setSelectedMedium] = useState<string>(initialMedium || '');
   const [gradeOptions, setGradeOptions] = useState<any[]>([]);
-  const [selectedGrade, setSelectedGrade] = useState<string>('');
+  const [selectedGrade, setSelectedGrade] = useState<string>(initialGrade || '');
   const [selectedState, setSelectedState] = useState<string>('');
 
   const res = customFormData;
@@ -90,7 +96,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
           const userBoards = boardValue.split(",");
           if (getBoards && userBoards) {
             const normalizedUserBoards = userBoards.map((board: string) => board.toLowerCase());       
-            const matchingBoards = getBoards.filter((board: { name: string; }) =>
+            const matchingBoards = getBoards?.filter((board: { name: string; }) =>
               normalizedUserBoards.includes(board.name.toLowerCase())
             );
             setBoardOptions(matchingBoards);
@@ -105,6 +111,98 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
     handleBMGS();
   }, []);
 
+  useEffect(() => {
+    if (selectedBoard && Object.keys(framework).length) {
+      const getMedium = getOptionsByCategory(framework, 'medium');
+      const boardAssociations = getAssociationsByName(boardOptions, selectedBoard);
+      setBoardAssociations(boardAssociations);
+  
+      const commonMediumInState = getMedium?.map((item1: { name: any; code: any; associations: any; }) => ({
+        name: item1.name,
+        code: item1.code,
+        associations: item1.associations,
+      }));
+  
+      const commonMediumInBoard = getMedium
+        ?.filter((item1: { code: string; }) =>
+          boardAssociations?.some(
+            (item2) => item2.code === item1.code && item2.category === 'medium'
+          )
+        )
+        ?.map((item1: { name: any; code: any; associations: any; }) => ({
+          name: item1.name,
+          code: item1.code,
+          associations: item1.associations,
+        }));
+  
+      const commonMediumData = findCommonAssociations(
+        commonMediumInState,
+        commonMediumInBoard
+      );
+  
+      setMediumOptions(commonMediumData);
+  
+      if (initialMedium && commonMediumData?.some((m) => m?.name === initialMedium)) {
+        setSelectedMedium(initialMedium);
+        setShowForm(false);
+      }
+    }
+  }, [selectedBoard, framework]);
+  
+  useEffect(() => {
+    if (selectedMedium && Object.keys(framework).length) {
+      const getGrades = getOptionsByCategory(framework, 'gradeLevel');
+      const mediumAssociations = getAssociationsByName(mediumOptions, selectedMedium);
+      setMediumAssociations(mediumAssociations);
+  
+      const commonGradeInState = getGrades?.map((item1: { name: any; code: any; associations: any; }) => ({
+        name: item1.name,
+        code: item1.code,
+        associations: item1.associations,
+      }));
+  
+      const commonGradeInBoard = getGrades
+        ?.filter((item1: { code: any; }) =>
+          boardAssociations?.some(
+            (item2) => item2.code === item1.code && item2.category === 'gradeLevel'
+          )
+        )
+        ?.map((item1: { name: any; code: any; associations: any; }) => ({
+          name: item1.name,
+          code: item1.code,
+          associations: item1.associations,
+        }));
+  
+      const commonGradeInMedium = getGrades
+        ?.filter((item1: { code: string; }) =>
+          mediumAssociations?.some(
+            (item2) => item2.code === item1.code && item2.category === 'gradeLevel'
+          )
+        )
+        ?.map((item1: { name: any; code: any; associations: any; }) => ({
+          name: item1.name,
+          code: item1.code,
+          associations: item1.associations,
+        }));
+  
+      const commonGradeInStateBoard = findCommonAssociations(
+        commonGradeInState,
+        commonGradeInBoard
+      );
+      const overAllCommonGrade = findCommonAssociations(
+        commonGradeInStateBoard,
+        commonGradeInMedium
+      );
+  
+      setGradeOptions(overAllCommonGrade);
+  
+      if (initialGrade && overAllCommonGrade?.some((g) => g?.name === initialGrade)) {
+        setSelectedGrade(initialGrade);
+        setShowForm(true);
+      }
+    }
+  }, [selectedMedium, framework]);
+  
   const handleBoardChange = (event: SelectChangeEvent<string>) => {
     const board = event.target.value;
     setSelectedBoard(board); 
@@ -120,20 +218,20 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
       setBoardAssociations(boardAssociations);
 
       const commonMediumInState = getMedium
-        .map((item1: { name: string; code: string; associations: any[] }) => ({
+        ?.map((item1: { name: string; code: string; associations: any[] }) => ({
           name: item1.name,
           code: item1.code,
           associations: item1.associations,
         }));
 
       const commonMediumInBoard = getMedium
-        .filter((item1: { code: any }) =>
-          boardAssociations.some(
+        ?.filter((item1: { code: any }) =>
+          boardAssociations?.some(
             (item2: { code: any; category: string }) =>
               item2.code === item1.code && item2.category === 'medium'
           )
         )
-        .map((item1: { name: any; code: any; associations: any }) => ({
+        ?.map((item1: { name: any; code: any; associations: any }) => ({
           name: item1.name,
           code: item1.code,
           associations: item1.associations,
@@ -159,33 +257,33 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
       setMediumAssociations(mediumAssociations);
 
       const commonGradeInState = getGrades
-        .map((item1: { name: string; code: string; associations: any[] }) => ({
+        ?.map((item1: { name: string; code: string; associations: any[] }) => ({
           name: item1.name,
           code: item1.code,
           associations: item1.associations,
         }));
 
       const commonGradeInBoard = getGrades
-        .filter((item1: { code: any }) =>
-          boardAssociations.some(
+        ?.filter((item1: { code: any }) =>
+          boardAssociations?.some(
             (item2: { code: any; category: string }) =>
               item2.code === item1.code && item2.category === 'gradeLevel'
           )
         )
-        .map((item1: { name: any; code: any; associations: any }) => ({
+        ?.map((item1: { name: any; code: any; associations: any }) => ({
           name: item1.name,
           code: item1.code,
           associations: item1.associations,
         }));
 
       const commonGradeInMedium = getGrades
-        .filter((item1: { code: any }) =>
-          mediumAssociations.some(
+        ?.filter((item1: { code: any }) =>
+          mediumAssociations?.some(
             (item2: { code: any; category: string }) =>
               item2.code === item1.code && item2.category === 'gradeLevel'
           )
         )
-        .map((item1: { name: any; code: any; associations: any }) => ({
+        ?.map((item1: { name: any; code: any; associations: any }) => ({
           name: item1.name,
           code: item1.code,
           associations: item1.associations,
