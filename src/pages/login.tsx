@@ -38,6 +38,7 @@ import { AcademicYear } from "@/utils/Interfaces";
 import { getAcademicYear } from "@/services/AcademicYearService";
 import useStore from '@/store/store';
 import loginImg from '../../public/images/login-image.jpg';
+import TenantService from "@/services/TenantService";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -286,6 +287,7 @@ const LoginPage = () => {
               localStorage.setItem("name", userResponse?.name);
               localStorage.setItem(Storage.USER_DATA, JSON.stringify(userResponse));
               const tenantId = userResponse?.tenantData?.[0]?.tenantId;
+              TenantService.setTenantId(tenantId);
               localStorage.setItem("tenantId", tenantId);
             }
 

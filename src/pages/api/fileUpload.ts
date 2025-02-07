@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       // Forward the request to the middleware API
-      const response = await fetch(`${process.env.WORKSPACE_BASE_URL}` + `${req.url}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}` + `${req.url}`, {
         method: 'POST',
         headers: headers, // Use the new Headers object
         body, // Pass the request body as a Buffer
