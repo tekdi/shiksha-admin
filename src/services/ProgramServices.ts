@@ -9,7 +9,7 @@ export interface programListData {
 }
 export const getProgramList = async (
 ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/read`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/tenant/read`;
   try {
     const response = await get(apiUrl);
     return response?.data;
@@ -21,7 +21,7 @@ export const getProgramList = async (
 
 export const createProgram = async (programData: FormData,   t?:any
   ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/create`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/tenant/create`;
   try {
     const headers = {
       'Content-Type': 'multipart/form-data' 
@@ -43,7 +43,7 @@ export const createProgram = async (programData: FormData,   t?:any
 };
 
 export const updateProgram = async (programData: any, tenantId: string): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/tenant/update/${tenantId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/tenant/update/${tenantId}`;
   try {
    
     const response = await patch(apiUrl, programData, 
