@@ -27,7 +27,7 @@ export const getFormRead = async (
       }
 
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/form/read`,
+        `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/form/read`,
         {
           params: {
             context,
@@ -61,7 +61,7 @@ export const getFormRead = async (
 
 
 export const createUser = async (userData: any): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/create`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/account/create`;
   try {
     const response = await post(apiUrl, userData);
     return response?.data?.result;
@@ -75,7 +75,7 @@ export const updateUser = async (
   userId: string,
   { userData, customFields }: UserDetailParam
 ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/update/${userId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/user/update/${userId}`;
   try {
     const response = await patch(apiUrl, { userData, customFields });
     return response;
