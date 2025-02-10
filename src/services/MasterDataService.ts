@@ -33,7 +33,7 @@ export const getStateBlockDistrictList = async ({
   optionName,
   sort,
 }: StateListParam): Promise<any> => {
-  const apiUrl = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/options/read`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/fields/options/read`;
 
   const requestBody: StateListParam = {
     fieldName,
@@ -71,7 +71,7 @@ export const getDistrictsForState = async ({
   optionName?: string;
   sort?: [string, string];
 }): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/options/read`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/fields/options/read`;
 
   const requestBody: {
     limit?: number;
@@ -120,7 +120,7 @@ export const getBlocksForDistricts = async ({
   optionName?: string;
   sort?: [string, string];
 }): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/options/read`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/fields/options/read`;
 
   const requestBody: {
     limit?: number;
@@ -159,7 +159,7 @@ export const getCenterList = async ({
   limit,
   offset,
 }: CenterListParam): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/search`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/cohort/search`;
   try {
     const response = await post(apiUrl, {
       filters,
@@ -177,7 +177,7 @@ export const deleteOption = async (
   type: "states" | "districts" | "blocks",
   option: string
 ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/options/delete/${type}?option=${option}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/fields/options/delete/${type}?option=${option}`;
   const requestBody = {};
   const requestHeaders = {};
 
@@ -199,7 +199,7 @@ export const createOrUpdateOption = async (
   t?:any
   // stateId?: string
 ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/update/${fieldId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/fields/update/${fieldId}`;
 
   
 
@@ -225,7 +225,7 @@ export const updateCohort = async (
   cohortId: string,
   cohortDetails: any
 ): Promise<any> => {
-  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/update/${cohortId}`;
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/interface/v1/cohort/update/${cohortId}`;
 
   try {
     const response = await put(apiUrl, cohortDetails);
