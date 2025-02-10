@@ -26,7 +26,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FRAMEWORK_ID } from "../../app.config";
+import useTenantConfig from "@/hooks/useTenantConfig";
 
 // Define Card interface
 interface Card {
@@ -49,6 +49,7 @@ interface FoundCard {
 }
 
 const SubjectDetails = () => {
+  const tenantConfig = useTenantConfig();
   const router = useRouter();
   const { t } = useTranslation();
   const { boardDetails, boardName } = router.query as {
@@ -228,7 +229,7 @@ const SubjectDetails = () => {
       const board = boardName;
 
       if (medium && grade && board) {
-        const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
+        const url = `/api/framework/v1/read/${tenantConfig?.COLLECTION_FRAMEWORK}`;
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
 
@@ -325,10 +326,11 @@ const SubjectDetails = () => {
   }, [selectedgrade]);
 
   useEffect(() => {
-    if (selectedtype) {
+    if (!tenantConfig) return;
+    if (selectedtype && tenantConfig?.COLLECTION_FRAMEWORK) {
       fetchAndSetSubData(selectedtype);
     }
-  }, [selectedtype]);
+  }, [tenantConfig, selectedtype]);
 
   if (loading) {
     return <Loader showBackdrop={true} loadingText="Loading" />;

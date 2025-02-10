@@ -8,10 +8,8 @@ import {
   SelectChangeEvent,
   Box,
 } from '@mui/material';
-
-import { FRAMEWORK_ID } from '../../app.config';
 import { findCommonAssociations, getAssociationsByName, getOptionsByCategory } from '@/utils/Helper';
-
+import useTenantConfig from "@/hooks/useTenantConfig";
 interface FrameworkCategoriesProps {
   initialBoard?: string;  
   initialMedium?: string;  
@@ -29,6 +27,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
   onFieldsChange,
   setShowForm,
 }) => {
+  const tenantConfig = useTenantConfig();
   const [framework, setFramework] = useState<any[]>([]);
   const [boardOptions, setBoardOptions] = useState<any[]>([]);
   const [boardAssociations, setBoardAssociations] = useState<any[]>([]);
@@ -78,10 +77,11 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
   }, [selectedBoard, selectedMedium, selectedGrade]);
 
   useEffect(() => {
+    if (!tenantConfig?.COLLECTION_FRAMEWORK) return;
     const handleBMGS = async () => {
       // const userStateName = localStorage.getItem('stateName');
       try {
-        const url = `/api/framework/v1/read/${FRAMEWORK_ID}`;
+        const url = `/api/framework/v1/read/${tenantConfig?.COLLECTION_FRAMEWORK}`;
         const boardData = await fetch(url).then((res) => res.json());
         const frameworks = boardData?.result?.framework;
         setFramework(frameworks);
@@ -109,7 +109,7 @@ const FrameworkCategories: React.FC<FrameworkCategoriesProps> = ({
       }
     };
     handleBMGS();
-  }, []);
+  }, [tenantConfig]);
 
   useEffect(() => {
     if (selectedBoard && Object.keys(framework).length) {

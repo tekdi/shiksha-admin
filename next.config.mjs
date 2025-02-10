@@ -92,6 +92,10 @@ const nextConfig = {
         destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/content/:path*`, // Forward other /action/asset requests to proxy.js
       },
       {
+        source: "/api/tenantConfig/:path*",
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/tenantConfig/:path*`
+      },
+      {
         source: "/action/:path*", // Match any other routes starting with /action/
         destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/:path*`, // Forward them to proxy.js
       },
