@@ -22,15 +22,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
     const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-    const columns: ITableProps["columns"] = [
-        { key: 'actionId', title: 'ID', dataType: DataType.Number, width: 50, style: { textAlign: 'center' }, },
-        { key: 'title', title: 'TITLE', dataType: DataType.String, width: 180, style: { textAlign: 'center' }, },
-        { key: 'key', title: 'KEY', dataType: DataType.String, width: 130, style: { textAlign: 'center' }, },
-        { key: 'context', title: 'CONTEXT', dataType: DataType.String, width: 60, style: { textAlign: 'center' }, },
-        { key: 'status', title: 'STATUS', dataType: DataType.String, width: 80, style: { textAlign: 'center' }, },
-        { key: 'templateType', title: 'TYPE', dataType: DataType.Object, width: 100, style: { textAlign: 'center' }, },
-        { key: 'actions', title: 'ACTIONS', dataType: DataType.String, width: 60, style: { textAlign: 'center' }, }
-    ];
+    
 
     const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
     const [templateToBeDeleted, setTemplateToBeDeleted] = useState<any>(null);
