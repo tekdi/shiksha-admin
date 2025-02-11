@@ -532,7 +532,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     "{FirstName}": firstLetterInUpperCase(creatorName),
                     "{UserName}": apiBody["username"],
                     "{LearnerName}": firstLetterInUpperCase(
-                      apiBody["firstName"]
+                      apiBody["firstName"]  
                     ),
                     "{Password}": apiBody["username"],
                     "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
