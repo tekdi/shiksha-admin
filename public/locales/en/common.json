@@ -201,7 +201,9 @@
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
     "SCTA": "State Content Team Associate",
 
-    "WORKSPACE": "Workspace"
+    "WORKSPACE": "Workspace",
+    "MENTOR":"Mentor",
+    "MENTOR_LEADER":"Mentor Leader"
   },
   "FACILITATORS": {
     "STATE": "State",

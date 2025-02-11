@@ -105,6 +105,8 @@ export const generateUsernameAndPassword = (
     [FormContextType.STUDENT]: "SC",
     [FormContextType.TEAM_LEADER]: "TLSC",
     [FormContextType.CONTENT_CREATOR]: "SCTA", //prefix is not fix till now assume this SCTA(State Content Team Associate)
+    [FormContextType.MENTOR]: "ME", //Add temporary prefix as mentor have no email field
+
   };
 
   if (!(role in rolePrefixes)) {

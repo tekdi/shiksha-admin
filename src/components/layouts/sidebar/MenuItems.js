@@ -37,6 +37,14 @@ const Menuitems = [
         title: "SIDEBAR.LEARNERS",
         href: ["/learners"],
       },
+      {
+        title: "SIDEBAR.MENTOR",
+        href: ["/mentors"],
+      },
+      // {
+      //   title: "SIDEBAR.MENTOR_LEADER",
+      //   href: ["/mentor-leaders"],
+      // },
     ],
   },
   {

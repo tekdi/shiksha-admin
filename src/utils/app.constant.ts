@@ -28,7 +28,8 @@ export enum Role {
   TEACHER = "Teacher",
   TEAM_LEADER = "Team Leader",
   TEAM_LEADERS = "Team Leaders",
-
+  MENTOR="Mentor",
+  MENTOR_LEADER="Mentor Leader",
   ADMIN = "State Admin",
   CENTRAL_ADMIN = "Central Admin",
   LEARNERS = "Learners",
@@ -79,7 +80,9 @@ export enum FormContextType {
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
   COHORT = "cohort",
-  CONTENT_CREATOR = "CONTENT CREATOR"
+  CONTENT_CREATOR = "CONTENT CREATOR",
+  MENTOR="MENTOR",
+  MENTOR_LEADER=" MENTOR LEADER"
 }
 
 export enum RoleId {
