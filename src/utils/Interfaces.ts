@@ -257,3 +257,33 @@ export interface BMGData {
   grade: { gradeName: string };
 }
 
+
+interface INotificationTemplateDetails {
+  language: string;
+  subject: string;
+  body: string;
+  createdOn: string;
+  image: string | null;
+  link: string | null;
+}
+
+interface INotificationTemplates {
+  email?: INotificationTemplateDetails;
+  sms?: INotificationTemplateDetails;
+  push?: INotificationTemplateDetails;
+}
+
+export interface INotificationTemplate {
+  actionId: number;
+  title: string;
+  createdOn: string;
+  updatedOn: string;
+  key: string;
+  status: "unpublished" | "published";
+  createdBy: string;
+  updatedBy: string;
+  context: string;
+  replacementTags: string[] | null;
+  templates: INotificationTemplates;
+  templateType: ("email" | "sms" | "push")[];
+}
