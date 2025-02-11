@@ -2,7 +2,7 @@ import { get, post, patch } from "./RestClient";
 import { createUserParam } from "../utils/Interfaces";
 import axios from "axios";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
-import { TENANT_ID } from "../../app.config";
+import TenantService from "./TenantService";
 
 export interface UserDetailParam {
   userData?: object;
@@ -23,7 +23,7 @@ export const getFormRead = async (
       };
 
       if (contextType !== "TENANT") {
-        headers.tenantId = TENANT_ID;
+        headers.tenantId = TenantService.getTenantId();
       }
 
       const response = await axios.get(

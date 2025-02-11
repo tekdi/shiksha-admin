@@ -43,12 +43,12 @@ import { RJSFSchema } from "@rjsf/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import React, { useEffect, useState } from "react";
-import { TENANT_ID } from "../../app.config";
 import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import CustomModal from "./CustomModal";
 import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
+import TenantService from "@/services/TenantService";
 
 interface UserModalProps {
   open: boolean;
@@ -312,7 +312,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         
         tenantCohortRoleMapping: [
           {
-            tenantId: TENANT_ID,
+            tenantId: TenantService.getTenantId(),
             roleId:
               userType === FormContextType.STUDENT
                 ? RoleId.STUDENT

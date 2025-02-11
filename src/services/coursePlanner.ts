@@ -6,25 +6,10 @@ import {
 } from "@/utils/Interfaces";
 import { get, post } from "./RestClient";
 import axios from "axios";
-import { FRAMEWORK_ID } from "../../app.config";
 import { URL_CONFIG } from "@/utils/url.config";
 
-export const getChannelDetails = async (): Promise<any> => {
-  const apiUrl: string = `/api/framework/v1/read/${FRAMEWORK_ID}`;
-
-  try {
-    const response = await axios.get(apiUrl);
-    return response?.data;
-  } catch (error) {
-    console.error("Error in getting Channel Details", error);
-    return error;
-  }
-};
-
-export const getFrameworkDetails = async (
-  frameworkId: string
-): Promise<any> => {
-  const apiUrl: string = `/api/framework/v1/read/${frameworkId}?categories=gradeLevel,medium,class,subject`;
+export const getFrameworkDetails = async (frameworkId: any): Promise<any> => {
+  const apiUrl: string = `/api/framework/v1/read/${frameworkId}`;
 
   try {
     const response = await axios.get(apiUrl);

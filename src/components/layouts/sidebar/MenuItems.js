@@ -7,7 +7,6 @@ import programIcon from "../../../../public/images/programIcon.svg";
 import coursePlannerIcon from "../../../../public/images/event_available.svg";
 import { store } from "@/store/store";
 import { Role } from "@/utils/app.constant";
-const ENV = process.env.NEXT_PUBLIC_SHOW_WORKSPACE;
 const isActiveYear = store.getState().isActiveYearSelected;
 
 const Menuitems = [
@@ -66,7 +65,7 @@ const Menuitems = [
         },
       ]
     : []),
-  ...(isActiveYear && ENV === "true"
+  ...(isActiveYear
     ? [
         {
           title: "SIDEBAR.WORKSPACE",

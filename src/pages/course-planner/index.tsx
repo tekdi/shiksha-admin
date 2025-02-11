@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 import { useRouter } from "next/router";
-import { getChannelDetails } from "@/services/coursePlanner";
+import { getFrameworkDetails } from "@/services/coursePlanner";
 import { getOptionsByCategory } from "@/utils/Helper";
 import coursePlannerStore from "@/store/coursePlannerStore";
 import taxonomyStore from "@/store/tanonomyStore";
@@ -21,8 +21,10 @@ import { telemetryFactory } from "@/utils/telemetry";
 import { TelemetryEventType } from "@/utils/app.constant";
 import useStore from "@/store/store";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import useTenantConfig from "@/hooks/useTenantConfig";
 
 const Foundation = () => {
+  const tenantConfig = useTenantConfig();
   const router = useRouter();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -48,6 +50,7 @@ const Foundation = () => {
   const setBoard = taxonomyStore((state) => state.setBoard);
 
   useEffect(() => {
+    if (!tenantConfig?.COLLECTION_FRAMEWORK) return;
     const fetchStateName = () => {
       if (typeof window !== "undefined") {
         const stateName = localStorage.getItem("stateName");
@@ -60,7 +63,7 @@ const Foundation = () => {
 
     const fetchFrameworkDetails = async (stateName?: string) => {
       try {
-        const data = await getChannelDetails();
+        const data = await getFrameworkDetails(tenantConfig?.COLLECTION_FRAMEWORK);
         const framework = data?.result?.framework;
         setFramework(framework);
         setFramedata(framework);
@@ -182,7 +185,7 @@ const Foundation = () => {
     if (!isActiveYear) {
       router.push("/course-planner");
     }
-  }, [userStateName, isActiveYear]);
+  }, [tenantConfig, userStateName, isActiveYear]);
 
   const handleCardClick = (board: any) => {
     // Navigate to the state details page

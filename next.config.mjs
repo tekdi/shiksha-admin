@@ -49,19 +49,19 @@ const nextConfig = {
       },
       {
         source: "/assets/pdfjs/:path*", // Match any URL starting with /workspace/content/assets/
-        destination: `${process.env.WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/play/content/assets/pdfjs/:path*", // Match any URL starting with /workspace/content/assets/
-        destination: `${process.env.WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/assets/pdfjs/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/play/content/assets/:path*", // Match any URL starting with /workspace/content/assets/
-        destination: `${process.env.WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/action/content/v3/upload/url/:identifier*", // Match content upload with 'url' in the path
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/v3/upload/url/:identifier*`, // Forward to proxy route with path as query param
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/content/v3/upload/url/:identifier*`, // Forward to proxy route with path as query param
       },
       {
         source: "/action/content/v3/upload/:identifier*", // Match content upload routes
@@ -69,11 +69,11 @@ const nextConfig = {
       },
       {
         source: "/workspace/content/assets/:path*", // Match any URL starting with /workspace/content/assets/
-        destination: `${process.env.WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/assets/:path*`, // Serve the assets from the public folder
       },
       {
         source: "/action/asset/:path*", // Match other /action/asset routes
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/asset/:path*`, // Forward other /action/asset requests to proxy.js
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/asset/:path*`, // Forward other /action/asset requests to proxy.js
       },
       {
         source: "/action/v1/telemetry",
@@ -89,15 +89,19 @@ const nextConfig = {
       },
       {
         source: "/action/content/:path*", // Match other /action/asset routes
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/content/:path*`, // Forward other /action/asset requests to proxy.js
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/content/:path*`, // Forward other /action/asset requests to proxy.js
+      },
+      {
+        source: "/api/tenantConfig/:path*",
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/tenantConfig/:path*`
       },
       {
         source: "/action/:path*", // Match any other routes starting with /action/
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/action/:path*`, // Forward them to proxy.js
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/action/:path*`, // Forward them to proxy.js
       },
       {
         source: "/api/:path*", // Match /api/ routes
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/proxy?path=/api/:path*`, // Forward them to proxy.js
       },
       {
         source: "/assets/public/:path*", // Match any URL starting with /assets/public/
@@ -117,11 +121,11 @@ const nextConfig = {
       },
       {
         source: '/sunbird-plugins/renderer/:path*',
-        destination: `${process.env.WORKSPACE_BASE_URL}/sunbird-plugins/renderer/:path*`
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/sunbird-plugins/renderer/:path*`
       },
       {
         source: "/app/telemetry", // Match telemetry route
-        destination: `${process.env.WORKSPACE_BASE_URL}/api/telemetry`, // Redirect to telemetry proxy
+        destination: `${process.env.NEXT_PUBLIC_WORKSPACE_BASE_URL}/api/telemetry`, // Redirect to telemetry proxy
       },
     ];
   },
