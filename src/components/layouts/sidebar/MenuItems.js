@@ -57,6 +57,11 @@ const Menuitems = [
       },
     ],
   },
+  {
+    title: "SIDEBAR.MANAGE_NOTIFICATION",
+    icon: centerIcon,
+    href: ["/notification-templates"],
+  },
   ...(isActiveYear
     ? [
         {

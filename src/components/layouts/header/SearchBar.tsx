@@ -12,16 +12,17 @@ interface SearchBarProps {
   placeholder: string;
 }
 
-const SearchBox = styled(Paper)<{ isSmallScreen: boolean }>(({ theme, isSmallScreen }) => ({
+const SearchBox = styled(Paper, {
+  shouldForwardProp: (prop) => prop !== "isSmallScreen",
+})<{ isSmallScreen: boolean }>(({ theme, isSmallScreen }) => ({
   padding: "2px 4px",
   display: "flex",
   alignItems: "center",
   width: "100%",
   maxWidth: isSmallScreen ? "100%" : 900,
   borderRadius: "8px",
-  backgroundColor:"#F0F0F0",
+  backgroundColor: "#F0F0F0",
 }));
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   marginLeft: theme.spacing(1),
   flex: 1,
