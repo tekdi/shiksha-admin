@@ -49,6 +49,7 @@ import AreaSelection from "./AreaSelection";
 import CustomModal from "./CustomModal";
 import SendCredentialModal from "./SendCredentialModal";
 import { showToastMessage } from "./Toastify";
+import { getStateBlockDistrictList } from "@/services/MasterDataService";
 
 interface UserModalProps {
   open: boolean;
@@ -76,15 +77,21 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   userNameFieldValue,
 }) => {
   const [schema, setSchema] = React.useState<any>();
+
   const [uiSchema, setUiSchema] = React.useState<any>();
+  const [formState, setFormState] = React.useState<any>();
+  const [formDistrict, setFormDistrict] = React.useState<any>("");
+  const [formBlock, setFormBlock] = React.useState<any>();
+  const [formVillage, setFormVillage] = React.useState<any>();
+
   const [openModal, setOpenModal] = React.useState(false);
   const [adminInfo, setAdminInfo] = React.useState<any>();
   const [createTLAlertModal, setcreateTLAlertModal] = useState(false);
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
-    const [originalSchema, setOriginalSchema] = React.useState(schema);
-   const messageKeyMap: Record<string, string> = {
+  const [originalSchema, setOriginalSchema] = React.useState(schema);
+  const messageKeyMap: Record<string, string> = {
     [FormContextType.STUDENT]: "LEARNERS.LEARNER_CREATED_SUCCESSFULLY",
     [FormContextType.TEACHER]: "FACILITATORS.FACILITATOR_CREATED_SUCCESSFULLY",
     [FormContextType.TEAM_LEADER]:
@@ -127,15 +134,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEACHER),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
-  // const {
-  //   data: mentorFormData,
-  //   isLoading: mentorFormDataLoading,
-  //   error: mentorFormDataErrror,
-  // } = useQuery<any>({
-  //   queryKey: ["mentorFormData"],
-  //   queryFn: () => getFormRead(FormContext.USERS, FormContextType.MENTOR),
-  //   staleTime: apiCatchingDuration.GETREADFORM,
-  // });
+  
+
+  //const [mentorFormData, setMentorFormData] = React.useState<any>(m);
+
   const {
     data: studentFormData,
     isLoading: studentFormDataLoading,
@@ -152,6 +154,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   } = useQuery<any>({
     queryKey: ["teamLeaderFormData"],
     queryFn: () => getFormRead(FormContext.USERS, FormContextType.TEAM_LEADER),
+    staleTime: apiCatchingDuration.GETREADFORM,
+  });
+  const {
+    data: mentorFormData,
+    isLoading: mentorFormDataLoading,
+    error: mentorFormDataErrror,
+  } = useQuery<any>({
+    queryKey: ["mentorFormData"],
+    queryFn: () => getFormRead(FormContext.USERS, FormContextType.MENTOR),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
   const { i18n } = useTranslation();
@@ -220,18 +231,118 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     assignedTeamLeaderNames,
     selectedStateCohortId,
   } = useLocationState(open, onClose, roleType);
-
+  
+  const [mentorData, setMentorData] = React.useState<any>(mentorFormData);
+  const updateFieldOptions = (fieldName: string, options: any[]) => {
+    setMentorData((prevData: any) => {
+      const updatedFields = prevData.fields.map((field: any) =>
+        field.name === fieldName ? { ...field, options } : field
+      );
+  
+      if (JSON.stringify(updatedFields) === JSON.stringify(prevData.fields)) {
+        return prevData;
+      }
+  
+      return {
+        ...prevData,
+        fields: updatedFields,
+      };
+    });
+  };
   useEffect(() => {
-    const getAddUserFormData = () => {
+    const getAddUserFormData = async () => {
       try {
         // const response: FormData = await getFormRead(
         //   FormContext.USERS,
         //   userType
         // );
-        // const response2= await getFormRead(
+        // const mentorFormData= await getFormRead(
         //   FormContext.USERS,
-        //   userType
-        // );
+        //   FormContextType.MENTOR
+        //  );
+
+        const admin = localStorage.getItem("adminInfo");
+        if (admin) {
+          const stateField = JSON.parse(admin).customFields.find(
+            (field: any) => field.label === "STATE"
+          );
+          console.log("stateField", stateField);
+
+          const stateOptions = [
+            { value: stateField?.code, label: stateField?.value },
+          ];
+          const districtObject = {
+            controllingfieldfk: stateField?.code,
+            fieldName: "district",
+          };
+
+          const districtResult =
+            await getStateBlockDistrictList(districtObject);
+
+          //   const districtResult = await formatedDistricts();
+          console.log("districtResult", districtResult);
+          // Modify the original fields array
+          const districtField = mentorFormData.fields.find(
+            (field: any) => field.name === "district"
+          );
+          const blockField = mentorFormData.fields.find(
+            (field: any) => field.name === "block"
+          );
+          const villageField = mentorFormData.fields.find(
+            (field: any) => field.name === "villages"
+          );
+          const StateField = mentorFormData.fields.find(
+            (field: any) => field.name === "state"
+          );
+          if (StateField) {
+            StateField.options = stateOptions;
+            updateFieldOptions("state", stateOptions);
+          }
+          if (districtResult && districtField) {
+            const districtOptions = districtResult?.result?.values.map(
+              (item: any) => ({
+                value: item.value.toString(),
+                label: item.label,
+              })
+            );
+            setFormDistrict(districtResult?.result?.values[0].value);
+            districtField.options = districtOptions;
+            updateFieldOptions("district", districtOptions);
+          }
+          if (blockField) {
+            const blockObject = {
+              controllingfieldfk: districtResult?.result?.values[0].value,
+              fieldName: "block",
+            };
+            const blockResult = await getStateBlockDistrictList(blockObject);
+            const blockOptions = blockResult?.result?.values.map(
+              (item: any) => ({
+                value: item.value.toString(),
+                label: item.label,
+              })
+            );
+            blockField.options = blockOptions;
+            updateFieldOptions("block", blockOptions);
+
+            if (villageField) {
+              const villageObject = {
+                controllingfieldfk: blockResult?.result?.values[0].value,
+                fieldName: "village",
+              };
+              const villageResult =
+                await getStateBlockDistrictList(villageObject);
+              const villageOptions = villageResult?.result?.values.map(
+                (item: any) => ({
+                  value: item.value.toString(),
+                  label: item.label,
+                })
+              );
+              villageField.options = villageOptions;
+              updateFieldOptions("villages", villageOptions);
+            }
+          }
+        }
+        // console.log(fields);
         const response: FormData =
           userType === FormContextType.TEACHER
             ? teacherFormData
@@ -239,7 +350,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               ? studentFormData
               : userType === FormContextType.CONTENT_CREATOR
                 ? contentCreatorFormData
-                : teamLeaderFormData;
+                : userType === FormContextType.MENTOR
+                  ? mentorData
+                  : teamLeaderFormData;
 
         if (response) {
           if (userType === FormContextType.TEACHER) {
@@ -280,6 +393,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     studentFormData,
     teamLeaderFormData,
     contentCreatorFormData,
+    mentorData,
     i18n.language,
   ]);
   const { getNotification } = useNotification();
@@ -308,8 +422,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       const apiBody: any = {
         username:
           userType === FormContextType.STUDENT ? username : formData.email,
-        password:userType === FormContextType.STUDENT ? username : password,
-        
+        password: userType === FormContextType.STUDENT ? username : password,
+
         tenantCohortRoleMapping: [
           {
             tenantId: TENANT_ID,
@@ -377,7 +491,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           fieldId: stateFieldId,
           value: [selectedStateCode],
         });
-      } else if (!isEditModal) {
+      } else if (
+        !isEditModal &&
+        selectedBlockCode &&
+        selectedDistrictCode &&
+        selectedStateCode
+      ) {
         apiBody.customFields.push({
           fieldId: blockFieldId,
           value: [selectedBlockCode],
@@ -535,19 +654,20 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                       apiBody["firstName"]
                     ),
                     "{Password}": apiBody["username"],
-                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
-
+                    "{appUrl}":
+                      (process.env.NEXT_PUBLIC_TEACHER_APP_URL as string) || "",
                   };
                 } else {
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(apiBody["firstName"]),
                     "{UserName}": formData?.email,
                     "{Password}": password,
-                    "{appUrl}": process.env.NEXT_PUBLIC_TEACHER_APP_URL as string || '',
+                    "{appUrl}":
+                      (process.env.NEXT_PUBLIC_TEACHER_APP_URL as string) || "",
                   };
                 }
               }
-              
+
               const sendTo = {
                 //  receipients: [userEmail],
                 receipients:
@@ -615,85 +735,96 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
   };
 
-  const handleChange = (event: IChangeEvent<any>) => {
+  const handleChange = async (event: IChangeEvent<any>) => {
     const { formData } = event;
-    if(userType === FormContextType.STUDENT)
-    {
-    let newFormData = { ...formData };
-   
-    const dob = event.formData.dob;
-    const dependencyKeys = Object.keys(schema?.dependencies)[0];
-    const dependentFields = schema?.dependencies?.dob?.properties;
-    // if (!isUsernameEdited) {
-    //   if (event.formData.firstName && event.formData.lastName) {
-    //     event.formData.username =
-    //       event.formData.firstName + event.formData.lastName;
-    //   } else {
-    //     event.formData.username = null;
-    //   }
-    // }
-    if (dob) {
-      const age = calculateAge(new Date(dob));
-      if (age >= 18) {
-        const newSchema = { ...schema };
-        const dependentFieldKeys = Object.keys(dependentFields);
-        newSchema.properties = Object.keys(newSchema.properties)
-          .filter((key) => !dependentFieldKeys.includes(key))
-          .reduce((acc: any, key) => {
-            acc[key] = newSchema.properties[key];
-            return acc;
-          }, {});
-        // Remove dependent fields from the formData
-        const updatedFormData = { ...event.formData };
-        dependentFieldKeys.forEach((key) => {
-          delete updatedFormData[key];
-        });
-        newSchema.dependencies = Object.keys(newSchema.dependencies)
-          .filter((key) => !dependentFieldKeys.includes(key))
-          .reduce((acc: any, key) => {
-            // Remove dependentFieldKeys from properties within dependencies
-            const filteredProperties = Object.keys(
-              newSchema.dependencies[key].properties
-            )
-              .filter((propKey) => !dependentFieldKeys.includes(propKey))
-              .reduce((nestedAcc: any, propKey) => {
-                nestedAcc[propKey] =
-                  newSchema.dependencies[key].properties[propKey];
-                return nestedAcc;
-              }, {});
-            // Add filtered dependencies back
-            acc[key] = { properties: filteredProperties };
-            return acc;
-          }, {});
-        setSchema(newSchema);
-        // setFormData(updatedFormData);
-        // setCustomFormData(updatedFormData);
-        newFormData = { ...updatedFormData };
-      } else if (age < 18) {
-        const newSchema = { ...originalSchema };
-        // Add dependent fields and reorder them in the schema
-        const reorderedFields: any[] = [];
-        const filteredFields = Object.keys(newSchema.properties).filter(
-          (key) => !Object.keys(dependentFields).includes(key)
-        );
-        filteredFields.forEach((key) => {
-          reorderedFields.push(key);
-          if (key === dependencyKeys) {
-            reorderedFields.push(...Object.keys(dependentFields));
-          }
-        });
-        newSchema.properties = reorderedFields.reduce((acc: any, key: any) => {
-          acc[key] = dependentFields[key] || newSchema.properties[key];
-          return acc;
-        }, {});
-        setSchema(newSchema);
-        // setFormData({ ...event.formData });
-        // setCustomFormData({ ...event.formData });
-        newFormData = { ...event.formData };
+    
+
+    if (formDistrict !== event.formData.district && formDistrict !== "") {
+      
+    }
+    if (formBlock !== event.formData.block) {
+    }
+    if (formVillage !== event.formData.village) {
+    }
+
+    if (userType === FormContextType.STUDENT) {
+      let newFormData = { ...formData };
+
+      const dob = event.formData.dob;
+      const dependencyKeys = Object.keys(schema?.dependencies)[0];
+      const dependentFields = schema?.dependencies?.dob?.properties;
+      // if (!isUsernameEdited) {
+      //   if (event.formData.firstName && event.formData.lastName) {
+      //     event.formData.username =
+      //       event.formData.firstName + event.formData.lastName;
+      //   } else {
+      //     event.formData.username = null;
+      //   }
+      // }
+      if (dob) {
+        const age = calculateAge(new Date(dob));
+        if (age >= 18) {
+          const newSchema = { ...schema };
+          const dependentFieldKeys = Object.keys(dependentFields);
+          newSchema.properties = Object.keys(newSchema.properties)
+            .filter((key) => !dependentFieldKeys.includes(key))
+            .reduce((acc: any, key) => {
+              acc[key] = newSchema.properties[key];
+              return acc;
+            }, {});
+          // Remove dependent fields from the formData
+          const updatedFormData = { ...event.formData };
+          dependentFieldKeys.forEach((key) => {
+            delete updatedFormData[key];
+          });
+          newSchema.dependencies = Object.keys(newSchema.dependencies)
+            .filter((key) => !dependentFieldKeys.includes(key))
+            .reduce((acc: any, key) => {
+              // Remove dependentFieldKeys from properties within dependencies
+              const filteredProperties = Object.keys(
+                newSchema.dependencies[key].properties
+              )
+                .filter((propKey) => !dependentFieldKeys.includes(propKey))
+                .reduce((nestedAcc: any, propKey) => {
+                  nestedAcc[propKey] =
+                    newSchema.dependencies[key].properties[propKey];
+                  return nestedAcc;
+                }, {});
+              // Add filtered dependencies back
+              acc[key] = { properties: filteredProperties };
+              return acc;
+            }, {});
+          setSchema(newSchema);
+          // setFormData(updatedFormData);
+          // setCustomFormData(updatedFormData);
+          newFormData = { ...updatedFormData };
+        } else if (age < 18) {
+          const newSchema = { ...originalSchema };
+          // Add dependent fields and reorder them in the schema
+          const reorderedFields: any[] = [];
+          const filteredFields = Object.keys(newSchema.properties).filter(
+            (key) => !Object.keys(dependentFields).includes(key)
+          );
+          filteredFields.forEach((key) => {
+            reorderedFields.push(key);
+            if (key === dependencyKeys) {
+              reorderedFields.push(...Object.keys(dependentFields));
+            }
+          });
+          newSchema.properties = reorderedFields.reduce(
+            (acc: any, key: any) => {
+              acc[key] = dependentFields[key] || newSchema.properties[key];
+              return acc;
+            },
+            {}
+          );
+          setSchema(newSchema);
+          // setFormData({ ...event.formData });
+          // setCustomFormData({ ...event.formData });
+          newFormData = { ...event.formData };
+        }
       }
     }
-   
-  }
     if (!isEditModal) {
       const { firstName, lastName, username } = formData;
       if (firstName && lastName) {
@@ -746,6 +877,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       setFormValue({});
     }
   }, [open]);
+  useEffect(() => {
+    setMentorData(mentorFormData);
+  }, [mentorFormData]);
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCheckedConfirmation(event.target.checked);
   };

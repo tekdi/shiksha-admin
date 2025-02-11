@@ -258,6 +258,16 @@ const UserTable: React.FC<UserTableProps> = ({
     staleTime: apiCatchingDuration.GETREADFORM,
     enabled: false,
   });
+  const {
+    data: mentorFormData,
+    isLoading: mentorFormDataLoading,
+    error: mentorFormDataErrror,
+  } = useQuery<any[]>({
+    queryKey: ["mentorFormData"],
+    queryFn: () => Promise.resolve([]),
+    staleTime: apiCatchingDuration.GETREADFORM,
+    enabled: false,
+  });
   const handleOpenAddLearnerModal = () => {
     setOpenAddLearnerModal(true);
   };
@@ -775,6 +785,10 @@ const UserTable: React.FC<UserTableProps> = ({
         formFields = await getFormRead("USERS", Role.CONTENT_CREATOR);
         setFormData(mapFields(contentCreatorFormData, response));
       }
+      else if(Role.MENTOR === role){
+        formFields = await getFormRead("USERS", Role.CONTENT_CREATOR);
+        setFormData(mapFields(mentorFormData, response));
+      }
       handleOpenAddLearnerModal();
 
     } catch (error) {
@@ -1075,10 +1089,12 @@ const UserTable: React.FC<UserTableProps> = ({
         console.log(error);
       }
     };
+    
     if (
       selectedBlockCode !== "" ||
       (selectedDistrictCode !== "" && selectedBlockCode === "") ||
-      (userType === Role.TEAM_LEADERS && selectedDistrictCode !== "")
+      (userType === Role.TEAM_LEADERS && selectedDistrictCode !== "") ||
+      (userType===Role.MENTOR)
     ) {
       fetchUserList();
     }
