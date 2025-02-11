@@ -9,6 +9,9 @@ import { showToastMessage } from '../Toastify';
 import ConfirmationModal from '../ConfirmationModal';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from "@mui/material";
+import { Theme } from "@mui/system";
+import { getNotificationTableData } from '@/data/tableColumns';
 
 interface TemplateTableProps {
     searchKey: string;
@@ -16,6 +19,9 @@ interface TemplateTableProps {
 }
 
 const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }) => {
+    const isMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("sm")
+  );
     const columns: ITableProps["columns"] = [
         { key: 'actionId', title: 'ID', dataType: DataType.Number, width: 50, style: { textAlign: 'center' }, },
         { key: 'title', title: 'TITLE', dataType: DataType.String, width: 180, style: { textAlign: 'center' }, },
@@ -84,7 +90,8 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
 
     return (
         <>
-            <KaTableComponent columns={columns} data={filteredTemplates} rowKeyField={'actionId'} extraActions={[]} paginationEnable={false} onEdit={onEdit} onDelete={onDelete} />
+            <KaTableComponent              columns={getNotificationTableData(t, isMobile)}
+ data={filteredTemplates} rowKeyField={'actionId'} extraActions={[]} paginationEnable={false} onEdit={onEdit} onDelete={onDelete} />
             {
                 confirmationModalOpen &&
                 <ConfirmationModal

@@ -8,18 +8,17 @@ interface ColumnConfig {
   width?: number;
   sortDirection?: SortDirection;
   isSortable?: boolean;
+  title?: string;
+  dataType?: DataType; // Added dataType field
+  style?:any
 }
 const isActiveYear = store.getState().isActiveYearSelected;
 
-const generateColumns = (
-  t: any,
-  configs: ColumnConfig[],
-  isMobile: boolean
-) => {
+const generateColumns = (t: any, configs: ColumnConfig[], isMobile: boolean) => {
   const newConfigs = configs.map((config) => ({
     key: config.key,
     title: t(config.titleKey).toUpperCase(),
-    dataType: DataType.String,
+    dataType: config.dataType || DataType.String, // Default to String if not provided
     sortDirection: config.sortDirection,
     width: isMobile && config.width ? config.width : config.width || undefined,
     isSortable: config.isSortable,
@@ -328,6 +327,24 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
     });
   }
   }
+
+  return generateColumns(t, configs, isMobile);
+};
+
+export const getNotificationTableData = (t: any, isMobile: boolean, isArchived?:any) => {
+
+
+  const configs: ColumnConfig[] = [
+
+    { key: 'actionId', titleKey: 'ID', dataType: DataType.Number, width: 50,  },
+    { key: 'title', titleKey: 'TITLE', dataType: DataType.String, width: 180,  },
+    { key: 'key', titleKey: 'KEY', dataType: DataType.String, width: 180,  },
+    { key: 'context', titleKey: 'CONTEXT',  width: 100, },
+    { key: 'status', titleKey: 'STATUS',  width: 100,  },
+    { key: 'templateType', titleKey: 'TYPE', dataType: DataType.Object, width: 100, style: { textAlign: 'center' } },
+    { key: 'actions', titleKey: 'ACTIONS',  width: 120 }
+  ];
+ 
 
   return generateColumns(t, configs, isMobile);
 };

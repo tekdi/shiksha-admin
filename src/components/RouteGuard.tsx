@@ -101,7 +101,7 @@ const RouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
     }
 
-    if (((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN) && (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) ||  (user.role === Role.ADMIN && router.pathname === "/programs")) {
+    if (((user.role === Role.ADMIN || user.role === Role.CENTRAL_ADMIN) && (allowedPaths.includes(router.pathname) || isWorkspaceContent || isCoursePlannerContent)) ||  (user.role === Role.ADMIN && (router.pathname === "/programs" ||router.pathname === "/notification-templates" ))) {
     
       if (router.pathname !== "/login" && router.pathname !== "/logout" && router.pathname !== "/edit-password") {
 
