@@ -29,8 +29,8 @@ export enum Role {
   TEAM_LEADER = "Team Leader",
   TEAM_LEADERS = "Team Leaders",
 
-  ADMIN = "State Admin",
-  CENTRAL_ADMIN = "Central Admin",
+  ADMIN = "Admin",
+  CENTRAL_ADMIN = "Admin",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
   CONTENT_CREATOR = "Content Creator",
@@ -73,13 +73,13 @@ export enum TelemetryEventType {
 
 }
 export enum FormContextType {
-  STUDENT = "STUDENT",
-  TEACHER = "TEACHER",
-  TEAM_LEADER = "TEAM LEADER",
+  STUDENT = "YOUTH",
+  TEACHER = "TRAINER",
+  TEAM_LEADER = "CENTER ADMIN",
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
-  COHORT = "cohort",
-  CONTENT_CREATOR = "CONTENT CREATOR"
+  COHORT = "center",
+  CONTENT_CREATOR = "TRAINER"
 }
 
 export enum RoleId {
@@ -116,7 +116,7 @@ export enum Numbers {
 }
 
 export enum CohortTypes {
-  COHORT = "COHORT",
+  COHORT = "CENTER",
   BLOCK = "BLOCK",
   DISTRICT = "DISTRICT",
   STATE="STATE"

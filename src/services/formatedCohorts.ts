@@ -100,7 +100,7 @@ export const formatedBlocks = async (districtCode: string) => {
     const cohortDetails = response?.results?.cohortDetails || [];
 
     const object = {
-      controllingfieldfk: districtCode,
+      // controllingfieldfk: districtCode,
       fieldName: "blocks",
     };
     const optionReadResponse = await getStateBlockDistrictList(object);

@@ -184,6 +184,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           : t("TEAM_LEADERS.EDIT_TEAM_LEADER");
   const theme = useTheme<any>();
   const {
+    country,
     states,
     districts,
     blocks,
@@ -198,8 +199,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     dynamicForm,
     selectedBlock,
     selectedBlockCode,
+    handleCountryChangeWrapper,
     handleStateChangeWrapper,
-    handleDistrictChangeWrapper,
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
     selectedCenterCode,
@@ -745,20 +746,20 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             }}
           >
             <AreaSelection
+              country={transformArray(country)}
               states={transformArray(states)}
               districts={transformArray(districts)}
               blocks={transformArray(blocks)}
               selectedState={selectedState}
               selectedDistrict={selectedDistrict}
               selectedBlock={selectedBlock}
+              handleCountryChangeWrapper={handleCountryChangeWrapper}
               handleStateChangeWrapper={handleStateChangeWrapper}
-              handleDistrictChangeWrapper={handleDistrictChangeWrapper}
               handleBlockChangeWrapper={handleBlockChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
               isCenterSelection={
-                userType !== "TEAM LEADER" &&
-                userType !== FormContextType.CONTENT_CREATOR
+                true
               }
               allCenters={allCenters}
               selectedCenter={selectedCenter}
@@ -766,6 +767,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               inModal={true}
               userType={userType}
               stateDefaultValue={stateDefaultValue}
+              isUserAdd={true}
             />
           </Box>
         )}

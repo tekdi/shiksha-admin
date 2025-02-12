@@ -16,10 +16,15 @@ const Menuitems = [
     icon: centerIcon,
     href: ["/centers"],
   },
+  // {
+  //   title: "PROGRAM_MANAGEMENT.PROGRAMS",
+  //   icon: programIcon,
+  //   href: ["/programs"],
+  // },
   {
-    title: "PROGRAM_MANAGEMENT.PROGRAMS",
+    title: "PROGRAM_MANAGEMENT.OPPORTUNITY",
     icon: programIcon,
-    href: ["/programs"],
+    href: ["/opportunity"],
   },
   {
     title: "SIDEBAR.MANAGE_USERS",
@@ -44,15 +49,15 @@ const Menuitems = [
     icon: masterIcon,
     subOptions: [
       {
-        title: "MASTER.STATE",
+        title: "MASTER.COUNTRY",
         href: ["/state"],
       },
       {
-        title: "MASTER.DISTRICTS",
+        title: "MASTER.STATE",
         href: ["/district"],
       },
       {
-        title: "MASTER.BLOCKS",
+        title: "MASTER.CITY",
         href: ["/block"],
       },
     ],
@@ -102,8 +107,7 @@ export const getFilteredMenuItems = () => {
       return Menuitems.filter(
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
-          item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "PROGRAM_MANAGEMENT.PROGRAMS"
+          item.title !== "SIDEBAR.WORKSPACE"
 
       );
     }
@@ -116,8 +120,7 @@ export const getFilteredMenuItems = () => {
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
           item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "SIDEBAR.CENTERS" &&
-          item.title !== "SIDEBAR.MANAGE_USERS"
+          item.title !== "SIDEBAR.CENTERS"
 
 
       );

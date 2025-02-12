@@ -191,9 +191,9 @@
     "MANAGE_USERS": "Manage Users",
     "COURSE_PLANNER": "Curriculum Planner",
     "CENTERS": "Centers",
-    "FACILITATORS": "Facilitators",
-    "LEARNERS": "Learners",
-    "TEAM_LEADERS": "Team Leaders",
+    "FACILITATORS": "Trainers",
+    "LEARNERS": "Youth",
+    "TEAM_LEADERS": "Center Admin",
     "CREATE_PLAN": "Create Plan",
     "VIEW_PLANS": "View Plans",
     "FOUNDATION_COURSE": "Foundation Course",
@@ -205,7 +205,8 @@
   },
   "FACILITATORS": {
     "STATE": "State",
-    "DISTRICT": "District",
+    "COUNTRY": "Country",
+    "CITY": "City",
     "BLOCK": "Block",
     "NEW_FACILITATOR": "New Facilitator",
     "SEARCHBAR_PLACEHOLDER": "Search Facilitators..",
@@ -280,6 +281,8 @@
     "SELECT_ALL_MESSSAGE": "Select Medium, Grade, and Type"
   },
   "MASTER": {
+    "COUNTRY": "Country",
+    "CITY":"City",
     "STATE": "States",
     "STATE_NAMES": "State Name",
     "SORT": "Sort",
@@ -508,7 +511,7 @@
     "CREATE_PROGRAM": "Create Program",
     "EDIT_PROGRAM": "Edit Program",
     "EDIT": "Edit",
-
+    "OPPORTUNITY":"Opportunity",
     "DELETE_PROGRAM": "Delete",
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",

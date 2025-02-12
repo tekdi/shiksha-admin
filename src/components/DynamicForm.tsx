@@ -28,6 +28,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   isProgramFields=false
 }) => {
   const { t } = useTranslation();
+  console.log("schema--------------",schema)
+  console.log("uiSchema--------------",uiSchema);
+  
   const [localFormData, setLocalFormData] = useState(formData ?? {});
   console.log("localFormData", localFormData?.dob);
 

@@ -207,7 +207,7 @@ const Center: React.FC = () => {
         setSelectedStateCode(object[0]?.value);
 
         setFilters({
-          type: "COHORT",
+          type: "CENTER",
           states: object[0]?.value,
           status: filters.status,
         });
@@ -267,7 +267,7 @@ const Center: React.FC = () => {
           })
         ); 
         const finalResult = result
-          ?.filter((cohort: any) => cohort.type === "COHORT")
+          ?.filter((cohort: any) => cohort.type === "CENTER")
         finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
@@ -390,6 +390,9 @@ const Center: React.FC = () => {
 
         setSchema(schema);
         setUiSchema(uiSchema);
+        console.log("Schema:-------", schema);
+        console.log("UiSchema:-------", uiSchema);
+        
       } else {
         console.log("Unexpected response format");
       }
@@ -400,9 +403,9 @@ const Center: React.FC = () => {
   };
 
   useEffect(() => {
-    if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
+    // if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
       fetchUserList();
-    }
+    // }
     getFormData();
   }, [pageOffset, pageLimit, sortBy, filters, filters.states, filters.status, createCenterStatus]);
 
@@ -496,7 +499,7 @@ const Center: React.FC = () => {
 
     if (selected[0] === "") {
       if (filters.status)
-        setFilters({ type: "COHORT", status: filters.status });
+        setFilters({ type: "CENTER", status: filters.status });
       // else setFilters({ role: role });
     } else {
       const stateCodes = code?.join(",");
