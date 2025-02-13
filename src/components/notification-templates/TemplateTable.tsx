@@ -89,7 +89,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
             {
                 confirmationModalOpen &&
                 <ConfirmationModal
-                    message={t("NOTIFICATION_TEMPLATE.DELETE_TEMPLATE_ALERT")}
+                    message={t("NOTIFICATION.DELETE_TEMPLATE_ALERT")}
                     handleAction={() => deleteTemplate(templateToBeDeleted?.actionId)}
                     buttonNames={{ primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL") }
                     }
