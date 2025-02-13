@@ -56,6 +56,11 @@ const Menuitems = [
       },
     ],
   },
+  {
+    title: "SIDEBAR.MANAGE_NOTIFICATION",
+    icon: centerIcon,
+    href: ["/notification-templates"],
+  },
   ...(isActiveYear
     ? [
         {
@@ -102,7 +107,9 @@ export const getFilteredMenuItems = () => {
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
           item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "PROGRAM_MANAGEMENT.PROGRAMS"
+          item.title !== "PROGRAM_MANAGEMENT.PROGRAMS" &&
+          item.title !== "SIDEBAR.MANAGE_NOTIFICATION"
+
 
       );
     }

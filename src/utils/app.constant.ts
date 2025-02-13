@@ -48,7 +48,8 @@ export enum Status {
   ALL_LABEL = "All",
   INACTIVE = "InActive",
   PUBLISHED="published",
-  DRAFT="draft"
+  DRAFT="draft",
+  UNPUBLISHED="Unpublished",
 }
 export enum SORT {
   ASCENDING = "asc",
@@ -100,6 +101,7 @@ export enum DataKey {
   NAME = "name",
   ACTIVE_MEMBER = "totalActiveMembers",
   ARCHIVED_MEMBERS = "totalArchivedMembers",
+  TEMPLATE_TYPE = "templateType",
 }
 
 export enum DateFormat {
@@ -147,8 +149,9 @@ export const QueryKeys = {
   MY_COHORTS: "myCohorts",
   GET_COHORT_LIST: "getcohortList",
   GET_STATE_COHORT_LIST: "getStateCohortList",
-
   GET_COHORT_MEMBER_LIST: "getCohortMemberList",
+  GET_ALL_NOTIFICATION_TEMPLATE: "getAllNotificationTemplate",
+  GET_NOTIFICATION_TEMPLATE_BY_KEY: "getNotificationTemplateByKey",
 }
 
 
@@ -214,3 +217,5 @@ export const ContentCardsTypes: FileType = {
 export enum fieldKeys {
   GENDER="gender"
 }
+
+export const DEFAULT_TEMPLATE_CONTEXT = ['USER', 'OTP', 'CMS']

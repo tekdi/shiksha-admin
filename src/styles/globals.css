@@ -18,9 +18,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: Poppins, sans-serif !important;
-background: #fff !important;
-overflow-y: auto !important;
-height: 100vh !important;
+  background: #fff !important;
+  overflow-y: auto !important;
+  height: 100vh !important;
 }
 
 @layer utilities {
@@ -152,7 +152,7 @@ h3,
 h4,
 h5,
 h6,
-p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-content{
+p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root .menu-list-content {
   font-family: Poppins, sans-serif !important;
 }
 
@@ -179,66 +179,72 @@ p .css-1ydl6z0-MuiTypography-root .css-b7ovn5-MuiTypography-root  .menu-list-con
   font-weight: 400 !important;
 }
 
-.create-card{
+.create-card {
   min-height: 118px !important;
 }
 
-.img-fluid{    width: 100%;
-    height: auto;
-    max-width: 300px;
+.img-fluid {
+  width: 100%;
+  height: auto;
+  max-width: 300px;
 }
 
-lib-editor .h-100vh{
+lib-editor .h-100vh {
   overflow-y: auto !important;
 }
+
 .swiper-button-next:after {
   font-size: 16px !important;
-  color: #1E1B16!important;
+  color: #1E1B16 !important;
   background-color: #EBE1D4 !important;
-  border-radius: 20% !important; 
-  width: 20px!important; 
+  border-radius: 20% !important;
+  width: 20px !important;
   height: 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25)!important; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25) !important;
 }
 
 .swiper-button-next:hover:after {
-  background-color: #FDBE16 !important; /* Replace with your desired hover color */
+  background-color: #FDBE16 !important;
+  /* Replace with your desired hover color */
 }
 
 
 .swiper-button-prev:after {
   font-size: 16px !important;
-  color: #1E1B16 !important; 
+  color: #1E1B16 !important;
   background-color: #EBE1D4 !important;
-  border-radius: 20% !important; 
-  width: 20px !important; 
+  border-radius: 20% !important;
+  width: 20px !important;
   height: 20px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25) !important; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25) !important;
 }
+
 .swiper-button-prev:hover:after {
-  background-color: #FDBE16 !important; /* Replace with your desired hover color */
+  background-color: #FDBE16 !important;
+  /* Replace with your desired hover color */
 }
+
 .swiper-pagination-bullet {
-  background-color: #CDC5BD !important; 
-  width: 40px!important; 
-  height: 4px!important;
-  border-radius: 8px!important;
-  opacity: 4 !important; 
+  background-color: #CDC5BD !important;
+  width: 40px !important;
+  height: 4px !important;
+  border-radius: 8px !important;
+  opacity: 4 !important;
 }
 
 /* Highlight the active dot */
 .swiper-pagination-bullet-active {
-  background-color: #FFC107 !important; 
-  width: 40px !important; 
+  background-color: #FFC107 !important;
+  width: 40px !important;
   height: 4px !important;
   border-radius: 8px !important;
-  opacity: 9 !important; 
+  opacity: 9 !important;
 }
 
 /* .swiper-container {
@@ -248,9 +254,84 @@ lib-editor .h-100vh{
 
 
 .swiper-pagination {
-  position: static !important; /* Reset default absolute positioning */
-  
-  text-align: center; 
+  position: static !important;
+  /* Reset default absolute positioning */
+
+  text-align: center;
 }
 
 
+/* iPhone-like frame */
+.mobile-frame {
+  width: 380px;
+  height: 732px;
+  background: #000;
+  border-radius: 55px;
+  position: relative;
+  overflow: hidden;
+  border: 8px solid #333;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dynamic Island (Notch) */
+.notch {
+  width: 120px;
+  height: 40px;
+  background: #222;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 20px;
+}
+
+/* Inner screen */
+
+.content-main {
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  margin-top: 20px;
+}
+.screen {
+  flex: 1;
+  background: #fff;
+  border-radius: 45px;
+  overflow-y: auto;
+  padding: 0px;
+
+  /* Custom Scrollbar */
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #909b90 #f0f0f0;
+  /* Thumb & Track colors */
+}
+
+/* For WebKit browsers (Chrome, Edge, Safari) */
+.screen::-webkit-scrollbar {
+  width: 8px;
+  /* Width of the scrollbar */
+}
+
+.screen::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  /* Light gray background */
+  border-radius: 10px;
+}
+
+.screen::-webkit-scrollbar-thumb {
+  background: #4caf50;
+  /* Green scrollbar */
+  border-radius: 10px;
+  transition: background 0.3s;
+  border-radius: 10px;
+}
+
+.screen::-webkit-scrollbar-thumb:hover {
+  background: #388e3c;
+  /* Darker green on hover */
+}

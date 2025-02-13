@@ -16,7 +16,7 @@ interface CustomModalProps {
   handleClose: () => void;
   title?: string;
   subtitle?: string;
-  primaryBtnText: string;
+  primaryBtnText?: string;
   secondaryBtnText?: string;
   primaryBtnClick?: () => void;
   secondaryBtnClick?: () => void;
@@ -24,7 +24,7 @@ interface CustomModalProps {
   backdropClose?: boolean;
   primaryBtnDisabled?: boolean;
   children: React.ReactNode;
-  width?:string
+  width?: string
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -97,14 +97,17 @@ const CustomModal: React.FC<CustomModalProps> = ({
               {secondaryBtnText}
             </Button>
           )}
-          <Button
-            // fullWidth
-            onClick={primaryBtnClick}
-            variant="contained"
-            disabled={primaryBtnDisabled}
-          >
-            {primaryBtnText}
-          </Button>
+          {
+            primaryBtnText &&
+            <Button
+              // fullWidth
+              onClick={primaryBtnClick}
+              variant="contained"
+              disabled={primaryBtnDisabled}
+            >
+              {primaryBtnText}
+            </Button>
+          }
         </Box>
       </Box>
     </Modal>
