@@ -21,6 +21,7 @@
     "@aws-sdk/s3-request-presigner": "^3.726.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "^3.10.0",
     "@module-federation/nextjs-mf": "^8.5.5",
     "@module-federation/utilities": "3.0.11",
     "@mui/icons-material": "^5.15.15",
@@ -49,10 +50,12 @@
     "react-csv-reader": "^4.0.0",
     "react-dom": "^18",
     "react-ga4": "^2.1.0",
+    "react-hook-form": "^7.54.2",
     "react-i18next": "^14.1.2",
     "react-toastify": "^10.0.5",
     "sharp": "^0.33.4",
     "swiper": "^11.2.0",
+    "yup": "^1.6.1",
     "zustand": "^4.5.4"
   },
   "devDependencies": {

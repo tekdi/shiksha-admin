@@ -17,6 +17,7 @@ import { useTranslation } from "next-i18next";
 import ActionIcon from "./ActionIcon";
 import UserNameCell from "./UserNameCell";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import TemplateTypeChip from "./notification-templates/TemplateTypeChip";
 
 interface KaTableComponentProps {
   columns: ITableProps["columns"];
@@ -30,7 +31,7 @@ interface KaTableComponentProps {
   onEdit?: any;
   reassignCohort?: any;
   onChange?: any;
-  extraActions: {
+  extraActions?: {
     name: string;
     onClick: (rowData: any) => void;
     icon: React.ElementType;
@@ -41,6 +42,7 @@ interface KaTableComponentProps {
   pagination?: boolean;
   reassignType?: string;
   handleMemberClick?: any;
+  rowKeyField?: string
 }
 
 const KaTableComponent: React.FC<KaTableComponentProps> = ({
@@ -58,6 +60,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
   pagination = true,
   reassignType,
   handleMemberClick,
+  rowKeyField
 }) => {
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
   const { t, i18n } = useTranslation();
@@ -75,7 +78,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
   const tableProps: ITableProps = {
     columns,
     data,
-    rowKeyField: "id",
+    rowKeyField: rowKeyField || "id",
     sortingMode: SortingMode.Single,
     ...(pagination && {
       paging: {
@@ -224,10 +227,11 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                 }
 
                 if (props.column.key === DataKey.STATUS) {
-                  if (props.rowData?.status === Status.ARCHIVED) {
+                  if (props.rowData?.status === Status.ARCHIVED || props.rowData?.status?.toLowerCase() === Status.UNPUBLISHED.toLocaleLowerCase()) {
                     return (
                       <Chip
-                        label={t("COMMON.INACTIVE")}
+                        // label={t("COMMON.INACTIVE")}
+                        label={firstLetterInUpperCase(props?.rowData?.status)}
                         color="error"
                         variant="outlined"
                         size={isMobile ? "small" : "medium"}
@@ -256,6 +260,9 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                       onChange={() => handleCheckboxChange(props?.rowData?.id)}
                     />
                   );
+                }
+                if (props.column.key === DataKey.TEMPLATE_TYPE) {
+                  return <TemplateTypeChip keys={props?.rowData?.templateType} />;
                 }
 
                 return <div className="table-cell">{props?.value}</div>;
