@@ -222,9 +222,9 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
 
         console.log("response", response);
         if (response?.responseCode === 'Created') {
-            showToastMessage(t("NOTIFICATION_TEMPLATE.TEMPLATE_ADDED_SUCCESS"), "success");
+            showToastMessage(t("NOTIFICATION.TEMPLATE_ADDED_SUCCESS"), "success");
         } else if (response?.responseCode === "OK") {
-            showToastMessage(t("NOTIFICATION_TEMPLATE.TEMPLATE_UPDATED_SUCCESS"), "success");
+            showToastMessage(t("NOTIFICATION.TEMPLATE_UPDATED_SUCCESS"), "success");
         }        queryClient.invalidateQueries({
           queryKey: [QueryKeys.GET_ALL_NOTIFICATION_TEMPLATE],
           exact: false,
@@ -248,7 +248,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
     const isSmsFilled = data.sms.subject?.trim() && data.sms.body?.trim();
 
     if (!isEmailFilled && !isPushFilled && !isSmsFilled) {
-        showToastMessage(t("NOTIFICATION_TEMPLATE.PLEASE_FILL_REQUIRED_FIELDS"), "warning");
+        showToastMessage(t("NOTIFICATION.PLEASE_FILL_REQUIRED_FIELDS"), "warning");
       return;
     }
 
