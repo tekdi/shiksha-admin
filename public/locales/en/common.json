@@ -199,9 +199,11 @@
     "FOUNDATION_COURSE": "Foundation Course",
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SCTA":"State Content Team Associate",
+    "MANAGE_NOTIFICATION": "Manage Notification Templates",
+    "SCTA": "State Content Team Associate",
     "WORKSPACE": "Workspace",
-    "MANAGE_NOTIFICATION": "Manage Notifications"
+    "MENTOR":"Mentor",
+    "MENTOR_LEADER":"Mentor Leader"
   },
   "FACILITATORS": {
     "STATE": "State",
@@ -225,6 +227,24 @@
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Learner is created, credentials will be sent soon",
     "LEARNER_UPDATED_SUCCESSFULLY": "Learner has been successfully updated!",
     "EDIT_LEARNER": "Edit Learner"
+  },
+  "MENTORS": {
+    "SEARCHBAR_PLACEHOLDER": "Search mentors..",
+    "NEW_MENTOR": "New Mentor",
+    "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
+    "MENTOR_CREATED_SUCCESSFULLY": "Mentor has been successfully created!",
+    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Mentor is created, credentials will be sent soon",
+    "MENTOR_UPDATED_SUCCESSFULLY": "Mentor has been successfully updated!",
+    "EDIT_MENTOR": "Edit Mentor"
+  },
+  "MENTOR_LEADERS": {
+    "SEARCHBAR_PLACEHOLDER": "Search mentor leaders..",
+    "NEW_MENTOR_LEADER": "New Mentor leaders",
+    "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
+    "MENTOR_LEADER_CREATED_SUCCESSFULLY": "Mentor leader has been successfully created!",
+    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Mentor leader is created, credentials will be sent soon",
+    "MENTOR_LEADER_UPDATED_SUCCESSFULLY": "Mentor leader has been successfully updated!",
+    "EDIT_MENTOR_LEADER": "Edit Mentor leader"
   },
   "TEAM_LEADERS": {
     "SEARCHBAR_PLACEHOLDER": "Search Team leaders..",
@@ -489,7 +509,12 @@
     "ARCHIVED_LEARNERS": " Archived Learners",
     "CODE": "Code",
     "DISTRICT": "District",
-    "DOB":"Date of Birth"
+    "DOB":"Date of Birth",
+    "ID":"Id",
+    "TITLE":"Title",
+    "KEY":"Key",
+    "CONTEXT":"Context"
+    
   },
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
@@ -537,11 +562,23 @@
 "CONTINUE_PROGRAM":"Do you want to continue  or discard the changes?",
 "DRAFTS":"Drafts",
 "DISCARD_CHANGES":"Discard Changes"
-
-
-
-
-
-
-  }
+},
+"NOTIFICATION":{
+"CONTEXT_TYPE":"Context Type",
+"ADD_NOTIFICATION_TEMPLATE":"Add Notification Template",
+"UPDATE_NOTIFICATION_TEMPLATE":"Update Notification Template",
+"PLEASE_FILL_REQUIRED_FIELDS":"Please fill in at least one template with both subject and body.",
+"TEMPLATE_ADDED_SUCCESS":"Template Added Successfully!",
+"TEMPLATE_UPDATED_SUCCESS":"Template Updated Successfully!",
+"UNPUBLISHED":"Unpublished",
+"PUBLISHED":"Published",
+"TEMPLATE":"Template",
+"USE_SAMPLE_TEMPLATE":"Use Sample Template",
+"PREVIEW":"Preview",
+"RESET":"Reset",
+"UPDATE_TEMPLATE":"Update Template",
+"Add_TEMPLATE":"Add new Template",
+"DELETE_TEMPLATE_ALERT":"Are you sure you want to delete this template?",
+"TEMPLATE_DELETED_SUCCESS":"Template with id {{templateId}} deleted successfully"
+}
 }

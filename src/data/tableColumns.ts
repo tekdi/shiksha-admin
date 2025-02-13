@@ -336,13 +336,13 @@ export const getNotificationTableData = (t: any, isMobile: boolean, isArchived?:
 
   const configs: ColumnConfig[] = [
 
-    { key: 'actionId', titleKey: 'ID', dataType: DataType.Number, width: 50,  },
-    { key: 'title', titleKey: 'TITLE', dataType: DataType.String, width: 180,  },
-    { key: 'key', titleKey: 'KEY', dataType: DataType.String, width: 180,  },
-    { key: 'context', titleKey: 'CONTEXT',  width: 100, },
-    { key: 'status', titleKey: 'STATUS',  width: 100,  },
-    { key: 'templateType', titleKey: 'TYPE', dataType: DataType.Object, width: 100, style: { textAlign: 'center' } },
-    { key: 'actions', titleKey: 'ACTIONS',  width: 120 }
+    { key: 'actionId', titleKey: 'TABLE_TITLE.ID', dataType: DataType.Number, width: 50,  },
+    { key: 'title', titleKey: 'TABLE_TITLE.TITLE', dataType: DataType.String, width: 180,  },
+    { key: 'key', titleKey: 'TABLE_TITLE.KEY', dataType: DataType.String, width: 180,  },
+    { key: 'context', titleKey: 'TABLE_TITLE.CONTEXT',  width: 100, },
+    { key: 'status', titleKey: 'TABLE_TITLE.STATUS',  width: 100,  },
+    { key: 'templateType', titleKey: 'TABLE_TITLE.TYPE', dataType: DataType.Object, width: 100, style: { textAlign: 'center' } },
+    { key: 'actions', titleKey: 'TABLE_TITLE.ACTIONS',  width: 120 }
   ];
  
 
