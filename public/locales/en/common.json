@@ -577,7 +577,7 @@
 "PREVIEW":"Preview",
 "RESET":"Reset",
 "UPDATE_TEMPLATE":"Update Template",
-"Add_TEMPLATE":"Add new Template",
+"ADD_TEMPLATE":"Add new Template",
 "DELETE_TEMPLATE_ALERT":"Are you sure you want to delete this template?",
 "TEMPLATE_DELETED_SUCCESS":"Template with id {{templateId}} deleted successfully"
 }
