@@ -6,10 +6,12 @@ import { INotificationTemplate } from "@/utils/Interfaces";
 import { useQuery } from "@tanstack/react-query";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
+import { useTranslation } from 'next-i18next';
 
 const UpdateTemplate: React.FC = () => {
     const router = useRouter();
     const { key } = router.query;
+    const { t } = useTranslation();
 
     // Fetch data using TanStack Query
     const { data: templateResponse = null, isLoading, isError, error } = useQuery({
@@ -33,7 +35,7 @@ const UpdateTemplate: React.FC = () => {
 
             {templateResponse?.length > 0 ?
                 <>
-                    <BackButtonWithLabel label={'Update Notification'} />
+                    <BackButtonWithLabel label={ t('NOTIFICATION.UPDATE_NOTIFICATION_TEMPLATE')} />
                     <AddTemplateForm templateDetails={templateResponse[0] as INotificationTemplate} isUpdate={true} />
                 </>
                 : null}

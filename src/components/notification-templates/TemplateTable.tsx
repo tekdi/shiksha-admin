@@ -57,7 +57,9 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
             const response = await deleteNotificationTemplate(templateId);
             queryClient.invalidateQueries({ queryKey: [QueryKeys.GET_ALL_NOTIFICATION_TEMPLATE], exact: false });
             console.log('Template deleted:', response);
-            showToastMessage(`Template with id ${templateId} deleted successfully`, 'success');
+            showToastMessage(t("NOTIFICATION.TEMPLATE_DELETED_SUCCESS", {
+                templateId: templateId,
+              }), 'success');
 
         } catch (error) {
             console.error('Error deleting template', error);
@@ -87,7 +89,7 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
             {
                 confirmationModalOpen &&
                 <ConfirmationModal
-                    message={"Are you sure you want to delete this template?"}
+                    message={t("NOTIFICATION.DELETE_TEMPLATE_ALERT")}
                     handleAction={() => deleteTemplate(templateToBeDeleted?.actionId)}
                     buttonNames={{ primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL") }
                     }

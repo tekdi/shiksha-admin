@@ -1,3 +1,4 @@
+import BackButtonWithLabel from "@/components/common/BackButtonWithLabel";
 import AddTemplateForm from "@/components/notification-templates/AddTemplateForm";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Box, IconButton, Typography } from "@mui/material";
@@ -12,7 +13,7 @@ const CreateNotificationTemplate = () => {
 
   return (
     <>
-      <Box
+      {/* <Box
         sx={{ display: "flex", alignItems: "center", mb: 2, mt: 2 }}
       onClick={() => router.back()}
       >
@@ -20,7 +21,10 @@ const CreateNotificationTemplate = () => {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h2">Add Notification Template</Typography>
-      </Box>
+      </Box> */}
+
+      <BackButtonWithLabel label={t('NOTIFICATION.ADD_NOTIFICATION_TEMPLATE')}
+ />
       <AddTemplateForm />
     </>
   );

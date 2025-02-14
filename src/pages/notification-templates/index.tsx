@@ -121,7 +121,8 @@ const NotificationTemplate = () => {
             >
               {(
                 <FormControl sx={{ width: '15%' }}>
-                  <InputLabel id="context-select-label">Context Type</InputLabel>
+                  <InputLabel id="context-select-label">        {t('NOTIFICATION.CONTEXT_TYPE')}
+</InputLabel>
                   <Select
                     labelId="context-select-label"
                     id="context-select"

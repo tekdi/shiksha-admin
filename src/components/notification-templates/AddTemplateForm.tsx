@@ -26,12 +26,13 @@ import Loader from "../Loader";
 import {
   createNotificationTemplate,
   TemplatePayload,
+  updateNotificationTemplate
 } from "@/services/NotificationTemplateService";
 import { useRouter } from "next/router";
 import { QueryKeys } from "@/utils/app.constant";
 import { useQueryClient } from "@tanstack/react-query";
 import { INotificationTemplate } from "@/utils/Interfaces";
-
+import { useTranslation } from 'next-i18next';
 // Interface for Notification Type Details
 interface NotificationTypeDetails {
   subject?: string;
@@ -174,7 +175,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const { t } = useTranslation();
   // Initialize react-hook-form with validation schema
   const {
     control,
@@ -210,22 +211,34 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
 
   const makeAPICall = async (payload: TemplatePayload) => {
     setLoading(true);
-    try {
-      const response = await createNotificationTemplate(payload);
-      if (response?.responseCode === "Created") {
-        showToastMessage("Template Added Successfully!", "success");
-        queryClient.invalidateQueries({
+      try {
+        let response;
+        if (isUpdate) {
+            delete (payload as { key?: string }).key;
+            response = await updateNotificationTemplate(templateDetails?.actionId as number, payload);
+        } else {
+            response = await createNotificationTemplate(payload);
+        }
+
+        console.log("response", response);
+        if (response?.responseCode === 'Created') {
+            showToastMessage(t("NOTIFICATION.TEMPLATE_ADDED_SUCCESS"), "success");
+        } else if (response?.responseCode === "OK") {
+            showToastMessage(t("NOTIFICATION.TEMPLATE_UPDATED_SUCCESS"), "success");
+        }        queryClient.invalidateQueries({
           queryKey: [QueryKeys.GET_ALL_NOTIFICATION_TEMPLATE],
           exact: false,
         });
         router.push("/notification-templates");
       }
-    } catch (error) {
+     catch (error) {
       console.error("Error in uploading data:", error);
     } finally {
       setLoading(false);
     }
-  };
+    
+}
+
 
   // Handle form submission
   const onSubmit: SubmitHandler<NotificationFormData> = (data) => {
@@ -235,10 +248,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
     const isSmsFilled = data.sms.subject?.trim() && data.sms.body?.trim();
 
     if (!isEmailFilled && !isPushFilled && !isSmsFilled) {
-      showToastMessage(
-        "Please fill in at least one template with both subject and body.",
-        "warning"
-      );
+        showToastMessage(t("NOTIFICATION.PLEASE_FILL_REQUIRED_FIELDS"), "warning");
       return;
     }
 
@@ -346,14 +356,14 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth error={!!errors.status}>
-                        <InputLabel id="status-label">Status</InputLabel>
+                        <InputLabel id="status-label">{t("FORM.STATUS")}</InputLabel>
                         <Select
                           {...field}
                           labelId="status-label"
                           label="Status"
                         >
-                          <MenuItem value="unpublished">Unpublished</MenuItem>
-                          <MenuItem value="published">Published</MenuItem>
+                          <MenuItem value="unpublished">{t("NOTIFICATION.UNPUBLISHED")}</MenuItem>
+                          <MenuItem value="published">{t("NOTIFICATION.PUBLISHED")}</MenuItem>
                         </Select>
                         {errors.status && (
                           <Typography color="error" variant="body2">
@@ -371,7 +381,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
                     >
                       <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                          {template.name} Template
+                          {template.name}{t("NOTIFICATION.TEMPLATE")}                                                    
                         </Typography>
 
                         {template.value === "email" && (
@@ -381,8 +391,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
                               size="small"
                               onClick={applyEmailTemplate}
                             >
-                              Use Sample Template
-                            </Button>
+                                                    {t("NOTIFICATION.USE_SAMPLE_TEMPLATE")}                            </Button>
                             {emailBody?.length > 0 && !preview && (
                               <Button
                                 sx={{
@@ -395,8 +404,7 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
                                 size="small"
                                 onClick={() => setPreview(true)}
                               >
-                                Preview
-                              </Button>
+                                                     {t("NOTIFICATION.PREVIEW")}                               </Button>
                             )}
                           </>
                         )}
@@ -487,11 +495,10 @@ const AddTemplateForm: React.FC<TemplateDetailsProps> = ({
                 </Box>
                 <Box mt={4} display="flex" justifyContent="right" gap={2}>
                   <Button variant="outlined" onClick={handleReset}>
-                    Reset
+                  {t("NOTIFICATION.RESET")}
                   </Button>
                   <Button variant="contained" type="submit" color="primary">
-                    {isUpdate ? "Update Template" : "Add new template"}
-                  </Button>
+                  {isUpdate ? t("NOTIFICATION.UPDATE_TEMPLATE") : t("NOTIFICATION.ADD_TEMPLATE")}                  </Button>
                 </Box>
               </form>
             </Box>
