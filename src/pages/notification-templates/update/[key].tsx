@@ -27,9 +27,11 @@ const UpdateTemplate: React.FC = () => {
             if(context)
             {
              response = await getNotificationTemplateByKey({ key,context: context.toString() });
-                return response;
             }
-            response = await getNotificationTemplateByKey({ key});
+            else{
+                response = await getNotificationTemplateByKey({ key});
+
+            }
             return response;
            
         },
