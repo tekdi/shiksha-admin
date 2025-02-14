@@ -11,6 +11,8 @@ import { useTranslation } from 'next-i18next';
 const UpdateTemplate: React.FC = () => {
     const router = useRouter();
     const { key } = router.query;
+    const { context } = router.query; 
+
     const { t } = useTranslation();
 
     // Fetch data using TanStack Query
@@ -21,8 +23,17 @@ const UpdateTemplate: React.FC = () => {
                 // router.push('/notification-templates');
                 throw new Error('Invalid key');
             }
-            const response = await getNotificationTemplateByKey({ key });
+            let response;
+            if(context)
+            {
+             response = await getNotificationTemplateByKey({ key,context: context.toString() });
+            }
+            else{
+                response = await getNotificationTemplateByKey({ key});
+
+            }
             return response;
+           
         },
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
         retry: 1, // Retry once on failure
