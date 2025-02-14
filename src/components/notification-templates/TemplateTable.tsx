@@ -70,6 +70,12 @@ const TemplateTable: React.FC<TemplateTableProps> = ({ searchKey = '', context }
     const onEdit = (template: any) => {
         console.log('Edit template with ID:', template);
         router.push(`/notification-templates/update/${template.key}`)
+        router.push({
+            pathname: `/notification-templates/update/${template.key}`,
+            query: {
+              context: context,
+            }
+          });
 
     }
 
