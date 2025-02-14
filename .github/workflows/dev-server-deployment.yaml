@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Extract Branch Name
-        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
       - name: Deploy Stack
         uses: appleboy/ssh-action@master
         with:
@@ -21,9 +18,8 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR_DEV }}
             if [ -f .env ]; then
-              rm .env
+            rm .env
             fi
             echo "${{ secrets.DEV_ENV }}" > .env
             ls -ltra
-            chmod +x deploy.sh
-            ./deploy.sh ${{ env.BRANCH_NAME }}
+            ./deploy.sh
