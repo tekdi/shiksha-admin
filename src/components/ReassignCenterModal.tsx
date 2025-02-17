@@ -109,7 +109,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   } = useLocationState(open, onClose, roleType, true);
   const cohorts: Cohort[] = allCenters?.map(
     (cohort: { cohortId: any; name: string }) => ({
-      name: cohort.name.toLowerCase(),
+      name: cohort.name,
       id: cohort.cohortId,
     })
   ); 

@@ -50,7 +50,7 @@ const Menuitems = [
     subOptions: [
       {
         title: "MASTER.COUNTRY",
-        href: ["/state"],
+        href: ["/country"],
       },
       {
         title: "MASTER.STATE",

@@ -140,7 +140,7 @@ export const formatedStates = async () => {
       filters: {
         // name: searchKeyword,
        
-        type: CohortTypes.STATE,
+        type: CohortTypes.COUNTRY,
         status: ["active"],
       },
       sort: ["name", "asc"],
@@ -150,7 +150,7 @@ export const formatedStates = async () => {
     const cohortDetails = response?.results?.cohortDetails || [];
 
     const object = {
-      fieldName: "states",
+      fieldName: "country",
     };
     const optionReadResponse = await getStateBlockDistrictList(object);
     const StateFieldId=optionReadResponse?.result?.fieldId;

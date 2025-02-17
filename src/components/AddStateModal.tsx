@@ -18,7 +18,6 @@ interface AddStateModalProps {
   onClose: () => void;
   onSubmit: (
     name: string,
-    value: string,
     fieldId: string,
     stateId?: string
   ) => void;
@@ -40,7 +39,6 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     name: initialValues.name || "",
-    value: initialValues.value || "",
   });
   const [errors, setErrors] = useState<{ name?: string; value?: string }>({});
   const { t } = useTranslation();
@@ -48,7 +46,6 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
   useEffect(() => {
     setFormData({
       name: initialValues.name || "",
-      value: initialValues.value || "",
     });
     setErrors({});
   }, [open, initialValues]);
@@ -97,11 +94,11 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
       newErrors.name = t("COMMON.INVALID_TEXT");
     }
 
-    if (!formData.value) {
-      newErrors.value = t("COMMON.CODE_REQUIRED");
-    } else if (!isValidCode(formData.value)) {
-      newErrors.value = t("COMMON.INVALID_TEXT");
-    }
+    // if (!formData.value) {
+    //   newErrors.value = t("COMMON.CODE_REQUIRED");
+    // } else if (!isValidCode(formData.value)) {
+    //   newErrors.value = t("COMMON.INVALID_TEXT");
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -109,7 +106,7 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
 
   const handleSubmit = () => {
     if (validateForm()) {
-      onSubmit(formData.name, formData.value, fieldId, stateId);
+      onSubmit(formData.name, fieldId, stateId);
     }
   };
 
@@ -123,14 +120,14 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
       }}
     >
       <DialogTitle sx={{ fontSize: "14px" }}>
-        {stateId ? t("COMMON.UPDATE_STATE") : t("COMMON.ADD_STATE")}
+        {stateId ? t("COMMON.UPDATE_COUNTRY") : t("COMMON.ADD_COUNTRY")}
       </DialogTitle>
       <Divider />
       <DialogContent>
         <TextField
           autoFocus
           margin="dense"
-          label={t("COMMON.STATE_NAME")}
+          label={t("COMMON.COUNTRY_NAME")}
           type="text"
           fullWidth
           variant="outlined"
@@ -139,7 +136,7 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
           error={!!errors.name}
           helperText={errors.name}
         />
-        <TextField
+        {/* <TextField
           margin="dense"
           label={t("COMMON.ADD_STATE_CODE")}
           type="text"
@@ -151,13 +148,13 @@ export const AddStateModal: React.FC<AddStateModalProps> = ({
           helperText={errors.value}
           disabled={isEditing}
 
-        />
-        <Box display="flex" alignItems="center" mt={2}>
+        /> */}
+        {/* <Box display="flex" alignItems="center" mt={2}>
           <InfoOutlinedIcon color="primary" sx={{ mr: 1 }} />
           <Typography variant="caption" color="textSecondary">
             {t("COMMON.CODE_NOTIFICATION")}
           </Typography>
-        </Box>
+        </Box> */}
       </DialogContent>
       <Divider />
 

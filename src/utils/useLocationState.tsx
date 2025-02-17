@@ -24,8 +24,8 @@ interface FieldProp {
   label: string;
 }
 interface CenterProp {
-  cohortId: string;
-  name: string;
+  value: string;
+  label: string;
 }
 export const useLocationState = (
   open: boolean,
@@ -119,9 +119,25 @@ export const useLocationState = (
     const result = response?.result?.values;
     setCountry(result);
   }
+  const ListCenter = async () => {
+    const response = await queryClient.fetchQuery({
+      queryKey: [
+        QueryKeys.FIELD_OPTION_READ,
+        "center",
+      ],
+      queryFn: () =>
+        getStateBlockDistrictList({
+          fieldName: "center",
+        }),
+    });
+    setStateFieldId(response?.result?.fieldId);
+    const result = response?.result?.values;
+    setAllCenters(result);
+  }
 
   useEffect(() => {
-      ListCountry();  
+      ListCountry();
+      ListCenter()  
   }
   , [open])
 

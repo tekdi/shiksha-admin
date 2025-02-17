@@ -96,7 +96,7 @@ const State: React.FC = () => {
       const data = {
       //  limit: limit,
       //  offset: offset,
-        fieldName: "states",
+        fieldName: "country",
         optionName: searchKeyword || "",
         sort: sortBy,
       };
@@ -107,6 +107,8 @@ const State: React.FC = () => {
       // });
       const resp=await getStateBlockDistrictList(data)
       const states = resp?.result?.values || [];
+      console.log(states,"states");
+      
       setStateDataOptinon(states);
       const stateNameArra = states.map((item: any) => item.label.toLowerCase());
       setStateNameArr(stateNameArra);
@@ -143,7 +145,7 @@ const State: React.FC = () => {
         offset: 0,
         filters: {
           name: searchKeyword,
-          type: "STATE",
+          type: "COUNTRY",
           status:["active"]
 
         },
@@ -153,19 +155,23 @@ const State: React.FC = () => {
       const response = await queryClient.fetchQuery({
         queryKey: [
           QueryKeys.FIELD_OPTION_READ,          
-          "STATE",
+          "COUNTRY",
           searchKeyword
         ],
         queryFn: () => getCohortList(reqParams),
       });
 
-      const statecohortDetails = response?.results?.cohortDetails || [];
+      const statecohortDetails = response?.results?.cohortDetails || [];      
       const filteredStateData = statecohortDetails
         .map((stateDetail: any) => {
           const transformedName = transformLabel(stateDetail.name);
+          console.log("transformedName",transformedName);
+          
           const matchingState = stateDataOption.find(
             (state: { label: string }) => state?.label?.toLowerCase() === transformedName?.toLowerCase()
           );
+          console.log("matchingState",matchingState);
+          
           return {
             label: transformedName,
             value: matchingState ? matchingState.value : null,
@@ -179,7 +185,10 @@ const State: React.FC = () => {
         .filter((state: { label: any }) =>
           stateNameArray.includes(state?.label?.toLowerCase())
         );
+        console.log("filteredStateData",filteredStateData);
+        
       setStateData(filteredStateData);
+      
       const totalCount = filteredStateData.length;
        
       setPaginationCount(totalCount);
@@ -348,7 +357,7 @@ const State: React.FC = () => {
         const response = await createOrUpdateOption(fieldId, newEntity, t);
         const queryParameters = {
           name: name,
-          type: CohortTypes.STATE,
+          type: CohortTypes.COUNTRY,
           status: Status.ACTIVE,
          
         };
@@ -539,11 +548,11 @@ const State: React.FC = () => {
   return (
     <>
      <HeaderComponent
-      userType={t("MASTER.STATE")}
-      searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_STATE")}
+      userType={t("MASTER.COUNTRY")}
+      searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_COUNTRY")}
       showStateDropdown={false}
       handleSortChange={handleSortChange}
-      showAddNew={ !!isActiveYear && userRole === Role.CENTRAL_ADMIN}
+      showAddNew={ !!isActiveYear && userRole === Role.ADMIN}
       showSort={true}
       shouldFetchDistricts={false}
       selectedSort={selectedSort}

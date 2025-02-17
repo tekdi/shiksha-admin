@@ -30,7 +30,7 @@ export enum Role {
   TEAM_LEADERS = "Team Leaders",
 
   ADMIN = "Admin",
-  CENTRAL_ADMIN = "Admin",
+  CENTRAL_ADMIN = "Center Admin",
   LEARNERS = "Learners",
   FACILITATORS = "Facilitators",
   CONTENT_CREATOR = "Content Creator",
@@ -119,7 +119,9 @@ export enum CohortTypes {
   COHORT = "CENTER",
   BLOCK = "BLOCK",
   DISTRICT = "DISTRICT",
-  STATE="STATE"
+  STATE="STATE",
+  COUNTRY="COUNTRY",
+  CITY="CITY",
 }
 
 export enum FormValues {

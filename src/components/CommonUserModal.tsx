@@ -750,6 +750,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               states={transformArray(states)}
               districts={transformArray(districts)}
               blocks={transformArray(blocks)}
+              allCenters={transformArray(allCenters)}
               selectedState={selectedState}
               selectedDistrict={selectedDistrict}
               selectedBlock={selectedBlock}
@@ -761,7 +762,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               isCenterSelection={
                 true
               }
-              allCenters={allCenters}
+              
               selectedCenter={selectedCenter}
               handleCenterChangeWrapper={handleCenterChangeWrapper}
               inModal={true}

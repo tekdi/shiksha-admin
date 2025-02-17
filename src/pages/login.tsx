@@ -167,6 +167,8 @@ const LoginPage = () => {
           // const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
           // showToastMessage(errorMessage, "error");
           //localStorage.removeItem("token");
+          console.log("inside unauthorized");
+          
           router.push({
             pathname: '/unauthorized',
             query: { role: userInfo?.role }, // Pass your query parameters here

@@ -61,10 +61,17 @@ function App({ Component, pageProps }: AppProps) {
       Role.SCTA,
       Role.CCTA
     ];
+
+    console.log(userInfo?.role,"userInfo?.role");
+    
   
     const restrictedPaths = ["/unauthorized", "/login", "/logout"];
     const isRestrictedRole = !restrictedRoles.includes(userInfo?.role);
+    console.log(isRestrictedRole,"isRestrictedRole");
+    
     const isRestrictedPath = !restrictedPaths.includes(router.pathname);
+    console.log(isRestrictedPath,"isRestrictedPath");
+    
   
     if (isRestrictedRole && isRestrictedPath) {
       router.push({

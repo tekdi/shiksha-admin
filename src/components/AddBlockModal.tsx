@@ -28,7 +28,7 @@ interface AddBlockModalProps {
   onClose: () => void;
   onSubmit: (
     name: string,
-    value: string,
+    // value: string,
     controllingField: string,
     cohortId: string,
     fieldId: string,
@@ -89,8 +89,10 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        if (userRole === Role.CENTRAL_ADMIN) {
+        if (userRole === Role.ADMIN) {
           const result = await formatedStates();
+          console.log("result-----", result);
+          
           setStates(result);
           setStateCode(result[0]?.value);
           setDefaultStates(result[0]);
@@ -140,11 +142,11 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const fetchDistricts = async () => {
     try {
       const data = await queryClient.fetchQuery({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode || "", "districts"],
+        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode || "", "states"],
         queryFn: () =>
           getDistrictsForState({
             controllingfieldfk: stateCode || "",
-            fieldName: "districts",
+            fieldName: "states",
           }),
       });
 
@@ -160,25 +162,28 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       setDistrictCodeArr(districtCodeArray);
     } catch (error) {
       setDistricts([]);
+      setDistrictsOptionRead([]);
       console.error("Error fetching districts", error);
     }
   };
 
   useEffect(() => {
-    if (stateCode !== "" && stateCode) fetchDistricts();
+    setDistrictsOptionRead([]);
+   fetchDistricts();
   }, [open, formData.controllingField, stateCode]);
   const handleStateChangeWrapper = async (
     selectedNames: string[],
     selectedCodes: string[]
   ) => {
     try {
+      
       // setSelectedNames(selectedNames);
 
       setStateCode(selectedCodes[0]);
       setSelectedState(selectedNames[0]);
       setDisabledDistrict(false);
       queryClient.invalidateQueries({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "districts"],
+        queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "state"],
       });
     } catch (error) {
       console.log(error);
@@ -190,8 +195,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         limit: 0,
         offset: 0,
         filters: {
-          states: stateCode,
-          type: CohortTypes.DISTRICT,
+          // name: stateName,
+          type: CohortTypes.STATE,
           status: ["active"]
 
         },
@@ -208,6 +213,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       // });
       const response = await getCohortList(reqParams);
       const cohortDetails = response?.results?.cohortDetails || [];
+      console.log(districts,"districts----------");
+      
 
       const filteredDistrictData = cohortDetails
         .map(
@@ -241,6 +248,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
         );
+        console.log("filteredDistrictData--------", filteredDistrictData);
+        
       setDistricts(filteredDistrictData);
     } catch (error) {
       setDistricts([]);
@@ -309,12 +318,12 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       name:
         validateField("name", formData.name, t("COMMON.BLOCK_NAME_REQUIRED")) ||
         (!formData.name ? t("COMMON.BLOCK_NAME_REQUIRED") : null),
-      value:
-        validateField(
-          "value",
-          formData.value,
-          t("COMMON.BLOCK_CODE_REQUIRED")
-        ) || (!formData.value ? t("COMMON.BLOCK_CODE_REQUIRED") : null),
+      // value:
+      //   validateField(
+      //     "value",
+      //     formData.value,
+      //     t("COMMON.BLOCK_CODE_REQUIRED")
+      //   ) || (!formData.value ? t("COMMON.BLOCK_CODE_REQUIRED") : null),
       controllingField:
         validateField(
           "controllingField",
@@ -336,7 +345,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
       onSubmit(
         formData.name,
-        formData.value,
+        // formData.value,
         formData.controllingField,
         currentCohortId,
         fieldId,
@@ -363,8 +372,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const isEditing = !!initialValues.name;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
   const dialogTitle = isEditing
-    ? t("COMMON.UPDATE_BLOCK")
-    : t("COMMON.ADD_BLOCK");
+    ? t("COMMON.UPDATE_CITY")
+    : t("COMMON.ADD_CITY");
 
   return (
     <Dialog
@@ -382,7 +391,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
-        {userRole === Role.CENTRAL_ADMIN && (
+        {userRole === Role.ADMIN && (
           <MultipleSelectCheckmarks
             names={states?.map(
               (state) =>
@@ -390,7 +399,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                 state.label?.toLowerCase().slice(1)
             )}
             codes={states?.map((state) => state.value)}
-            tagName={t("FACILITATORS.STATE")}
+            tagName={t("FACILITATORS.COUNTRY")}
             selectedCategories={initialValues.stateLabel ? [initialValues.stateLabel] : [selectedState]}
             onCategoryChange={handleStateChangeWrapper}
             cohortIds={states?.map((state) => state.cohortId)}
@@ -403,10 +412,10 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         {!(formData.controllingField === "All") && !initialValues.controllingField && (
           <>
             <FormControl fullWidth sx={{ marginTop: "8px" }}>
-              {!disabledDistrict && (<InputLabel id="district-label" >District</InputLabel>)}
+              {!disabledDistrict && (<InputLabel id="district-label" >State</InputLabel>)}
               <Select
                 labelId="district-label"
-                label={!disabledDistrict ? "District" : null}
+                label={!disabledDistrict ? "State" : null}
                 value={formData.controllingField !== "" && formData.controllingField ? formData.controllingField : "district"}
                 onChange={(e) =>
                   handleChange("controllingField")(
@@ -427,7 +436,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                 disabled={disabledDistrict}
               >
                 {/* Default MenuItem */}
-                {disabledDistrict && (<MenuItem value="district">District</MenuItem>)}
+                {disabledDistrict && (<MenuItem value="district">State</MenuItem>)}
 
                 {/* District Options */}
                 {districts.length > 0 && !initialValues.controllingField ? (
@@ -449,7 +458,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         )}
 
         {initialValues.controllingField && !(formData.controllingField === "All") && (<FormControl fullWidth disabled>
-          <InputLabel id="district-label" sx={{ marginTop: "8px" }}>District</InputLabel>
+          <InputLabel id="district-label" sx={{ marginTop: "8px" }}>State</InputLabel>
           <Select
             labelId="district-label"
             id="disabled-select"
@@ -470,7 +479,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         )}
         <TextField
           margin="dense"
-          label={t("COMMON.BLOCK_NAME")}
+          label={t("COMMON.CITY_NAME")}
           type="text"
           fullWidth
           variant="outlined"
@@ -479,7 +488,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
           error={!!errors.name}
           helperText={errors.name}
         />
-        <TextField
+        {/* <TextField
           margin="dense"
           label={t("COMMON.BLOCK_CODE")}
           type="text"
@@ -496,7 +505,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
           <Typography variant="caption" color="textSecondary">
             {t("COMMON.CODE_NOTIFICATION")}
           </Typography>
-        </Box>
+        </Box> */}
       </DialogContent>
       <Divider />
       <DialogActions sx={{ p: 2 }}>

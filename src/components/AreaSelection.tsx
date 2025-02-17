@@ -26,8 +26,8 @@ interface Block {
   label: string;
 }
 interface Centers {
-  cohortId: string;
-  name: string;
+  value: string;
+  label: string;
 }
 interface DropdownBoxProps {
   country: Country[];
@@ -77,7 +77,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   states,
   districts,
   blocks,
-  allCenters = [],
+  allCenters,
   selectedState,
   selectedDistrict,
   selectedBlock,
@@ -101,7 +101,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   const router = useRouter();
 
   const {  center } = router.query;
-console.log(states,"states-------");
+console.log(allCenters,"allCenters-------");
 
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -112,6 +112,8 @@ console.log(states,"states-------");
     theme.breakpoints.down("sm")
   );
   // isSmallScreen=isMobile?true: false;
+  const centerNames = allCenters?.map((center) => center.label) || [];
+
   const blockDisable = districtDefaultValue ? false : true;
   const shouldRenderSelectCheckmarks = !(
     reAssignModal && userType === Role.TEAM_LEADERS
@@ -256,10 +258,8 @@ console.log(states,"states-------");
                 lg={inModal ? 12 : isCenterSelection ? 3 : 4}
               >
                 <MultipleSelectCheckmarks
-                  names={capitalizeFirstLetterOfEachWordInArray(
-                    allCenters?.map((center) => center.name)
-                  )}
-                  codes={allCenters?.map((center) => center.cohortId)}
+                  names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
+                  codes={allCenters?.map((center) => center.value) || []}
                   tagName={t("CENTERS.CENTERS")}
                   selectedCategories={selectedCenter}
                   onCategoryChange={handleCenterChangeWrapper}
@@ -268,13 +268,6 @@ console.log(states,"states-------");
                   //   selectedBlock.length === 0 ||
                   //   selectedBlock[0] === t("COMMON.ALL_BLOCKS") ||
                   //   (selectedBlock?.length > 0 && allCenters?.length === 0)
-                  // }
-                  overall={!inModal}
-                  defaultValue={
-                    selectedBlock?.length > 0 && allCenters?.length === 0
-                      ? t("COMMON.NO_CENTERS")
-                      : t("COMMON.ALL_CENTERS")
-                  }
                 />
               </Grid>
             )}
