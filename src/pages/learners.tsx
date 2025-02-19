@@ -48,7 +48,7 @@ const Learners: React.FC = () => {
   return (
     <>
       <UserTable
-        role={Role.STUDENT}
+        role={Role.YOUTH}
         userType={t("SIDEBAR.LEARNERS")}
         searchPlaceholder={t("LEARNERS.SEARCHBAR_PLACEHOLDER")}
         handleAddUserClick={handleAddLearnerClick}

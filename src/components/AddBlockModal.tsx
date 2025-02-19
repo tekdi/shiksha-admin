@@ -178,6 +178,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     try {
       
       // setSelectedNames(selectedNames);
+      console.log(selectedCodes, "selectedCodes");
+      
 
       setStateCode(selectedCodes[0]);
       setSelectedState(selectedNames[0]);
@@ -342,6 +344,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const handleSubmit = () => {
     if (validateForm()) {
       const currentCohortId: any = cohortIdAddNewDropdown;
+      console.log(stateCode,"stateCode");
+      
 
       onSubmit(
         formData.name,

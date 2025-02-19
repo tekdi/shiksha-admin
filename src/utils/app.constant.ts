@@ -28,7 +28,8 @@ export enum Role {
   TEACHER = "Teacher",
   TEAM_LEADER = "Team Leader",
   TEAM_LEADERS = "Team Leaders",
-
+  TRAINER = "Trainer",
+  YOUTH = "Youth",
   ADMIN = "Admin",
   CENTRAL_ADMIN = "Center Admin",
   LEARNERS = "Learners",

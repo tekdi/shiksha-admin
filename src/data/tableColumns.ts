@@ -175,7 +175,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
   const configs: ColumnConfig[] = [
     {
       key: "label",
-      titleKey: "TABLE_TITLE.STATE",
+      titleKey: "TABLE_TITLE.COUNTRY",
       width: 130,
     },
     { key: "value", titleKey: "TABLE_TITLE.CODE", width: 130 },
@@ -225,7 +225,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
       userInfo = JSON.parse(adminInfo || "{}");
     } 
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
+  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
@@ -241,7 +241,7 @@ export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any
   const configs: ColumnConfig[] = [
     {
       key: "label",
-      titleKey: t("TABLE_TITLE.DISTRICT").toUpperCase(),
+      titleKey: t("TABLE_TITLE.STATE").toUpperCase(),
       width: 130,
     },
     { key: "value", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
@@ -274,7 +274,7 @@ export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any
       userInfo = JSON.parse(adminInfo || "{}");
     } 
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived) {
+  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
@@ -289,7 +289,7 @@ export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any
 export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) => {
 
   const configs: ColumnConfig[] = [
-    { key: "name", titleKey: "TABLE_TITLE.BLOCK", width: 130 },
+    { key: "name", titleKey: "TABLE_TITLE.CITY", width: 130 },
     { key: "code", titleKey: "TABLE_TITLE.CODE", width: 130 },
     {
       key: "createdBy",
@@ -320,7 +320,7 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
       userInfo = JSON.parse(adminInfo || "{}");
     } 
   // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN && !isArchived ) {
+  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived ) {
     configs.push({
       key: "actions",
       titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),

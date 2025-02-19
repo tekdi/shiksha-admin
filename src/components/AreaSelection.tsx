@@ -70,6 +70,7 @@ interface DropdownBoxProps {
   blockDefaultValue?: string;
   districtDefaultValue?: string;
   isUserAdd?: boolean;
+  iscenterCreate?: boolean;
 }
 
 const AreaSelection: React.FC<DropdownBoxProps> = ({
@@ -87,21 +88,21 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   handleBlockChangeWrapper,
   isMobile,
   isMediumScreen,
-  isCenterSelection = false,
+  isCenterSelection = true,
   inModal = false,
   handleCenterChangeWrapper = () => { },
   stateDefaultValue,
   blockDefaultValue,
   districtDefaultValue,
   isUserAdd,
-
+  iscenterCreate=false,
   userType,
   reAssignModal = false,
 }) => { 
   const router = useRouter();
 
   const {  center } = router.query;
-console.log(allCenters,"allCenters-------");
+console.log(blocks,"blocks-------");
 
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -151,8 +152,8 @@ console.log(allCenters,"allCenters-------");
             },
           }}
         >
-          <Grid container spacing={2}>
-           {!isUserAdd && (
+          
+           
               <Grid container spacing={2}>
                 <Grid
               item
@@ -200,56 +201,59 @@ console.log(allCenters,"allCenters-------");
                   reAssignModal
                     ? districtDefaultValue
                     : selectedState.length > 0 && districts?.length === 0
-                      ? t("COMMON.NO_DISTRICTS")
-                      : t("COMMON.ALL_DISTRICTS")
+                      ? t("COMMON.STATES")
+                      : t("COMMON.ALL_STATES")
                 }
               />
             </Grid>
             <Grid
-              item
-              xs={12}
-              sm={inModal ? 12 : 6}
-              md={inModal ? 12 : 4}
-              lg={inModal ? 12 : isCenterSelection ? 3 : 4}
-            >
-              {shouldRenderSelectCheckmarks && (
-                <MultipleSelectCheckmarks
-                  names={capitalizeFirstLetterOfEachWordInArray(
-                    blocks?.length > 0 ? blocks.map((block) => block.label) : []
-                    //  blocks.map((block) => block.label)
-
-                  )}
-                  codes={
-
-                    blocks?.length > 0 ? blocks?.map((block) => block.value) : []
-                    // blocks?.map((block) => block.value)
-                  }
-                  tagName={t("FACILITATORS.CITY")}
-                  selectedCategories={capitalizeFirstLetterOfEachWordInArray(
-                    selectedBlock
-                  )}
-                  onCategoryChange={handleBlockChangeWrapper}
-                  // disabled={
-                  //   blocks?.length <= 0 ||
-                  //   selectedDistrict?.length === 0 ||
-                  //   selectedDistrict[0] === t("COMMON.ALL_DISTRICTS")
-                  // }
-                  overall={!inModal}
-                  defaultValue={
-                    selectedDistrict?.length > 0 && (blocks?.length === 0)
-                      ? t("COMMON.NO_BLOCKS")
-                      : t("COMMON.ALL_BLOCKS")
-                  }
-                />
-              )}
-            </Grid>
+                item
+                xs={12}
+                sm={inModal ? 12 : 6}
+                md={inModal ? 12 : 4}
+                lg={inModal ? 12 : isCenterSelection ? 3 : 4}
+              >
+                {shouldRenderSelectCheckmarks && (
+                  <MultipleSelectCheckmarks
+                    names={capitalizeFirstLetterOfEachWordInArray(
+                      blocks?.length > 0 ? blocks.map((block) => block.label) : []
+                    )}
+                    codes={blocks?.length > 0 ? blocks?.map((block) => block.value) : []}
+                    tagName={t("FACILITATORS.CITY")}
+                    selectedCategories={capitalizeFirstLetterOfEachWordInArray(selectedBlock)}
+                    onCategoryChange={handleBlockChangeWrapper}
+                    overall={!inModal}
+                    defaultValue={
+                      selectedDistrict?.length > 0 && blocks?.length === 0
+                        ? t("COMMON.NO_CITIES")
+                        : t("COMMON.ALL_CITIES")
+                    }
+                  />
+                )}
               </Grid>
-           )
 
-           } 
+              {isCenterSelection && !iscenterCreate && (
+                <Grid
+                  item
+                  xs={12}
+                  sm={inModal ? 12 : 6}
+                  md={inModal ? 12 : 4}
+                  lg={inModal ? 12 : isCenterSelection ? 3 : 4}
+                >
+                  <MultipleSelectCheckmarks
+                    names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
+                    codes={allCenters?.map((center) => center.value) || []}
+                    tagName={t("CENTERS.CENTERS")}
+                    selectedCategories={selectedCenter}
+                    onCategoryChange={handleCenterChangeWrapper}
+                  />
+                </Grid>
+              )}
+              </Grid>
+           
 
 
-            {isCenterSelection && (
+            {/* {isCenterSelection && !iscenterCreate && (
               <Grid
                 item
                 xs={12}
@@ -270,9 +274,9 @@ console.log(allCenters,"allCenters-------");
                   //   (selectedBlock?.length > 0 && allCenters?.length === 0)
                 />
               </Grid>
-            )}
+            )} */}
 
-          </Grid>
+          
         </Box>)}
       </Box>
     </Box>

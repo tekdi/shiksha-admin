@@ -30,7 +30,7 @@ const Faciliator: React.FC = () => {
   return (
     <>
       <UserTable
-        role={Role.TEACHER}
+        role={Role.TRAINER}
         userType={t("SIDEBAR.FACILITATORS")}
         searchPlaceholder={t("FACILITATORS.SEARCHBAR_PLACEHOLDER")}
         handleAddUserClick={handleAddFaciliatorClick}

@@ -88,9 +88,9 @@ export const formatedBlocks = async (districtCode: string) => {
       offset: 0,
       filters: {
         // name: searchKeyword,
-        states: adminState.code,
-        districts: districtCode,
-        type: CohortTypes.BLOCK,
+        country: adminState?.code,
+        states: districtCode,
+        type: CohortTypes.CITY,
         status: ["active"],
       },
       sort: ["name", "asc"],
@@ -100,8 +100,8 @@ export const formatedBlocks = async (districtCode: string) => {
     const cohortDetails = response?.results?.cohortDetails || [];
 
     const object = {
-      // controllingfieldfk: districtCode,
-      fieldName: "blocks",
+      controllingfieldfk: districtCode,
+      fieldName: "city",
     };
     const optionReadResponse = await getStateBlockDistrictList(object);
     const result = optionReadResponse?.result?.values;

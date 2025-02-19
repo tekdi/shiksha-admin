@@ -19,6 +19,7 @@ import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import FrameworkCategories from "./FrameworkCategories";
 import { showToastMessage } from "./Toastify";
+import { createOrUpdateOption } from "@/services/MasterDataService"
 
 interface CustomField {
   fieldId: string;
@@ -168,6 +169,23 @@ setShowForm(true)
     event: React.FormEvent<any>
   ) => {
     const formData = data?.formData;
+    const name = (formData.name).toLowerCase();
+    const fieldId = "94befdc4-3173-4af3-998f-aa366d91ade7";
+
+    const newEntity = {
+      isCreate: true,
+      options: [
+        {
+          controllingfieldfk: selectedBlockCode,
+          name,
+          // value,
+        },
+      ],
+    };
+
+    const response = await createOrUpdateOption(fieldId, newEntity, t)
+    console.log(response, "response------");
+    
     // const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
     
       const parentId = selectedBlockCohortId;
@@ -304,19 +322,19 @@ setShowForm(true)
                           handleBlockChangeWrapper={handleBlockChangeWrapper}
                           isMobile={isMobile}
                           isMediumScreen={isMediumScreen}
-                         
+                          iscenterCreate={true}
                           allCenters={allCenters}
                           selectedCenter={selectedCenter}
                           handleCenterChangeWrapper={handleCenterChangeWrapper}
                           inModal={true}
-                                                stateDefaultValue={stateDefaultValue}
+                          stateDefaultValue={stateDefaultValue}
           />
         </Box>
-        <FrameworkCategories
+        {/* <FrameworkCategories
           customFormData={customFormData}
           onFieldsChange={handleDependentFieldsChange}
           setShowForm={setShowForm}
-        />
+        /> */}
       </>
       {dynamicFormForBlock && schema && uiSchema && (
         <>

@@ -596,7 +596,7 @@ const State: React.FC = () => {
                 height="20vh"
               >
                 <Typography marginTop="10px" textAlign="center">
-                  {t("COMMON.STATE_NOT_FOUND")}
+                  {t("COMMON.COUNTRY_NOT_FOUND")}
                 </Typography>
               </Box>
             )

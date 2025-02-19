@@ -51,8 +51,8 @@ const TeamLeader: React.FC = () => {
   return (
     <>
       <UserTable
-        role={Role.TEAM_LEADER}
-        searchPlaceholder={t("TEAM_LEADERS.SEARCHBAR_PLACEHOLDER")}
+        role={Role.CENTRAL_ADMIN}
+        searchPlaceholder={t("CENTER_ADMIN.SEARCHBAR_PLACEHOLDER")}
         userType={t("SIDEBAR.TEAM_LEADERS")}
         handleAddUserClick={handleAddTeamLeaderClick}
         parentState={submitValue}

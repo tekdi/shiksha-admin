@@ -66,6 +66,8 @@
     "BLOCK_CODE": "Block Code",
     "BLOCKS_NOT_FOUND": "Cities not found",
     "STATE_NOT_FOUND": "States not found",
+    "CITY_NOT_FOUND": "Cities not found",
+    "COUNTRY_NOT_FOUND": "Country not found",
     "DISTRICT_NOT_FOUND": "District not found",
     "USERS_EMAIL": "Users Email",
     "STATE_NAME_REQUIRED": "State Name is Required",
@@ -106,10 +108,14 @@
     "ALL_DISTRICTS": "All Districts",
     "NO_DISTRICTS": "No Districts",
     "ALL_STATES": "All States",
+    "NO_STATES": "No States",
     "LOGOUT": "Log out",
     "HI": "Hi, {{name}}",
     "MOBILE": "Mobile",
+    "ALL_CITIES": "All Cities",
+    "NO_CITIES": "No Cities",
     "ALL_BLOCKS": "All Blocks",
+    "STATES": "States",
     "NO_BLOCKS": "No Blocks",
     "ARCHIVED": "Archived",
     "SEND_CREDENTIALS": "Send Credentials",
@@ -236,6 +242,15 @@
   "TEAM_LEADERS": {
     "SEARCHBAR_PLACEHOLDER": "Search Team leaders..",
     "NEW_TEAM_LEADER": "New Team Leader",
+    "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
+    "TEAM_LEADER_CREATED_SUCCESSFULLY": "Team Leader is created, and credentials sent successfully!",
+    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Team Leader is created ,credentials will be sent soon",
+    "TEAM_LEADER_UPDATED_SUCCESSFULLY": "Team Leader has been successfully updated!",
+    "EDIT_TEAM_LEADER": "Edit Team Leader"
+  },
+   "CENTER_ADMIN": {
+    "SEARCHBAR_PLACEHOLDER": "Search Center Admin..",
+    "NEW_CENTER_ADMIN": "New Center Admin",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
     "TEAM_LEADER_CREATED_SUCCESSFULLY": "Team Leader is created, and credentials sent successfully!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Team Leader is created ,credentials will be sent soon",
@@ -452,7 +467,10 @@
     "URDU":"Urdu",
     "DIVORCED/WIDOW":"Divorced/Widow",
     "GRADUATE":"Graduate",
-    "POST_GRADUATE":"Post Graduate"
+    "POST_GRADUATE":"Post Graduate",
+    "QUALIFICATIONS":"Qualification",
+    "DETAILED_ADDRESS":"Detailed Address",
+    "COURSES":"Courses"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -496,7 +514,9 @@
     "ARCHIVED_LEARNERS": " Archived Learners",
     "CODE": "Code",
     "DISTRICT": "District",
-    "DOB":"Date of Birth"
+    "DOB":"Date of Birth",
+    "CITY":"City",
+    "COUNTRY":"Country"
   },
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",

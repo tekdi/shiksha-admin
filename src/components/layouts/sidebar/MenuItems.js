@@ -91,13 +91,24 @@ export const getFilteredMenuItems = () => {
       userInfo = JSON.parse(adminInfo || "{}");
     } 
 
-    if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
+    if (userInfo?.role === Role.CENTRAL_ADMIN || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace
-      return Menuitems.filter(
-        (item) =>
-          item.title === "SIDEBAR.COURSE_PLANNER" ||
-          item.title === "SIDEBAR.WORKSPACE"
-      );
+      return Menuitems.filter(item => 
+        item.title === "PROGRAM_MANAGEMENT.OPPORTUNITY" || 
+        item.title === "SIDEBAR.MANAGE_USERS"
+      ).map(item => {
+        if (item.title === "SIDEBAR.MANAGE_USERS") {
+          return {
+            ...item,
+            subOptions: item.subOptions.filter(
+              subItem =>
+                subItem.title === "SIDEBAR.FACILITATORS" ||
+                subItem.title === "SIDEBAR.LEARNERS"
+            ),
+          };
+        }
+        return item;
+      });
     }
 
     if (
