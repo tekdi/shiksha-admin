@@ -4,6 +4,7 @@ export interface userListParam {
   limit?: number;
   //  page: number;
   filters: {
+    cohortId?: any;
     role?: string;
     status?: string;
     states?: string;

@@ -80,7 +80,7 @@ export enum FormContextType {
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
   COHORT = "center",
-  CONTENT_CREATOR = "TRAINER"
+  CONTENT_CREATOR = "CONTENT CREATOR"
 }
 
 export enum RoleId {
@@ -123,6 +123,7 @@ export enum CohortTypes {
   STATE="STATE",
   COUNTRY="COUNTRY",
   CITY="CITY",
+  BATCH="COHORT"
 }
 
 export enum FormValues {

@@ -29,16 +29,22 @@ interface Centers {
   value: string;
   label: string;
 }
+interface Batches {
+  name :string;
+  cohortId: string;
+}
 interface DropdownBoxProps {
   country: Country[];
   states: State[];
   districts: District[];
   blocks: Block[];
   allCenters?: Centers[];
+  batches?: Batches[];
   selectedState: string[];
   selectedDistrict: string[];
   selectedBlock: string[];
   selectedCenter?: any;
+  selectedBatch?: any;
   inModal?: boolean;
    handleCountryChangeWrapper: (
     selectedNames: string[],
@@ -57,6 +63,10 @@ interface DropdownBoxProps {
     selectedCodes: string[]
   ) => void;
   handleCenterChangeWrapper?: (
+    selected: string[],
+    selectedCodes: string[]
+  ) => void;
+  handleBatchChangeWrapper?: (
     selected: string[],
     selectedCodes: string[]
   ) => void;
@@ -79,13 +89,16 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   districts,
   blocks,
   allCenters,
+  batches,
   selectedState,
   selectedDistrict,
   selectedBlock,
   selectedCenter = [],
+  selectedBatch = [],
   handleCountryChangeWrapper,
   handleStateChangeWrapper,
   handleBlockChangeWrapper,
+  handleBatchChangeWrapper= () => { },
   isMobile,
   isMediumScreen,
   isCenterSelection = true,
@@ -102,7 +115,6 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   const router = useRouter();
 
   const {  center } = router.query;
-console.log(blocks,"blocks-------");
 
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -112,8 +124,12 @@ console.log(blocks,"blocks-------");
   const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("sm")
   );
+  const isbatchselection = (userType === "YOUTH" || userType === "TRAINER")
   // isSmallScreen=isMobile?true: false;
   const centerNames = allCenters?.map((center) => center.label) || [];
+
+  const batch = batches?.map((batch) => batch.name) || [];
+
 
   const blockDisable = districtDefaultValue ? false : true;
   const shouldRenderSelectCheckmarks = !(
@@ -246,6 +262,23 @@ console.log(blocks,"blocks-------");
                     tagName={t("CENTERS.CENTERS")}
                     selectedCategories={selectedCenter}
                     onCategoryChange={handleCenterChangeWrapper}
+                  />
+                </Grid>
+              )}
+              {isCenterSelection && !iscenterCreate && isbatchselection &&(
+                <Grid
+                  item
+                  xs={12}
+                  sm={inModal ? 12 : 6}
+                  md={inModal ? 12 : 4}
+                  lg={inModal ? 12 : isCenterSelection ? 3 : 4}
+                >
+                  <MultipleSelectCheckmarks
+                    names={capitalizeFirstLetterOfEachWordInArray(batch)}
+                    codes={batches?.map((batch) => batch.cohortId) || []}
+                    tagName={t("BATCHES.BATCHES")}
+                    selectedCategories={selectedBatch}
+                    onCategoryChange={handleBatchChangeWrapper}
                   />
                 </Grid>
               )}
