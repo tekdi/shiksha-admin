@@ -1,0 +1,34 @@
+version: 1
+include:
+  - "src/pages/**/*.tsx"
+  - "src/app/**/*.tsx"
+  - "src/components/**/*.tsx"
+  - "src/lib/**/*.ts"
+  - "src/utils/**/*.ts"
+exclude:
+  - "node_modules/**/*"
+  - "public/**/*"
+  - ".next/**/*"
+rules:
+  eslint:
+    enabled: true
+    config: "./.eslintrc.json"
+  formatting:
+    enabled: true
+    prettier:
+      config: "./.prettierrc"
+  best_practices:
+    enforce_nextjs_image: true   # Enforce usage of next/image instead of <img>
+    enforce_nextjs_link: true    # Enforce usage of next/link instead of <a>
+    enforce_nextjs_script: true  # Enforce next/script for third-party scripts
+    avoid_direct_api_calls: true # Ensure API calls are made through getStaticProps or getServerSideProps
+    react_hooks_rules: true      # Enforce correct React hooks usage
+  security:
+    avoid_raw_html: true    # Prevent direct usage of dangerouslySetInnerHTML
+    avoid_eval: true        # Prevent usage of eval()
+    enforce_content_security_policy: true  # Suggests proper CSP headers
+  performance:
+    optimize_fonts: true    # Ensure custom fonts are loaded via next/font
+    optimize_images: true   # Ensure images are properly optimized
+  accessibility:
+    a11y_rules: true  # Enforce WCAG guidelines for accessible UI
