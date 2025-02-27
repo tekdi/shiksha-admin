@@ -1,41 +1,39 @@
-version: 1
+include:
+  - "src/pages/**/*.tsx"
+  - "src/app/**/*.tsx"
+  - "src/components/**/*.tsx"
+  - "src/lib/**/*.ts"
+  - "src/utils/**/*.ts"
 
-settings:
-  include:
-    - "src/pages/**/*.tsx"
-    - "src/app/**/*.tsx"
-    - "src/components/**/*.tsx"
-    - "src/lib/**/*.ts"
-    - "src/utils/**/*.ts"
-  exclude:
-    - "node_modules/**/*"
-    - "public/**/*"
-    - ".next/**/*"
-
-linting:
-  eslint:
-    enabled: true
-    config: "./.eslintrc.json"
-  prettier:
-    enabled: true
-    config: "./.prettierrc"
+exclude:
+  - "node_modules/**/*"
+  - "public/**/*"
+  - ".next/**/*"
 
 rules:
+  eslint:
+    enabled: true
+    config: ".eslintrc.json"
+
+  prettier:
+    enabled: true
+    config: ".prettierrc"
+
   best_practices:
-    enforce_nextjs_image: true  # Use next/image instead of <img>
-    enforce_nextjs_link: true   # Use next/link instead of <a>
-    enforce_nextjs_script: true # Use next/script for third-party scripts
-    avoid_direct_api_calls: true # Use getStaticProps/getServerSideProps for API calls
-    react_hooks_rules: true     # Enforce React hooks rules
+    enforce_nextjs_image: true
+    enforce_nextjs_link: true
+    enforce_nextjs_script: true
+    avoid_direct_api_calls: true
+    react_hooks_rules: true
 
   security:
-    avoid_raw_html: true  # Prevent dangerouslySetInnerHTML usage
-    avoid_eval: true      # Prevent eval() usage
-    enforce_csp: true     # Suggest proper Content Security Policy (CSP) headers
+    avoid_raw_html: true
+    avoid_eval: true
+    enforce_content_security_policy: true
 
   performance:
-    optimize_fonts: true  # Ensure fonts are loaded via next/font
-    optimize_images: true # Ensure images are properly optimized
+    optimize_fonts: true
+    optimize_images: true
 
   accessibility:
-    enforce_a11y: true # Enforce WCAG accessibility guidelines
+    a11y_rules: true
