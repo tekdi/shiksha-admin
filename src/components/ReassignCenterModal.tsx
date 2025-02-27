@@ -43,10 +43,12 @@ interface ReassignCohortModalProps {
 }
 
 interface Cohort {
-  id?: any;
-  cohortId?: string;
-  name?: string;
+  value: string;
+  label: string;
 }
+
+
+
 type FilterDetails = {
   role: any;
   status?: any;
@@ -91,10 +93,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     dynamicForm,
     selectedBlock,
     selectedBlockCode,
+    handleCountryChangeWrapper,
     handleStateChangeWrapper,
-    handleDistrictChangeWrapper,
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
+    handleBatchChangeWrapper,
     selectedCenterCode,
     selectedBlockCohortId,
     blockFieldId,
@@ -108,11 +111,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     setSelectedBlockCode,
   } = useLocationState(open, onClose, roleType, true);
   const cohorts: Cohort[] = allCenters?.map(
-    (cohort: { cohortId: any; name: string }) => ({
-      name: cohort.name,
-      id: cohort.cohortId,
-    })
-  ); 
+  (cohort: { value: string; label: string }) => ({
+    label: cohort.label,
+    value: cohort.value,
+  })
+); 
   const names = cohortData.map((item: any) => item.name);
   const setReassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setReassignButtonStatus
@@ -190,15 +193,15 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       if (userType !== Role.TEAM_LEADERS) {
         selectedData = cohorts
           .filter(
-            (center) => center?.name && checkedCenters.includes((center?.name)?.toLowerCase())
+            (center) => center?.label && checkedCenters.includes((center?.label)?.toLowerCase())
           )
-          .map((center) => center!.id);
+          .map((center) => center!.value);
 
         unSelectedData = cohorts
           .filter(
-            (center) => center?.name && !checkedCenters.includes(center.name)
+            (center) => center?.label && !checkedCenters.includes(center.label)
           )
-          .map((center) => center!.id);
+          .map((center) => center!.value);
       } else {
         selectedData = blocks
           .filter(
@@ -467,13 +470,13 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
   const filteredCohorts = cohorts?.filter((cohort) =>
-    cohort?.name?.toLowerCase().includes(searchInput)
+    cohort?.label?.toLowerCase().includes(searchInput)
   );
 
   const formattedCohorts = filteredCohorts?.map((location) => ({
     ...location,
-    name: location.name
-      ? location.name
+    name: location.label
+      ? location.label
           .split(" ")
           .map(
             (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -641,6 +644,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
         primaryBtnDisabled={checkedCenters.length === 0}
       >
         <AreaSelection
+          country={transformArray(states)}
           states={transformArray(states)}
           districts={transformArray(districts)}
           blocks={transformArray(blocks)}
@@ -648,7 +652,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
           selectedDistrict={selectedDistrict}
           selectedBlock={selectedBlock}
           handleStateChangeWrapper={handleStateChangeWrapper}
-          handleDistrictChangeWrapper={handleDistrictChangeWrapper}
+          handleCountryChangeWrapper={handleStateChangeWrapper}
           handleBlockChangeWrapper={handleBlockChangeWrapper}
           isMobile={true}
           isMediumScreen={isMediumScreen}
@@ -706,7 +710,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
               {userType !== Role.TEAM_LEADERS ? (
                 formattedCohorts && formattedCohorts.length > 0 ? (
                   formattedCohorts.map((center) => (
-                    <Box key={center.id}>
+                    <Box key={center.value}>
                       <Box
                         sx={{
                           display: "flex",

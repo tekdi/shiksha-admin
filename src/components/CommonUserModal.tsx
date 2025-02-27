@@ -43,7 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import React, { useEffect, useState } from "react";
 import { TENANT_ID } from "../../app.config";
-import { transformArray } from "../utils/Helper";
+import { transformArray,transformBatchArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import CustomModal from "./CustomModal";
 import SendCredentialModal from "./SendCredentialModal";
@@ -762,7 +762,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               districts={transformArray(districts)}
               blocks={transformArray(blocks)}
               allCenters={transformArray(allCenters)}
-              batches={transformArray(batches)}
+              batches={transformBatchArray(batches)}
               selectedState={selectedState}
               selectedDistrict={selectedDistrict}
               selectedBlock={selectedBlock}

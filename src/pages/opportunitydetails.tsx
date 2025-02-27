@@ -33,7 +33,7 @@ const users = Array.from({ length: 25 }, (_, i) => ({ id: i + 1, name: `User ${i
 export default function OpportunityDetail() {
     const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
 
   const toggleUserSelection = (id: any) => {
     setSelectedUsers((prev : any) =>
