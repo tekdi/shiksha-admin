@@ -7,6 +7,10 @@ export interface State {
   label: string;
 }
 
+export interface Batch {
+  name: string;
+  cohortId: string;
+}
 export interface FieldOption {
   label: string;
   value: string;

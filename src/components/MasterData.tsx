@@ -1423,7 +1423,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           selectedStateForEdit
             ? {
                 name: selectedStateForEdit.label,
-                value: selectedStateForEdit.value,
+                // value: selectedStateForEdit.value,
                 controllingField: selectedStateForEdit.stateCode,
                 controllingFieldLabel: selectedStateForEdit.selectedState,
               }

@@ -1,7 +1,7 @@
 import FingerprintJS from "fingerprintjs2";
 import { getUserDetailsInfo } from "../services/UserList";
 import { Role, FormContextType, FormValues, InputTypes, Storage } from "./app.constant";
-import { State } from "./Interfaces";
+import { State,Batch } from "./Interfaces";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from 'axios';
 
@@ -137,6 +137,17 @@ export const transformArray = (arr: State[]): State[] => {
     label: transformLabel(item.label),
   }));
 };
+
+export const transformBatchArray = (arr: Batch[]): Batch[] => {
+  if (!arr || !Array.isArray(arr)) {
+    return arr;
+  }
+  return arr?.map((item) => ({
+    ...item,
+    label: transformLabel(item.name),
+  }));
+};
+
 
 export const firstLetterInUpperCase = (label: string): string => {
   if (!label) {

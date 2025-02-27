@@ -42,8 +42,8 @@ interface Block {
   label: string;
 }
 interface CenterProp {
-  cohortId: string;
-  name: string;
+  value: string;
+  label: string;
 }
 const Sort = ["A-Z", "Z-A"];
 

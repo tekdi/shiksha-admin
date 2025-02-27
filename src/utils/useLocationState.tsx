@@ -24,6 +24,10 @@ interface FieldProp {
   label: string;
 }
 
+interface batchProp {
+  name :string;
+  cohortId: string;
+}
 interface CenterProp {
   value: string;
   label: string;
@@ -41,7 +45,7 @@ export const useLocationState = (
   const [districts, setDistricts] = useState<FieldProp[]>([]);
   const [blocks, setBlocks] = useState<FieldProp[]>([]);
   const [allCenters, setAllCenters] = useState<CenterProp[]>([]);
-  const [batches,setBatches] = useState<FieldProp[]>([]);
+  const [batches,setBatches] = useState<batchProp[]>([]);
   const isMobile = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(max-width:986px)");
   const [selectedCountry, setSelectedCountry] = useState<string[]>([]);

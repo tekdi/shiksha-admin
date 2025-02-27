@@ -52,7 +52,7 @@ import {
   getUserFullName,
 } from "../utils/Helper";
 import CommonUserModal from "./CommonUserModal";
-import ReassignCenterModal from "./ReassignCenterModal";
+// import ReassignCenterModal from "./ReassignCenterModal";
 import { showToastMessage } from "./Toastify";
 type UserDetails = {
   userId: any;
@@ -1665,7 +1665,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         userName={userName}
         userType={userType}
       />
-      <ReassignCenterModal
+      {/* <ReassignCenterModal
         open={isReassignCohortModalOpen}
         onClose={handleCloseReassignModal}
         userType={userType}
@@ -1679,7 +1679,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         cohortId={cohortId}
         centers={assignedCenters}
         userName={userName}
-      />
+      /> */}
 
       <CommonUserModal
         open={openAddLearnerModal}

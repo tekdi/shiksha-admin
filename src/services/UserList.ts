@@ -5,11 +5,8 @@ export interface userListParam {
   //  page: number;
   filters: {
     cohortId?: any;
-    role?: string;
-    status?: string;
-    states?: string;
-    districts?: string;
-    blocks?: string;
+    role?: any;
+    status?: any;
   };
   fields?: any;
   sort?: object;
