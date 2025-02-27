@@ -51,10 +51,6 @@ interface DropdownBoxProps {
     selectedCodes: string[]
   ) => Promise<void>;
   handleStateChangeWrapper: (
-    selectedNames: string[],
-    selectedCodes: string[]
-  ) => Promise<void>;
-  handleStateChangeWrapper: (
     selected: string[],
     selectedCodes: string[]
   ) => Promise<void>;
