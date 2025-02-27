@@ -174,7 +174,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         ? t("FACILITATORS.NEW_FACILITATOR")
         : userType === FormContextType.CONTENT_CREATOR
           ? t("CONTENT_CREATOR_REVIEWER.CREATE_CONTENT_CREATOR")
-          : t("TEAM_LEADERS.NEW_TEAM_LEADER")
+          : t("CENTER_ADMIN.NEW_CENTER_ADMIN")
     : userType === FormContextType.STUDENT
       ? t("LEARNERS.EDIT_LEARNER")
       : userType === FormContextType.TEACHER
@@ -184,6 +184,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           : t("TEAM_LEADERS.EDIT_TEAM_LEADER");
   const theme = useTheme<any>();
   const {
+    country,
     states,
     districts,
     blocks,
@@ -198,8 +199,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     dynamicForm,
     selectedBlock,
     selectedBlockCode,
+    handleCountryChangeWrapper,
     handleStateChangeWrapper,
-    handleDistrictChangeWrapper,
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
     selectedCenterCode,
@@ -284,7 +285,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     const target = event?.target as HTMLFormElement;
  
  
-
+    console.log(selectedCenterCode,"selectedCenterCode-----");
+    
     const formData = data.formData; 
     const schemaProperties = schema.properties;
  
@@ -315,12 +317,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   : userType === FormContextType.CONTENT_CREATOR
                     ? RoleId.SCTA
                     : RoleId.TEAM_LEADER,
-            cohortIds:
-              userType === FormContextType.TEAM_LEADER
-                ? [selectedBlockCohortId]
-                : userType === FormContextType.CONTENT_CREATOR
-                  ? selectedStateCohortId
-                  : [selectedCenterCode],
+            cohortIds:[selectedCenterCode]
+              // userType === FormContextType.TEAM_LEADER
+              //   ? [selectedBlockCohortId]
+              //   : userType === FormContextType.CONTENT_CREATOR
+              //     ? selectedStateCohortId
+              //     : [selectedCenterCode],
           },
         ],
         customFields: [],
@@ -328,8 +330,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
 
       Object.entries(formData).forEach(([fieldKey, fieldValue]) => { 
         const fieldSchema = schemaProperties[fieldKey];
+        
         const fieldId = fieldSchema?.fieldId; 
-
+ 
         if (fieldId === null || fieldId === "null" || fieldKey===fieldKeys.GENDER) {
           if (typeof fieldValue !== "object") {
             apiBody[fieldKey] = fieldValue;
@@ -338,21 +341,23 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if (
             fieldSchema?.hasOwnProperty("isDropdown") ||
             fieldSchema?.hasOwnProperty("isCheckbox")
-          ) {
+          ) {            
             apiBody.customFields.push({
               fieldId: fieldId,
               value: Array.isArray(fieldValue) ? fieldValue : [fieldValue],
             });
           } else {
             if (fieldSchema?.checkbox && fieldSchema.type === "array") {
-              if (String(fieldValue).length != 0) {
+              if (String(fieldValue).length != 0) {                
                 apiBody.customFields.push({
                   fieldId: fieldId,
                   value: String(fieldValue).split(","),
                 });
               }
             } else {
-              if (fieldId) {
+              if (fieldId) {        
+                console.log(fieldId,"fieldId----");
+                                      
                 apiBody.customFields.push({
                   fieldId: fieldId,
                   value: String(fieldValue),
@@ -361,8 +366,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             }
           }
         }
+        
       });
       if (userType === FormContextType.CONTENT_CREATOR && !isEditModal) {
+        
         apiBody.customFields.push({
           fieldId: stateFieldId,
           value: [selectedStateCode],
@@ -472,6 +479,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           {
             apiBody.mobile = apiBody?.phone_number;
           }
+          
           const response = await createUser(apiBody); 
           if (response) {
             const messageKey = messageKeyMap[userType];
@@ -745,27 +753,29 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             }}
           >
             <AreaSelection
+              country={transformArray(country)}
               states={transformArray(states)}
               districts={transformArray(districts)}
               blocks={transformArray(blocks)}
+              allCenters={transformArray(allCenters)}
               selectedState={selectedState}
               selectedDistrict={selectedDistrict}
               selectedBlock={selectedBlock}
+              handleCountryChangeWrapper={handleCountryChangeWrapper}
               handleStateChangeWrapper={handleStateChangeWrapper}
-              handleDistrictChangeWrapper={handleDistrictChangeWrapper}
               handleBlockChangeWrapper={handleBlockChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
               isCenterSelection={
-                userType !== "TEAM LEADER" &&
-                userType !== FormContextType.CONTENT_CREATOR
+                true
               }
-              allCenters={allCenters}
+              
               selectedCenter={selectedCenter}
               handleCenterChangeWrapper={handleCenterChangeWrapper}
               inModal={true}
               userType={userType}
               stateDefaultValue={stateDefaultValue}
+              isUserAdd={true}
             />
           </Box>
         )}

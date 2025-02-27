@@ -53,6 +53,8 @@ import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
 import axios from 'axios';
 type cohortFilterDetails = {
+  city?: string;
+  country?: string;
   type?: string;
   status?: any;
   states?: string;
@@ -176,9 +178,9 @@ const Center: React.FC = () => {
   );
   const [filters, setFilters] = useState<cohortFilterDetails>({
     type: CohortTypes.COHORT,
-    states: selectedStateCode,
+    country: selectedStateCode,
     status: [statusValue],
-    districts: selectedDistrictCode,
+    states: selectedDistrictCode,
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
@@ -207,7 +209,7 @@ const Center: React.FC = () => {
         setSelectedStateCode(object[0]?.value);
 
         setFilters({
-          type: "COHORT",
+          type: "CENTER",
           states: object[0]?.value,
           status: filters.status,
         });
@@ -267,7 +269,7 @@ const Center: React.FC = () => {
           })
         ); 
         const finalResult = result
-          ?.filter((cohort: any) => cohort.type === "COHORT")
+          ?.filter((cohort: any) => cohort.type === "CENTER")
         finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
@@ -390,6 +392,9 @@ const Center: React.FC = () => {
 
         setSchema(schema);
         setUiSchema(uiSchema);
+        console.log("Schema:-------", schema);
+        console.log("UiSchema:-------", uiSchema);
+        
       } else {
         console.log("Unexpected response format");
       }
@@ -400,9 +405,9 @@ const Center: React.FC = () => {
   };
 
   useEffect(() => {
-    if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
+    // if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
       fetchUserList();
-    }
+    // }
     getFormData();
   }, [pageOffset, pageLimit, sortBy, filters, filters.states, filters.status, createCenterStatus]);
 
@@ -496,18 +501,18 @@ const Center: React.FC = () => {
 
     if (selected[0] === "") {
       if (filters.status)
-        setFilters({ type: "COHORT", status: filters.status });
+        setFilters({ type: "CENTER", status: filters.status });
       // else setFilters({ role: role });
     } else {
       const stateCodes = code?.join(",");
       setSelectedStateCode(stateCodes);
       if (filters.status)
         setFilters({
-          type: "COHORT",
-          states: stateCodes,
+          type: "CENTER",
+          country: stateCodes,
           status: filters.status,
         });
-      else setFilters({ type: "COHORT", states: stateCodes });
+      else setFilters({ type: "CENTER", country: stateCodes });
     }
   };
 
@@ -528,7 +533,7 @@ const Center: React.FC = () => {
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
       if (filters.status) { 
         setFilters({
-          states: selectedStateCode,
+          country: selectedStateCode,
           status: filters.status,
           type: "COHORT",
 
@@ -536,7 +541,7 @@ const Center: React.FC = () => {
       } else {
         setFilters({
 
-          states: selectedStateCode,
+          country: selectedStateCode,
           type: "COHORT",
 
         });
@@ -565,8 +570,8 @@ const Center: React.FC = () => {
       if (filters.status) {
         setFilters({
 
-          states: selectedStateCode,
-          districts: districts,
+          country: selectedStateCode,
+          states: districts,
           status: filters.status,
           //type:"COHORT",
 
@@ -574,8 +579,8 @@ const Center: React.FC = () => {
       } else {
         setFilters({
 
-          states: selectedStateCode,
-          districts: districts,
+          country: selectedStateCode,
+          states: districts,
           // type:"COHORT",
 
         });
@@ -613,18 +618,18 @@ const Center: React.FC = () => {
       if (filters.status) {
         setFilters({
 
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
+          country: selectedStateCode,
+          states: selectedDistrictCode,
           status: filters.status,
-          type: "COHORT",
+          type: "CENTER",
 
         });
       } else {
         setFilters({
 
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          type: "COHORT",
+          country: selectedStateCode,
+          states: selectedDistrictCode,
+          type: "CENTER",
 
         });
       }
@@ -643,20 +648,20 @@ const Center: React.FC = () => {
       if (filters.status) {
         setFilters({
 
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          blocks: blocks,
+          country: selectedStateCode,
+          states: selectedDistrictCode,
+          city: blocks,
           status: filters.status,
-          type: "COHORT",
+          type: "CENTER",
 
         });
       } else {
         setFilters({
 
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          blocks: blocks,
-          type: "COHORT",
+          country: selectedStateCode,
+          states: selectedDistrictCode,
+          city: blocks,
+          type: "CENTER",
 
         });
       }

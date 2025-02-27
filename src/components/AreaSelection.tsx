@@ -12,6 +12,10 @@ interface State {
   label: string;
 }
 
+interface Country {
+  value: string;
+  label: string;
+}
 interface District {
   value: string;
   label: string;
@@ -22,10 +26,11 @@ interface Block {
   label: string;
 }
 interface Centers {
-  cohortId: string;
-  name: string;
+  value: string;
+  label: string;
 }
 interface DropdownBoxProps {
+  country: Country[];
   states: State[];
   districts: District[];
   blocks: Block[];
@@ -35,11 +40,15 @@ interface DropdownBoxProps {
   selectedBlock: string[];
   selectedCenter?: any;
   inModal?: boolean;
+   handleCountryChangeWrapper: (
+    selectedNames: string[],
+    selectedCodes: string[]
+  ) => Promise<void>;
   handleStateChangeWrapper: (
     selectedNames: string[],
     selectedCodes: string[]
   ) => Promise<void>;
-  handleDistrictChangeWrapper: (
+  handleStateChangeWrapper: (
     selected: string[],
     selectedCodes: string[]
   ) => Promise<void>;
@@ -60,35 +69,40 @@ interface DropdownBoxProps {
   reAssignModal?: boolean;
   blockDefaultValue?: string;
   districtDefaultValue?: string;
+  isUserAdd?: boolean;
+  iscenterCreate?: boolean;
 }
 
 const AreaSelection: React.FC<DropdownBoxProps> = ({
+  country,
   states,
   districts,
   blocks,
-  allCenters = [],
+  allCenters,
   selectedState,
   selectedDistrict,
   selectedBlock,
   selectedCenter = [],
+  handleCountryChangeWrapper,
   handleStateChangeWrapper,
-  handleDistrictChangeWrapper,
   handleBlockChangeWrapper,
   isMobile,
   isMediumScreen,
-  isCenterSelection = false,
+  isCenterSelection = true,
   inModal = false,
   handleCenterChangeWrapper = () => { },
   stateDefaultValue,
   blockDefaultValue,
   districtDefaultValue,
-
+  isUserAdd,
+  iscenterCreate=false,
   userType,
   reAssignModal = false,
 }) => { 
   const router = useRouter();
 
   const {  center } = router.query;
+console.log(blocks,"blocks-------");
 
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -99,6 +113,8 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
     theme.breakpoints.down("sm")
   );
   // isSmallScreen=isMobile?true: false;
+  const centerNames = allCenters?.map((center) => center.label) || [];
+
   const blockDisable = districtDefaultValue ? false : true;
   const shouldRenderSelectCheckmarks = !(
     reAssignModal && userType === Role.TEAM_LEADERS
@@ -136,8 +152,10 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
             },
           }}
         >
-          <Grid container spacing={2}>
-            <Grid
+          
+           
+              <Grid container spacing={2}>
+                <Grid
               item
               xs={12}
               sm={inModal ? 12 : 6}
@@ -145,18 +163,18 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
               lg={inModal ? 12 : isCenterSelection ? 3 : 4}
             >
               <MultipleSelectCheckmarks
-                names={states?.map(
-                  (state) =>
-                    state.label?.toLowerCase().charAt(0).toUpperCase() +
-                    state.label?.toLowerCase().slice(1)
+                names={country?.map(
+                  (country) =>
+                    country.label?.toLowerCase().charAt(0).toUpperCase() +
+                    country.label?.toLowerCase().slice(1)
                 )}
-                codes={states?.map((state) => state.value)}
-                tagName={t("FACILITATORS.STATE")}
+                codes={country?.map((country) => country.value)}
+                tagName={t("FACILITATORS.COUNTRY")}
                 selectedCategories={selectedState}
-                onCategoryChange={handleStateChangeWrapper}
-                disabled={stateDefaultValue !== t("COMMON.ALL_STATES")}
+                onCategoryChange={handleCountryChangeWrapper}
+                // disabled={stateDefaultValue !== t("COMMON.ALL_STATES")}
                 overall={!inModal}
-                defaultValue={stateDefaultValue}
+                // defaultValue={stateDefaultValue}
               />
             </Grid>
 
@@ -168,67 +186,74 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
               lg={inModal ? 12 : isCenterSelection ? 3 : 4}
             >
               <MultipleSelectCheckmarks
-                names={districts?.map((district) => district.label)}
-                codes={districts?.map((district) => district.value)}
-                tagName={t("FACILITATORS.DISTRICT")}
+                names={states?.map((states) => states.label)}
+                codes={states?.map((states) => states.value)}
+                tagName={t("FACILITATORS.STATE")}
                 selectedCategories={selectedDistrict}
-                onCategoryChange={handleDistrictChangeWrapper}
-                disabled={
-                  districts?.length <= 0 ||
-                  (selectedState.length === 0 &&
-                    stateDefaultValue === t("COMMON.ALL_STATES"))
-                }
+                onCategoryChange={handleStateChangeWrapper}
+                // disabled={
+                //   districts?.length <= 0 ||
+                //   (selectedState.length === 0 &&
+                //     stateDefaultValue === t("COMMON.ALL_STATES"))
+                // }
                 overall={!inModal}
                 defaultValue={
                   reAssignModal
                     ? districtDefaultValue
                     : selectedState.length > 0 && districts?.length === 0
-                      ? t("COMMON.NO_DISTRICTS")
-                      : t("COMMON.ALL_DISTRICTS")
+                      ? t("COMMON.STATES")
+                      : t("COMMON.ALL_STATES")
                 }
               />
             </Grid>
             <Grid
-              item
-              xs={12}
-              sm={inModal ? 12 : 6}
-              md={inModal ? 12 : 4}
-              lg={inModal ? 12 : isCenterSelection ? 3 : 4}
-            >
-              {shouldRenderSelectCheckmarks && (
-                <MultipleSelectCheckmarks
-                  names={capitalizeFirstLetterOfEachWordInArray(
-                    blocks?.length > 0 ? blocks.map((block) => block.label) : []
-                    //  blocks.map((block) => block.label)
+                item
+                xs={12}
+                sm={inModal ? 12 : 6}
+                md={inModal ? 12 : 4}
+                lg={inModal ? 12 : isCenterSelection ? 3 : 4}
+              >
+                {shouldRenderSelectCheckmarks && (
+                  <MultipleSelectCheckmarks
+                    names={capitalizeFirstLetterOfEachWordInArray(
+                      blocks?.length > 0 ? blocks.map((block) => block.label) : []
+                    )}
+                    codes={blocks?.length > 0 ? blocks?.map((block) => block.value) : []}
+                    tagName={t("FACILITATORS.CITY")}
+                    selectedCategories={capitalizeFirstLetterOfEachWordInArray(selectedBlock)}
+                    onCategoryChange={handleBlockChangeWrapper}
+                    overall={!inModal}
+                    defaultValue={
+                      selectedDistrict?.length > 0 && blocks?.length === 0
+                        ? t("COMMON.NO_CITIES")
+                        : t("COMMON.ALL_CITIES")
+                    }
+                  />
+                )}
+              </Grid>
 
-                  )}
-                  codes={
-
-                    blocks?.length > 0 ? blocks?.map((block) => block.value) : []
-                    // blocks?.map((block) => block.value)
-                  }
-                  tagName={t("FACILITATORS.BLOCK")}
-                  selectedCategories={capitalizeFirstLetterOfEachWordInArray(
-                    selectedBlock
-                  )}
-                  onCategoryChange={handleBlockChangeWrapper}
-                  disabled={
-                    blocks?.length <= 0 ||
-                    selectedDistrict?.length === 0 ||
-                    selectedDistrict[0] === t("COMMON.ALL_DISTRICTS")
-                  }
-                  overall={!inModal}
-                  defaultValue={
-                    selectedDistrict?.length > 0 && (blocks?.length === 0)
-                      ? t("COMMON.NO_BLOCKS")
-                      : t("COMMON.ALL_BLOCKS")
-                  }
-                />
+              {isCenterSelection && !iscenterCreate && (
+                <Grid
+                  item
+                  xs={12}
+                  sm={inModal ? 12 : 6}
+                  md={inModal ? 12 : 4}
+                  lg={inModal ? 12 : isCenterSelection ? 3 : 4}
+                >
+                  <MultipleSelectCheckmarks
+                    names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
+                    codes={allCenters?.map((center) => center.value) || []}
+                    tagName={t("CENTERS.CENTERS")}
+                    selectedCategories={selectedCenter}
+                    onCategoryChange={handleCenterChangeWrapper}
+                  />
+                </Grid>
               )}
-            </Grid>
+              </Grid>
+           
 
 
-            {isCenterSelection && (
+            {/* {isCenterSelection && !iscenterCreate && (
               <Grid
                 item
                 xs={12}
@@ -237,30 +262,21 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                 lg={inModal ? 12 : isCenterSelection ? 3 : 4}
               >
                 <MultipleSelectCheckmarks
-                  names={capitalizeFirstLetterOfEachWordInArray(
-                    allCenters?.map((center) => center.name)
-                  )}
-                  codes={allCenters?.map((center) => center.cohortId)}
+                  names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
+                  codes={allCenters?.map((center) => center.value) || []}
                   tagName={t("CENTERS.CENTERS")}
                   selectedCategories={selectedCenter}
                   onCategoryChange={handleCenterChangeWrapper}
-                  disabled={
-                   (center&& !inModal)?false:
-                    selectedBlock.length === 0 ||
-                    selectedBlock[0] === t("COMMON.ALL_BLOCKS") ||
-                    (selectedBlock?.length > 0 && allCenters?.length === 0)
-                  }
-                  overall={!inModal}
-                  defaultValue={
-                    selectedBlock?.length > 0 && allCenters?.length === 0
-                      ? t("COMMON.NO_CENTERS")
-                      : t("COMMON.ALL_CENTERS")
-                  }
+                  // disabled={
+                  //  (center&& !inModal)?false:
+                  //   selectedBlock.length === 0 ||
+                  //   selectedBlock[0] === t("COMMON.ALL_BLOCKS") ||
+                  //   (selectedBlock?.length > 0 && allCenters?.length === 0)
                 />
               </Grid>
-            )}
+            )} */}
 
-          </Grid>
+          
         </Box>)}
       </Box>
     </Box>

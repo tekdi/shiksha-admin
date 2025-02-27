@@ -25,7 +25,7 @@ interface AddDistrictBlockModalProps {
   onClose: () => void;
   onSubmit: (
     name: string,
-    value: string,
+    // value: string,
     controllingField: string,
     fieldId: string,
    // districtId?: string,
@@ -34,7 +34,7 @@ interface AddDistrictBlockModalProps {
   fieldId: string;
   initialValues?: {
     name?: string;
-    value?: string;
+    // value?: string;
     controllingField?: string;
     controllingFieldLabel?: string;
   };
@@ -56,7 +56,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     name: initialValues?.name ?? "",
-    value: initialValues?.value ?? "",
+    // value: initialValues?.value ?? "",
     controllingField: initialValues?.controllingField ?? "",
   });
 
@@ -99,10 +99,12 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
            userData = JSON.parse(storedUserData);
         }
        
-            if(userData?.role===Role.CENTRAL_ADMIN)
+            if(userData?.role===Role.ADMIN)
        {
 
-        const result= await formatedStates(); 
+        const result= await formatedStates();
+        console.log(result,"result-------");
+         
          setStates(result)
          setStateCode(result[0]?.value);
          setStateParentId(result[0]?.cohortId);
@@ -132,7 +134,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
   useEffect(() => {
     setFormData({
       name: initialValues.name ?? "",
-      value: initialValues.value ?? "",
+      // value: initialValues.value ?? "",
       controllingField: initialValues.controllingField ?? stateCode,
     });
     setErrors({});
@@ -166,11 +168,11 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       newErrors.name = t("COMMON.INVALID_TEXT");
     }
 
-    if (!formData.value) {
-      newErrors.value = t("COMMON.CODE_REQUIRED");
-    } else if (!isValidCode(formData.value)) {
-      newErrors.value = t("COMMON.INVALID_TEXT");
-    }
+    // if (!formData.value) {
+    //   newErrors.value = t("COMMON.CODE_REQUIRED");
+    // } else if (!isValidCode(formData.value)) {
+    //   newErrors.value = t("COMMON.INVALID_TEXT");
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -180,7 +182,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     if (validateForm()) {
       onSubmit(
         formData.name,
-        formData.value,
+        // formData.value,
         formData.controllingField || stateCode,
         fieldId,
         //districtId,
@@ -188,7 +190,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       );
       setFormData({
         name: "",
-        value: "",
+        // value: "",
         controllingField: "",
       });
       onClose();
@@ -215,11 +217,11 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
     }
   };
   const isEditing = !!initialValues.name;
-  const isEditCode = !!initialValues.value;
+  // const isEditCode = !!initialValues.value;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
   const dialogTitle = isEditing
-    ? t("COMMON.UPDATE_DISTRICT")
-    : t("COMMON.ADD_DISTRICT");
+    ? t("COMMON.UPDATE_STATE")
+    : t("COMMON.ADD_STATE");
 
   return (
     <Dialog
@@ -235,7 +237,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
       <Divider />
       <DialogContent>
 
-        {userRole===Role.CENTRAL_ADMIN?(<>
+        {userRole===Role.ADMIN?(<>
           <MultipleSelectCheckmarks
               names={states?.map(
                 (state) =>
@@ -243,15 +245,15 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
                   state.label?.toLowerCase().slice(1)
               )}
               codes={states?.map((state) => state.value)}
-              tagName={t("FACILITATORS.STATE")}
+              tagName={t("FACILITATORS.COUNTRY")}
               selectedCategories={initialValues.controllingFieldLabel ? [initialValues.controllingFieldLabel] : selectedState}
               onCategoryChange={handleStateChangeWrapper}
               cohortIds={states?.map((state) => state.cohortId)}
 
-              disabled={isEditing}
+              // disabled={isEditing}
               // overall={!inModal}
              width="293px"
-              defaultValue={defaultStates?.label}
+              // defaultValue={defaultStates?.label}
             />
         </>):(<Select
           value={formData.controllingField || stateCode}
@@ -275,7 +277,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
         )}
         <TextField
           margin="dense"
-          label={t("COMMON.DISTRICT_NAME")}
+          label={t("COMMON.STATE_NAME")}
           type="text"
           fullWidth
           variant="outlined"
@@ -284,7 +286,7 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
           error={!!errors.name}
           helperText={errors.name}
         />
-        <TextField
+        {/* <TextField
           margin="dense"
           label={t("COMMON.DISTRICT_CODE")}
           type="text"
@@ -295,13 +297,13 @@ const AddDistrictModal: React.FC<AddDistrictBlockModalProps> = ({
           error={!!errors.value}
           helperText={errors.value}
           disabled={isEditing}
-        />
-        <Box display="flex" alignItems="center" mt={2}>
+        /> */}
+        {/* <Box display="flex" alignItems="center" mt={2}>
           <InfoOutlinedIcon color="primary" sx={{ mr: 1 }} />
           <Typography variant="caption" color="textSecondary">
             {t("COMMON.CODE_NOTIFICATION")}
           </Typography>
-        </Box>
+        </Box> */}
       </DialogContent>
       <Divider />
       <DialogActions sx={{ p: 2 }}>

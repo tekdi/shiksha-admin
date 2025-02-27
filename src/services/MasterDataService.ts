@@ -194,7 +194,7 @@ export const createOrUpdateOption = async (
   fieldId: string,
   fieldParams: {
     isCreate?: boolean;
-    options: { name: string; value: string; controllingfieldfk?: string ,updatedBy?:string}[];
+    options: { name: string;  controllingfieldfk?: string ,updatedBy?:string}[];
   },
   t?:any
   // stateId?: string

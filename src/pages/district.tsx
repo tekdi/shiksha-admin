@@ -3,7 +3,7 @@ import { CohortTypes } from "@/utils/app.constant";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const District: React.FC = () => {
-  return <MasterData cohortType={CohortTypes.DISTRICT} />;
+  return <MasterData cohortType={CohortTypes.STATE} />;
 };
 
 export default District;

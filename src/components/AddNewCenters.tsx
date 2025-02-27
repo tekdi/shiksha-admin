@@ -19,6 +19,7 @@ import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import FrameworkCategories from "./FrameworkCategories";
 import { showToastMessage } from "./Toastify";
+import { createOrUpdateOption } from "@/services/MasterDataService"
 
 interface CustomField {
   fieldId: string;
@@ -59,6 +60,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
   const { t } = useTranslation();
   const roleType = FormContextType.ADMIN_CENTER;
   const {
+        country,
     states,
     districts,
     blocks,
@@ -66,21 +68,27 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     isMobile,
     isMediumScreen,
     selectedState,
+    selectedStateCode,
     selectedDistrict,
+    selectedDistrictCode,
     selectedCenter,
+    dynamicForm,
     selectedBlock,
+    selectedBlockCode,
+    handleCountryChangeWrapper,
+    handleStateChangeWrapper,
+    handleBlockChangeWrapper,
+    handleCenterChangeWrapper,
+    selectedCenterCode,
+    selectedBlockCohortId,
     blockFieldId,
     districtFieldId,
     stateFieldId,
-    handleStateChangeWrapper,
-    handleDistrictChangeWrapper,
-    handleBlockChangeWrapper,
-    handleCenterChangeWrapper,
-    selectedBlockCohortId,
-    selectedDistrictCode,
-    selectedStateCode,
-    selectedBlockCode,
     dynamicFormForBlock,
+    stateDefaultValue,
+    assignedTeamLeader,
+    assignedTeamLeaderNames,
+    selectedStateCohortId,
   } = useLocationState(open, onClose, roleType);
   const setSubmittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setSubmittedButtonStatus
@@ -112,7 +120,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
       setShowForm(false)
     }
     else {
-
+setShowForm(true)
     }
   }, [onClose, open]);
   useEffect(() => {
@@ -161,8 +169,25 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
     event: React.FormEvent<any>
   ) => {
     const formData = data?.formData;
-    const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
-    if (selectedBlockCohortId) {
+    const name = (formData.name).toLowerCase();
+    const fieldId = "94befdc4-3173-4af3-998f-aa366d91ade7";
+
+    const newEntity = {
+      isCreate: true,
+      options: [
+        {
+          controllingfieldfk: selectedBlockCode,
+          name,
+          // value,
+        },
+      ],
+    };
+
+    const response = await createOrUpdateOption(fieldId, newEntity, t)
+    console.log(response, "response------");
+    
+    // const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
+    
       const parentId = selectedBlockCohortId;
       const cohortDetails: CohortDetails = {
         name: (formData.name).toLowerCase(),
@@ -195,21 +220,24 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
           });
         }
 
-        if (bmgsData) {
-          cohortDetails?.customFields?.push({
-            fieldId: bmgsData?.board.fieldId,
-            value: bmgsData?.board.boardName,
-          });
-          cohortDetails?.customFields?.push({
-            fieldId: bmgsData.medium.fieldId,
-            value: bmgsData.medium.mediumName,
-          });
-          cohortDetails?.customFields?.push({
-            fieldId: bmgsData.grade.fieldId,
-            value: bmgsData.grade.gradeName,
-          });
-        }
+        // if (bmgsData) {
+        //   cohortDetails?.customFields?.push({
+        //     fieldId: bmgsData?.board.fieldId,
+        //     value: bmgsData?.board.boardName,
+        //   });
+        //   cohortDetails?.customFields?.push({
+        //     fieldId: bmgsData.medium.fieldId,
+        //     value: bmgsData.medium.mediumName,
+        //   });
+        //   cohortDetails?.customFields?.push({
+        //     fieldId: bmgsData.grade.fieldId,
+        //     value: bmgsData.grade.gradeName,
+        //   });
+        // }
       });
+
+      console.log(cohortDetails,"cohortDetails---------");
+      
 
       if (
         cohortDetails?.customFields &&
@@ -252,9 +280,7 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
       } else {
         showToastMessage("Please Input Data", "warning");
       }
-    } else {
-      showToastMessage(t("CENTER.NOT_ABLE_CREATE_CENTER"), "error");
-    }
+    
     onClose();
 
   };
@@ -284,32 +310,33 @@ const AddNewCenters: React.FC<AddLearnerModalProps> = ({
           }}
         >
           <AreaSelection
-            states={transformArray(states)}
-            districts={transformArray(districts)}
-            blocks={transformArray(blocks)}
-            selectedState={selectedState}
-            selectedDistrict={selectedDistrict}
-            selectedBlock={selectedBlock}
-            handleStateChangeWrapper={handleStateChangeWrapper}
-            handleDistrictChangeWrapper={handleDistrictChangeWrapper}
-            handleBlockChangeWrapper={handleBlockChangeWrapper}
-            isMobile={isMobile}
-            isMediumScreen={isMediumScreen}
-            isCenterSelection={false}
-            allCenters={allCenters}
-            selectedCenter={selectedCenter}
-            handleCenterChangeWrapper={handleCenterChangeWrapper}
-            inModal={true}
-            stateDefaultValue={stateDefaultValueForCenter}
+            country={transformArray(country)}
+                          states={transformArray(states)}
+                          districts={transformArray(districts)}
+                          blocks={transformArray(blocks)}
+                          selectedState={selectedState}
+                          selectedDistrict={selectedDistrict}
+                          selectedBlock={selectedBlock}
+                          handleCountryChangeWrapper={handleCountryChangeWrapper}
+                          handleStateChangeWrapper={handleStateChangeWrapper}
+                          handleBlockChangeWrapper={handleBlockChangeWrapper}
+                          isMobile={isMobile}
+                          isMediumScreen={isMediumScreen}
+                          iscenterCreate={true}
+                          allCenters={allCenters}
+                          selectedCenter={selectedCenter}
+                          handleCenterChangeWrapper={handleCenterChangeWrapper}
+                          inModal={true}
+                          stateDefaultValue={stateDefaultValue}
           />
         </Box>
-        <FrameworkCategories
+        {/* <FrameworkCategories
           customFormData={customFormData}
           onFieldsChange={handleDependentFieldsChange}
           setShowForm={setShowForm}
-        />
+        /> */}
       </>
-      {dynamicFormForBlock && schema && uiSchema && selectedBlockCohortId && (
+      {dynamicFormForBlock && schema && uiSchema && (
         <>
           {showForm ? (
             <DynamicForm

@@ -757,15 +757,15 @@ console.log("setEnableCenterFilter", enableCenterFilter)
    setSelectedUserEmail(response?.userData?.email);
 
       let formFields;
-      if (Role.STUDENT === role) {
+      if (Role.YOUTH === role) {
         //  formFields = await getFormRead("USERS", "STUDENT");
         setFormData(mapFields(studentFormData, response)); 
-      } else if (Role.TEACHER === role) {
+      } else if (Role.TRAINER === role) {
         // formFields = await getFormRead("USERS", "TEACHER");
 
         setFormData(mapFields(teacherFormData, response));
         //  handleOpenAddFacilitatorModal();
-      } else if (Role.TEAM_LEADER === role) {
+      } else if (Role.CENTRAL_ADMIN === role) {
         formFields = await getFormRead("USERS", "TEAM LEADER");
         setFormData(mapFields(teamLeaderFormData, response));
         // handleOpenAddTeamLeaderModal();
@@ -1075,14 +1075,14 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         console.log(error);
       }
     }; 
-    if (
-      selectedBlockCode !== "" ||
-      (selectedDistrictCode !== "" && selectedBlockCode === "") ||
-      (userType === Role.TEAM_LEADERS && selectedDistrictCode !== "")
-    ) {
-      fetchUserList();
-    }
-    // fetchUserList();
+    // if (
+    //   selectedBlockCode !== "" ||
+    //   (selectedDistrictCode !== "" && selectedBlockCode === "") ||
+    //   (userType === Role.CENTRAL_ADMIN && selectedDistrictCode !== "")
+    // ) {
+    //   fetchUserList();
+    // }
+    fetchUserList();
   }, [
     pageOffset,
     submitValue,
@@ -1540,6 +1540,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
     searchPlaceHolder: searchPlaceholder,
     selectedState: selectedState,
     selectedDistrict: selectedDistrict,
+    showStateDropdown: false,
     setSelectedDistrict: setSelectedDistrict,
     selectedBlock: selectedBlock,
     setSelectedBlock: setSelectedBlock,

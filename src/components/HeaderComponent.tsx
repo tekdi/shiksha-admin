@@ -19,7 +19,7 @@ import Tabs from "@mui/material/Tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import {
   getCenterList,
   getStateBlockDistrictList,
@@ -122,6 +122,45 @@ const HeaderComponent = ({
   const setSelectedCenterStore = useSubmittedButtonStore(
     (state: any) => state.setSelectedCenterStore
   );
+
+   const handleCountryChangeWrapper = useCallback(
+      async (selectedNames: string[], selectedCodes: string[]) => {
+        try {
+          setDistricts([]);
+          setBlocks([]);
+          setAllCenters([]);
+          setSelectedStateCode(selectedCodes[0]);
+          // setSelectedBlockCohortId("");
+  
+          // const object = {
+          //   controllingfieldfk: selectedCodes[0],
+          //   fieldName: "districts",
+          // };
+          // const response = await getStateBlockDistrictList(object);
+          const response = await queryClient.fetchQuery({
+            queryKey: [
+              QueryKeys.FIELD_OPTION_READ,
+              selectedCodes[0],
+              "states",
+            ],
+            queryFn: () =>
+              getStateBlockDistrictList({
+                controllingfieldfk: selectedCodes[0],
+                fieldName: "states",
+              }),
+          });
+  
+          // setDistrictFieldId(response?.result?.fieldId);
+          const result = response?.result?.values;
+          setDistricts(result);
+        } catch (error) {
+          console.log(error);
+        }
+        handleStateChange(selectedNames, selectedCodes);
+      },
+      [selectedStateCode]
+    );
+
   const handleStateChangeWrapper = async (
     selectedNames: string[],
     selectedCodes: string[]
@@ -135,11 +174,11 @@ const HeaderComponent = ({
     }
     try {
       const response = await queryClient.fetchQuery({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, selectedCodes[0], "districts"],
+        queryKey: [QueryKeys.FIELD_OPTION_READ, selectedCodes[0], "city"],
         queryFn: () =>
           getStateBlockDistrictList({
             controllingfieldfk: selectedCodes[0],
-            fieldName: "districts",
+            fieldName: "city",
           }),
       });
 
@@ -150,12 +189,13 @@ const HeaderComponent = ({
       // }; 
       // const response = await getStateBlockDistrictList(object);
       const result = response?.result?.values;
-
-      setDistricts(result);
+      console.log(result,"result---------1");
+      
+      setBlocks(result);
     } catch (error) {
       console.log(error);
     }
-    handleStateChange(selectedNames, selectedCodes);
+    handleDistrictChange(selectedNames, selectedCodes);
   };
 
   const handleDistrictChangeWrapper = async (
@@ -168,11 +208,11 @@ const HeaderComponent = ({
     }
     try {
       const response = await queryClient.fetchQuery({
-        queryKey: [QueryKeys.FIELD_OPTION_READ, selectedCodes[0], "blocks"],
+        queryKey: [QueryKeys.FIELD_OPTION_READ, selectedCodes[0], "city"],
         queryFn: () =>
           getStateBlockDistrictList({
             controllingfieldfk: selectedCodes[0],
-            fieldName: "blocks",
+            fieldName: "city",
           }),
       });
 
@@ -185,7 +225,7 @@ const HeaderComponent = ({
       const result = response?.result?.values;
       const blockResult = await formatedBlocks(selectedCodes[0]);
 
-      setBlocks(blockResult);
+      setBlocks(result);
     } catch (error) {
       console.log(error);
     }
@@ -222,8 +262,8 @@ const HeaderComponent = ({
       filters: {
         // "type":"COHORT",
         status: ["active"],
-        states: selectedStateCode,
-        districts: selectedDistrictCode,
+        country: selectedStateCode,
+        states: selectedDistrictCode,
         blocks: selectedCodes[0],
         // "name": selected[0]
       },
@@ -300,6 +340,8 @@ const HeaderComponent = ({
     const fetchData = async () => {
       const { state, district, center } = router.query; 
       const fullPath = router.asPath;
+      console.log(fullPath,"fullPath");
+      
 
       // Extract query parameters
       const queryString = fullPath.split("?")[1];  
@@ -316,182 +358,184 @@ const HeaderComponent = ({
         const object = {
           // "limit": 20,
           // "offset": 0,
-          fieldName: "states",
+          fieldName: "country",
         };
-        // const response = await getStateBlockDistrictList(object);
-        // const result = response?.result?.values;
-        if (typeof window !== "undefined" && window.localStorage) {
-          const admin = localStorage.getItem("adminInfo");
-          if (admin) {
-            const stateField = JSON.parse(admin).customFields.find(
-              (field: any) => field.label === "STATES"
-            );
+        const response = await getStateBlockDistrictList(object);
+        const result = response?.result?.values;
+        // if (typeof window !== "undefined" && window.localStorage) {
+        //   const admin = localStorage.getItem("adminInfo");
+        //   if (admin) {
+        //     const stateField = JSON.parse(admin).customFields.find(
+        //       (field: any) => field.label === "STATES"
+        //     );
                 
-            if (stateField.value.includes(",")) {
-              console.log("The value contains more than one item.");
-              setStateDefaultValue(t("COMMON.ALL_STATES"));
-            } else {
-              setStateDefaultValue(stateField.value);
+        //     if (stateField.value.includes(",")) {
+        //       console.log("The value contains more than one item.");
+        //       setStateDefaultValue(t("COMMON.ALL_STATES"));
+        //     } else {
+        //       setStateDefaultValue(stateField.value);
 
-              const response = await queryClient.fetchQuery({
-                queryKey: [
-                  QueryKeys.FIELD_OPTION_READ,
-                  stateField.code,
-                  "districts",
-                ],
-                queryFn: () =>
-                  getStateBlockDistrictList({
-                    controllingfieldfk: stateField.code,
-                    fieldName: "districts",
-                  }),
-              });
+        //       const response = await queryClient.fetchQuery({
+        //         queryKey: [
+        //           QueryKeys.FIELD_OPTION_READ,
+        //           stateField.code,
+        //           "districts",
+        //         ],
+        //         queryFn: () =>
+        //           getStateBlockDistrictList({
+        //             controllingfieldfk: stateField.code,
+        //             fieldName: "districts",
+        //           }),
+        //       });
 
-              // const object = {
-              //   controllingfieldfk: stateField.code,
+        //       // const object = {
+        //       //   controllingfieldfk: stateField.code,
 
-              //   fieldName: "districts",
-              // }; 
-              // const response = await getStateBlockDistrictList(object);
-              const result = response?.result?.values;
-              const districtResult = await formatedDistricts();
-              let blockResult;
-              setDistricts(districtResult);
-              if (!hasDistrict) {
-                setSelectedDistrict([districtResult[0]?.label]);
-                setSelectedDistrictCode(districtResult[0]?.value);
-                localStorage.setItem(
-                  "selectedDistrict",
-                  districtResult[0]?.label
-                );
-                setSelectedDistrictStore(districtResult[0]?.label);
-                blockResult = await formatedBlocks(
-                  districtResult[0]?.value
-                ); 
-                if (blockResult?.message === "Request failed with status code 404") {
-                  setBlocks([]);
-                }
-                else {
-                  setBlocks(blockResult);
+        //       //   fieldName: "districts",
+        //       // }; 
+        //       // const response = await getStateBlockDistrictList(object);
+        //       const result = response?.result?.values;
+        //       const districtResult = await formatedDistricts();
+        //       let blockResult;
+        //       setDistricts(districtResult);
+        //       if (!hasDistrict) {
+        //         setSelectedDistrict([districtResult[0]?.label]);
+        //         setSelectedDistrictCode(districtResult[0]?.value);
+        //         localStorage.setItem(
+        //           "selectedDistrict",
+        //           districtResult[0]?.label
+        //         );
+        //         setSelectedDistrictStore(districtResult[0]?.label);
+        //         blockResult = await formatedBlocks(
+        //           districtResult[0]?.value
+        //         ); 
+        //         if (blockResult?.message === "Request failed with status code 404") {
+        //           setBlocks([]);
+        //         }
+        //         else {
+        //           setBlocks(blockResult);
 
-                }
-              }
+        //         }
+        //       }
 
-              if (!hasBlock && !hasDistrict && userType !== Role.CONTENT_CREATOR) {
-                if (userType === Role.TEAM_LEADERS || userType === "Centers") {
-                  //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
-                  //setSelectedBlockCode("")
-                  router.replace({
-                    pathname: router.pathname,
-                    query: {
-                      ...router.query,
-                      state: stateField.code,
-                      district: districtResult[0]?.value,
-                    },
-                  });
-                } else {
-                  console.log(blockResult)
-                  if (blockResult?.message === "Request failed with status code 404") {
-                    setBlocks([]);
-                  }
-                  else {
-                    setSelectedBlock([blockResult[0]?.label]);
-                    setSelectedBlockCode(blockResult[0]?.value);
-                    localStorage.setItem("selectedBlock", blockResult[0]?.label);
-                    setSelectedBlockStore(blockResult[0]?.label);
+        //       if (!hasBlock && !hasDistrict && userType !== Role.CONTENT_CREATOR) {
+        //         if (userType === Role.TEAM_LEADERS || userType === "Centers") {
+        //           //  setSelectedBlock([t("COMMON.ALL_BLOCKS")]);
+        //           //setSelectedBlockCode("")
+        //           router.replace({
+        //             pathname: router.pathname,
+        //             query: {
+        //               ...router.query,
+        //               state: stateField.code,
+        //               district: districtResult[0]?.value,
+        //             },
+        //           });
+        //         } else {
+        //           console.log(blockResult)
+        //           if (blockResult?.message === "Request failed with status code 404") {
+        //             setBlocks([]);
+        //           }
+        //           else {
+        //             setSelectedBlock([blockResult[0]?.label]);
+        //             setSelectedBlockCode(blockResult[0]?.value);
+        //             localStorage.setItem("selectedBlock", blockResult[0]?.label);
+        //             setSelectedBlockStore(blockResult[0]?.label);
 
-                  }
+        //           }
 
-                  router.replace({
-                    pathname: router.pathname,
-                    query: {
-                      ...router.query,
-                      state: stateField.code,
-                      district: districtResult[0]?.value,
-                      block: blockResult[0]?.value,
-                    },
-                  });
-                }
-              }
-              else if (userType === Role.CONTENT_CREATOR) {
-                router.replace({
-                  pathname: router.pathname,
-                  query: {
-                    ...router.query,
-                    state: stateField.code,
+        //           router.replace({
+        //             pathname: router.pathname,
+        //             query: {
+        //               ...router.query,
+        //               state: stateField.code,
+        //               district: districtResult[0]?.value,
+        //               block: blockResult[0]?.value,
+        //             },
+        //           });
+        //         }
+        //       }
+        //       else if (userType === Role.CONTENT_CREATOR) {
+        //         router.replace({
+        //           pathname: router.pathname,
+        //           query: {
+        //             ...router.query,
+        //             state: stateField.code,
 
-                  },
-                });
-              }
+        //           },
+        //         });
+        //       }
 
-              const getCentersObject = {
-                limit: 0,
-                offset: 0,
-                filters: {
-                  // "type":"COHORT",
-                  status: ["active"],
-                  states: stateField.code,
-                  districts: districtResult[0]?.value,
-                  blocks: blockResult[0]?.value,
-                  // "name": selected[0]
-                },
-              };
-              const centerResponse = await queryClient.fetchQuery({
-                queryKey: [
-                  QueryKeys.FIELD_OPTION_READ,
-                  getCentersObject.limit,
-                  getCentersObject.offset,
-                  getCentersObject.filters,
-                ],
-                queryFn: () => getCenterList(getCentersObject),
-              });
-              // const response = await getCenterList(getCentersObject); 
-              // setSelectedBlockCohortId(
-              //   response?.result?.results?.cohortDetails[0].cohortId
-              // );
-              //   const result = response?.result?.cohortDetails;
-              const dataArray = centerResponse?.result?.results?.cohortDetails; 
-              const cohortInfo = dataArray
-                ?.filter((cohort: any) => cohort.type !== "BLOCK")
-                .map((item: any) => ({
-                  cohortId: item?.cohortId,
-                  name: item?.name,
-                }));
-              setAllCenters(cohortInfo);
+        //       const getCentersObject = {
+        //         limit: 0,
+        //         offset: 0,
+        //         filters: {
+        //           // "type":"COHORT",
+        //           status: ["active"],
+        //           states: stateField.code,
+        //           districts: districtResult[0]?.value,
+        //           blocks: blockResult[0]?.value,
+        //           // "name": selected[0]
+        //         },
+        //       };
+        //       const centerResponse = await queryClient.fetchQuery({
+        //         queryKey: [
+        //           QueryKeys.FIELD_OPTION_READ,
+        //           getCentersObject.limit,
+        //           getCentersObject.offset,
+        //           getCentersObject.filters,
+        //         ],
+        //         queryFn: () => getCenterList(getCentersObject),
+        //       });
+        //       // const response = await getCenterList(getCentersObject); 
+        //       // setSelectedBlockCohortId(
+        //       //   response?.result?.results?.cohortDetails[0].cohortId
+        //       // );
+        //       //   const result = response?.result?.cohortDetails;
+        //       const dataArray = centerResponse?.result?.results?.cohortDetails; 
+        //       const cohortInfo = dataArray
+        //         ?.filter((cohort: any) => cohort.type !== "BLOCK")
+        //         .map((item: any) => ({
+        //           cohortId: item?.cohortId,
+        //           name: item?.name,
+        //         }));
+        //       setAllCenters(cohortInfo);
  
-              if (
-                !hasCenter &&
-                !hasBlock &&
-                !hasDistrict &&
-                userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
-              ) { 
-                setSelectedCenter([t("COMMON.ALL_CENTERS")]);
-                //  setSelectedCenterCode([cohortInfo[0]?.cohortId])
-                //   localStorage.setItem('selectedCenter',cohortInfo[0]?.name )
-                //  setSelectedCenterStore(cohortInfo[0]?.name)
-                router.replace({
-                  pathname: router.pathname,
-                  query: {
-                    ...router.query,
-                    state: stateField.code,
-                    district: districtResult[0]?.value,
-                    block: blockResult[0]?.value,
-                    // center: cohortInfo[0]?.cohortId
-                  },
-                });
-              }
+        //       if (
+        //         !hasCenter &&
+        //         !hasBlock &&
+        //         !hasDistrict &&
+        //         userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
+        //       ) { 
+        //         setSelectedCenter([t("COMMON.ALL_CENTERS")]);
+        //         //  setSelectedCenterCode([cohortInfo[0]?.cohortId])
+        //         //   localStorage.setItem('selectedCenter',cohortInfo[0]?.name )
+        //         //  setSelectedCenterStore(cohortInfo[0]?.name)
+        //         router.replace({
+        //           pathname: router.pathname,
+        //           query: {
+        //             ...router.query,
+        //             state: stateField.code,
+        //             district: districtResult[0]?.value,
+        //             block: blockResult[0]?.value,
+        //             // center: cohortInfo[0]?.cohortId
+        //           },
+        //         });
+        //       }
  
-            }
+        //     }
 
-            const object = [
-              {
-                value: stateField.code,
-                label: stateField.value,
-              },
-            ];
-            setStates(object);
-          }
-        }
-        //  setStates(result); 
+        //     const object = [
+        //       {
+        //         value: stateField.code,
+        //         label: stateField.value,
+        //       },
+        //     ];
+        //     setStates(object);
+        //   }
+        // }
+        console.log(result,"result----");
+        
+         setStates(result); 
       } catch (error) {
         console.log(error);
       }
@@ -569,8 +613,8 @@ const HeaderComponent = ({
             filters: {
               // "type":"COHORT",
               status: ["active"],
-              states: state.toString(),
-              districts: district.toString(),
+              country: state.toString(),
+              states: district.toString(),
               blocks: block.toString(),
               // "name": selected[0]
             },
@@ -627,14 +671,15 @@ const HeaderComponent = ({
 
       {showStateDropdown && (
         <AreaSelection
-          states={transformArray(states)}
+          country={transformArray(states)}
+          states={transformArray(districts)}
           districts={transformArray(districts)}
           blocks={transformArray(blocks)}
           selectedState={selectedState}
           selectedDistrict={selectedDistrict}
           selectedBlock={selectedBlock}
+          handleCountryChangeWrapper={handleCountryChangeWrapper}
           handleStateChangeWrapper={handleStateChangeWrapper}
-          handleDistrictChangeWrapper={handleDistrictChangeWrapper}
           handleBlockChangeWrapper={handleBlockChangeWrapper}
           isMobile={isMobile}
           isMediumScreen={isMediumScreen}
@@ -643,7 +688,7 @@ const HeaderComponent = ({
             userType === Role.FACILITATORS || userType === Role.LEARNERS
           }
           stateDefaultValue={stateDefaultValue}
-          allCenters={allCenters}
+          allCenters={transformArray(allCenters)}
           selectedCenter={selectedCenter}
           handleCenterChangeWrapper={handleCenterChangeWrapper}
           userType={userType}

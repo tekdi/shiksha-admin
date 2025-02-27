@@ -312,7 +312,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
             <Image
               src={appLogo}
               alt="App Logo"
-              style={{ width: "200px", height: "150px" }}
+              style={{ width: "300px", height: "250px" }}
             />
           )}
 

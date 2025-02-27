@@ -16,10 +16,15 @@ const Menuitems = [
     icon: centerIcon,
     href: ["/centers"],
   },
+  // {
+  //   title: "PROGRAM_MANAGEMENT.PROGRAMS",
+  //   icon: programIcon,
+  //   href: ["/programs"],
+  // },
   {
-    title: "PROGRAM_MANAGEMENT.PROGRAMS",
+    title: "PROGRAM_MANAGEMENT.OPPORTUNITY",
     icon: programIcon,
-    href: ["/programs"],
+    href: ["/opportunity"],
   },
   {
     title: "SIDEBAR.MANAGE_USERS",
@@ -44,15 +49,15 @@ const Menuitems = [
     icon: masterIcon,
     subOptions: [
       {
-        title: "MASTER.STATE",
-        href: ["/state"],
+        title: "MASTER.COUNTRY",
+        href: ["/country"],
       },
       {
-        title: "MASTER.DISTRICTS",
+        title: "MASTER.STATE",
         href: ["/district"],
       },
       {
-        title: "MASTER.BLOCKS",
+        title: "MASTER.CITY",
         href: ["/block"],
       },
     ],
@@ -86,13 +91,24 @@ export const getFilteredMenuItems = () => {
       userInfo = JSON.parse(adminInfo || "{}");
     } 
 
-    if (userInfo?.role === Role.SCTA || userInfo?.role === Role.CCTA) {
+    if (userInfo?.role === Role.CENTRAL_ADMIN || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace
-      return Menuitems.filter(
-        (item) =>
-          item.title === "SIDEBAR.COURSE_PLANNER" ||
-          item.title === "SIDEBAR.WORKSPACE"
-      );
+      return Menuitems.filter(item => 
+        item.title === "PROGRAM_MANAGEMENT.OPPORTUNITY" || 
+        item.title === "SIDEBAR.MANAGE_USERS"
+      ).map(item => {
+        if (item.title === "SIDEBAR.MANAGE_USERS") {
+          return {
+            ...item,
+            subOptions: item.subOptions.filter(
+              subItem =>
+                subItem.title === "SIDEBAR.FACILITATORS" ||
+                subItem.title === "SIDEBAR.LEARNERS"
+            ),
+          };
+        }
+        return item;
+      });
     }
 
     if (
@@ -102,8 +118,7 @@ export const getFilteredMenuItems = () => {
       return Menuitems.filter(
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
-          item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "PROGRAM_MANAGEMENT.PROGRAMS"
+          item.title !== "SIDEBAR.WORKSPACE"
 
       );
     }
@@ -116,8 +131,7 @@ export const getFilteredMenuItems = () => {
         (item) =>
           item.title !== "SIDEBAR.COURSE_PLANNER" &&
           item.title !== "SIDEBAR.WORKSPACE" &&
-          item.title !== "SIDEBAR.CENTERS" &&
-          item.title !== "SIDEBAR.MANAGE_USERS"
+          item.title !== "SIDEBAR.CENTERS"
 
 
       );
