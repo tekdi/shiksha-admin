@@ -882,13 +882,22 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         const fields = ["age", "districts", "states", "blocks", "gender"];
         const limit = pageLimit;
         let offset = pageOffset * limit;
-        // const filters = { role: role , status:"active"};
+        const userData = JSON.parse(localStorage.getItem("adminInfo") || "{}");
+        const isCenterAdmin = (userData?.role === "Center Admin")
+
         const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy; 
         if (filters.firstName) {
           offset = 0;
         }
         let resp;
-        if (enableCenterFilter) {
+        if (enableCenterFilter || isCenterAdmin) {
+          const response = await getCohortList(userData.userId);
+          const filters ={
+          role: role, 
+          status: [statusValue],
+          cohortId : response?.result?.cohortData[0]?.cohortId
+        }
+        
           resp = await cohortMemberList({
             limit,
             filters,
@@ -905,7 +914,7 @@ console.log("setEnableCenterFilter", enableCenterFilter)
         } else if (!resp?.getUserDetails) {
           setData([]);
         }
-        const result = enableCenterFilter
+        const result = isCenterAdmin
           ? resp?.userDetails
           : resp?.getUserDetails; 
         if (resp?.totalCount >= 15) {

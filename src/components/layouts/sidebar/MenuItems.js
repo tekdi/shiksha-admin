@@ -16,11 +16,11 @@ const Menuitems = [
     icon: centerIcon,
     href: ["/centers"],
   },
-  // {
-  //   title: "PROGRAM_MANAGEMENT.PROGRAMS",
-  //   icon: programIcon,
-  //   href: ["/programs"],
-  // },
+  {
+    title: "SIDEBAR.BATCHES",
+    icon: programIcon,
+    href: ["/batch"],
+  },
   {
     title: "PROGRAM_MANAGEMENT.OPPORTUNITY",
     icon: programIcon,
@@ -94,6 +94,7 @@ export const getFilteredMenuItems = () => {
     if (userInfo?.role === Role.CENTRAL_ADMIN || userInfo?.role === Role.CCTA) {
       // For SCTA and CCTA, show only Course Planner and Workspace
       return Menuitems.filter(item => 
+        item.title=== "SIDEBAR.BATCHES" ||
         item.title === "PROGRAM_MANAGEMENT.OPPORTUNITY" || 
         item.title === "SIDEBAR.MANAGE_USERS"
       ).map(item => {

@@ -23,6 +23,7 @@ interface FieldProp {
   value: string;
   label: string;
 }
+
 interface CenterProp {
   value: string;
   label: string;
@@ -40,6 +41,7 @@ export const useLocationState = (
   const [districts, setDistricts] = useState<FieldProp[]>([]);
   const [blocks, setBlocks] = useState<FieldProp[]>([]);
   const [allCenters, setAllCenters] = useState<CenterProp[]>([]);
+  const [batches,setBatches] = useState<FieldProp[]>([]);
   const isMobile = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(max-width:986px)");
   const [selectedCountry, setSelectedCountry] = useState<string[]>([]);
@@ -54,12 +56,14 @@ export const useLocationState = (
   const [selectedBlock, setSelectedBlock] = useState<string[]>([]);
   const [selectedBlockCode, setSelectedBlockCode] = useState("");
   const [selectedCenterCode, setSelectedCenterCode] = useState("");
+  const [selectedCenterId, setSelectedCenterId] = useState("");
   const [selectedBlockCohortId, setSelectedBlockCohortId] = useState("");
   const [selectedStateCohortId, setSelectedStateCohortId] = useState("");
-
+  const[selectedBatch,setSelectedBatch] = useState<string[]>([])
   const [blockFieldId, setBlockFieldId] = useState("");
   const [stateFieldId, setStateFieldId] = useState("");
   const [districtFieldId, setDistrictFieldId] = useState("");
+  const [centerFieldId, setCenterFieldId] = useState("");
   const [stateDefaultValue, setStateDefaultValue] = useState<string>("");
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -130,7 +134,7 @@ export const useLocationState = (
           fieldName: "center",
         }),
     });
-    setStateFieldId(response?.result?.fieldId);
+    setCenterFieldId(response?.result?.fieldId);
     const result = response?.result?.values;
     setAllCenters(result);
   }
@@ -296,6 +300,14 @@ export const useLocationState = (
     []
   );
 
+  const handleBatchChangeWrapper = useCallback(
+    (selected: string[], selectedCodes: string[]) => {      
+      setSelectedBatch(selectedCodes)
+      handleBatchChange(selected, selectedCodes);
+    },
+    []
+  );
+
   const handleStateChange = useCallback(
     (selected: string[], code: string[]) => {
       setSelectedDistrict([]);
@@ -364,10 +376,80 @@ export const useLocationState = (
       
       setSelectedCenter(selected);
       const centers = code?.join(",");
+      console.log(centers,"centers----");
       
-      // setSelectedCenterCode(centers);
+      
+      setSelectedCenterId(centers);
       setDynamicForm(true);
 
+      const reqBody = {
+            limit: 0,
+            offset: 0,
+            filters: {
+              "type": "COHORT",
+              status: ["active"],
+              "center":code
+            },
+          };
+
+          const response1 = await getCenterList(reqBody);
+          setBatches(response1?.result?.results?.cohortDetails);
+          console.log(response1?.result?.results?.cohortDetails,"response1?.result?.results?.cohortDetails-----");
+          
+
+    },
+    []
+  );
+  
+  const handleBatchChange = useCallback(
+    async(selected: string[], code: string[]) => {
+      // handle center change logic
+      const object = 
+          {
+            limit: 0,
+            offset: 0,
+            filters: {
+              // "type": "COHORT",
+              status: ["active"],
+              // "states": selectedStateCode,
+              // "districts": selectedDistrictCode,
+              // "blocks": selectedCodes[0]
+              name: selected,
+            },
+          };
+      const response = await getCenterList(object);
+      const getCohortDetails = response?.result?.results?.cohortDetails;
+      const blockId = getCohortDetails?.map((item: any) => {
+          if (item?.type === "CENTER") {
+              return item?.cohortId;
+            }
+      })
+      const blockCohortId = getCohortDetails?.find(
+              (item: any) => item?.type === "CENTER"
+            )?.cohortId;
+            if (blockCohortId) {
+              setSelectedCenterCode(blockCohortId);
+            } else {
+                console.log("No Block Id found");
+              }
+      
+      setSelectedCenter(selected);
+      const centers = code?.join(",");      
+      setSelectedCenterId(centers);
+      setDynamicForm(true);
+
+      const reqBody = {
+            limit: 0,
+            offset: 0,
+            filters: {
+              "type": "COHORT",
+              status: ["active"],
+              "center":code
+            },
+          };
+
+          const response1 = await getCenterList(reqBody);
+          setBatches(response1?.result?.results?.cohortDetails);          
     },
     []
   );
@@ -476,6 +558,8 @@ export const useLocationState = (
                 setDistricts(districtResult);
                 if (reAssignModal) {
                   const data = getStoredData();
+                  
+                  
                   setSelectedBlock([data.blocks]);
                   setSelectedDistrict([data.districtValue]);
                   setSelectedDistrictCode(data.districtCode);
@@ -661,12 +745,14 @@ export const useLocationState = (
     districts,
     blocks,
     allCenters,
+    batches,
     isMobile,
     isMediumScreen,
     selectedState,
     selectedStateCode,
     selectedDistrict,
     selectedDistrictCode,
+    selectedBatch,
     selectedCenter,
     dynamicForm,
     selectedBlock,
@@ -675,10 +761,13 @@ export const useLocationState = (
     blockFieldId,
     districtFieldId,
     stateFieldId,
+    centerFieldId,
+    selectedCenterId,
     handleCountryChangeWrapper,
     handleStateChangeWrapper,
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
+    handleBatchChangeWrapper,
     selectedCenterCode,
     selectedBlockCohortId,
     stateDefaultValue,

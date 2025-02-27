@@ -189,6 +189,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     districts,
     blocks,
     allCenters,
+    batches,
     isMobile,
     isMediumScreen,
     selectedState,
@@ -203,6 +204,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     handleStateChangeWrapper,
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
+    handleBatchChangeWrapper,
+    selectedBatch,
     selectedCenterCode,
     selectedBlockCohortId,
     blockFieldId,
@@ -302,6 +305,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
     if (result !== null) {
       const { username, password } = result;
+      console.log(selectedBatch,"selectedBatch-----");
 
       const apiBody: any = {
         username: userType === FormContextType.STUDENT ? username : formData.email,
@@ -317,7 +321,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   : userType === FormContextType.CONTENT_CREATOR
                     ? RoleId.SCTA
                     : RoleId.TEAM_LEADER,
-            cohortIds:[selectedCenterCode]
+              cohortIds:userType !== "CENTER ADMIN" ? [selectedCenterCode, selectedBatch[0]] : [selectedCenterCode]
               // userType === FormContextType.TEAM_LEADER
               //   ? [selectedBlockCohortId]
               //   : userType === FormContextType.CONTENT_CREATOR
@@ -758,12 +762,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               districts={transformArray(districts)}
               blocks={transformArray(blocks)}
               allCenters={transformArray(allCenters)}
+              batches={transformArray(batches)}
               selectedState={selectedState}
               selectedDistrict={selectedDistrict}
               selectedBlock={selectedBlock}
+              selectedBatch={selectedBatch}
               handleCountryChangeWrapper={handleCountryChangeWrapper}
               handleStateChangeWrapper={handleStateChangeWrapper}
               handleBlockChangeWrapper={handleBlockChangeWrapper}
+              handleBatchChangeWrapper={handleBatchChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
               isCenterSelection={

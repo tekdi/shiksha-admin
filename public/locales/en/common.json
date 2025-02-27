@@ -212,7 +212,7 @@
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
     "SCTA": "State Content Team Associate",
-
+    "BATCHES":"Batches",
     "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
@@ -354,6 +354,34 @@
     "SEARCHBAR_PLACEHOLDER": "Search Center..",
     "CENTER_UPDATE_FAILED": "Something went wrong while updating center",
     "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the center because it has {{activeMembers}} Active Learners"
+  },
+  "BATCHES": {
+    "BATCHE": "Batche",
+    "BATCHES": "Batches",
+    "REGULAR_CENTERS": "Regular Batches",
+    "REMOTE_CENTERS": "Remote Batches",
+    "REMOTE_CENTER": "Remote Batch",
+    "REGULAR": "Regular",
+    "REMOTE": "Remote",
+    "SEARCH_BLOCKS": "Search Blocks",
+    "BLOCK_REQUEST": "You are sending a request to the state Team Leader to re-assign the Block to this user",
+    "NEW_BATCHES": "New Batche",
+    "CENTER_TYPE": "Center Type",
+    "UNIT_NAME": "Unit Name",
+    "NOTE": "Note: This will be the center name",
+    "CENTER_CREATED": "Batch Created Successfully!",
+    "RENAME_CENTER": "Rename Batch",
+    "REQUEST_TO_DELETE": "Request to Delete",
+    "RENAME": "Rename",
+    "CENTER_RENAMED": "Batch Renamed Successfully!",
+    "SEND_REQUEST": "Send Request",
+    "SURE_DELETE_CENTER": "Are you sure you want to delete ",
+    "CENTER_UPDATE_SUCCESSFULLY": "Batch has been successfully updated",
+    "CENTER_DELETE_SUCCESSFULLY": "Batch has been successfully deleted",
+    "CENTER_CREATED_SUCCESSFULLY": "Batch Created successfully",
+    "SEARCHBAR_PLACEHOLDER": "Search Batch..",
+    "CENTER_UPDATE_FAILED": "Something went wrong while updating Batch",
+    "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the Batch because it has {{activeMembers}} Active Learners"
   },
   "FORM": {
     "FULL_NAME": "Full Name",
