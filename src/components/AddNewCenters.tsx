@@ -171,6 +171,7 @@ setShowForm(true)
     const formData = data?.formData;
     const name = (formData.name).toLowerCase();
     const fieldId = "94befdc4-3173-4af3-998f-aa366d91ade7";
+    const value = (formData.name).toLowerCase()
 
     const newEntity = {
       isCreate: true,
@@ -178,7 +179,7 @@ setShowForm(true)
         {
           controllingfieldfk: selectedBlockCode,
           name,
-          // value,
+          value
         },
       ],
     };
