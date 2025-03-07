@@ -541,3 +541,15 @@ export const getLastDayDate= (): string => {
   const day = String(currentDate.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
+
+export const toPascalCase = (name: string | any) => {
+  if (typeof name !== 'string') {
+    return name;
+  }
+
+  return name
+    ?.toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};

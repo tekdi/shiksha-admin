@@ -24,7 +24,7 @@ const Menuitems = [
   {
     title: "PROGRAM_MANAGEMENT.OPPORTUNITY",
     icon: programIcon,
-    href: ["/opportunity"],
+    href: ["/opportunities"],
   },
   {
     title: "SIDEBAR.MANAGE_USERS",

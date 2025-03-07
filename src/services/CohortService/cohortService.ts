@@ -155,3 +155,37 @@ export const updateCohortMemberStatus = async ({
     // throw error;
   }
 };
+
+export const getUserCohortList = async (
+  userId: string,
+  filters: { [key: string]: string } = {},
+  isCustomFields: boolean = false
+): Promise<any> => {
+  let apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/mycohorts/${userId}?children=true`;
+  const filterParams = new URLSearchParams(filters).toString();
+  if (filterParams) {
+    apiUrl += `&${filterParams}`;
+  }
+  try {
+    const response = await get(apiUrl);
+    if (isCustomFields) {
+      return response?.data?.result;
+    }
+    if (response?.data?.result?.length) {
+      let res = response?.data?.result;
+      res = res.filter((block: any) => {
+        if (
+          block?.cohortMemberStatus === "active" &&
+          block?.cohortStatus === "active"
+        ) {
+          return block;
+        }
+      });
+      return res;
+    }
+    return response?.data?.result;
+  } catch (error) {
+    console.error('Error in getting cohort details', error);
+    // throw error;
+  }
+};
