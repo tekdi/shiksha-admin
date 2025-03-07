@@ -329,7 +329,7 @@ const LoginPage = () => {
       <Box
         display="flex"
         flexDirection="column"
-        bgcolor={theme.palette.warning.A200}
+        // bgcolor={theme.palette.warning.A200}
         borderRadius={'10px'}
         sx={{
           '@media (min-width: 900px)': {
@@ -348,7 +348,7 @@ const LoginPage = () => {
           zIndex={99}
           sx={{ margin: '5px 10px 25px', }}
         >
-          <Box sx={{ width: '55%', '@media (max-width: 400px)': { width: '95%' } }}>
+          <Box sx={{ width: '100%', '@media (max-width: 400px)': { width: '95%' } }}>
             <Image src={appLogo} alt="App Logo" height={80}
               layout='responsive'
             />
@@ -392,7 +392,7 @@ const LoginPage = () => {
           <Box
             flexGrow={1}
             // display={'flex'}
-            bgcolor={theme.palette.warning['A400']}
+            // bgcolor={theme.palette.warning['A400']}
             height="auto"
             zIndex={99}
             justifyContent={'center'}
@@ -415,7 +415,7 @@ const LoginPage = () => {
             <Box
               display="flex"
               flexDirection="column"
-              bgcolor={theme.palette.warning.A200}
+              // bgcolor={theme.palette.warning.A200}
               borderRadius={'10px'}
               sx={{
                 '@media (max-width: 900px)': {
@@ -434,7 +434,7 @@ const LoginPage = () => {
                 zIndex={99}
               // sx={{ margin: '5px 10px 25px', }}
               >
-                <Box sx={{ width: '60%', '@media (max-width: 700px)': { width: '95%' } }}>
+                <Box sx={{ width: '100%', '@media (max-width: 700px)': { width: '95%' } }}>
                   <Image src={appLogo} alt="App Logo" height={80}
                     layout='responsive'
                   />
