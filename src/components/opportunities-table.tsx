@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
-import { Grid, Card, CardContent, Typography, IconButton, Tooltip, Box, CardActions, Button, Chip, Modal, List, ListItem, ListItemText, CircularProgress, Select, MenuItem, TextField } from "@mui/material";
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Tooltip,
+  Box,
+  CardActions,
+  Button,
+  Chip,
+  Modal,
+  List,
+  ListItem,
+  ListItemText,
+  CircularProgress,
+  Select,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import BusinessIcon from "@mui/icons-material/Business";
-import { useRouter } from 'next/router';
-import { getAppliedUsers, updateApplicationStatus, fetchApplicationStatuses, updateOpportunity } from "@/lib/api"; // Import API functions
+import { useRouter } from "next/router";
+import {
+  getAppliedUsers,
+  updateApplicationStatus,
+  fetchApplicationStatuses,
+  updateOpportunity,
+} from "@/lib/api"; // Import API functions
 import { getUserDetailsInfo } from "@/services/UserList";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useTranslation } from "next-i18next";
@@ -30,7 +54,12 @@ interface OpportunitiesListProps {
   onView: (opportunity: OpportunityList) => void;
 }
 
-export function OpportunitiesList({ data, onEdit, onDelete, onView }: OpportunitiesListProps) {
+export function OpportunitiesList({
+  data,
+  onEdit,
+  onDelete,
+  onView,
+}: OpportunitiesListProps) {
   const router = useRouter();
   const [userList, setUserList] = useState<string[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -44,7 +73,7 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
   const [rejection_reason, setReason] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
       setIsAdmin(adminInfo?.role === "Admin");
     }
@@ -56,7 +85,12 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
       try {
         const response = await fetchApplicationStatuses();
         if (response && response.result) {
-          setStatusOptions(response.result.map((status: Status) => ({ label: status.status, value: status.id })));
+          setStatusOptions(
+            response.result.map((status: Status) => ({
+              label: status.status,
+              value: status.id,
+            }))
+          );
         }
       } catch (error) {
         console.error("Error fetching statuses:", error);
@@ -75,7 +109,9 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
     try {
       const appliedUsersList = await getAppliedUsers(opportunityId);
       const appliedUsers = appliedUsersList.result.data.map((user: any) => {
-        const matchedStatus = statusOptions.find((status) => status.label === user.status_name);
+        const matchedStatus = statusOptions.find(
+          (status) => status.label === user.status_name
+        );
 
         return {
           applicationId: user.application_id,
@@ -126,12 +162,18 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
   const handleStatusChange = (applicationId: any, newStatus: string) => {
     setUserList((prevList: any) =>
       prevList.map((user: any) =>
-        user.applicationId === applicationId ? { ...user, status: newStatus } : user
+        user.applicationId === applicationId
+          ? { ...user, status: newStatus }
+          : user
       )
     );
   };
 
-  const handleApproveReject = async (opportunity_id: any, status: string, e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleApproveReject = async (
+    opportunity_id: any,
+    status: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     e.stopPropagation();
     if (status === "reject") {
       setOpenRejectModal(true);
@@ -142,7 +184,10 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
   };
 
   const handleReject = async (opportunity_id: any) => {
-    await updateOpportunity(opportunity_id, { status: "rejected", rejection_reason });
+    await updateOpportunity(opportunity_id, {
+      status: "rejected",
+      rejection_reason,
+    });
     alert("Opportunity rejected successfully!");
     setOpenRejectModal(false);
   };
@@ -154,14 +199,25 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
           data.map((opportunity: any) => (
             <Grid item xs={12} sm={6} md={4} key={opportunity.id}>
               <Card
-                sx={{ cursor: "pointer", "&:hover": { boxShadow: 10 }, borderRadius: 4, padding: 1, border: "1px solid black" }}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": { boxShadow: 10 },
+                  borderRadius: 4,
+                  padding: 1,
+                  border: "1px solid black",
+                }}
                 onClick={() => onView(opportunity)}
               >
                 <CardContent>
                   <Typography
                     variant="h6"
                     gutterBottom
-                    sx={{ fontWeight: "bold", color: "#1A0DAB", cursor: "pointer", textDecoration: "underline" }}
+                    sx={{
+                      fontWeight: "bold",
+                      color: "#1A0DAB",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                    }}
                   >
                     {opportunity.title}
                   </Typography>
@@ -176,24 +232,36 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
                   <Box display="flex" alignItems="center" gap={1} mt={1}>
                     <LocationOnIcon fontSize="small" color="disabled" />
                     <Typography variant="body2" color="text.secondary">
-                      {opportunity?.location?.city}, {opportunity?.location?.state}
+                      {opportunity?.location?.city},{" "}
+                      {opportunity?.location?.state}
                     </Typography>
                   </Box>
 
                   <Box display="flex" alignItems="center" gap={1} mt={1}>
                     <WorkIcon fontSize="small" color="disabled" />
                     <Typography variant="body2" color="text.secondary">
-                      {opportunity.opportunity_type || "Full Time"} | {opportunity.experience_level || "Immediate Joiner"}
+                      {opportunity.opportunity_type || "Full Time"} |{" "}
+                      {opportunity.experience_level || "Immediate Joiner"}
                     </Typography>
                   </Box>
 
                   <Typography variant="body1" sx={{ mt: 1 }}>
-                    <Box component="span" sx={{ fontWeight: "bold" }}>KES</Box> {Math.floor(opportunity.min_salary)} - {Math.floor(opportunity.max_salary)}
+                    <Box component="span" sx={{ fontWeight: "bold" }}>
+                      KES
+                    </Box>{" "}
+                    {Math.floor(opportunity.min_salary)} -{" "}
+                    {Math.floor(opportunity.max_salary)}
                   </Typography>
 
-                  <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-start",
+                      mt: 1,
+                    }}
+                  >
                     <Chip
-                      label={`${t('OPPORTUNITY.MAPPED_USERS')}: ${opportunity?.stats?.mapped || 0}`}
+                      label={`${t("OPPORTUNITY.MAPPED_USERS")}: ${opportunity?.stats?.mapped || 0}`}
                       sx={{ backgroundColor: "#E0E0E0", color: "black" }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -201,7 +269,6 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
                       }}
                     />
                   </Box>
-
                 </CardContent>
 
                 <CardActions>
@@ -233,81 +300,131 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
                 </CardActions>
                 {isAdmin && opportunity.status === "pending" && (
                   <Box display={"flex"} gap={"10px"}>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      handleApproveReject(opportunity.id, "approved", e)} 
-                    }
-                      variant="contained" color="primary">Approve</Button>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      handleApproveReject(opportunity.id, "reject", e)} 
-                    }
-                    variant="contained" sx={{bgcolor: "#EF5350", color: "white"}}
-                  >Reject</Button>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApproveReject(opportunity.id, "approved", e);
+                      }}
+                      variant="contained"
+                      color="primary"
+                    >
+                      {t("OPPORTUNITY.APPROVE")}
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleApproveReject(opportunity.id, "reject", e);
+                      }}
+                      variant="contained"
+                      sx={{ bgcolor: "#EF5350", color: "white" }}
+                    >
+                      {t("OPPORTUNITY.REJECT")}
+                    </Button>
                   </Box>
                 )}
-                <Modal open={openRejectModal} onClose={() => setOpenRejectModal(false)}>
-                  <Box sx={{
-                    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                    width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2
-                  }}>
-                    <Typography variant="h6" gutterBottom>{t('OPPORTUNITY.REJECTION_REASON')}</Typography>
+                <Modal
+                  open={openRejectModal}
+                  onClose={() => setOpenRejectModal(false)}
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      boxShadow: 24,
+                      p: 4,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      {t("OPPORTUNITY.REJECTION_REASON")}
+                    </Typography>
                     <TextField
                       fullWidth
                       variant="outlined"
-                      label={t('OPPORTUNITY.REASON')}
+                      label={t("OPPORTUNITY.REASON")}
                       value={rejection_reason}
                       onChange={(e) => setReason(e.target.value)}
                       multiline
                       rows={4}
                       sx={{ mb: 2 }}
                     />
-                    <Box display="flex" justifyContent="space-between">
-                      <Button variant="contained" color="primary" onClick={(e) => {
-                        e.stopPropagation();
-                        handleReject(opportunity.id);
-                      }}>
-                        {t('OPPORTUNITY.REJECT')}
+                    <Box display="flex" gap="10px" justifyContent={"end"}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ bgcolor: "#EF5350", color: "white" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReject(opportunity.id);
+                        }}
+                      >
+                        {t("OPPORTUNITY.REJECT")}
                       </Button>
-                      <Button variant="contained" color="secondary" onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenRejectModal(false);
-                      }}>
-                        {t('OPPORTUNITY.CANCEL')}
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenRejectModal(false);
+                        }}
+                      >
+                        {t("OPPORTUNITY.CANCEL")}
                       </Button>
                     </Box>
                   </Box>
                 </Modal>
-                {opportunity.status === "approved" &&
+                {opportunity.status === "approved" && (
                   <Box p={1} textAlign="center">
                     <Button
                       variant="contained"
                       fullWidth
-                      sx={{ backgroundColor: "var", color: "black", "&:hover": { backgroundColor: "#333" } }}
+                      sx={{
+                        backgroundColor: "var",
+                        color: "black",
+                        "&:hover": { backgroundColor: "#333" },
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         fetchMappedUsers(opportunity.id);
                       }}
                     >
-                      {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
+                      {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
                     </Button>
-                  </Box>}
+                  </Box>
+                )}
               </Card>
             </Grid>
           ))
         ) : (
           <Grid item xs={12}>
-            <Typography align="center">{t('OPPORTUNITY.NO_RESULT_FOUND')}</Typography>
+            <Typography align="center">
+              {t("OPPORTUNITY.NO_RESULT_FOUND")}
+            </Typography>
           </Grid>
         )}
       </Grid>
 
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Box sx={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2
-        }}>
-          <Typography variant="h4" gutterBottom>{t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}</Typography>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h4" gutterBottom>
+            {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
+          </Typography>
           <Button
             fullWidth
             variant="text"
@@ -317,14 +434,21 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
               color: "black",
               fontWeight: "bold",
               textTransform: "none",
-              mb: 2
+              mb: 2,
             }}
-            onClick={() => router.push(`opportunities/map-youth/${selectedOpportunity}`)} // Navigate to youth mapping page
+            onClick={() =>
+              router.push(`opportunities/map-youth/${selectedOpportunity}`)
+            } // Navigate to youth mapping page
           >
-            {t('OPPORTUNITY.ADD_YOUTH')}
+            {t("OPPORTUNITY.ADD_YOUTH")}
           </Button>
           {loadingUsers ? (
-            <Box display="flex" justifyContent="center" alignItems="center" p={2}>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              p={2}
+            >
               <CircularProgress />
             </Box>
           ) : userList.length > 0 ? (
@@ -334,7 +458,9 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
                   <ListItemText primary={user.name} />
                   <Select
                     value={user.status}
-                    onChange={(e) => handleStatusChange(user.applicationId, e.target.value)}
+                    onChange={(e) =>
+                      handleStatusChange(user.applicationId, e.target.value)
+                    }
                     size="small"
                   >
                     {statusOptions.map((status: any) => (
@@ -347,12 +473,16 @@ export function OpportunitiesList({ data, onEdit, onDelete, onView }: Opportunit
               ))}
             </List>
           ) : (
-            <Typography>{t('OPPORTUNITY.NO_YOUTH_FOUND')}</Typography>
+            <Typography>{t("OPPORTUNITY.NO_YOUTH_FOUND")}</Typography>
           )}
 
           <Box mt={2} textAlign="center">
-            <Button variant="contained" color="primary" onClick={handleUpdateStatus}>
-              {t('OPPORTUNITY.UPDATE')}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateStatus}
+            >
+              {t("OPPORTUNITY.UPDATE")}
             </Button>
           </Box>
         </Box>

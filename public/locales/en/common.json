@@ -103,7 +103,7 @@
     "NO_COUNTY": "No County",
     "ALL_SUB_COUNTY": "All Sub-County",
     "ALL_COUNTY": "All County",
-    "COUNTY":"County",
+    "COUNTY": "County",
     "SELECT_STATE": "Select State",
     "SELECT_DISTRICT": "Select District",
     "SOMETHING_WENT_WRONG": "Something went wrong",
@@ -217,14 +217,14 @@
     "MAIN_COURSE": "Main Course",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
     "SCTA": "State Content Team Associate",
-    "BATCHES":"Batches",
+    "BATCHES": "Batches",
     "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
     "STATE": "State",
     "COUNTRY": "Country",
-    "COUNTY":"County",
-    "SUB_COUNTY":"Sub-County",
+    "COUNTY": "County",
+    "SUB_COUNTY": "Sub-County",
     "CITY": "City",
     "BLOCK": "Block",
     "NEW_FACILITATOR": "New Facilitator",
@@ -255,7 +255,7 @@
     "TEAM_LEADER_UPDATED_SUCCESSFULLY": "Team Leader has been successfully updated!",
     "EDIT_TEAM_LEADER": "Edit Team Leader"
   },
-   "CENTER_ADMIN": {
+  "CENTER_ADMIN": {
     "SEARCHBAR_PLACEHOLDER": "Search Center Admin..",
     "NEW_CENTER_ADMIN": "New Center Admin",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
@@ -310,7 +310,7 @@
   },
   "MASTER": {
     "COUNTRY": "Country",
-    "CITY":"City",
+    "CITY": "City",
     "STATE": "States",
     "STATE_NAMES": "State Name",
     "SORT": "Sort",
@@ -472,12 +472,12 @@
     "MEDIUM": "Medium",
     "GRADE": "Grade",
     "USERNAME": "Username",
-    "DESCRIPTION":"Description",
-    "PROGRAM_NAME":"Program Name",
-    "PROGRAM_DESCRIPTION":"Program Description",
-    "PROGRAM_TYPE":"Program Type",
-    "PROGRAM_HEAD_NAME":"Program Head Name",
-    "PROGRAM_IMAGE":"Program Image",
+    "DESCRIPTION": "Description",
+    "PROGRAM_NAME": "Program Name",
+    "PROGRAM_DESCRIPTION": "Program Description",
+    "PROGRAM_TYPE": "Program Type",
+    "PROGRAM_HEAD_NAME": "Program Head Name",
+    "PROGRAM_IMAGE": "Program Image",
     "PREFERRED_LANGUAGE": "Preferred Language",
     "FIRST_NAME": "First Name",
     "MIDDLE_NAME_OR_FATHER_NAME": "Middle Name or Father Name",
@@ -494,18 +494,18 @@
     "HAVE_YOU_RECEIVE_ANY_PRIOR_TRAINING": "Have You Received Any Prior Training?",
     "WHAT_DO_YOU_WANT_TO_BECOME": "What do you want to become?",
     "EDUCATIONAL_INSTITUTE": "Educational Institute",
-    "UNEMPLOYED_OR_DOMESTIC_WORK":"Unemployed or Domestic Work",
-    "SELF_PLACED":"Self Placed",
-    "TRANSGENDER":"Transgender",
-    "HINDI":"Hindi",
-    "MARATHI":"Marathi",
-    "URDU":"Urdu",
-    "DIVORCED/WIDOW":"Divorced/Widow",
-    "GRADUATE":"Graduate",
-    "POST_GRADUATE":"Post Graduate",
-    "QUALIFICATIONS":"Qualification",
-    "DETAILED_ADDRESS":"Detailed Address",
-    "COURSES":"Courses"
+    "UNEMPLOYED_OR_DOMESTIC_WORK": "Unemployed or Domestic Work",
+    "SELF_PLACED": "Self Placed",
+    "TRANSGENDER": "Transgender",
+    "HINDI": "Hindi",
+    "MARATHI": "Marathi",
+    "URDU": "Urdu",
+    "DIVORCED/WIDOW": "Divorced/Widow",
+    "GRADUATE": "Graduate",
+    "POST_GRADUATE": "Post Graduate",
+    "QUALIFICATIONS": "Qualification",
+    "DETAILED_ADDRESS": "Detailed Address",
+    "COURSES": "Courses"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -549,9 +549,9 @@
     "ARCHIVED_LEARNERS": " Archived Learners",
     "CODE": "Code",
     "DISTRICT": "District",
-    "DOB":"Date of Birth",
-    "CITY":"City",
-    "COUNTRY":"Country"
+    "DOB": "Date of Birth",
+    "CITY": "City",
+    "COUNTRY": "Country"
   },
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
@@ -562,49 +562,42 @@
     "CONTENT_CREATOR": "Content Creator",
     "CONTENT_REVIEWER": "Content Reviewer",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SEARCH_CONTENT_CREATOR":"Search content creator...",
-    "EDIT_CONTENT_CREATOR":"Edit content creator",
-    "CREATE_CONTENT_CREATOR":"Create content creator",
-    "EDIT_CONTENT_REVIEWER":"Edit content reviewer"
+    "SEARCH_CONTENT_CREATOR": "Search content creator...",
+    "EDIT_CONTENT_CREATOR": "Edit content creator",
+    "CREATE_CONTENT_CREATOR": "Create content creator",
+    "EDIT_CONTENT_REVIEWER": "Edit content reviewer"
   },
-
 
   "PROGRAM_MANAGEMENT": {
     "PROGRAMS": "Programs",
     "CREATE_PROGRAM": "Create Program",
     "EDIT_PROGRAM": "Edit Program",
     "EDIT": "Edit",
-    "OPPORTUNITY":"Opportunities",
+    "OPPORTUNITY": "Opportunities",
     "DELETE_PROGRAM": "Delete",
     "SEARCH_PROGRAM": "Search Program...",
     "NO_PROGRAMS_FOUND": "No Program Found",
     "PROGRAM_CREATED_SUCCESS": "Program Created Successfully!",
     "PROGRAM_DELETED_SUCCESS": "Program Deleted Successfully!",
     "PROGRAM_ALREADY_EXISTS": "Program Already Exists!",
-    "DRAFT":"Draft",
-    "MARK_AS_DRAFT":"Yes, Unpublish",
-    "ARCHIVED":"Archived",
-    "PUBLISHED":"Published",
-    "PUBLISH":"Publish",
+    "DRAFT": "Draft",
+    "MARK_AS_DRAFT": "Yes, Unpublish",
+    "ARCHIVED": "Archived",
+    "PUBLISHED": "Published",
+    "PUBLISH": "Publish",
 
-    "UNPUBLISHED":"Unpublish",
+    "UNPUBLISHED": "Unpublish",
     "PROGRAM_PUBLISHED_SUCCESS": "Program Published Successfully!",
     "PROGRAM_DRAFT": "Program marked as a Draft",
     "PROGRAM_UPDATED_SUCCESS": "Program Updated Successfully!",
-    "SURE_TO_PUBLISH_PROGRAM":"Are you sure, you want to Publish this program?",
-    "SURE_TO_REVERT_PROGRAM":"Are you sure you want to unpublish this program, It will be marked as a draft? ",
-    "SURE_PROGRAM_DELETE":"Are you sure to delete this program?",
-"SURE_PUBLISH_PROGRAM_UPDATE":"The program is already published. Are you sure you want to update it?",
-"SAVE_AS_DRAFT":"Save as Draft",
-"CONTINUE_PROGRAM":"Do you want to continue  or discard the changes?",
-"DRAFTS":"Drafts",
-"DISCARD_CHANGES":"Discard Changes"
-
-
-
-
-
-
+    "SURE_TO_PUBLISH_PROGRAM": "Are you sure, you want to Publish this program?",
+    "SURE_TO_REVERT_PROGRAM": "Are you sure you want to unpublish this program, It will be marked as a draft? ",
+    "SURE_PROGRAM_DELETE": "Are you sure to delete this program?",
+    "SURE_PUBLISH_PROGRAM_UPDATE": "The program is already published. Are you sure you want to update it?",
+    "SAVE_AS_DRAFT": "Save as Draft",
+    "CONTINUE_PROGRAM": "Do you want to continue  or discard the changes?",
+    "DRAFTS": "Drafts",
+    "DISCARD_CHANGES": "Discard Changes"
   },
 
   "OPPORTUNITY": {
@@ -637,11 +630,11 @@
     "ALL_SKILLS": "All Skills",
     "NUMBER_OF_VACUNCIES": "Number of Vacancies",
     "CANCEL": "Cancel",
-    "MAP_OR_UPDATE_STATUS":"Map or Update Youth Status",
+    "MAP_OR_UPDATE_STATUS": "Map or Update Youth Status",
     "MAPPED_USERS": "Mapped Youth",
     "STATUS": "Status",
     "ALL_STATUS": "All Status",
-    "ADD_NEW":"Add New",
+    "ADD_NEW": "Add New",
     "CREATED_BY_ME": "Created by me",
     "ADD_YOUTH": "Add Youth",
     "NO_YOUTH_FOUND": "No Youth found",
@@ -651,6 +644,10 @@
     "ADD": "Add",
     "MAP_YOUTH_TO_OPPORTUNITY": "Map Youth to Opportunity : ",
     "BACK_TO_OPPORTUNITY": "Back to Opportunites",
-    "NEW_REQUEST": "New Request"
+    "NEW_REQUEST": "New Request",
+    "REJECTION_REASON": "Rejection Reason",
+    "REJECT": "Reject",
+    "REASON": "Reason",
+    "APPROVE": "Approve"
   }
 }

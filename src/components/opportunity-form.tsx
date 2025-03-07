@@ -1,356 +1,578 @@
-import { useState, useEffect } from "react";
-import { Grid, Card, CardContent, Typography, IconButton, Tooltip, Box, CardActions, Button, Chip, Modal, List, ListItem, ListItemText, CircularProgress, Select, MenuItem, TextField } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import WorkIcon from "@mui/icons-material/Work";
-import BusinessIcon from "@mui/icons-material/Business";
-import { useRouter } from 'next/router';
-import { getAppliedUsers, updateApplicationStatus, fetchApplicationStatuses, updateOpportunity } from "@/lib/api"; // Import API functions
-import { getUserDetailsInfo } from "@/services/UserList";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Grid,
+  Chip,
+  OutlinedInput,
+  Stack,
+  FormLabel,
+} from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import type { OpportunityFormData } from "@/types/opportunity";
+import {
+  getSkills,
+  getCategories,
+  getOrganizations,
+  getLocation,
+  getLocationCode,
+  getBenefits,
+} from "@/lib/api";
 import { useTranslation } from "next-i18next";
-import type { OpportunityList } from "@/types/opportunity";
 
-interface Status {
-  status: string;
-  id: string;
-  status_name: string;
-}
-
-interface StatusOption {
-  label: string;
-  value: string;
-}
-
-interface OpportunitiesListProps {
-  data: OpportunityList[];
-  onEdit: (opportunity: OpportunityList) => void;
-  onDelete: (opportunity: OpportunityList) => void;
-  onView: (opportunity: OpportunityList) => void;
-}
-
-export function OpportunitiesList({ data, onEdit, onDelete, onView }: OpportunitiesListProps) {
-  const router = useRouter();
-  const [userList, setUserList] = useState<string[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [statusOptions, setStatusOptions] = useState<StatusOption[]>([]);
-  const [loadingStatus, setLoadingStatus] = useState(true);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<string>();
-  const { t } = useTranslation();
-  const [openRejectModal, setOpenRejectModal] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [reason, setReason] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
-      setIsAdmin(adminInfo?.role === "Admin");
+const formSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    min_experience: z.number().min(0, "Minimum experience cannot be negative"),
+    min_salary: z.number().min(0, "Minimum salary cannot be negative"),
+    max_salary: z.string().min(1, "Stipend cannot be negative"),
+    category: z.string().min(1, "At least one category is required"),
+    company: z.string().min(1, "Organisation is required"),
+    skills: z.array(z.string()).min(1, "At least one skill is required"),
+    no_of_candidates: z.string().min(1, "Number of candidates is required"),
+    status: z.string().min(1, "Status is required"),
+    role_type: z.string().min(1, "Role type is required"),
+    work_nature: z.string().min(1, "Work nature is required"),
+    benefits: z.string().min(1, "Benefits are required"),
+    country: z.string().min(1, "Country is required"),
+    state: z.string().min(1, "State is required"),
+    city: z.string().min(1, "City is required"),
+    otherBenefits: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.benefits === "51d25808-371b-4ba3-9d85-a16e3a5793be" &&
+      !data.otherBenefits
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Other benefits are required when the specific benefit is selected",
+        path: ["otherBenefits"],
+      });
     }
-  }, []);
+  });
 
-  // Fetch application statuses from API
-  useEffect(() => {
-    const fetchStatuses = async () => {
-      try {
-        const response = await fetchApplicationStatuses();
-        if (response && response.result) {
-          setStatusOptions(response.result.map((status: Status) => ({ label: status.status, value: status.id })));
-        }
-      } catch (error) {
-        console.error("Error fetching statuses:", error);
-      } finally {
-        setLoadingStatus(false);
-      }
+interface OpportunityFormProps {
+  initialData?: Partial<OpportunityFormData>;
+  onSubmit: (data: OpportunityFormData) => Promise<void>;
+  onCancel?: () => void;
+}
+
+interface Item {
+  id: string;
+  name: string;
+}
+
+interface Location {
+  country: string;
+  state: string;
+  city: string;
+}
+
+export function OpportunityForm({
+  initialData,
+  onSubmit,
+  onCancel,
+}: OpportunityFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [countries, setCountries] = useState<Location[]>([]);
+  const [states, setStates] = useState<Location[]>([]);
+  const [cities, setCities] = useState<Location[]>([]);
+  const [locationCode, setlocationCode] = useState("");
+  const [skills, setSkills] = useState<Item[]>([]);
+  const [categories, setCategories] = useState<Item[]>([]);
+  const [organisation, setOrganisation] = useState<Item[]>([]);
+  const [benefits, setBenefits] = useState<Item[]>([]);
+  const { t } = useTranslation();
+  // const [initialcompany, setInitialcompany] = useState(initialData?.company?.name)
+
+  const defaultValues: Partial<OpportunityFormData> = {
+    title: "",
+    description: "",
+    min_experience: 0,
+    min_salary: 0,
+    max_salary: "0",
+    category: "",
+    company: "",
+    skills: [],
+    no_of_candidates: "",
+    status: "pending",
+    role_type: "",
+    work_nature: "",
+    benefits: "",
+    ...initialData,
+  };
+
+  async function handleFormSubmit(data: OpportunityFormData) {
+    const transformedData = {
+      ...data,
+      location: locationCode, // Ensure mapping happens here
     };
 
-    fetchStatuses();
+    console.log("Submitting form data:", transformedData);
+
+    try {
+      setIsLoading(true);
+      await onSubmit(transformedData); // Make sure onSubmit is defined and handles API errors
+    } catch (error) {
+      console.error("Error submitting opportunity:", error); // Log any errors
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [
+          skillsResponse,
+          categoriesResponse,
+          organisationResponse,
+          countriesResponse,
+          benefitsResponse,
+        ] = await Promise.all([
+          getSkills(),
+          getCategories(),
+          getOrganizations(),
+          getLocation(),
+          getBenefits(),
+        ]);
+        setSkills(skillsResponse?.result);
+        setCategories(categoriesResponse?.result);
+        setOrganisation(organisationResponse?.result);
+        setCountries(countriesResponse.result);
+        setBenefits(benefitsResponse?.result);
+      } catch (e) {
+        console.log(e, "error");
+      }
+    }
+    fetchData();
   }, []);
 
-  const fetchMappedUsers = async (opportunityId: string) => {
-    setSelectedOpportunity(opportunityId);
-    setLoadingUsers(true);
-    setOpenModal(true);
-    try {
-      const appliedUsersList = await getAppliedUsers(opportunityId);
-      const appliedUsers = appliedUsersList.result.data.map((user: any) => {
-        const matchedStatus = statusOptions.find((status) => status.label === user.status_name);
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<OpportunityFormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+  });
 
-        return {
-          applicationId: user.application_id,
-          userId: user.application_user_id,
-          status: matchedStatus ? matchedStatus.value : "", // Store the status ID
-          originalStatus: matchedStatus ? matchedStatus.value : "",
-        };
-      });
+  console.log(errors, "errors---");
 
-      const userDetailsPromises = appliedUsers.map((user: any) =>
-        getUserDetailsInfo(user.userId).then((details) => ({
-          ...user,
-          name: `${details.userData.firstName} ${details.userData.lastName || ""}`.trim(),
-        }))
-      );
+  const selectedCountry = watch("country");
+  const selectedState = watch("state");
 
-      const users = await Promise.all(userDetailsPromises);
-
-      if (users.length === 0) {
-        router.push(`opportunities/map-youth/${opportunityId}`);
-      }
-      setUserList(users);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setUserList([]);
-    } finally {
-      setLoadingUsers(false);
+  useEffect(() => {
+    if (selectedCountry) {
+      getLocation({ country: selectedCountry })
+        .then((data) => setStates(data.result))
+        .catch((err) => console.log(err, "error fetching states"));
     }
-  };
+  }, [selectedCountry]);
 
-  const handleUpdateStatus = async () => {
-    try {
-      const updatePromises = userList.map(async (user: any) => {
-        if (user.status !== user.originalStatus) {
-          await updateApplicationStatus(user.applicationId, user.status);
-        }
-      });
-
-      await Promise.all(updatePromises);
-      alert("Statuses updated successfully!");
-      setOpenModal(false);
-    } catch (error) {
-      console.error("Error updating statuses:", error);
-      alert("Failed to update statuses.");
+  useEffect(() => {
+    if (selectedCountry && selectedState) {
+      getLocation({ country: selectedCountry, state: selectedState })
+        .then((data) => setCities(data.result))
+        .catch((err) => console.log(err, "error fetching cities"));
     }
-  };
+  }, [selectedCountry, selectedState]);
 
-  const handleStatusChange = (applicationId: any, newStatus: string) => {
-    setUserList((prevList: any) =>
-      prevList.map((user: any) =>
-        user.applicationId === applicationId ? { ...user, status: newStatus } : user
-      )
-    );
-  };
+  const selectedCity = watch("city");
 
-  const handleApproveReject = async (opportunity_id: any, status: string, e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (status === "reject") {
-      setOpenRejectModal(true);
-    } else {
-      await updateOpportunity(opportunity_id, { status });
-      alert("Opportunity approved successfully!");
+  useEffect(() => {
+    if (selectedCountry && selectedState && selectedCity) {
+      getLocationCode({
+        country: selectedCountry,
+        state: selectedState,
+        city: selectedCity,
+      })
+        .then((data) => {
+          console.log(data.result[0].id, "location code");
+
+          setlocationCode(data.result[0].id); // Set the location field with result.id
+        })
+        .catch((err) => console.log(err, "Error fetching location code"));
     }
-  };
-
-  const handleReject = async (opportunity_id: any) => {
-    await updateOpportunity(opportunity_id, { status: "rejected", reason });
-    alert("Opportunity rejected successfully!");
-    setOpenRejectModal(false);
-  };
+  }, [selectedCountry, selectedState, selectedCity]);
 
   return (
-    <>
-      <Grid container spacing={2}>
-        {data.length > 0 ? (
-          data.map((opportunity: any) => (
-            <Grid item xs={12} sm={6} md={4} key={opportunity.id}>
-              <Card
-                sx={{ cursor: "pointer", "&:hover": { boxShadow: 10 }, borderRadius: 4, padding: 1, border: "1px solid black" }}
-                onClick={() => onView(opportunity)}
-              >
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: "bold", color: "#1A0DAB", cursor: "pointer", textDecoration: "underline" }}
-                  >
-                    {opportunity.title}
-                  </Typography>
-
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <BusinessIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity?.company?.name || "Unknown Company"}
-                    </Typography>
-                  </Box>
-
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <LocationOnIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity?.location?.city}, {opportunity?.location?.state}
-                    </Typography>
-                  </Box>
-
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <WorkIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity.opportunity_type || "Full Time"} | {opportunity.experience_level || "Immediate Joiner"}
-                    </Typography>
-                  </Box>
-
-                  <Typography variant="body1" sx={{ mt: 1 }}>
-                    <Box component="span" sx={{ fontWeight: "bold" }}>KES</Box> {Math.floor(opportunity.min_salary)} - {Math.floor(opportunity.max_salary)}
-                  </Typography>
-
-                  <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 1 }}>
-                    <Chip
-                      label={`${t('OPPORTUNITY.MAPPED_USERS')}: ${opportunity?.stats?.mapped || 0}`}
-                      sx={{ backgroundColor: "#E0E0E0", color: "black" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fetchMappedUsers(opportunity.id);
-                      }}
-                    />
-                  </Box>
-
-                </CardContent>
-
-                <CardActions>
-                  <Box sx={{ ml: "auto" }}>
-                    <Tooltip title="Edit">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(opportunity);
-                        }}
-                        size="small"
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(opportunity);
-                        }}
-                        size="small"
-                        color="error"
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </CardActions>
-                {isAdmin && opportunity.status === "pending" && (
-                  <Box>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      handleApproveReject(opportunity.id, "approved", e)} 
-                    }
-                      variant="contained" color="primary">Approve</Button>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      handleApproveReject(opportunity.id, "rejected", e)} 
-                    }
-                    variant="contained" color="error">Reject</Button>
-                  </Box>
-                )}
-                {opportunity.status === "approved" &&
-                  <Box p={1} textAlign="center">
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      sx={{ backgroundColor: "var", color: "black", "&:hover": { backgroundColor: "#333" } }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fetchMappedUsers(opportunity.id);
-                      }}
-                    >
-                      {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
-                    </Button>
-                  </Box>}
-              </Card>
-            </Grid>
-          ))
-        ) : (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(handleFormSubmit)}
+        sx={{ mt: 2 }}
+      >
+        <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography align="center">{t('OPPORTUNITY.NO_RESULT_FOUND')}</Typography>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t("OPPORTUNITY.TITLE")}
+                  error={!!errors.title}
+                  helperText={errors.title?.message}
+                />
+              )}
+            />
           </Grid>
-        )}
-      </Grid>
 
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Box sx={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2
-        }}>
-          <Typography variant="h4" gutterBottom>{t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}</Typography>
-          <Button
-            fullWidth
-            variant="text"
-            startIcon={<PersonAddIcon />}
-            sx={{
-              justifyContent: "flex-start",
-              color: "black",
-              fontWeight: "bold",
-              textTransform: "none",
-              mb: 2
-            }}
-            onClick={() => router.push(`opportunities/map-youth/${selectedOpportunity}`)} // Navigate to youth mapping page
-          >
-            {t('OPPORTUNITY.ADD_YOUTH')}
-          </Button>
-          {loadingUsers ? (
-            <Box display="flex" justifyContent="center" alignItems="center" p={2}>
-              <CircularProgress />
-            </Box>
-          ) : userList.length > 0 ? (
-            <List>
-              {userList.map((user: any) => (
-                <ListItem key={user.applicationId}>
-                  <ListItemText primary={user.name} />
+          <Grid item xs={12}>
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label={t("OPPORTUNITY.DESCRIPTION")}
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Controller
+              name="country"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.country}>
+                  <InputLabel id="country">
+                    {t("OPPORTUNITY.COUNTRY")}
+                  </InputLabel>
                   <Select
-                    value={user.status}
-                    onChange={(e) => handleStatusChange(user.applicationId, e.target.value)}
-                    size="small"
+                    {...field}
+                    labelId="country"
+                    label={t("OPPORTUNITY.COUNTRY")}
                   >
-                    {statusOptions.map((status: any) => (
-                      <MenuItem key={status.value} value={status.value}>
-                        {status.label}
+                    {countries.map((item) => (
+                      <MenuItem key={item.country} value={item.country}>
+                        {item.country}
                       </MenuItem>
                     ))}
                   </Select>
-                </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography>{t('OPPORTUNITY.NO_YOUTH_FOUND')}</Typography>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="state"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.state}>
+                  <InputLabel>{t("OPPORTUNITY.COUNTY")}</InputLabel>
+                  <Select
+                    {...field}
+                    disabled={!selectedCountry}
+                    label={t("OPPORTUNITY.COUNTY")}
+                  >
+                    {states.map((item) => (
+                      <MenuItem key={item.state} value={item.state}>
+                        {item.state}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="city"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.city}>
+                  <InputLabel>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
+                  <Select
+                    {...field}
+                    disabled={!selectedState}
+                    label={t("OPPORTUNITY.COUNTY")}
+                  >
+                    {cities.map((item) => (
+                      <MenuItem key={item.city} value={item.city}>
+                        {item.city}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="company"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.company}>
+                  <InputLabel>{t("OPPORTUNITY.ORGANISATION")}</InputLabel>
+                  <Select
+                    {...field}
+                    label="Organisation"
+                    onChange={(event) => field.onChange(event.target.value)} // Store a single value
+                  >
+                    {organisation.map((org) => (
+                      <MenuItem key={org.id} value={org.id}>
+                        {org.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.company && (
+                    <FormHelperText>
+                      {errors.company.message?.toString()}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.category}>
+                  <InputLabel>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
+                  <Select
+                    {...field}
+                    label="Category"
+                    onChange={(event) => field.onChange(event.target.value)} // Store single value
+                  >
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.category && (
+                    <FormHelperText>
+                      {errors.category.message?.toString()}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Controller
+              name="role_type"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.role_type}>
+                  <InputLabel>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
+                  <Select {...field} value={field.value || ""}>
+                    {["Part-time", "Full-time", "Mid", "Contract"].map(
+                      (role) => (
+                        <MenuItem key={role} value={role}>
+                          {role}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                  {errors.role_type && (
+                    <FormHelperText>{errors.role_type.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              name="benefits"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.benefits}>
+                  <InputLabel>{t("OPPORTUNITY.BENIFITS")}</InputLabel>
+                  <Select
+                    {...field}
+                    value={field.value || ""} // Ensure single select
+                    onChange={(event) => field.onChange(event.target.value)} // Set single value
+                    input={<OutlinedInput label="Benefits" />}
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          maxWidth: "100%", // Ensures dropdown width matches form
+                        },
+                      },
+                    }}
+                    sx={{ width: "100%" }} // Ensures select box width matches form
+                  >
+                    {benefits.map((benefit) => (
+                      <MenuItem key={benefit.id} value={benefit.id}>
+                        {benefit.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.benefits && (
+                    <FormHelperText>{errors.benefits.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          {watch("benefits") === "51d25808-371b-4ba3-9d85-a16e3a5793be" && (
+            <Grid item xs={12}>
+              <Controller
+                name="otherBenefits"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label={t("OPPORTUNITY.OTHERBENIFITS")}
+                    // error={!!errors.otherBenefits}
+                    // helperText={errors.otherBenefits?.message}
+                  />
+                )}
+              />
+            </Grid>
           )}
 
-          <Box mt={2} textAlign="center">
-            <Button variant="contained" color="primary" onClick={handleUpdateStatus}>
-              {t('OPPORTUNITY.UPDATE')}
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+          <Grid item xs={12}>
+            <Controller
+              name="max_salary"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t("OPPORTUNITY.STIPEND")}
+                  error={!!errors.title}
+                  helperText={errors.title?.message}
+                />
+              )}
+            />
+          </Grid>
 
-      <Modal open={openRejectModal} onClose={() => setOpenRejectModal(false)}>
-        <Box sx={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 2
-        }}>
-          <Typography variant="h6" gutterBottom>{t('OPPORTUNITY.REJECTION_REASON')}</Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            label={t('OPPORTUNITY.REASON')}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            multiline
-            rows={4}
-            sx={{ mb: 2 }}
-          />
-          <Box display="flex" justifyContent="space-between">
-            <Button variant="contained" color="primary" onClick={() => handleReject(selectedOpportunity)}>
-              {t('OPPORTUNITY.REJECT')}
+          <Grid item xs={12}>
+            <Controller
+              name="work_nature"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.work_nature}>
+                  <InputLabel>
+                    {t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
+                  </InputLabel>
+                  <Select
+                    {...field}
+                    label={t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
+                  >
+                    {["Remote", "On-site", "Hybrid", "Work From Home"].map(
+                      (role) => (
+                        <MenuItem key={role} value={role}>
+                          {role}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                  {errors.work_nature && (
+                    <FormHelperText>
+                      {errors.work_nature.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Controller
+              name="skills"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.skills}>
+                  <InputLabel>{t("OPPORTUNITY.SKILLS")}</InputLabel>
+                  <Select
+                    {...field}
+                    multiple
+                    input={<OutlinedInput label="Skills" />}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => {
+                          const skill = skills.find((s) => s.id === value);
+                          return skill ? (
+                            <Chip key={value} label={skill.name} />
+                          ) : null;
+                        })}
+                      </Box>
+                    )}
+                  >
+                    {skills.map((skill) => (
+                      <MenuItem key={skill.id} value={skill.id}>
+                        {skill.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.skills && (
+                    <FormHelperText>{errors.skills.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Controller
+              name="no_of_candidates"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t("OPPORTUNITY.NUMBER_OF_VACUNCIES")}
+                  error={!!errors.no_of_candidates}
+                  helperText={errors.no_of_candidates?.message}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ mt: 4, justifyContent: "flex-end" }}
+        >
+          {onCancel && (
+            <Button onClick={onCancel} disabled={isLoading}>
+              {t("OPPORTUNITY.CANCEL")}
             </Button>
-            <Button variant="contained" color="secondary" onClick={() => setOpenRejectModal(false)}>
-              {t('OPPORTUNITY.CANCEL')}
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
-    </>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving..." : "Save Opportunity"}
+          </Button>
+        </Stack>
+      </Box>
+    </LocalizationProvider>
   );
 }
