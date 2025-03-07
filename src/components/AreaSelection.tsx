@@ -200,7 +200,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
               <MultipleSelectCheckmarks
                 names={states?.map((states) => states.label)}
                 codes={states?.map((states) => states.value)}
-                tagName={t("FACILITATORS.STATE")}
+                tagName={t("FACILITATORS.COUNTY")}
                 selectedCategories={selectedDistrict}
                 onCategoryChange={handleStateChangeWrapper}
                 // disabled={
@@ -213,8 +213,8 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                   reAssignModal
                     ? districtDefaultValue
                     : selectedState.length > 0 && districts?.length === 0
-                      ? t("COMMON.STATES")
-                      : t("COMMON.ALL_STATES")
+                      ? t("COMMON.COUNTY")
+                      : t("COMMON.ALL_COUNTY")
                 }
               />
             </Grid>
@@ -231,14 +231,14 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                       blocks?.length > 0 ? blocks.map((block) => block.label) : []
                     )}
                     codes={blocks?.length > 0 ? blocks?.map((block) => block.value) : []}
-                    tagName={t("FACILITATORS.CITY")}
+                    tagName={t("FACILITATORS.SUB_COUNTY")}
                     selectedCategories={capitalizeFirstLetterOfEachWordInArray(selectedBlock)}
                     onCategoryChange={handleBlockChangeWrapper}
                     overall={!inModal}
                     defaultValue={
                       selectedDistrict?.length > 0 && blocks?.length === 0
-                        ? t("COMMON.NO_CITIES")
-                        : t("COMMON.ALL_CITIES")
+                        ? t("COMMON.NO_SUB_COUNTY")
+                        : t("COMMON.ALL_SUB_COUNTY")
                     }
                   />
                 )}
