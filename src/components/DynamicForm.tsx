@@ -10,10 +10,9 @@ import MultiSelectCheckboxes from "./form/MultiSelectCheckboxes";
 import MultiSelectDropdown from "./form/MultiSelectDropdown";
 const FormWithMaterialUI = withTheme(MaterialUITheme);
 import { getCurrentYearPattern } from "@/utils/Helper";
-import CustomNumberWidget from './CustomNumberWidget';
+import CustomNumberWidget from "./CustomNumberWidget";
 import CustomImageWidget from "./form/CustomImageWidget";
-import {DynamicFormProps} from '../utils/Interfaces'
-
+import { DynamicFormProps } from "../utils/Interfaces";
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
   id,
@@ -25,16 +24,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   onError,
   customFields,
   children,
-  isProgramFields=false
+  isProgramFields = false,
 }) => {
   const { t } = useTranslation();
-  console.log("schema--------------",schema)
-  console.log("uiSchema--------------",uiSchema);
-  
-  const [localFormData, setLocalFormData] = useState(formData ?? {});
-  console.log("localFormData", localFormData?.dob);
 
-  const [changedFormData, setChangedFormData] = useState( {});
+  const [localFormData, setLocalFormData] = useState(formData ?? {});
+  const [changedFormData, setChangedFormData] = useState({});
 
   const submittedButtonStatus = useSubmittedButtonStore(
     (state: any) => state.submittedButtonStatus
@@ -52,14 +47,13 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     MultiSelectCheckboxes: MultiSelectCheckboxes,
     CustomRadioWidget: CustomRadioWidget,
     CustomNumberWidget: CustomNumberWidget,
-    files: CustomImageWidget
-
+    files: CustomImageWidget,
   };
 
   const handleError = (errors: any) => {
-    if (errors.length === 0) { 
+    if (errors.length === 0) {
       // You can perform any additional action here when there are no errors
-    } 
+    }
     if (errors.length > 0) {
       const property = errors[0].property?.replace(/^root\./, "");
       const errorField = document.querySelector(
@@ -82,10 +76,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     event: IChangeEvent<any, RJSFSchema, any>,
     formEvent: React.FormEvent<any>
   ) => {
-    if(isProgramFields)
-    {
-      event.formData=changedFormData
-
+    if (isProgramFields) {
+      event.formData = changedFormData;
     }
 
     onSubmit(event, formEvent);
@@ -94,28 +86,26 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     const differences: any = {};
 
     for (const key in obj1) {
-        if (obj1[key] !== obj2[key]) {
-            differences[key] = obj1[key];
-        }
+      if (obj1[key] !== obj2[key]) {
+        differences[key] = obj1[key];
+      }
     }
 
     for (const key in obj2) {
-        if (!(key in obj1)) {
-            differences[key] = obj2[key];
-        }
+      if (!(key in obj1)) {
+        differences[key] = obj2[key];
+      }
     }
 
     return differences;
-}
+  }
 
   const handleChange = (event: IChangeEvent<any>) => {
-    console.log("event.formData",event.formData);
-    if(formData)
-    {    const differences = getDifferences(event?.formData, formData);
-      setChangedFormData(differences)
+    if (formData) {
+      const differences = getDifferences(event?.formData, formData);
+      setChangedFormData(differences);
     }
     // console.log("differences", differences);
-
 
     const cleanAndReplace = (data: any) => {
       for (const key in data) {
@@ -132,7 +122,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
 
     const cleanedFormData = cleanAndReplace(event.formData);
-  
 
     setLocalFormData(cleanedFormData);
     setUserEnteredEmail(cleanedFormData?.email);
@@ -145,12 +134,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     console.log("errors", errors);
     errors.length === 0 ? setNoError(true) : setNoError(false);
 
- 
-
     return errors?.map((error: any) => {
-      console.log("error.name", error.name)
+      console.log("error.name", error.name);
       switch (error.name) {
-        case "required": { 
+        case "required": {
           error.message = submittedButtonStatus
             ? t("FORM_ERROR_MESSAGES.THIS_IS_REQUIRED_FIELD")
             : "";
@@ -200,7 +187,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         //     const dobDate = new Date(localFormData?.dob);
         //     currentDate.setHours(0, 0, 0, 0);
         //     dobDate.setHours(0, 0, 0, 0);
-        
+
         //     if (dobDate >= currentDate) {
         //       error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY")
         //     }
@@ -212,7 +199,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         //   break;
         // }
         case "pattern": {
-          const pattern = error?.params?.pattern; 
+          const pattern = error?.params?.pattern;
           const property = error.property.substring(1);
 
           switch (pattern) {
@@ -258,7 +245,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               );
               break;
             }
-            
+
             default: {
               const validRange = currentYearPattern.test(pattern);
               if (!validRange) {
@@ -300,11 +287,13 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       return error;
     });
   };
- useEffect(() => {
-   
+  useEffect(() => {
     const updatedFormData = Object.fromEntries(
-      Object.entries(localFormData)?.map(([key, value]) => [key, value === "undefined" ? "" : value])
-    ); 
+      Object.entries(localFormData)?.map(([key, value]) => [
+        key,
+        value === "undefined" ? "" : value,
+      ])
+    );
     setLocalFormData(updatedFormData);
   }, []);
   return (

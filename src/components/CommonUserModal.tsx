@@ -24,7 +24,7 @@ import {
   RoleId,
   TelemetryEventType,
   apiCatchingDuration,
-  fieldKeys
+  fieldKeys,
 } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
@@ -43,7 +43,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import React, { useEffect, useState } from "react";
 import { TENANT_ID } from "../../app.config";
-import { transformArray,transformBatchArray } from "../utils/Helper";
+import { transformArray, transformBatchArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import CustomModal from "./CustomModal";
 import SendCredentialModal from "./SendCredentialModal";
@@ -58,8 +58,8 @@ interface UserModalProps {
   onSubmit: (submitValue: boolean) => void;
   userType: string;
   userName?: string;
-  emailFieldValue?:string
-  userNameFieldValue?:string
+  emailFieldValue?: string;
+  userNameFieldValue?: string;
 }
 
 const CommonUserModal: React.FC<UserModalProps> = ({
@@ -72,11 +72,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   userType,
   userName,
   emailFieldValue,
-  userNameFieldValue
-}) => { 
-  
-
-
+  userNameFieldValue,
+}) => {
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
   const [openModal, setOpenModal] = React.useState(false);
@@ -167,6 +164,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   //     ),
   //   staleTime: apiCatchingDuration.GETREADFORM,
   // })
+  console.log(isEditModal, "isEditModal");
+  console.log(userType, "userType");
+
   const modalTitle = !isEditModal
     ? userType === FormContextType.STUDENT
       ? t("LEARNERS.NEW_LEARNER")
@@ -216,7 +216,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     assignedTeamLeader,
     assignedTeamLeaderNames,
     selectedStateCohortId,
-  } = useLocationState(open, onClose, roleType); 
+  } = useLocationState(open, onClose, roleType);
 
   useEffect(() => {
     const getAddUserFormData = () => {
@@ -228,7 +228,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         // const response2= await getFormRead(
         //   FormContext.USERS,
         //   userType
-        // ); 
+        // );
         const response: FormData =
           userType === FormContextType.TEACHER
             ? teacherFormData
@@ -237,7 +237,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               : userType === FormContextType.CONTENT_CREATOR
                 ? contentCreatorFormData
                 : teamLeaderFormData;
-     
 
         if (response) {
           if (userType === FormContextType.TEACHER) {
@@ -251,19 +250,19 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             );
             setFormValue(formValues);
             setSchema(schema);
-            setUiSchema(uiSchema); 
+            setUiSchema(uiSchema);
           } else if (userType === FormContextType.TEAM_LEADER) {
             const { schema, uiSchema, formValues } = GenerateSchemaAndUiSchema(
               response,
               t
             );
             setFormValue(formValues);
-            setSchema(schema); 
+            setSchema(schema);
             setUiSchema(uiSchema);
           } else {
             console.log("response---------", response);
             const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
-            setSchema(schema); 
+            setSchema(schema);
             setUiSchema(uiSchema);
           }
         }
@@ -284,15 +283,14 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
-  ) => { 
+  ) => {
     const target = event?.target as HTMLFormElement;
- 
- 
-    console.log(selectedCenterCode,"selectedCenterCode-----");
-    
-    const formData = data.formData; 
+
+    console.log(selectedCenterCode, "selectedCenterCode-----");
+
+    const formData = data.formData;
     const schemaProperties = schema.properties;
- 
+
     let result;
     if (formData["year of joining scp"]) {
       result = generateUsernameAndPassword(
@@ -305,10 +303,11 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
     if (result !== null) {
       const { username, password } = result;
-      console.log(selectedBatch,"selectedBatch-----");
+      console.log(selectedBatch, "selectedBatch-----");
 
       const apiBody: any = {
-        username: userType === FormContextType.STUDENT ? username : formData.email,
+        username:
+          userType === FormContextType.STUDENT ? username : formData.email,
         password: password,
         tenantCohortRoleMapping: [
           {
@@ -321,23 +320,30 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   : userType === FormContextType.CONTENT_CREATOR
                     ? RoleId.SCTA
                     : RoleId.TEAM_LEADER,
-              cohortIds:userType !== "CENTER ADMIN" ? [selectedCenterCode, selectedBatch[0]] : [selectedCenterCode]
-              // userType === FormContextType.TEAM_LEADER
-              //   ? [selectedBlockCohortId]
-              //   : userType === FormContextType.CONTENT_CREATOR
-              //     ? selectedStateCohortId
-              //     : [selectedCenterCode],
+            cohortIds:
+              userType !== "CENTER ADMIN"
+                ? [selectedCenterCode, selectedBatch[0]]
+                : [selectedCenterCode],
+            // userType === FormContextType.TEAM_LEADER
+            //   ? [selectedBlockCohortId]
+            //   : userType === FormContextType.CONTENT_CREATOR
+            //     ? selectedStateCohortId
+            //     : [selectedCenterCode],
           },
         ],
         customFields: [],
       };
 
-      Object.entries(formData).forEach(([fieldKey, fieldValue]) => { 
+      Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
         const fieldSchema = schemaProperties[fieldKey];
-        
-        const fieldId = fieldSchema?.fieldId; 
- 
-        if (fieldId === null || fieldId === "null" || fieldKey===fieldKeys.GENDER) {
+
+        const fieldId = fieldSchema?.fieldId;
+
+        if (
+          fieldId === null ||
+          fieldId === "null" ||
+          fieldKey === fieldKeys.GENDER
+        ) {
           if (typeof fieldValue !== "object") {
             apiBody[fieldKey] = fieldValue;
           }
@@ -345,23 +351,23 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           if (
             fieldSchema?.hasOwnProperty("isDropdown") ||
             fieldSchema?.hasOwnProperty("isCheckbox")
-          ) {            
+          ) {
             apiBody.customFields.push({
               fieldId: fieldId,
               value: Array.isArray(fieldValue) ? fieldValue : [fieldValue],
             });
           } else {
             if (fieldSchema?.checkbox && fieldSchema.type === "array") {
-              if (String(fieldValue).length != 0) {                
+              if (String(fieldValue).length != 0) {
                 apiBody.customFields.push({
                   fieldId: fieldId,
                   value: String(fieldValue).split(","),
                 });
               }
             } else {
-              if (fieldId) {        
-                console.log(fieldId,"fieldId----");
-                                      
+              if (fieldId) {
+                console.log(fieldId, "fieldId----");
+
                 apiBody.customFields.push({
                   fieldId: fieldId,
                   value: String(fieldValue),
@@ -370,10 +376,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             }
           }
         }
-        
       });
       if (userType === FormContextType.CONTENT_CREATOR && !isEditModal) {
-        
         apiBody.customFields.push({
           fieldId: stateFieldId,
           value: [selectedStateCode],
@@ -394,7 +398,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       }
 
       try {
-        if (isEditModal && userId) { 
+        if (isEditModal && userId) {
           const userData = {
             name: apiBody?.name,
             mobile: String(apiBody?.phone_number),
@@ -402,21 +406,19 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),
             username: apiBody?.username,
-            firstName:apiBody?.firstName,
-            middleName:apiBody?.middleName,
-            lastName:apiBody?.lastName,
-            dob:apiBody?.dob,
-            gender:apiBody?.gender,
+            firstName: apiBody?.firstName,
+            middleName: apiBody?.middleName,
+            lastName: apiBody?.lastName,
+            dob: apiBody?.dob,
+            gender: apiBody?.gender,
           };
 
-          const customFields = apiBody?.customFields; 
-          if(emailFieldValue===userData.email)
-          {
+          const customFields = apiBody?.customFields;
+          if (emailFieldValue === userData.email) {
             delete userData.email;
-
           }
-          if(userNameFieldValue===userData.username)
-          delete userData.username;
+          if (userNameFieldValue === userData.username)
+            delete userData.username;
 
           const object = {
             userData: userData,
@@ -471,20 +473,17 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           };
           telemetryFactory.interact(telemetryInteract);
         } else {
-          if(apiBody?.name)
-          {
+          if (apiBody?.name) {
             apiBody.name = apiBody?.name.trim();
           }
-          if(apiBody?.father_name)
-          {
+          if (apiBody?.father_name) {
             apiBody.father_name = apiBody?.father_name.trim();
           }
-          if(apiBody?.phone_number)
-          {
+          if (apiBody?.phone_number) {
             apiBody.mobile = apiBody?.phone_number;
           }
-          
-          const response = await createUser(apiBody); 
+
+          const response = await createUser(apiBody);
           if (response) {
             const messageKey = messageKeyMap[userType];
 
@@ -525,13 +524,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 creatorName = getUserFullName();
               }
               let replacements: { [key: string]: string };
-              replacements = {}; 
+              replacements = {};
               if (creatorName) {
                 if (userType === FormContextType.STUDENT) {
                   replacements = {
                     "{FirstName}": firstLetterInUpperCase(creatorName),
                     "{UserName}": apiBody["username"],
-                    "{LearnerName}": firstLetterInUpperCase(apiBody["firstName"]),
+                    "{LearnerName}": firstLetterInUpperCase(
+                      apiBody["firstName"]
+                    ),
                     "{Password}": password,
                   };
                 } else {
@@ -595,14 +596,14 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         onClose();
         onCloseModal();
       } catch (error: any) {
-        // onClose(); 
+        // onClose();
         if (error?.response?.data?.params?.err === "User already exist.") {
           showToastMessage(error?.response?.data?.params?.err, "error");
-        } 
-        else if (error?.response?.data?.params?.errmsg === "Email already exists") {
+        } else if (
+          error?.response?.data?.params?.errmsg === "Email already exists"
+        ) {
           showToastMessage(error?.response?.data?.params?.errmsg, "error");
-        } 
-        else {
+        } else {
           showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
         }
       }
@@ -681,7 +682,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const admin = localStorage.getItem("adminInfo");
-      if (admin) setAdminInfo(JSON.parse(admin)); 
+      if (admin) setAdminInfo(JSON.parse(admin));
     }
   }, []);
   return (
@@ -725,13 +726,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               color="primary"
               disabled={!submitButtonEnable}
               onClick={() => {
-                setSubmittedButtonStatus(true); 
+                setSubmittedButtonStatus(true);
                 if (
                   userType !== FormContextType.STUDENT &&
                   !isEditModal &&
                   noError
                 ) {
-                  // setOpenModal(true); 
+                  // setOpenModal(true);
                   if (
                     assignedTeamLeaderNames.length !== 0 &&
                     userType === FormContextType.TEAM_LEADER
@@ -742,7 +743,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     //onClose();
                     setOpenModal(true);
                   }
-                } 
+                }
               }}
             >
               {!isEditModal ? t("COMMON.CREATE") : t("COMMON.UPDATE")}
@@ -773,10 +774,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               handleBatchChangeWrapper={handleBatchChangeWrapper}
               isMobile={isMobile}
               isMediumScreen={isMediumScreen}
-              isCenterSelection={
-                true
-              }
-              
+              isCenterSelection={true}
               selectedCenter={selectedCenter}
               handleCenterChangeWrapper={handleCenterChangeWrapper}
               inModal={true}
@@ -833,7 +831,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   onSubmit={handleSubmit}
                   onChange={handleChange}
                   onError={handleError}
-                  // widgets={{}}
+                  widgets={{}}
                   showErrorList={true}
                   customFields={customFields}
                   formData={formValue}
