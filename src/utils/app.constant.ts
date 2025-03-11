@@ -1,4 +1,4 @@
-import { TFunction } from 'i18next';
+import { TFunction } from "i18next";
 import pdf from "./../assets/images/PDF.svg";
 import epub from "../assets/images/Epub.svg";
 import html from "../assets/images/HTML.svg";
@@ -6,7 +6,7 @@ import mp4 from "../assets/images/MP4.svg";
 import qml from "../assets/images/Qml.svg";
 import youtube from "../assets/images/youtube.svg";
 
-// background image 
+// background image
 
 import bgpdf from "./../assets/images/bgPDF.svg";
 import bgepub from "../assets/images/bgEpub.svg";
@@ -15,12 +15,9 @@ import bgmp4 from "../assets/images/bgMP4.svg";
 import bgqml from "../assets/images/bgQml.svg";
 import bgyoutube from "../assets/images/bgYouTube.svg";
 
-
-
 export const limit: number = 200;
 export const metaTags = {
-  title: 'Pratham Admin Management App'
- 
+  title: "Pratham Admin Management App",
 };
 
 export enum Role {
@@ -32,13 +29,12 @@ export enum Role {
   YOUTH = "Youth",
   ADMIN = "Admin",
   CENTRAL_ADMIN = "Center Admin",
-  LEARNERS = "Learners",
-  FACILITATORS = "Facilitators",
+  LEARNERS = "Youth",
+  FACILITATORS = "TRAINER",
   CONTENT_CREATOR = "Content Creator",
   CONTENT_REVIEWER = "Content Reviewer",
   SCTA = "State Content Team Associate (SCTA)",
-  CCTA = "Central Content Team Associate (CCTA)"
-
+  CCTA = "Central Content Team Associate (CCTA)",
 }
 
 export enum Status {
@@ -48,8 +44,8 @@ export enum Status {
   ACTIVE_LABEL = "Active",
   ALL_LABEL = "All",
   INACTIVE = "InActive",
-  PUBLISHED="published",
-  DRAFT="draft"
+  PUBLISHED = "published",
+  DRAFT = "draft",
 }
 export enum SORT {
   ASCENDING = "asc",
@@ -63,15 +59,13 @@ export enum Storage {
 }
 export enum FormContext {
   USERS = "USERS",
-  COHORTS = "cohorts"
-
+  COHORTS = "cohorts",
 }
 export enum TelemetryEventType {
-  CLICK = 'CLICK',
-  SEARCH = 'SEARCH',
-  VIEW = 'VIEW',
-  RADIO = "RADIO"
-
+  CLICK = "CLICK",
+  SEARCH = "SEARCH",
+  VIEW = "VIEW",
+  RADIO = "RADIO",
 }
 export enum FormContextType {
   STUDENT = "YOUTH",
@@ -80,7 +74,7 @@ export enum FormContextType {
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
   COHORT = "center",
-  CONTENT_CREATOR = "CONTENT CREATOR"
+  CONTENT_CREATOR = "TRAINER",
 }
 
 export enum RoleId {
@@ -88,7 +82,7 @@ export enum RoleId {
   TEACHER = "3bde0028-6900-4900-9d05-eeb608843718",
   TEAM_LEADER = "9dd9328f-1bc7-444f-96e3-c5e1daa3514a",
   ADMIN = "ee482faf-8a41-45fe-9656-5533dd6a787c",
-  SCTA = "f972a14e-afdb-4502-8ede-cf1fcf171e46"
+  SCTA = "f972a14e-afdb-4502-8ede-cf1fcf171e46",
 }
 
 export enum DataKey {
@@ -120,10 +114,10 @@ export enum CohortTypes {
   COHORT = "CENTER",
   BLOCK = "BLOCK",
   DISTRICT = "DISTRICT",
-  STATE="STATE",
-  COUNTRY="COUNTRY",
-  CITY="CITY",
-  BATCH="COHORT"
+  STATE = "STATE",
+  COUNTRY = "COUNTRY",
+  CITY = "CITY",
+  BATCH = "COHORT",
 }
 
 export enum FormValues {
@@ -131,7 +125,7 @@ export enum FormValues {
   MALE = "MALE",
   REGULAR = "REGULAR",
   REMOTE = "REMOTE",
-  TRANSGENDER="TRANSGENDER"
+  TRANSGENDER = "TRANSGENDER",
 }
 
 export enum InputTypes {
@@ -144,7 +138,6 @@ export enum apiCatchingDuration {
   GETREADFORM = 36000000,
 }
 
-
 export const QueryKeys = {
   USER_READ: "userRead",
   FIELD_OPTION_READ: "fieldOptionRead",
@@ -153,21 +146,20 @@ export const QueryKeys = {
   GET_STATE_COHORT_LIST: "getStateCohortList",
 
   GET_COHORT_MEMBER_LIST: "getCohortMemberList",
-}
-
+};
 
 export const monthColors: any = {
-  "Jan": "#99CCFF",
-  "Mar": "#D9B2FF",
-  "Apr": "#FFABAB",
-  "May": "#FFABAB",
-  "Jun": "#FFABAB",
-  "Jul": "#FFABAB",
-  "Aug": "#FFABAB",
-  "Sep": "#FFABAB",
-  "Oct": "#FFD6D6",
-  "Nov": "#FFD6D6",
-  "Dec": "#FFD6D6"
+  Jan: "#99CCFF",
+  Mar: "#D9B2FF",
+  Apr: "#FFABAB",
+  May: "#FFABAB",
+  Jun: "#FFABAB",
+  Jul: "#FFABAB",
+  Aug: "#FFABAB",
+  Sep: "#FFABAB",
+  Oct: "#FFD6D6",
+  Nov: "#FFD6D6",
+  Dec: "#FFD6D6",
 };
 
 export enum ResourceType {
@@ -188,11 +180,8 @@ export enum ContentType {
   YOUTUBE_VIDEO = "video/youtube",
   YOUTUBE_X_VIDEO = "video/x-youtube",
   WEBM_VIDEO = "video/webm",
-  VND = "application/vnd.ekstep.content-collection"
+  VND = "application/vnd.ekstep.content-collection",
 }
-
-
-
 
 export type FileType = {
   [key in ContentType]: {
@@ -208,13 +197,25 @@ export const ContentCardsTypes: FileType = {
   [ContentType.EPUB]: { name: "EPUB", imgPath: epub, BgImgPath: bgepub },
   [ContentType.HTML]: { name: "HTML", imgPath: html, BgImgPath: bghtml },
   [ContentType.VIDEO_MP4]: { name: "Video", imgPath: mp4, BgImgPath: bgmp4 },
-  [ContentType.QUESTION_SET]: { name: "Question Set", imgPath: qml, BgImgPath: bgqml },
+  [ContentType.QUESTION_SET]: {
+    name: "Question Set",
+    imgPath: qml,
+    BgImgPath: bgqml,
+  },
   [ContentType.H5P]: { name: "H5P", imgPath: html, BgImgPath: bghtml },
-  [ContentType.YOUTUBE_X_VIDEO]: { name: "YouTube", imgPath: youtube, BgImgPath: bgyoutube },
-  [ContentType.YOUTUBE_VIDEO]: { name: "YouTube", imgPath: youtube, BgImgPath: bgyoutube },
+  [ContentType.YOUTUBE_X_VIDEO]: {
+    name: "YouTube",
+    imgPath: youtube,
+    BgImgPath: bgyoutube,
+  },
+  [ContentType.YOUTUBE_VIDEO]: {
+    name: "YouTube",
+    imgPath: youtube,
+    BgImgPath: bgyoutube,
+  },
   [ContentType.WEBM_VIDEO]: { name: "WEBM", imgPath: mp4, BgImgPath: bgmp4 },
   [ContentType.VND]: { name: "WEBM", imgPath: html, BgImgPath: bghtml },
 };
 export enum fieldKeys {
-  GENDER="gender"
+  GENDER = "gender",
 }

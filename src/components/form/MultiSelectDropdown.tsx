@@ -1,8 +1,8 @@
-import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import { WidgetProps } from '@rjsf/utils';
-import React from 'react';
+import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+import { WidgetProps } from "@rjsf/utils";
+import React from "react";
 
 const MultiSelectDropdown: React.FC<WidgetProps> = ({
   options,
@@ -35,16 +35,16 @@ const MultiSelectDropdown: React.FC<WidgetProps> = ({
       value={value || []}
       onChange={handleChange}
       variant="outlined"
-      SelectProps={{
-        multiple: true,
-        renderValue: (selected) =>
-          (selected as string[])
-            .map(
-              (val) =>
-                selectOptions?.find((opt: any) => opt.value === val)?.label
-            )
-            .join(', '),
-      }}
+      // SelectProps={{
+      //   multiple: true,
+      //   renderValue: (selected) =>
+      //     (selected as string[])
+      //       ?.map(
+      //         (val) =>
+      //           selectOptions?.find((opt: any) => opt.value === val)?.label
+      //       )
+      //       .join(", "),
+      // }}
       InputLabelProps={{ required: required }}
       fullWidth
       disabled={disabled || readonly}

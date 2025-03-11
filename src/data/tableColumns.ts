@@ -23,20 +23,21 @@ const generateColumns = (
     sortDirection: config.sortDirection,
     width: isMobile && config.width ? config.width : config.width || undefined,
     isSortable: config.isSortable,
-  })); 
+  }));
   return [...newConfigs];
 };
 
-export const getUserTableColumns = (t: any, isMobile: boolean, isArchived?:any) => {
- 
-
-
+export const getUserTableColumns = (
+  t: any,
+  isMobile: boolean,
+  isArchived?: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
-    { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
-    { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
+    // { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
+    // { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
     { key: "mobile", titleKey: "TABLE_TITLE.MOBILE", width: 130 },
-    { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 160 },
+    // { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 160 },
     // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130},
     { key: "centers", titleKey: "TABLE_TITLE.CENTER", width: 130 },
     { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 160 },
@@ -56,10 +57,11 @@ export const getUserTableColumns = (t: any, isMobile: boolean, isArchived?:any) 
 
   return generateColumns(t, configs, isMobile);
 };
-export const getLearnerTableColumns = (t: any, isMobile: boolean, isArchived?:any) => {
- 
-
-
+export const getLearnerTableColumns = (
+  t: any,
+  isMobile: boolean,
+  isArchived?: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
@@ -87,13 +89,16 @@ export const getLearnerTableColumns = (t: any, isMobile: boolean, isArchived?:an
   return generateColumns(t, configs, isMobile);
 };
 
-export const getTLTableColumns = (t: any, isMobile: boolean, isArchived:any) => {
-
+export const getTLTableColumns = (
+  t: any,
+  isMobile: boolean,
+  isArchived: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
-    { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
-    { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
-    { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 150 },
+    // { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
+    // { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
+    // { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 150 },
     // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130 },
     { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
@@ -113,8 +118,11 @@ export const getTLTableColumns = (t: any, isMobile: boolean, isArchived:any) => 
   return generateColumns(t, configs, isMobile);
 };
 
-export const getContentCreatorTableColumns = (t: any, isMobile: boolean, isArchived:any) => {
-
+export const getContentCreatorTableColumns = (
+  t: any,
+  isMobile: boolean,
+  isArchived: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "age", titleKey: "TABLE_TITLE.AGE", width: 70 },
@@ -138,26 +146,29 @@ export const getContentCreatorTableColumns = (t: any, isMobile: boolean, isArchi
   return generateColumns(t, configs, isMobile);
 };
 
-export const getCenterTableData = (t: any, isMobile: boolean, isArchived:any) => {
-
+export const getCenterTableData = (
+  t: any,
+  isMobile: boolean,
+  isArchived: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
-    { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
+    // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
     { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
     { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 130 },
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
 
-    {
-      key: "totalActiveMembers",
-      titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
-      width: 130,
-    },
-    {
-      key: "totalArchivedMembers",
-      titleKey: "TABLE_TITLE.ARCHIVED_LEARNERS",
-      width: 130,
-    },
+    // {
+    //   key: "totalActiveMembers",
+    //   titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
+    //   width: 130,
+    // },
+    // {
+    //   key: "totalArchivedMembers",
+    //   titleKey: "TABLE_TITLE.ARCHIVED_LEARNERS",
+    //   width: 130,
+    // },
   ];
   // Conditionally add the "actions" column if isActiveYear is true
   if (isActiveYear && !isArchived) {
@@ -171,7 +182,11 @@ export const getCenterTableData = (t: any, isMobile: boolean, isArchived:any) =>
 };
 
 //master data
-export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) => {
+export const getStateDataMaster = (
+  t: any,
+  isMobile: boolean,
+  isArchived?: any
+) => {
   const configs: ColumnConfig[] = [
     {
       key: "label",
@@ -199,7 +214,6 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
       titleKey: t("TABLE_TITLE.UPDATED_DATE").toUpperCase(),
       width: 130,
     },
-    
   ];
   // if (typeof window !== "undefined" && window.localStorage) {
   //   const adminInfo = localStorage.getItem("adminInfo");
@@ -207,7 +221,7 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
 
   //   if (adminInfo && adminInfo !== "undefined") {
   //     userInfo = JSON.parse(adminInfo || "{}");
-  //   } 
+  //   }
   // // Conditionally add the "actions" column if isActiveYear is true
   // if (isActiveYear && userInfo?.role===Role.CENTRAL_ADMIN) {
   //   configs.push({
@@ -223,21 +237,24 @@ export const getStateDataMaster = (t: any, isMobile: boolean,  isArchived?:any) 
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    } 
-  // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived) {
-    configs.push({
-      key: "actions",
-      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
-      width: 160,
-    });
+    }
+    // Conditionally add the "actions" column if isActiveYear is true
+    if (isActiveYear && userInfo?.role === Role.ADMIN && !isArchived) {
+      configs.push({
+        key: "actions",
+        titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+        width: 160,
+      });
+    }
   }
-}
-return generateColumns(t, configs, isMobile);
-
+  return generateColumns(t, configs, isMobile);
 };
 
-export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any) => {
+export const getDistrictTableData = (
+  t: any,
+  isMobile: boolean,
+  isArchived?: any
+) => {
   const configs: ColumnConfig[] = [
     {
       key: "label",
@@ -272,22 +289,25 @@ export const getDistrictTableData = (t: any, isMobile: boolean,  isArchived?:any
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    } 
-  // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived) {
-    configs.push({
-      key: "actions",
-      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
-      width: 160,
-    });
-  }
+    }
+    // Conditionally add the "actions" column if isActiveYear is true
+    if (isActiveYear && userInfo?.role === Role.ADMIN && !isArchived) {
+      configs.push({
+        key: "actions",
+        titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+        width: 160,
+      });
+    }
   }
 
   return generateColumns(t, configs, isMobile);
 };
 
-export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) => {
-
+export const getBlockTableData = (
+  t: any,
+  isMobile: boolean,
+  isArchived?: any
+) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.CITY", width: 130 },
     { key: "code", titleKey: "TABLE_TITLE.CODE", width: 130 },
@@ -318,15 +338,15 @@ export const getBlockTableData = (t: any, isMobile: boolean, isArchived?:any) =>
 
     if (adminInfo && adminInfo !== "undefined") {
       userInfo = JSON.parse(adminInfo || "{}");
-    } 
-  // Conditionally add the "actions" column if isActiveYear is true
-  if (isActiveYear && userInfo?.role===Role.ADMIN && !isArchived ) {
-    configs.push({
-      key: "actions",
-      titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
-      width: 160,
-    });
-  }
+    }
+    // Conditionally add the "actions" column if isActiveYear is true
+    if (isActiveYear && userInfo?.role === Role.ADMIN && !isArchived) {
+      configs.push({
+        key: "actions",
+        titleKey: t("TABLE_TITLE.ACTIONS").toUpperCase(),
+        width: 160,
+      });
+    }
   }
 
   return generateColumns(t, configs, isMobile);

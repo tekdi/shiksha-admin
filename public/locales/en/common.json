@@ -505,7 +505,8 @@
     "POST_GRADUATE": "Post Graduate",
     "QUALIFICATIONS": "Qualification",
     "DETAILED_ADDRESS": "Detailed Address",
-    "COURSES": "Courses"
+    "COURSES": "Courses",
+    "HIGHEST_QUALIFICATION": "Highest Qualification"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
