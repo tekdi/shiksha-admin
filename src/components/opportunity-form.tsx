@@ -218,8 +218,9 @@ export function OpportunityForm({
         component="form"
         onSubmit={handleSubmit(handleFormSubmit)}
         sx={{ mt: 2 }}
+        position={'relative'}
       >
-        <Grid container spacing={3}>
+        <Grid container spacing={3} p={'20px'} pt={0}>
           <Grid item xs={12}>
             <Controller
               name="title"
@@ -228,7 +229,7 @@ export function OpportunityForm({
                 <TextField
                   {...field}
                   fullWidth
-                  label={t("OPPORTUNITY.TITLE")}
+                  label={t('OPPORTUNITY.TITLE')}
                   error={!!errors.title}
                   helperText={errors.title?.message}
                 />
@@ -246,7 +247,7 @@ export function OpportunityForm({
                   fullWidth
                   multiline
                   rows={4}
-                  label={t("OPPORTUNITY.DESCRIPTION")}
+                  label={t('OPPORTUNITY.DESCRIPTION')}
                   error={!!errors.description}
                   helperText={errors.description?.message}
                 />
@@ -260,14 +261,8 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.country}>
-                  <InputLabel id="country">
-                    {t("OPPORTUNITY.COUNTRY")}
-                  </InputLabel>
-                  <Select
-                    {...field}
-                    labelId="country"
-                    label={t("OPPORTUNITY.COUNTRY")}
-                  >
+                  <InputLabel>{t('OPPORTUNITY.COUNTRY')}</InputLabel>
+                  <Select {...field}>
                     {countries.map((item) => (
                       <MenuItem key={item.country} value={item.country}>
                         {item.country}
@@ -284,12 +279,8 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.state}>
-                  <InputLabel>{t("OPPORTUNITY.COUNTY")}</InputLabel>
-                  <Select
-                    {...field}
-                    disabled={!selectedCountry}
-                    label={t("OPPORTUNITY.COUNTY")}
-                  >
+                  <InputLabel>{t('OPPORTUNITY.COUNTY')}</InputLabel>
+                  <Select {...field} disabled={!selectedCountry}>
                     {states.map((item) => (
                       <MenuItem key={item.state} value={item.state}>
                         {item.state}
@@ -306,12 +297,8 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.city}>
-                  <InputLabel>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
-                  <Select
-                    {...field}
-                    disabled={!selectedState}
-                    label={t("OPPORTUNITY.COUNTY")}
-                  >
+                  <InputLabel>{t('OPPORTUNITY.SUBCOUNTY')}</InputLabel>
+                  <Select {...field} disabled={!selectedState}>
                     {cities.map((item) => (
                       <MenuItem key={item.city} value={item.city}>
                         {item.city}
@@ -328,7 +315,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.company}>
-                  <InputLabel>{t("OPPORTUNITY.ORGANISATION")}</InputLabel>
+                  <InputLabel>{t('OPPORTUNITY.ORGANISATION')}</InputLabel>
                   <Select
                     {...field}
                     label="Organisation"
@@ -341,9 +328,7 @@ export function OpportunityForm({
                     ))}
                   </Select>
                   {errors.company && (
-                    <FormHelperText>
-                      {errors.company.message?.toString()}
-                    </FormHelperText>
+                    <FormHelperText>{errors.company.message}</FormHelperText>
                   )}
                 </FormControl>
               )}
@@ -355,7 +340,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.category}>
-                  <InputLabel>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
+                  <InputLabel>{t('OPPORTUNITY.CATEGORY')}</InputLabel>
                   <Select
                     {...field}
                     label="Category"
@@ -367,11 +352,7 @@ export function OpportunityForm({
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.category && (
-                    <FormHelperText>
-                      {errors.category.message?.toString()}
-                    </FormHelperText>
-                  )}
+                  {errors.category && <FormHelperText></FormHelperText>}
                 </FormControl>
               )}
             />
@@ -383,14 +364,14 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.role_type}>
-                  <InputLabel>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
-                  <Select {...field} value={field.value || ""}>
-                    {["Part-time", "Full-time", "Mid", "Contract"].map(
+                  <InputLabel>{t('OPPORTUNITY.ROLETYPE')}</InputLabel>
+                  <Select {...field}>
+                    {['Part-time', 'Full-time', 'Mid', 'Contract'].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
                           {role}
                         </MenuItem>
-                      )
+                      ),
                     )}
                   </Select>
                   {errors.role_type && (
@@ -406,20 +387,20 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.benefits}>
-                  <InputLabel>{t("OPPORTUNITY.BENIFITS")}</InputLabel>
+                  <InputLabel>{t('OPPORTUNITY.BENIFITS')}</InputLabel>
                   <Select
                     {...field}
-                    value={field.value || ""} // Ensure single select
+                    value={field.value || ''} // Ensure single select
                     onChange={(event) => field.onChange(event.target.value)} // Set single value
                     input={<OutlinedInput label="Benefits" />}
                     MenuProps={{
                       PaperProps: {
                         sx: {
-                          maxWidth: "100%", // Ensures dropdown width matches form
+                          maxWidth: '100%', // Ensures dropdown width matches form
                         },
                       },
                     }}
-                    sx={{ width: "100%" }} // Ensures select box width matches form
+                    sx={{ width: '100%' }} // Ensures select box width matches form
                   >
                     {benefits.map((benefit) => (
                       <MenuItem key={benefit.id} value={benefit.id}>
@@ -435,7 +416,7 @@ export function OpportunityForm({
             />
           </Grid>
 
-          {watch("benefits") === "51d25808-371b-4ba3-9d85-a16e3a5793be" && (
+          {watch('benefits') === '51d25808-371b-4ba3-9d85-a16e3a5793be' && (
             <Grid item xs={12}>
               <Controller
                 name="otherBenefits"
@@ -444,7 +425,7 @@ export function OpportunityForm({
                   <TextField
                     {...field}
                     fullWidth
-                    label={t("OPPORTUNITY.OTHERBENIFITS")}
+                    label={t('OPPORTUNITY.OTHERBENIFITS')}
                     // error={!!errors.otherBenefits}
                     // helperText={errors.otherBenefits?.message}
                   />
@@ -461,7 +442,7 @@ export function OpportunityForm({
                 <TextField
                   {...field}
                   fullWidth
-                  label={t("OPPORTUNITY.STIPEND")}
+                  label={t('OPPORTUNITY.STIPEND')}
                   error={!!errors.title}
                   helperText={errors.title?.message}
                 />
@@ -476,18 +457,15 @@ export function OpportunityForm({
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.work_nature}>
                   <InputLabel>
-                    {t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
+                    {t('OPPORTUNITY.WORK_EXPERIENCE_NATURE')}
                   </InputLabel>
-                  <Select
-                    {...field}
-                    label={t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
-                  >
-                    {["Remote", "On-site", "Hybrid", "Work From Home"].map(
+                  <Select {...field}>
+                    {['Remote', 'On-site', 'Hybrid', 'Work From Home'].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
                           {role}
                         </MenuItem>
-                      )
+                      ),
                     )}
                   </Select>
                   {errors.work_nature && (
@@ -506,13 +484,13 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.skills}>
-                  <InputLabel>{t("OPPORTUNITY.SKILLS")}</InputLabel>
+                  <InputLabel>{t('OPPORTUNITY.SKILLS')}</InputLabel>
                   <Select
                     {...field}
                     multiple
                     input={<OutlinedInput label="Skills" />}
                     renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {selected.map((value) => {
                           const skill = skills.find((s) => s.id === value);
                           return skill ? (
@@ -544,7 +522,7 @@ export function OpportunityForm({
                 <TextField
                   {...field}
                   fullWidth
-                  label={t("OPPORTUNITY.NUMBER_OF_VACUNCIES")}
+                  label={t('OPPORTUNITY.NUMBER_OF_VACUNCIES')}
                   error={!!errors.no_of_candidates}
                   helperText={errors.no_of_candidates?.message}
                 />
@@ -554,13 +532,20 @@ export function OpportunityForm({
         </Grid>
 
         <Stack
-          direction="row"
-          spacing={2}
-          sx={{ mt: 4, justifyContent: "flex-end" }}
+          borderTop={'1px solid #D0C5B4'}
+          p={'16px'}
+          position={'sticky'}
+          bottom={0}
+          bgcolor={'white'}
+          zIndex={9999999}
         >
           {onCancel && (
-            <Button onClick={onCancel} disabled={isLoading}>
-              {t("OPPORTUNITY.CANCEL")}
+            <Button
+              onClick={onCancel}
+              disabled={isLoading}
+              sx={{ padding: '10px', fontWeight: 500 }}
+            >
+              {t('OPPORTUNITY.CANCEL')}
             </Button>
           )}
           <Button
@@ -568,8 +553,9 @@ export function OpportunityForm({
             variant="contained"
             color="primary"
             disabled={isLoading}
+            sx={{ padding: '10px', fontWeight: 500 }}
           >
-            {isLoading ? "Saving..." : "Save Opportunity"}
+            {isLoading ? 'Saving...' : 'Add'}
           </Button>
         </Stack>
       </Box>

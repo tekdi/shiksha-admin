@@ -22,8 +22,11 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { showToastMessage } from "@/components/Toastify";
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { GetStaticPaths } from 'next';
 import { toPascalCase } from "@/utils/Helper";
 // import SearchBar from '@/components/Searchbar';
+import { SearchInput } from "@/components/search-input";
 import { useTranslation } from "next-i18next";
 import { applyToOpportunity, getAppliedUsers } from "@/lib/api";
 import { getUserCohortList } from "@/services/CohortService/cohortService";
@@ -41,41 +44,43 @@ export default function MapYouth() {
   const [reloadState, setReloadState] = useState<boolean>(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const setCohortLearnerCount = useStore(
-    (state) => state.setCohortLearnerCount
+    (state) => state.setCohortLearnerCount,
   );
   const [userData, setUserData] = useState<UserDataProps[]>([]);
   const [filteredData, setFilteredData] = useState<UserDataProps[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const opportunityId = router.query.id;
   const { t } = useTranslation();
   const [myCohorts, setMyCohorts] = useState<any[]>([]);
-  const [cohortId, setCohortId] = useState<string>("");
+  const [cohortId, setCohortId] = useState<string>(
+    'be10c29a-43c9-49ff-8c36-3719fb5f467c',
+  );
 
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        const getMyCohortList = async () => {
-          const response = await getUserCohortList(userId);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined" && window.localStorage) {
+  //     const userId = localStorage.getItem("userId");
+  //     if (userId) {
+  //       const getMyCohortList = async () => {
+  //         const response = await getUserCohortList(userId);
 
-          // Filter cohorts where type is "COHORT"
-          const cohortList = response?.filter(
-            (center: any) => center.type === "COHORT"
-          );
-          console.log(cohortList, "cohortList");
+  //         // Filter cohorts where type is "COHORT"
+  //         const cohortList = response?.filter(
+  //           (center: any) => center.type === "COHORT"
+  //         );
+  //         console.log(cohortList, "cohortList");
 
-          setMyCohorts(cohortList); // Set only the filtered cohorts
+  //         setMyCohorts(cohortList); // Set only the filtered cohorts
 
-          if (cohortList?.length > 0) {
-            setCohortId(cohortList[0].cohortId); // Default to the first cohort
-          }
-        };
-        getMyCohortList();
-      }
-    }
-  }, []);
+  //         if (cohortList?.length > 0) {
+  //           setCohortId(cohortList[0].cohortId); // Default to the first cohort
+  //         }
+  //       };
+  //       getMyCohortList();
+  //     }
+  //   }
+  // }, []);
 
   useEffect(() => {
     const getCohortMemberList = async () => {
@@ -87,51 +92,52 @@ export default function MapYouth() {
 
           // Fetch all users in the cohort
           const response = await cohortMemberList({ limit, filters });
-          const cohortUsers = response?.result?.userDetails || [];
+          const cohortUsers = response?.userDetails || [];
 
           // Fetch applied users
           const appliedUsersList = await getAppliedUsers(opportunityId);
-
           if (
             !appliedUsersList?.result?.data ||
             !Array.isArray(appliedUsersList.result.data)
           ) {
             console.error(
-              "Unexpected appliedUsersList structure:",
-              appliedUsersList
+              'Unexpected appliedUsersList structure:',
+              appliedUsersList,
             );
-            showToastMessage("Error fetching applied users", "error");
+            showToastMessage('Error fetching applied users', 'error');
             return;
           }
 
           // Extract user IDs from all applications
           const appliedUsers = appliedUsersList.result.data.map(
-            (applicant: any) => applicant.application_user_id
+            (applicant: any) => applicant.application_user_id,
           );
 
           // Filter out users who have already applied
           const filteredUsers = cohortUsers.filter(
-            (user: any) => !appliedUsers.includes(user.userId)
+            (user: any) => !appliedUsers.includes(user.userId),
           );
 
           const userDetails = filteredUsers.map((user: any) => ({
             name:
-              toPascalCase(user?.firstName || "") +
-              " " +
-              (user?.lastName ? toPascalCase(user.lastName) : ""),
+              toPascalCase(user?.firstName || '') +
+              ' ' +
+              (user?.lastName ? toPascalCase(user.lastName) : ''),
             userId: user?.userId,
             memberStatus: user?.status,
             cohortMembershipId: user?.cohortMembershipId,
             enrollmentNumber: user?.username,
           }));
 
-          setCohortLearnerCount(userDetails.length);
+          // setCohortLearnerCount(userDetails.length);
+          console.log(userDetails, 'userDetails');
+
           setUserData(userDetails);
           setFilteredData(userDetails);
         }
       } catch (error) {
-        console.error("Error fetching cohort list:", error);
-        showToastMessage("Something went wrong!", "error");
+        console.error('Error fetching cohort list:', error);
+        showToastMessage('Something went wrong!', 'error');
       } finally {
         setLoading(false);
       }
@@ -144,17 +150,17 @@ export default function MapYouth() {
     setSelectedUsers((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
   const handleSubmit = async () => {
     if (selectedUsers.length === 0) {
-      showToastMessage("Please select at least one user", "error");
+      showToastMessage('Please select at least one user', 'error');
       return;
     }
-    const statusId = "adb327a6-7abb-4f7a-9810-eff745071a1b";
-    const appliedSkills = ["2c8278c3-cdfe-42af-8960-ab80f2d6aed7"];
+    const statusId = 'adb327a6-7abb-4f7a-9810-eff745071a1b';
+    const appliedSkills = ['2c8278c3-cdfe-42af-8960-ab80f2d6aed7'];
 
     try {
       for (const userId of selectedUsers) {
@@ -168,23 +174,23 @@ export default function MapYouth() {
         const response = await applyToOpportunity(requestData);
 
         if (response.responseCode === 200) {
-          showToastMessage(`User mapped successfully!`, "success");
+          showToastMessage(`User mapped successfully!`, 'success');
         } else {
-          showToastMessage(response.message || `Failed to map user`, "error");
+          showToastMessage(response.message || `Failed to map user`, 'error');
         }
       }
     } catch (error) {
-      console.error("Error submitting mapping:", error);
-      showToastMessage("Something went wrong!", "error");
+      console.error('Error submitting mapping:', error);
+      showToastMessage('Something went wrong!', 'error');
     }
   };
 
   // Function to get user initials
   const getInitials = (name: string) => {
     return name
-      .split(" ")
+      .split(' ')
       .map((word) => word[0])
-      .join("")
+      .join('')
       .toUpperCase();
   };
 
@@ -196,30 +202,47 @@ export default function MapYouth() {
         data?.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
         data?.enrollmentNumber
           ?.toLowerCase()
-          ?.includes(searchTerm.toLowerCase())
+          ?.includes(searchTerm.toLowerCase()),
     );
     setFilteredData(filtered);
   };
 
+
   return (
     <>
       {/* <Header /> */}
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" sx={{mt: 3}}>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => router.push("/opportunities")}
+          onClick={() => router.push('/opportunities')}
           sx={{ mb: 2 }}
         >
-          {t("OPPORTUNITY.BACK_TO_OPPORTUNITY")}
+          {t('OPPORTUNITY.BACK_TO_OPPORTUNITY')}
         </Button>
-        <Typography variant="h5" gutterBottom textAlign="center">
-          {t("OPPORTUNITY.MAP_YOUTH_TO_OPPORTUNITY")} {opportunityId}
+        <Typography variant="h3" mb={3} gutterBottom>
+          {t('OPPORTUNITY.MAP_YOUTH_TO_OPPORTUNITY')} {opportunityId}
         </Typography>
 
+        {/* Search Box */}
+        <Box mb={2}>
+          <SearchInput
+            // fullWidth
+            onSearch={handleSearch}
+            defaultValue={searchTerm}
+            placeholder={t('OPPORTUNITY.SEARCH_YOUTH')}
+          />
+        </Box>
+
         {/* Cohort Filter Dropdown */}
-        <FormControl fullWidth margin="normal">
-          <InputLabel>{t("OPPORTUNITY.SELECT_BATCH")}</InputLabel>
+        <FormControl
+          fullWidth
+          sx={{
+            mb: 2,
+          }}
+        >
+          <InputLabel>{t('OPPORTUNITY.SELECT_BATCH')}</InputLabel>
           <Select
+            label={t('OPPORTUNITY.SELECT_BATCH')}
             value={cohortId}
             onChange={(e) => setCohortId(e.target.value)}
           >
@@ -231,19 +254,40 @@ export default function MapYouth() {
           </Select>
         </FormControl>
 
-        {/* Search Box */}
-        {/* <SearchBar onSearch={handleSearch} value={searchTerm} placeholder={t('OPPORTUNITY.SEARCH_YOUTH')} /> */}
-
         <List>
           {filteredData.map((user) => (
             <ListItem
               key={user.userId}
-              sx={{ display: "flex", justifyContent: "space-between" }}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderTop: '1px solid #0000001A',
+              }}
             >
               <ListItemAvatar>
-                <Avatar>{getInitials(user.name)}</Avatar>
+                <Avatar
+                  sx={{
+                    boxShadow:
+                      '0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D',
+                    border: '1.5px solid #B3B3B3',
+                    background: 'white',
+                    color: '#1F1B13',
+                    fontSize: '16px',
+                    lineHeight: '24px',
+                    fontWeight: '500',
+                  }}
+                >
+                  {getInitials(user.name)}
+                </Avatar>
               </ListItemAvatar>
               <ListItemText
+                sx={{
+                  color: '#2C2C2C',
+                  fontWeight: '400',
+                  '& p': {
+                    marginBottom: 0, // Remove bottom margin
+                  },
+                }}
                 primary={user.name}
                 secondary={user.enrollmentNumber}
               />
@@ -257,17 +301,43 @@ export default function MapYouth() {
           ))}
         </List>
 
-        <Box textAlign="center" mt={2}>
+        <Box
+          textAlign="center"
+          mt={2}
+          borderTop={'1px solid #D0C5B4'}
+          p={'16px 16px 24px'}
+        >
           <Button
+            fullWidth
             variant="contained"
+            sx={{
+              p: '10px',
+              fontWeight: '500',
+            }}
             color="primary"
             onClick={handleSubmit}
             disabled={selectedUsers.length === 0}
           >
-            {t("OPPORTUNITY.ADD")} ({selectedUsers.length})
+            {t('OPPORTUNITY.ADD')} ({selectedUsers.length})
           </Button>
         </Box>
       </Container>
     </>
   );
 }
+
+export async function getStaticProps({ locale }: any) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+      // Will be passed to the page component as props
+    },
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: 'blocking', //indicates the type of fallback
+  };
+};

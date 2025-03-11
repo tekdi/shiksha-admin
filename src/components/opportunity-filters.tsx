@@ -118,21 +118,22 @@ export function OpportunityFilters({
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: { xs: "column", sm: "row" },
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: { xs: 'column', sm: 'row' },
         gap: 2,
-        width: { xs: "100%", md: "auto" },
+        width: { xs: '100%', md: 'auto' },
       }}
     >
       {/* Category Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.CATEGORY')}</InputLabel>
         <Select
-          value={selectedCategory || "all"}
-          onChange={(e) => onFilterChange("category", e.target.value)}
+          value={selectedCategory || 'all'}
+          onChange={(e) => onFilterChange('category', e.target.value)}
         >
           <MenuItem value="all">{t('OPPORTUNITY.ALL_CATEGORY')}</MenuItem>
-          {categories.map((option:options) => (
+          {categories.map((option: options) => (
             <MenuItem key={option.id} value={option.id}>
               {option.name}
             </MenuItem>
@@ -144,11 +145,11 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.SKILLS')}</InputLabel>
         <Select
-          value={selectedSkills || "all"}
-          onChange={(e) => onFilterChange("skills", e.target.value)}
+          value={selectedSkills || 'all'}
+          onChange={(e) => onFilterChange('skills', e.target.value)}
         >
           <MenuItem value="all">{t('OPPORTUNITY.ALL_SKILLS')}</MenuItem>
-          {skills.map((option:options) => (
+          {skills.map((option: options) => (
             <MenuItem key={option.id} value={option.id}>
               {option.name}
             </MenuItem>
@@ -160,8 +161,8 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.STATUS')}</InputLabel>
         <Select
-          value={selectedStatus || "all"}
-          onChange={(e) => onFilterChange("status", e.target.value)}
+          value={selectedStatus || 'all'}
+          onChange={(e) => onFilterChange('status', e.target.value)}
         >
           <MenuItem value="all">{t('OPPORTUNITY.ALL_STATUS')}</MenuItem>
           {statusOptions.map((option) => (
@@ -179,7 +180,7 @@ export function OpportunityFilters({
           value={selectedCountry}
           onChange={(e) => setSelectedCountry(e.target.value)}
         >
-          {countries.map((item:options) => (
+          {countries.map((item: options) => (
             <MenuItem key={item.country} value={item.country}>
               {item.country}
             </MenuItem>
@@ -195,7 +196,7 @@ export function OpportunityFilters({
           onChange={(e) => setSelectedState(e.target.value)}
           disabled={!selectedCountry}
         >
-          {states.map((item:options) => (
+          {states.map((item: options) => (
             <MenuItem key={item.state} value={item.state}>
               {item.state}
             </MenuItem>
@@ -211,7 +212,7 @@ export function OpportunityFilters({
           onChange={(e) => setSelectedCity(e.target.value)}
           disabled={!selectedState}
         >
-          {cities.map((item:options) => (
+          {cities.map((item: options) => (
             <MenuItem key={item.city} value={item.city}>
               {item.city}
             </MenuItem>
@@ -219,5 +220,5 @@ export function OpportunityFilters({
         </Select>
       </FormControl>
     </Box>
-  )
+  );
 }
