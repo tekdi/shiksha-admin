@@ -258,9 +258,9 @@ export default function OpportunitiesPage() {
                   }}
                 >
                   <OpportunityFilters
-                    selectedCategory={industry as string}
-                    selectedSkills={status as string}
-                    selectedStatus={location as string}
+                    selectedCategory={category as string}
+                    selectedSkills={skills as string}
+                    selectedStatus={status as string}
                     onFilterChange={handleFilterChange}
                   />
                 </Box>
