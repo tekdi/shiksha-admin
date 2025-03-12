@@ -129,6 +129,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.CATEGORY')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.CATEGORY')}
           value={selectedCategory || 'all'}
           onChange={(e) => onFilterChange('category', e.target.value)}
         >
@@ -145,6 +146,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.SKILLS')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.SKILLS')}
           value={selectedSkills || 'all'}
           onChange={(e) => onFilterChange('skills', e.target.value)}
         >
@@ -161,6 +163,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.STATUS')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.STATUS')}
           value={selectedStatus || 'all'}
           onChange={(e) => onFilterChange('status', e.target.value)}
         >
@@ -177,6 +180,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.COUNTRY')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.COUNTRY')}
           value={selectedCountry}
           onChange={(e) => setSelectedCountry(e.target.value)}
         >
@@ -192,6 +196,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.COUNTY')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.COUNTY')}
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
           disabled={!selectedCountry}
@@ -208,6 +213,7 @@ export function OpportunityFilters({
       <FormControl size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{t('OPPORTUNITY.SUBCOUNTY')}</InputLabel>
         <Select
+          label={t('OPPORTUNITY.SUBCOUNTY')}
           value={selectedCity}
           onChange={(e) => setSelectedCity(e.target.value)}
           disabled={!selectedState}

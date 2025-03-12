@@ -262,7 +262,7 @@ export function OpportunityForm({
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.country}>
                   <InputLabel>{t('OPPORTUNITY.COUNTRY')}</InputLabel>
-                  <Select {...field}>
+                  <Select {...field} label={t('OPPORTUNITY.COUNTRY')}>
                     {countries.map((item) => (
                       <MenuItem key={item.country} value={item.country}>
                         {item.country}
@@ -280,7 +280,11 @@ export function OpportunityForm({
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.state}>
                   <InputLabel>{t('OPPORTUNITY.COUNTY')}</InputLabel>
-                  <Select {...field} disabled={!selectedCountry}>
+                  <Select
+                    {...field}
+                    label={t('OPPORTUNITY.COUNTY')}
+                    disabled={!selectedCountry}
+                  >
                     {states.map((item) => (
                       <MenuItem key={item.state} value={item.state}>
                         {item.state}
@@ -298,7 +302,11 @@ export function OpportunityForm({
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.city}>
                   <InputLabel>{t('OPPORTUNITY.SUBCOUNTY')}</InputLabel>
-                  <Select {...field} disabled={!selectedState}>
+                  <Select
+                    label={t('OPPORTUNITY.SUBCOUNTY')}
+                    {...field}
+                    disabled={!selectedState}
+                  >
                     {cities.map((item) => (
                       <MenuItem key={item.city} value={item.city}>
                         {item.city}
@@ -318,7 +326,7 @@ export function OpportunityForm({
                   <InputLabel>{t('OPPORTUNITY.ORGANISATION')}</InputLabel>
                   <Select
                     {...field}
-                    label="Organisation"
+                    label={t('OPPORTUNITY.ORGANISATION')}
                     onChange={(event) => field.onChange(event.target.value)} // Store a single value
                   >
                     {organisation.map((org) => (
@@ -343,7 +351,7 @@ export function OpportunityForm({
                   <InputLabel>{t('OPPORTUNITY.CATEGORY')}</InputLabel>
                   <Select
                     {...field}
-                    label="Category"
+                    label={t('OPPORTUNITY.CATEGORY')}
                     onChange={(event) => field.onChange(event.target.value)} // Store single value
                   >
                     {categories.map((category) => (
@@ -365,7 +373,7 @@ export function OpportunityForm({
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.role_type}>
                   <InputLabel>{t('OPPORTUNITY.ROLETYPE')}</InputLabel>
-                  <Select {...field}>
+                  <Select {...field} label={t('OPPORTUNITY.ROLETYPE')}>
                     {['Part-time', 'Full-time', 'Mid', 'Contract'].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
@@ -389,6 +397,7 @@ export function OpportunityForm({
                 <FormControl fullWidth error={!!errors.benefits}>
                   <InputLabel>{t('OPPORTUNITY.BENIFITS')}</InputLabel>
                   <Select
+                    label={t('OPPORTUNITY.BENIFITS')}
                     {...field}
                     value={field.value || ''} // Ensure single select
                     onChange={(event) => field.onChange(event.target.value)} // Set single value
@@ -459,7 +468,10 @@ export function OpportunityForm({
                   <InputLabel>
                     {t('OPPORTUNITY.WORK_EXPERIENCE_NATURE')}
                   </InputLabel>
-                  <Select {...field}>
+                  <Select
+                    {...field}
+                    label={t('OPPORTUNITY.WORK_EXPERIENCE_NATURE')}
+                  >
                     {['Remote', 'On-site', 'Hybrid', 'Work From Home'].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
@@ -487,6 +499,7 @@ export function OpportunityForm({
                   <InputLabel>{t('OPPORTUNITY.SKILLS')}</InputLabel>
                   <Select
                     {...field}
+                    label={t('OPPORTUNITY.SKILLS')}
                     multiple
                     input={<OutlinedInput label="Skills" />}
                     renderValue={(selected) => (
