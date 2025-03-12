@@ -11,6 +11,7 @@ import {
   Button,
   Chip,
   Modal,
+  Avatar,
   List,
   ListItem,
   ListItemText,
@@ -18,13 +19,15 @@ import {
   Select,
   MenuItem,
   TextField,
-} from "@mui/material";
+} from '@mui/material';
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import BusinessIcon from "@mui/icons-material/Business";
 import { useRouter } from "next/router";
+import CloseIcon from '@mui/icons-material/Close';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import {
   getAppliedUsers,
   updateApplicationStatus,
@@ -70,12 +73,13 @@ export function OpportunitiesList({
   const { t } = useTranslation();
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [rejection_reason, setReason] = useState<string>("");
+  const [rejection_reason, setReason] = useState<string>('');
+  const [selected, setSelected]=useState("")
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
-      setIsAdmin(adminInfo?.role === "Admin");
+    if (typeof window !== 'undefined') {
+      const adminInfo = JSON.parse(localStorage?.getItem('adminInfo') || '{}');
+      setIsAdmin(adminInfo?.role === 'Admin');
     }
   }, []);
 
@@ -89,11 +93,11 @@ export function OpportunitiesList({
             response.result.map((status: Status) => ({
               label: status.status,
               value: status.id,
-            }))
+            })),
           );
         }
       } catch (error) {
-        console.error("Error fetching statuses:", error);
+        console.error('Error fetching statuses:', error);
       } finally {
         setLoadingStatus(false);
       }
@@ -110,22 +114,22 @@ export function OpportunitiesList({
       const appliedUsersList = await getAppliedUsers(opportunityId);
       const appliedUsers = appliedUsersList.result.data.map((user: any) => {
         const matchedStatus = statusOptions.find(
-          (status) => status.label === user.status_name
+          (status) => status.label === user.status_name,
         );
 
         return {
           applicationId: user.application_id,
           userId: user.application_user_id,
-          status: matchedStatus ? matchedStatus.value : "", // Store the status ID
-          originalStatus: matchedStatus ? matchedStatus.value : "",
+          status: matchedStatus ? matchedStatus.value : '', // Store the status ID
+          originalStatus: matchedStatus ? matchedStatus.value : '',
         };
       });
 
       const userDetailsPromises = appliedUsers.map((user: any) =>
         getUserDetailsInfo(user.userId).then((details) => ({
           ...user,
-          name: `${details.userData.firstName} ${details.userData.lastName || ""}`.trim(),
-        }))
+          name: `${details.userData.firstName} ${details.userData.lastName || ''}`.trim(),
+        })),
       );
 
       const users = await Promise.all(userDetailsPromises);
@@ -135,7 +139,7 @@ export function OpportunitiesList({
       }
       setUserList(users);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error('Error fetching users:', error);
       setUserList([]);
     } finally {
       setLoadingUsers(false);
@@ -151,11 +155,11 @@ export function OpportunitiesList({
       });
 
       await Promise.all(updatePromises);
-      alert("Statuses updated successfully!");
+      alert('Statuses updated successfully!');
       setOpenModal(false);
     } catch (error) {
-      console.error("Error updating statuses:", error);
-      alert("Failed to update statuses.");
+      console.error('Error updating statuses:', error);
+      alert('Failed to update statuses.');
     }
   };
 
@@ -164,31 +168,41 @@ export function OpportunitiesList({
       prevList.map((user: any) =>
         user.applicationId === applicationId
           ? { ...user, status: newStatus }
-          : user
-      )
+          : user,
+      ),
     );
+  };
+
+  // Function to get user initials
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase();
   };
 
   const handleApproveReject = async (
     opportunity_id: any,
     status: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.stopPropagation();
-    if (status === "reject") {
+    if (status === 'reject') {
+      setSelected(opportunity_id)
       setOpenRejectModal(true);
     } else {
       await updateOpportunity(opportunity_id, { status });
-      alert("Opportunity approved successfully!");
+      alert('Opportunity approved successfully!');
     }
   };
 
   const handleReject = async (opportunity_id: any) => {
     await updateOpportunity(opportunity_id, {
-      status: "rejected",
+      status: 'rejected',
       rejection_reason,
     });
-    alert("Opportunity rejected successfully!");
+    alert('Opportunity rejected successfully!');
     setOpenRejectModal(false);
   };
 
@@ -197,72 +211,180 @@ export function OpportunitiesList({
       <Grid container spacing={2}>
         {data.length > 0 ? (
           data.map((opportunity: any) => (
-            <Grid item xs={12} sm={6} md={4} key={opportunity.id}>
+            <Grid item xs={12} sm={6} lg={4} key={opportunity.id}>
               <Card
                 sx={{
-                  cursor: "pointer",
-                  "&:hover": { boxShadow: 10 },
+                  cursor: 'pointer',
+                  boxShadow: ' rgba(0, 0, 0, 0.1) 0px 4px 12px;',
+                  // '&:hover': { boxShadow: 10 },
                   borderRadius: 4,
                   padding: 1,
-                  border: "1px solid black",
+                  minHeight: { sm: '305px' },
                 }}
                 onClick={() => onView(opportunity)}
               >
                 <CardContent>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{
-                      fontWeight: "bold",
-                      color: "#1A0DAB",
-                      cursor: "pointer",
-                      textDecoration: "underline",
-                    }}
+                  <Box display={'flex'} justifyContent={'space-between'} alignItems={'start'} gap={2}>
+                    <Typography
+                      variant="h2"
+                      gutterBottom
+                      mb={1}
+                      sx={{
+                        color: '#101828',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        minHeight: '48px',
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {opportunity.title
+                        ? opportunity.title
+                        : opportunity.opportunity_title}
+                    </Typography>
+
+                    <CardActions sx={{p: 0, whiteSpace: 'nowrap'}}>
+                      <Box sx={{ ml: 'auto' }}>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(opportunity);
+                            }}
+                            size="small"
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(opportunity);
+                            }}
+                            size="small"
+                            color="error"
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </CardActions>
+                  </Box>
+
+                  <Box display="flex" alignItems="center" gap={'12px'}>
+                    <BusinessIcon fontSize="small" sx={{ color: '#484848' }} />
+                    <Typography
+                      sx={{
+                        fontWeight: '400',
+                        color: '#484848',
+                        letterSpacing: '0.32px',
+                      }}
+                      variant="body2"
+                      mb={0}
+                    >
+                      {opportunity?.company?.name
+                        ? opportunity?.company?.name
+                        : opportunity.company_name || 'Unknown Company'}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex" alignItems="center" gap={'12px'} mt={1}>
+                    <LocationOnIcon
+                      fontSize="small"
+                      sx={{ color: '#484848' }}
+                    />
+                    <Typography
+                      sx={{
+                        fontWeight: '400',
+                        color: '#484848',
+                        letterSpacing: '0.32px',
+                      }}
+                      variant="body2"
+                      mb={0}
+                    >
+                      {opportunity?.location?.city
+                        ? opportunity?.location?.city
+                        : opportunity.location_city}
+                      ,{' '}
+                      {opportunity?.location?.state
+                        ? opportunity?.location?.state
+                        : opportunity.location_state}
+                    </Typography>
+                  </Box>
+
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    gap={'12px'}
+                    mt={1}
+                    mb={1}
                   >
-                    {opportunity.title}
-                  </Typography>
-
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <BusinessIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity?.company?.name || "Unknown Company"}
+                    <WorkIcon fontSize="small" sx={{ color: '#484848' }} />
+                    <Typography
+                      sx={{
+                        fontWeight: '400',
+                        color: '#484848',
+                        letterSpacing: '0.32px',
+                      }}
+                      variant="body2"
+                      mb={0}
+                    >
+                      {opportunity.opportunity_type
+                        ? opportunity.opportunity_type
+                        : opportunity.opportunity_opportunity_type ||
+                          'Full Time'}{' '}
+                      |{' '}
+                      {opportunity.experience_level
+                        ? opportunity.experience_level
+                        : opportunity.opportunity_experience_level ||
+                          'Immediate Joiner'}
                     </Typography>
                   </Box>
 
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <LocationOnIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity?.location?.city},{" "}
-                      {opportunity?.location?.state}
-                    </Typography>
-                  </Box>
-
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <WorkIcon fontSize="small" color="disabled" />
-                    <Typography variant="body2" color="text.secondary">
-                      {opportunity.opportunity_type || "Full Time"} |{" "}
-                      {opportunity.experience_level || "Immediate Joiner"}
-                    </Typography>
-                  </Box>
-
-                  <Typography variant="body1" sx={{ mt: 1 }}>
-                    <Box component="span" sx={{ fontWeight: "bold" }}>
-                      KES
-                    </Box>{" "}
-                    {Math.floor(opportunity.min_salary)} -{" "}
-                    {Math.floor(opportunity.max_salary)}
+                  <Typography
+                    sx={{
+                      fontWeight: '400',
+                      color: '#484848',
+                      letterSpacing: '0.32px',
+                    }}
+                    variant="body2"
+                    mb={0}
+                  >
+                    KES{' '}
+                    {Math.floor(
+                      opportunity.min_salary
+                        ? opportunity.min_salary
+                        : opportunity.opportunity_min_salary,
+                    )}{' '}
+                    -{' '}
+                    {Math.floor(
+                      opportunity.max_salary
+                        ? opportunity.max_salary
+                        : opportunity.opportunity_max_salary,
+                    )}
                   </Typography>
 
                   <Box
                     sx={{
-                      display: "flex",
-                      justifyContent: "flex-start",
+                      display: 'flex',
+                      justifyContent: 'flex-start',
                       mt: 1,
                     }}
                   >
                     <Chip
-                      label={`${t("OPPORTUNITY.MAPPED_USERS")}: ${opportunity?.stats?.mapped || 0}`}
-                      sx={{ backgroundColor: "#E0E0E0", color: "black" }}
+                      label={` ${opportunity?.stats?.mapped || 0} ${t('OPPORTUNITY.MAPPED_USERS')}`}
+                      sx={{
+                        backgroundColor: '#E0E0E0 !important',
+                        color: '#1F1B13',
+                        borderRadius: '8px',
+                        p: '8px',
+                        fontWeight: '500',
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         fetchMappedUsers(opportunity.id);
@@ -271,128 +393,54 @@ export function OpportunitiesList({
                   </Box>
                 </CardContent>
 
-                <CardActions>
-                  <Box sx={{ ml: "auto" }}>
-                    <Tooltip title="Edit">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(opportunity);
-                        }}
-                        size="small"
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(opportunity);
-                        }}
-                        size="small"
-                        color="error"
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </CardActions>
-                {isAdmin && opportunity.status === "pending" && (
-                  <Box display={"flex"} gap={"10px"}>
+                {isAdmin && opportunity.status === 'pending' && (
+                  <Box display={'flex'} gap={'10px'}>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleApproveReject(opportunity.id, "approved", e);
+                        handleApproveReject(opportunity.id, 'approved', e);
                       }}
+                      fullWidth
                       variant="contained"
+                      sx={{ py: '10px' }}
                       color="primary"
                     >
-                      {t("OPPORTUNITY.APPROVE")}
+                      {t('OPPORTUNITY.APPROVE')}
                     </Button>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleApproveReject(opportunity.id, "reject", e);
+                        handleApproveReject(opportunity.id, 'reject', e);
                       }}
+                      fullWidth
                       variant="contained"
-                      sx={{ bgcolor: "#EF5350", color: "white" }}
+                      sx={{
+                        bgcolor: '#EF5350 !important',
+                        color: 'white',
+                        py: '10px',
+                      }}
                     >
-                      {t("OPPORTUNITY.REJECT")}
+                      {t('OPPORTUNITY.REJECT')}
                     </Button>
                   </Box>
                 )}
-                <Modal
-                  open={openRejectModal}
-                  onClose={() => setOpenRejectModal(false)}
-                >
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: 400,
-                      bgcolor: "background.paper",
-                      boxShadow: 24,
-                      p: 4,
-                      borderRadius: 2,
-                    }}
-                  >
-                    <Typography variant="h6" gutterBottom>
-                      {t("OPPORTUNITY.REJECTION_REASON")}
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      label={t("OPPORTUNITY.REASON")}
-                      value={rejection_reason}
-                      onChange={(e) => setReason(e.target.value)}
-                      multiline
-                      rows={4}
-                      sx={{ mb: 2 }}
-                    />
-                    <Box display="flex" gap="10px" justifyContent={"end"}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{ bgcolor: "#EF5350", color: "white" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleReject(opportunity.id);
-                        }}
-                      >
-                        {t("OPPORTUNITY.REJECT")}
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenRejectModal(false);
-                        }}
-                      >
-                        {t("OPPORTUNITY.CANCEL")}
-                      </Button>
-                    </Box>
-                  </Box>
-                </Modal>
-                {opportunity.status === "approved" && (
+
+                {opportunity.status === 'approved' && (
                   <Box p={1} textAlign="center">
                     <Button
                       variant="contained"
                       fullWidth
                       sx={{
-                        backgroundColor: "var",
-                        color: "black",
-                        "&:hover": { backgroundColor: "#333" },
+                        backgroundColor: 'var',
+                        p: '10px',
+                        color: '#1F1B13',
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
                         fetchMappedUsers(opportunity.id);
                       }}
                     >
-                      {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
+                      {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
                     </Button>
                   </Box>
                 )}
@@ -402,69 +450,126 @@ export function OpportunitiesList({
         ) : (
           <Grid item xs={12}>
             <Typography align="center">
-              {t("OPPORTUNITY.NO_RESULT_FOUND")}
+              {t('OPPORTUNITY.NO_RESULT_FOUND')}
             </Typography>
           </Grid>
         )}
       </Grid>
 
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      <Modal open={openModal}>
         <Box
+          pt={3}
+          position={'absolute'}
+          top={'50%'}
+          left={'50%'}
+          maxWidth={'400px'}
+          width={'100%'}
+          bgcolor={'white'}
+          borderRadius={'16px'}
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
+            transform: 'translate(-50%, -50%)',
           }}
         >
-          <Typography variant="h4" gutterBottom>
-            {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
-          </Typography>
+          <Box
+            display={'flex'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #D0C5B4'}
+            paddingBottom={2}
+            px={2}
+          >
+            <Typography
+              variant="h3"
+              lineHeight={'24px'}
+              color={'#4D4639'}
+              fontWeight={'500'}
+              gutterBottom
+            >
+              {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpenModal(false)}
+              sx={{
+                ml: 2,
+                fontSize: '24px',
+                color: '#4D4639',
+                cursor: 'pointer',
+              }}
+            />
+          </Box>
+
           <Button
-            fullWidth
-            variant="text"
-            startIcon={<PersonAddIcon />}
             sx={{
-              justifyContent: "flex-start",
-              color: "black",
-              fontWeight: "bold",
-              textTransform: "none",
-              mb: 2,
+              p: '24px 16px',
+              justifyContent: 'start',
+              color: '#313131',
+              fontWeight: '500',
             }}
+            variant="text"
+            endIcon={<PersonAddAltIcon />}
             onClick={() =>
               router.push(`opportunities/map-youth/${selectedOpportunity}`)
             } // Navigate to youth mapping page
           >
-            {t("OPPORTUNITY.ADD_YOUTH")}
+            {t('OPPORTUNITY.ADD_YOUTH')}
           </Button>
           {loadingUsers ? (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              p={2}
-            >
+            <Box display="flex" justifyContent="center" alignItems="center">
               <CircularProgress />
             </Box>
           ) : userList.length > 0 ? (
-            <List>
+            <List sx={{ p: 0 }}>
               {userList.map((user: any) => (
-                <ListItem key={user.applicationId}>
-                  <ListItemText primary={user.name} />
+                <ListItem
+                  key={user.applicationId}
+                  sx={{
+                    p: '12px 16px',
+                    borderTop: '1px solid #0000001A',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Box display={'flex'} alignItems={'center'} gap={'8px'}>
+                    <Avatar
+                      sx={{
+                        boxShadow:
+                          '0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D',
+                        border: '1.5px solid #B3B3B3',
+                        background: 'white',
+                        color: '#1F1B13',
+                        fontSize: '16px',
+                        lineHeight: '24px',
+                        fontWeight: '500',
+                      }}
+                    >
+                      {getInitials(user.name)}
+                    </Avatar>
+                    <ListItemText primary={user.name} />
+                  </Box>
                   <Select
                     value={user.status}
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      textTransform: 'capitalize',
+                      color: '#313131',
+                      '& fieldset': {
+                        border: 'none',
+                      },
+                      '& .MuiSvgIcon-root': {
+                        color: '#313131', // Change dropdown arrow color
+                      },
+                    }}
                     onChange={(e) =>
                       handleStatusChange(user.applicationId, e.target.value)
                     }
                     size="small"
                   >
                     {statusOptions.map((status: any) => (
-                      <MenuItem key={status.value} value={status.value}>
+                      <MenuItem
+                        key={status.value}
+                        value={status.value}
+                        sx={{ textTransform: 'capitalize' }}
+                      >
                         {status.label}
                       </MenuItem>
                     ))}
@@ -473,16 +578,109 @@ export function OpportunitiesList({
               ))}
             </List>
           ) : (
-            <Typography>{t("OPPORTUNITY.NO_YOUTH_FOUND")}</Typography>
+            <Typography sx={{ p: '0px 16px' }}>
+              {t('OPPORTUNITY.NO_YOUTH_FOUND')}
+            </Typography>
           )}
 
-          <Box mt={2} textAlign="center">
+          <Box textAlign="center" p={2} borderTop={'1px solid #D0C5B4'} mt={3}>
             <Button
               variant="contained"
+              sx={{ py: '10px', width: '100%', fontWeight: '500' }}
               color="primary"
               onClick={handleUpdateStatus}
             >
-              {t("OPPORTUNITY.UPDATE")}
+              {t('OPPORTUNITY.SAVE')}
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      <Modal
+        open={openRejectModal}
+        onClose={(e, reason) => {
+          if (reason == 'backdropClick') {
+            return;
+          }
+          setOpenRejectModal(false);
+        }}
+      >
+        <Box
+          pt={3}
+          position={'absolute'}
+          top={'50%'}
+          left={'50%'}
+          maxWidth={'400px'}
+          width={'100%'}
+          bgcolor={'white'}
+          borderRadius={'16px'}
+          sx={{
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <Box
+            display={'flex'}
+            justifyContent={'space-between'}
+            borderBottom={'1px solid #D0C5B4'}
+            paddingBottom={2}
+            px={2}
+          >
+            <Typography
+              variant="h3"
+              lineHeight={'24px'}
+              color={'#4D4639'}
+              fontWeight={'500'}
+              gutterBottom
+            >
+              {t('OPPORTUNITY.REJECTION_REASON')}
+            </Typography>
+
+            <CloseIcon
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenRejectModal(false);
+              }}
+              sx={{
+                ml: 2,
+                fontSize: '24px',
+                color: '#4D4639',
+                cursor: 'pointer',
+              }}
+            />
+          </Box>
+          <Box p={'24px 16px'}>
+            <Typography
+              variant="h2"
+              lineHeight={'24px'}
+              color={'#4D4639'}
+              fontWeight={'400'}
+              mb={2}
+              gutterBottom
+            >
+              {t('OPPORTUNITY.REJECTION_CONFIRMATION_TEXT')}
+            </Typography>
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              label={t('OPPORTUNITY.REASON')}
+              placeholder="Type here..."
+              value={rejection_reason}
+              onChange={(e) => setReason(e.target.value)}
+              multiline
+              rows={4}
+            />
+          </Box>
+          <Box textAlign="center" p={2} borderTop={'1px solid #D0C5B4'}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ py: '10px', width: '100%', fontWeight: '500' }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleReject(selected);
+              }}
+            >
+              {t('OPPORTUNITY.YES_REJECT')}
             </Button>
           </Box>
         </Box>
