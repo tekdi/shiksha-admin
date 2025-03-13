@@ -1,6 +1,18 @@
-import { getCategories, getSkills, getLocation, getLocationCode } from "@/lib/api"
-import { Box, FormControl, InputLabel, MenuItem, Select, Button } from "@mui/material"
-import { useEffect, useState } from "react"
+import {
+  getCategories,
+  getSkills,
+  getLocation,
+  getLocationCode,
+} from "@/lib/api";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Button,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
 
 const statusOptions = [
@@ -10,21 +22,21 @@ const statusOptions = [
   { label: "Open", value: "open" },
   { label: "Closed", value: "closed" },
   { label: "Archived", value: "archived" },
-]
+];
 
 interface OpportunityFiltersProps {
-  selectedCategory?: string
-  selectedSkills?: string
-  selectedStatus?: string
-  onFilterChange: (name: string, value: string) => void
+  selectedCategory?: string;
+  selectedSkills?: string;
+  selectedStatus?: string;
+  onFilterChange: (name: string, value: string) => void;
 }
 
 interface options {
-  id: string
-  name: string
-  country: string
-  state: string
-  city: string
+  id: string;
+  name: string;
+  country: string;
+  state: string;
+  city: string;
 }
 
 export function OpportunityFilters({
@@ -102,7 +114,11 @@ export function OpportunityFilters({
   // Fetch Location Code based on Country, State, and City
   useEffect(() => {
     if (selectedCountry && selectedState && selectedCity) {
-      getLocationCode({ country: selectedCountry, state: selectedState, city: selectedCity })
+      getLocationCode({
+        country: selectedCountry,
+        state: selectedState,
+        city: selectedCity,
+      })
         .then((data) => {
           const code = data.result[0]?.id || "";
           setLocationCode(code);
@@ -114,27 +130,26 @@ export function OpportunityFilters({
     }
   }, [selectedCountry, selectedState, selectedCity]);
 
-
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        flexDirection: { xs: 'column', sm: 'row' },
+        display: "flex",
+        flexWrap: "wrap",
+        flexDirection: { xs: "column", sm: "row" },
         gap: 2,
-        width: { xs: '100%', md: 'auto' },
+        width: { xs: "100%", md: "auto" },
       }}
     >
       {/* Category Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.CATEGORY')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.CATEGORY')}
-          value={selectedCategory || 'all'}
-          onChange={(e) => onFilterChange('category', e.target.value)}
+          label={t("OPPORTUNITY.CATEGORY")}
+          value={selectedCategory || "all"}
+          onChange={(e) => onFilterChange("category", e.target.value)}
         >
-          <MenuItem value="all">{t('OPPORTUNITY.ALL_CATEGORY')}</MenuItem>
-          {categories.map((option: options) => (
+          <MenuItem value="all">{t("OPPORTUNITY.ALL_CATEGORY")}</MenuItem>
+          {categories?.map((option: options) => (
             <MenuItem key={option.id} value={option.id}>
               {option.name}
             </MenuItem>
@@ -144,13 +159,13 @@ export function OpportunityFilters({
 
       {/* Skills Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.SKILLS')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.SKILLS")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.SKILLS')}
-          value={selectedSkills || 'all'}
-          onChange={(e) => onFilterChange('skills', e.target.value)}
+          label={t("OPPORTUNITY.SKILLS")}
+          value={selectedSkills || "all"}
+          onChange={(e) => onFilterChange("skills", e.target.value)}
         >
-          <MenuItem value="all">{t('OPPORTUNITY.ALL_SKILLS')}</MenuItem>
+          <MenuItem value="all">{t("OPPORTUNITY.ALL_SKILLS")}</MenuItem>
           {skills.map((option: options) => (
             <MenuItem key={option.id} value={option.id}>
               {option.name}
@@ -161,13 +176,13 @@ export function OpportunityFilters({
 
       {/* Status Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.STATUS')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.STATUS")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.STATUS')}
-          value={selectedStatus || 'all'}
-          onChange={(e) => onFilterChange('status', e.target.value)}
+          label={t("OPPORTUNITY.STATUS")}
+          value={selectedStatus || "all"}
+          onChange={(e) => onFilterChange("status", e.target.value)}
         >
-          <MenuItem value="all">{t('OPPORTUNITY.ALL_STATUS')}</MenuItem>
+          <MenuItem value="all">{t("OPPORTUNITY.ALL_STATUS")}</MenuItem>
           {statusOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
@@ -178,9 +193,9 @@ export function OpportunityFilters({
 
       {/* Country Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.COUNTRY')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.COUNTRY")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.COUNTRY')}
+          label={t("OPPORTUNITY.COUNTRY")}
           value={selectedCountry}
           onChange={(e) => setSelectedCountry(e.target.value)}
         >
@@ -194,9 +209,9 @@ export function OpportunityFilters({
 
       {/* State Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.COUNTY')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.COUNTY")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.COUNTY')}
+          label={t("OPPORTUNITY.COUNTY")}
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
           disabled={!selectedCountry}
@@ -211,9 +226,9 @@ export function OpportunityFilters({
 
       {/* City Filter */}
       <FormControl size="small" sx={{ minWidth: 150 }}>
-        <InputLabel>{t('OPPORTUNITY.SUBCOUNTY')}</InputLabel>
+        <InputLabel>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
         <Select
-          label={t('OPPORTUNITY.SUBCOUNTY')}
+          label={t("OPPORTUNITY.SUBCOUNTY")}
           value={selectedCity}
           onChange={(e) => setSelectedCity(e.target.value)}
           disabled={!selectedState}

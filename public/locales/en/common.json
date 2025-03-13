@@ -602,9 +602,9 @@
   },
 
   "OPPORTUNITY": {
-   "OPPORTUNITIES": "Opportunities",
+    "OPPORTUNITIES": "Opportunities",
     "ALL_OPPORTUNITIES": "All Opportunities",
-    "SEARCH_OPPORTUNITIES": "Search Opportunities...",
+    "SEARCH_OPPORTUNITIES": "Search...",
     "NO_OPPORTUNITIES_FOUND": "No opportunities found",
     "NO_RESULT_FOUND": "No opportunities found",
     "NO_OPPORTUNITY_EXPIRED": "No opportunities expired",
@@ -631,12 +631,12 @@
     "ALL_SKILLS": "All Skills",
     "NUMBER_OF_VACUNCIES": "Number of Vacancies",
     "CANCEL": "Cancel",
-    "MAP_OR_UPDATE_STATUS":"Map or Update Youth Status",
+    "MAP_OR_UPDATE_STATUS": "Map or Update Youth Status",
     "SAVE": "Save",
     "MAPPED_USERS": "Youth mapped",
     "STATUS": "Status",
     "ALL_STATUS": "All Status",
-    "ADD_NEW":"Add New",
+    "ADD_NEW": "Add New",
     "CREATED_BY_ME": "Created by me",
     "ADD_YOUTH": "Add Youth",
     "NO_YOUTH_FOUND": "No Youth found",
@@ -647,13 +647,16 @@
     "MAP_YOUTH_TO_OPPORTUNITY": "Map Youth to Opportunity : ",
     "BACK_TO_OPPORTUNITY": "Back to Opportunites",
     "MAPPED_BY_ME": "Mapped by me",
-    "CREATE_NEW_OPPORTUNITY": "Create a New Opportunity",
+    "CREATE_NEW_OPPORTUNITY": "Create Opportunity",
     "NEW_REQUEST": "New Request",
     "REJECTION_REASON": "Rejection Reason",
     "REJECTION_CONFIRMATION_TEXT": "Are you sure you want to reject this opportunity? If yes, please provide a reason",
     "REJECT": "Reject",
     "YES_REJECT": "Yes, Reject",
     "REASON": "Reason",
-    "APPROVE": "Approve"
+    "APPROVE": "Approve",
+    "CLEAR_FILTERS": "Clear Filters",
+    "OFFER_LETTER_PROVIDED": "Offer Letter Provided",
+    "PRICING_TYPE": "Pricing Type"
   }
 }
