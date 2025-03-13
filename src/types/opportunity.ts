@@ -63,7 +63,7 @@ export interface OpportunityList {
   country: string;
   state: string;
   city: string;
-  offer_letter_provided?: boolean;
+  offer_letter_provided: boolean;
   pricing_type: string;
 }
 
