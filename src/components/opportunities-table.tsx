@@ -19,15 +19,15 @@ import {
   Select,
   MenuItem,
   TextField,
-} from '@mui/material';
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import BusinessIcon from "@mui/icons-material/Business";
 import { useRouter } from "next/router";
-import CloseIcon from '@mui/icons-material/Close';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import CloseIcon from "@mui/icons-material/Close";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import {
   getAppliedUsers,
   updateApplicationStatus,
@@ -38,6 +38,7 @@ import { getUserDetailsInfo } from "@/services/UserList";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useTranslation } from "next-i18next";
 import type { OpportunityList } from "@/types/opportunity";
+import { showToastMessage } from "@/components/Toastify";
 
 interface Status {
   status: string;
@@ -73,13 +74,13 @@ export function OpportunitiesList({
   const { t } = useTranslation();
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [rejection_reason, setReason] = useState<string>('');
-  const [selected, setSelected]=useState("")
+  const [rejection_reason, setReason] = useState<string>("");
+  const [selected, setSelected] = useState("");
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const adminInfo = JSON.parse(localStorage?.getItem('adminInfo') || '{}');
-      setIsAdmin(adminInfo?.role === 'Admin');
+    if (typeof window !== "undefined") {
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsAdmin(adminInfo?.role === "Admin");
     }
   }, []);
 
@@ -93,11 +94,11 @@ export function OpportunitiesList({
             response.result.map((status: Status) => ({
               label: status.status,
               value: status.id,
-            })),
+            }))
           );
         }
       } catch (error) {
-        console.error('Error fetching statuses:', error);
+        console.error("Error fetching statuses:", error);
       } finally {
         setLoadingStatus(false);
       }
@@ -114,22 +115,22 @@ export function OpportunitiesList({
       const appliedUsersList = await getAppliedUsers(opportunityId);
       const appliedUsers = appliedUsersList.result.data.map((user: any) => {
         const matchedStatus = statusOptions.find(
-          (status) => status.label === user.status_name,
+          (status) => status.label === user.status_name
         );
 
         return {
           applicationId: user.application_id,
           userId: user.application_user_id,
-          status: matchedStatus ? matchedStatus.value : '', // Store the status ID
-          originalStatus: matchedStatus ? matchedStatus.value : '',
+          status: matchedStatus ? matchedStatus.value : "", // Store the status ID
+          originalStatus: matchedStatus ? matchedStatus.value : "",
         };
       });
 
       const userDetailsPromises = appliedUsers.map((user: any) =>
         getUserDetailsInfo(user.userId).then((details) => ({
           ...user,
-          name: `${details.userData.firstName} ${details.userData.lastName || ''}`.trim(),
-        })),
+          name: `${details.userData.firstName} ${details.userData.lastName || ""}`.trim(),
+        }))
       );
 
       const users = await Promise.all(userDetailsPromises);
@@ -139,7 +140,7 @@ export function OpportunitiesList({
       }
       setUserList(users);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       setUserList([]);
     } finally {
       setLoadingUsers(false);
@@ -155,11 +156,11 @@ export function OpportunitiesList({
       });
 
       await Promise.all(updatePromises);
-      alert('Statuses updated successfully!');
+      showToastMessage("Statuses updated successfully!");
       setOpenModal(false);
     } catch (error) {
-      console.error('Error updating statuses:', error);
-      alert('Failed to update statuses.');
+      console.error("Error updating statuses:", error);
+      showToastMessage("Failed to update statuses.", "error");
     }
   };
 
@@ -168,78 +169,84 @@ export function OpportunitiesList({
       prevList.map((user: any) =>
         user.applicationId === applicationId
           ? { ...user, status: newStatus }
-          : user,
-      ),
+          : user
+      )
     );
   };
 
   // Function to get user initials
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((word) => word[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   const handleApproveReject = async (
     opportunity_id: any,
     status: string,
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: React.MouseEvent<HTMLButtonElement>
   ) => {
     e.stopPropagation();
-    if (status === 'reject') {
-      setSelected(opportunity_id)
+    if (status === "reject") {
+      setSelected(opportunity_id);
       setOpenRejectModal(true);
     } else {
       await updateOpportunity(opportunity_id, { status });
-      alert('Opportunity approved successfully!');
+      showToastMessage("Opportunity approved successfully!");
+      router.reload();
     }
   };
 
   const handleReject = async (opportunity_id: any) => {
     await updateOpportunity(opportunity_id, {
-      status: 'rejected',
+      status: "rejected",
       rejection_reason,
     });
-    alert('Opportunity rejected successfully!');
+    alert("Opportunity rejected successfully!");
     setOpenRejectModal(false);
   };
 
   return (
     <>
       <Grid container spacing={2}>
-        {data.length > 0 ? (
+        {data?.length > 0 ? (
           data.map((opportunity: any) => (
-            <Grid item xs={12} sm={6} lg={4} key={opportunity.id}>
+            <Grid item xs={12} sm={6} lg={4} key={opportunity?.id}>
               <Card
                 sx={{
-                  cursor: 'pointer',
-                  boxShadow: ' rgba(0, 0, 0, 0.1) 0px 4px 12px;',
+                  cursor: "pointer",
+                  boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px;",
                   // '&:hover': { boxShadow: 10 },
                   borderRadius: 4,
                   padding: 1,
-                  minHeight: { sm: '305px' },
+                  minHeight: { sm: "305px" },
                 }}
                 onClick={() => onView(opportunity)}
               >
                 <CardContent>
-                  <Box display={'flex'} justifyContent={'space-between'} alignItems={'start'} gap={2}>
+                  <Box
+                    display={"flex"}
+                    justifyContent={"space-between"}
+                    alignItems={"start"}
+                    gap={2}
+                  >
                     <Typography
                       variant="h2"
                       gutterBottom
                       mb={1}
                       sx={{
-                        color: '#101828',
-                        cursor: 'pointer',
-                        textDecoration: 'underline',
-                        minHeight: '48px',
-                        display: '-webkit-box',
-                        WebkitBoxOrient: 'vertical',
+                        color: "#101828",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        minHeight: "48px",
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
                         WebkitLineClamp: 2,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        wordBreak: 'break-word',
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        wordBreak: "break-word",
                       }}
                     >
                       {opportunity.title
@@ -247,8 +254,8 @@ export function OpportunitiesList({
                         : opportunity.opportunity_title}
                     </Typography>
 
-                    <CardActions sx={{p: 0, whiteSpace: 'nowrap'}}>
-                      <Box sx={{ ml: 'auto' }}>
+                    <CardActions sx={{ p: 0, whiteSpace: "nowrap" }}>
+                      <Box sx={{ ml: "auto" }}>
                         <Tooltip title="Edit">
                           <IconButton
                             onClick={(e) => {
@@ -276,33 +283,33 @@ export function OpportunitiesList({
                     </CardActions>
                   </Box>
 
-                  <Box display="flex" alignItems="center" gap={'12px'}>
-                    <BusinessIcon fontSize="small" sx={{ color: '#484848' }} />
+                  <Box display="flex" alignItems="center" gap={"12px"}>
+                    <BusinessIcon fontSize="small" sx={{ color: "#484848" }} />
                     <Typography
                       sx={{
-                        fontWeight: '400',
-                        color: '#484848',
-                        letterSpacing: '0.32px',
+                        fontWeight: "400",
+                        color: "#484848",
+                        letterSpacing: "0.32px",
                       }}
                       variant="body2"
                       mb={0}
                     >
                       {opportunity?.company?.name
                         ? opportunity?.company?.name
-                        : opportunity.company_name || 'Unknown Company'}
+                        : opportunity.company_name || "Unknown Company"}
                     </Typography>
                   </Box>
 
-                  <Box display="flex" alignItems="center" gap={'12px'} mt={1}>
+                  <Box display="flex" alignItems="center" gap={"12px"} mt={1}>
                     <LocationOnIcon
                       fontSize="small"
-                      sx={{ color: '#484848' }}
+                      sx={{ color: "#484848" }}
                     />
                     <Typography
                       sx={{
-                        fontWeight: '400',
-                        color: '#484848',
-                        letterSpacing: '0.32px',
+                        fontWeight: "400",
+                        color: "#484848",
+                        letterSpacing: "0.32px",
                       }}
                       variant="body2"
                       mb={0}
@@ -310,7 +317,7 @@ export function OpportunitiesList({
                       {opportunity?.location?.city
                         ? opportunity?.location?.city
                         : opportunity.location_city}
-                      ,{' '}
+                      ,{" "}
                       {opportunity?.location?.state
                         ? opportunity?.location?.state
                         : opportunity.location_state}
@@ -320,16 +327,16 @@ export function OpportunitiesList({
                   <Box
                     display="flex"
                     alignItems="center"
-                    gap={'12px'}
+                    gap={"12px"}
                     mt={1}
                     mb={1}
                   >
-                    <WorkIcon fontSize="small" sx={{ color: '#484848' }} />
+                    <WorkIcon fontSize="small" sx={{ color: "#484848" }} />
                     <Typography
                       sx={{
-                        fontWeight: '400',
-                        color: '#484848',
-                        letterSpacing: '0.32px',
+                        fontWeight: "400",
+                        color: "#484848",
+                        letterSpacing: "0.32px",
                       }}
                       variant="body2"
                       mb={0}
@@ -337,110 +344,112 @@ export function OpportunitiesList({
                       {opportunity.opportunity_type
                         ? opportunity.opportunity_type
                         : opportunity.opportunity_opportunity_type ||
-                          'Full Time'}{' '}
-                      |{' '}
+                          "Full Time"}{" "}
+                      |{" "}
                       {opportunity.experience_level
                         ? opportunity.experience_level
                         : opportunity.opportunity_experience_level ||
-                          'Immediate Joiner'}
+                          "Immediate Joiner"}
                     </Typography>
                   </Box>
 
                   <Typography
                     sx={{
-                      fontWeight: '400',
-                      color: '#484848',
-                      letterSpacing: '0.32px',
+                      fontWeight: "400",
+                      color: "#484848",
+                      letterSpacing: "0.32px",
                     }}
                     variant="body2"
                     mb={0}
                   >
-                    KES{' '}
+                    KES{" "}
                     {Math.floor(
                       opportunity.min_salary
                         ? opportunity.min_salary
-                        : opportunity.opportunity_min_salary,
-                    )}{' '}
-                    -{' '}
+                        : opportunity.opportunity_min_salary
+                    )}{" "}
+                    -{" "}
                     {Math.floor(
                       opportunity.max_salary
                         ? opportunity.max_salary
-                        : opportunity.opportunity_max_salary,
+                        : opportunity.opportunity_max_salary
                     )}
                   </Typography>
 
                   <Box
                     sx={{
-                      display: 'flex',
-                      justifyContent: 'flex-start',
+                      display: "flex",
+                      justifyContent: "flex-start",
                       mt: 1,
                     }}
                   >
-                    <Chip
-                      label={` ${opportunity?.stats?.mapped || 0} ${t('OPPORTUNITY.MAPPED_USERS')}`}
-                      sx={{
-                        backgroundColor: '#E0E0E0 !important',
-                        color: '#1F1B13',
-                        borderRadius: '8px',
-                        p: '8px',
-                        fontWeight: '500',
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fetchMappedUsers(opportunity.id);
-                      }}
-                    />
+                    {opportunity?.status === "approved" && (
+                      <Chip
+                        label={` ${opportunity?.stats?.mapped || 0} ${t("OPPORTUNITY.MAPPED_USERS")}`}
+                        sx={{
+                          backgroundColor: "#E0E0E0 !important",
+                          color: "#1F1B13",
+                          borderRadius: "8px",
+                          p: "8px",
+                          fontWeight: "500",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fetchMappedUsers(opportunity.id);
+                        }}
+                      />
+                    )}
                   </Box>
                 </CardContent>
 
-                {isAdmin && opportunity.status === 'pending' && (
-                  <Box display={'flex'} gap={'10px'}>
+                {isAdmin && opportunity.status === "pending" && (
+                  <Box display={"flex"} gap={"10px"}>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleApproveReject(opportunity.id, 'approved', e);
+                        handleApproveReject(opportunity.id, "approved", e);
                       }}
                       fullWidth
                       variant="contained"
-                      sx={{ py: '10px' }}
+                      sx={{ py: "10px" }}
                       color="primary"
                     >
-                      {t('OPPORTUNITY.APPROVE')}
+                      {t("OPPORTUNITY.APPROVE")}
                     </Button>
                     <Button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleApproveReject(opportunity.id, 'reject', e);
+                        handleApproveReject(opportunity.id, "reject", e);
                       }}
                       fullWidth
                       variant="contained"
                       sx={{
-                        bgcolor: '#EF5350 !important',
-                        color: 'white',
-                        py: '10px',
+                        bgcolor: "#EF5350 !important",
+                        color: "white",
+                        py: "10px",
                       }}
                     >
-                      {t('OPPORTUNITY.REJECT')}
+                      {t("OPPORTUNITY.REJECT")}
                     </Button>
                   </Box>
                 )}
 
-                {opportunity.status === 'approved' && (
+                {opportunity.status === "approved" && (
                   <Box p={1} textAlign="center">
                     <Button
                       variant="contained"
                       fullWidth
                       sx={{
-                        backgroundColor: 'var',
-                        p: '10px',
-                        color: '#1F1B13',
+                        backgroundColor: "var",
+                        p: "10px",
+                        color: "#1F1B13",
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
                         fetchMappedUsers(opportunity.id);
                       }}
                     >
-                      {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
+                      {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
                     </Button>
                   </Box>
                 )}
@@ -450,7 +459,7 @@ export function OpportunitiesList({
         ) : (
           <Grid item xs={12}>
             <Typography align="center">
-              {t('OPPORTUNITY.NO_RESULT_FOUND')}
+              {t("OPPORTUNITY.NO_RESULT_FOUND")}
             </Typography>
           </Grid>
         )}
@@ -459,50 +468,50 @@ export function OpportunitiesList({
       <Modal open={openModal}>
         <Box
           pt={3}
-          position={'absolute'}
-          top={'50%'}
-          left={'50%'}
-          maxWidth={'400px'}
-          width={'100%'}
-          bgcolor={'white'}
-          borderRadius={'16px'}
+          position={"absolute"}
+          top={"50%"}
+          left={"50%"}
+          maxWidth={"400px"}
+          width={"100%"}
+          bgcolor={"white"}
+          borderRadius={"16px"}
           sx={{
-            transform: 'translate(-50%, -50%)',
+            transform: "translate(-50%, -50%)",
           }}
         >
           <Box
-            display={'flex'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #D0C5B4'}
+            display={"flex"}
+            justifyContent={"space-between"}
+            borderBottom={"1px solid #D0C5B4"}
             paddingBottom={2}
             px={2}
           >
             <Typography
               variant="h3"
-              lineHeight={'24px'}
-              color={'#4D4639'}
-              fontWeight={'500'}
+              lineHeight={"24px"}
+              color={"#4D4639"}
+              fontWeight={"500"}
               gutterBottom
             >
-              {t('OPPORTUNITY.MAP_OR_UPDATE_STATUS')}
+              {t("OPPORTUNITY.MAP_OR_UPDATE_STATUS")}
             </Typography>
             <CloseIcon
               onClick={() => setOpenModal(false)}
               sx={{
                 ml: 2,
-                fontSize: '24px',
-                color: '#4D4639',
-                cursor: 'pointer',
+                fontSize: "24px",
+                color: "#4D4639",
+                cursor: "pointer",
               }}
             />
           </Box>
 
           <Button
             sx={{
-              p: '24px 16px',
-              justifyContent: 'start',
-              color: '#313131',
-              fontWeight: '500',
+              p: "24px 16px",
+              justifyContent: "start",
+              color: "#313131",
+              fontWeight: "500",
             }}
             variant="text"
             endIcon={<PersonAddAltIcon />}
@@ -510,7 +519,7 @@ export function OpportunitiesList({
               router.push(`opportunities/map-youth/${selectedOpportunity}`)
             } // Navigate to youth mapping page
           >
-            {t('OPPORTUNITY.ADD_YOUTH')}
+            {t("OPPORTUNITY.ADD_YOUTH")}
           </Button>
           {loadingUsers ? (
             <Box display="flex" justifyContent="center" alignItems="center">
@@ -522,23 +531,23 @@ export function OpportunitiesList({
                 <ListItem
                   key={user.applicationId}
                   sx={{
-                    p: '12px 16px',
-                    borderTop: '1px solid #0000001A',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    p: "12px 16px",
+                    borderTop: "1px solid #0000001A",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
-                  <Box display={'flex'} alignItems={'center'} gap={'8px'}>
+                  <Box display={"flex"} alignItems={"center"} gap={"8px"}>
                     <Avatar
                       sx={{
                         boxShadow:
-                          '0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D',
-                        border: '1.5px solid #B3B3B3',
-                        background: 'white',
-                        color: '#1F1B13',
-                        fontSize: '16px',
-                        lineHeight: '24px',
-                        fontWeight: '500',
+                          "0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D",
+                        border: "1.5px solid #B3B3B3",
+                        background: "white",
+                        color: "#1F1B13",
+                        fontSize: "16px",
+                        lineHeight: "24px",
+                        fontWeight: "500",
                       }}
                     >
                       {getInitials(user.name)}
@@ -548,15 +557,15 @@ export function OpportunitiesList({
                   <Select
                     value={user.status}
                     sx={{
-                      fontSize: '14px',
+                      fontSize: "14px",
                       fontWeight: 500,
-                      textTransform: 'capitalize',
-                      color: '#313131',
-                      '& fieldset': {
-                        border: 'none',
+                      textTransform: "capitalize",
+                      color: "#313131",
+                      "& fieldset": {
+                        border: "none",
                       },
-                      '& .MuiSvgIcon-root': {
-                        color: '#313131', // Change dropdown arrow color
+                      "& .MuiSvgIcon-root": {
+                        color: "#313131", // Change dropdown arrow color
                       },
                     }}
                     onChange={(e) =>
@@ -568,7 +577,7 @@ export function OpportunitiesList({
                       <MenuItem
                         key={status.value}
                         value={status.value}
-                        sx={{ textTransform: 'capitalize' }}
+                        sx={{ textTransform: "capitalize" }}
                       >
                         {status.label}
                       </MenuItem>
@@ -578,19 +587,19 @@ export function OpportunitiesList({
               ))}
             </List>
           ) : (
-            <Typography sx={{ p: '0px 16px' }}>
-              {t('OPPORTUNITY.NO_YOUTH_FOUND')}
+            <Typography sx={{ p: "0px 16px" }}>
+              {t("OPPORTUNITY.NO_YOUTH_FOUND")}
             </Typography>
           )}
 
-          <Box textAlign="center" p={2} borderTop={'1px solid #D0C5B4'} mt={3}>
+          <Box textAlign="center" p={2} borderTop={"1px solid #D0C5B4"} mt={3}>
             <Button
               variant="contained"
-              sx={{ py: '10px', width: '100%', fontWeight: '500' }}
+              sx={{ py: "10px", width: "100%", fontWeight: "500" }}
               color="primary"
               onClick={handleUpdateStatus}
             >
-              {t('OPPORTUNITY.SAVE')}
+              {t("OPPORTUNITY.SAVE")}
             </Button>
           </Box>
         </Box>
@@ -598,7 +607,7 @@ export function OpportunitiesList({
       <Modal
         open={openRejectModal}
         onClose={(e, reason) => {
-          if (reason == 'backdropClick') {
+          if (reason == "backdropClick") {
             return;
           }
           setOpenRejectModal(false);
@@ -606,32 +615,32 @@ export function OpportunitiesList({
       >
         <Box
           pt={3}
-          position={'absolute'}
-          top={'50%'}
-          left={'50%'}
-          maxWidth={'400px'}
-          width={'100%'}
-          bgcolor={'white'}
-          borderRadius={'16px'}
+          position={"absolute"}
+          top={"50%"}
+          left={"50%"}
+          maxWidth={"400px"}
+          width={"100%"}
+          bgcolor={"white"}
+          borderRadius={"16px"}
           sx={{
-            transform: 'translate(-50%, -50%)',
+            transform: "translate(-50%, -50%)",
           }}
         >
           <Box
-            display={'flex'}
-            justifyContent={'space-between'}
-            borderBottom={'1px solid #D0C5B4'}
+            display={"flex"}
+            justifyContent={"space-between"}
+            borderBottom={"1px solid #D0C5B4"}
             paddingBottom={2}
             px={2}
           >
             <Typography
               variant="h3"
-              lineHeight={'24px'}
-              color={'#4D4639'}
-              fontWeight={'500'}
+              lineHeight={"24px"}
+              color={"#4D4639"}
+              fontWeight={"500"}
               gutterBottom
             >
-              {t('OPPORTUNITY.REJECTION_REASON')}
+              {t("OPPORTUNITY.REJECTION_REASON")}
             </Typography>
 
             <CloseIcon
@@ -641,28 +650,28 @@ export function OpportunitiesList({
               }}
               sx={{
                 ml: 2,
-                fontSize: '24px',
-                color: '#4D4639',
-                cursor: 'pointer',
+                fontSize: "24px",
+                color: "#4D4639",
+                cursor: "pointer",
               }}
             />
           </Box>
-          <Box p={'24px 16px'}>
+          <Box p={"24px 16px"}>
             <Typography
               variant="h2"
-              lineHeight={'24px'}
-              color={'#4D4639'}
-              fontWeight={'400'}
+              lineHeight={"24px"}
+              color={"#4D4639"}
+              fontWeight={"400"}
               mb={2}
               gutterBottom
             >
-              {t('OPPORTUNITY.REJECTION_CONFIRMATION_TEXT')}
+              {t("OPPORTUNITY.REJECTION_CONFIRMATION_TEXT")}
             </Typography>
 
             <TextField
               fullWidth
               variant="outlined"
-              label={t('OPPORTUNITY.REASON')}
+              label={t("OPPORTUNITY.REASON")}
               placeholder="Type here..."
               value={rejection_reason}
               onChange={(e) => setReason(e.target.value)}
@@ -670,17 +679,17 @@ export function OpportunitiesList({
               rows={4}
             />
           </Box>
-          <Box textAlign="center" p={2} borderTop={'1px solid #D0C5B4'}>
+          <Box textAlign="center" p={2} borderTop={"1px solid #D0C5B4"}>
             <Button
               variant="contained"
               color="primary"
-              sx={{ py: '10px', width: '100%', fontWeight: '500' }}
+              sx={{ py: "10px", width: "100%", fontWeight: "500" }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleReject(selected);
               }}
             >
-              {t('OPPORTUNITY.YES_REJECT')}
+              {t("OPPORTUNITY.YES_REJECT")}
             </Button>
           </Box>
         </Box>
