@@ -227,7 +227,7 @@
     "SUB_COUNTY": "Sub-County",
     "CITY": "City",
     "BLOCK": "Block",
-    "NEW_FACILITATOR": "New Facilitator",
+    "NEW_FACILITATOR": "New Trainer",
     "SEARCHBAR_PLACEHOLDER": "Search Facilitators..",
     "FACILITATOR_CREATED_SUCCESSFULLY": "Teacher is created, and credentials sent successfully!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Teacher is created ,credentials will be sent soon",
@@ -239,7 +239,7 @@
   },
   "LEARNERS": {
     "SEARCHBAR_PLACEHOLDER": "Search Learners..",
-    "NEW_LEARNER": "New Learner",
+    "NEW_LEARNER": "New Youth",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
     "LEARNER_CREATED_SUCCESSFULLY": "Learner has been successfully created!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Learner is created, credentials will be sent soon",

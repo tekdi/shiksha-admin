@@ -11,7 +11,15 @@ import {
   getStateBlockDistrictList,
   updateCohort,
 } from "@/services/MasterDataService";
-import { CohortTypes, Numbers, QueryKeys, Role, SORT, Status, TelemetryEventType } from "@/utils/app.constant";
+import {
+  CohortTypes,
+  Numbers,
+  QueryKeys,
+  Role,
+  SORT,
+  Status,
+  TelemetryEventType,
+} from "@/utils/app.constant";
 import { transformLabel } from "@/utils/Helper";
 import {
   Box,
@@ -55,7 +63,9 @@ const State: React.FC = () => {
   const [selectedStateForEdit, setSelectedStateForEdit] =
     useState<StateDetail | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [fieldId, setFieldId] = useState<string>("6469c3ac-8c46-49d7-852a-00f9589737c5");
+  const [fieldId, setFieldId] = useState<string>(
+    "6469c3ac-8c46-49d7-852a-00f9589737c5"
+  );
   const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
   const [pageCount, setPageCount] = useState<number>(Numbers.ONE);
   const [pageOffset, setPageOffset] = useState<number>(Numbers.ZERO);
@@ -81,7 +91,7 @@ const State: React.FC = () => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-   useEffect(() => {
+  useEffect(() => {
     const storedUserData = localStorage.getItem("adminInfo");
     if (storedUserData) {
       const userData = JSON.parse(storedUserData);
@@ -89,13 +99,12 @@ const State: React.FC = () => {
     }
   }, []);
   const fetchStateData = async () => {
-     
     try {
       const limit = pageLimit;
       const offset = pageOffset * limit;
       const data = {
-      //  limit: limit,
-      //  offset: offset,
+        //  limit: limit,
+        //  offset: offset,
         fieldName: "country",
         optionName: searchKeyword || "",
         sort: sortBy,
@@ -105,10 +114,10 @@ const State: React.FC = () => {
       //   queryKey: [QueryKeys.GET_STATE_COHORT_LIST],
       //   queryFn: () => getStateBlockDistrictList(data),
       // });
-      const resp=await getStateBlockDistrictList(data)
+      const resp = await getStateBlockDistrictList(data);
       const states = resp?.result?.values || [];
-      console.log(states,"states");
-      
+      console.log(states, "states");
+
       setStateDataOptinon(states);
       const stateNameArra = states.map((item: any) => item.label.toLowerCase());
       setStateNameArr(stateNameArra);
@@ -131,9 +140,9 @@ const State: React.FC = () => {
     const startIndex = pageOffset * pageLimit;
     const endIndex = startIndex + pageLimit;
     let transformedData;
-        transformedData = stateData?.map((item) => ({
+    transformedData = stateData?.map((item) => ({
       ...item,
-      label:(item.label),
+      label: item.label,
     }));
     return transformedData.slice(startIndex, endIndex);
   };
@@ -146,37 +155,36 @@ const State: React.FC = () => {
         filters: {
           name: searchKeyword,
           type: "COUNTRY",
-          status:["active"]
-
+          status: ["active"],
         },
         sort: sortBy,
       };
 
       const response = await queryClient.fetchQuery({
-        queryKey: [
-          QueryKeys.FIELD_OPTION_READ,          
-          "COUNTRY",
-          searchKeyword
-        ],
+        queryKey: [QueryKeys.FIELD_OPTION_READ, "COUNTRY", searchKeyword],
         queryFn: () => getCohortList(reqParams),
       });
 
-      const statecohortDetails = response?.results?.cohortDetails || [];      
+      const statecohortDetails = response?.results?.cohortDetails || [];
       const filteredStateData = statecohortDetails
         .map((stateDetail: any) => {
           const transformedName = transformLabel(stateDetail.name);
-          console.log("transformedName",transformedName);
-          
+          console.log("transformedName", transformedName);
+
           const matchingState = stateDataOption.find(
-            (state: { label: string }) => state?.label?.toLowerCase() === transformedName?.toLowerCase()
+            (state: { label: string }) =>
+              state?.label?.toLowerCase() === transformedName?.toLowerCase()
           );
-          console.log("matchingState",matchingState);
-          
+          console.log("matchingState", matchingState);
           return {
             label: transformedName,
             value: matchingState ? matchingState.value : null,
-            createdAt: stateDetail.createdAt,
-            updatedAt: stateDetail.updatedAt,
+            createdAt: new Date(stateDetail.createdAt)
+              .toISOString()
+              .split("T")[0],
+            updatedAt: new Date(stateDetail.updatedAt)
+              .toISOString()
+              .split("T")[0],
             createdBy: stateDetail.createdBy,
             updatedBy: stateDetail.updatedBy,
             cohortId: stateDetail.cohortId,
@@ -185,12 +193,12 @@ const State: React.FC = () => {
         .filter((state: { label: any }) =>
           stateNameArray.includes(state?.label?.toLowerCase())
         );
-        console.log("filteredStateData",filteredStateData);
-        
+      console.log("filteredStateData", filteredStateData);
+
       setStateData(filteredStateData);
-      
+
       const totalCount = filteredStateData.length;
-       
+
       setPaginationCount(totalCount);
       setPageCount(Math.ceil(totalCount / pageLimit));
       setLoading(false);
@@ -218,27 +226,23 @@ const State: React.FC = () => {
   //   setSelectedStateForEdit(rowData);
   //   setAddStateModalOpen(true);
   // };
-  const handleEdit = (rowData: any) => { 
-   setSelectedStateForEdit(rowData);
+  const handleEdit = (rowData: any) => {
+    setSelectedStateForEdit(rowData);
     setAddStateModalOpen(true);
     const cohortIdForEDIT = rowData.cohortId;
     setCohortIdForEdit(cohortIdForEDIT);
     let updatedRowData;
-  
-      updatedRowData = {
-        ...rowData,
-        cohortId: cohortIdForEDIT,
-      };
-      setSelectedStateForEdit(updatedRowData);
 
-    
-   
-    
+    updatedRowData = {
+      ...rowData,
+      cohortId: cohortIdForEDIT,
+    };
+    setSelectedStateForEdit(updatedRowData);
   };
   const handleDelete = (rowData: StateDetail) => {
     setSelectedStateForDelete(rowData);
     setCohortIdForDelete(rowData?.cohortId);
-    setConfirmationDialogOpen(true); 
+    setConfirmationDialogOpen(true);
     setStateValueForDelete(rowData.value);
   };
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -247,11 +251,7 @@ const State: React.FC = () => {
     setSortBy(["name", sortOrder]);
     setSelectedSort(event.target.value);
     queryClient.invalidateQueries({
-      queryKey: [
-        QueryKeys.FIELD_OPTION_READ,          
-      "STATE",
-      searchKeyword
-    ],
+      queryKey: [QueryKeys.FIELD_OPTION_READ, "STATE", searchKeyword],
     });
   };
   const handleConfirmDelete = async () => {
@@ -272,13 +272,13 @@ const State: React.FC = () => {
             const cohort = filteredCohortOptionData()?.find(
               (item: any) => item.cohortId == cohortIdForDelete
             );
-          //   if (cohort) {
-          //     cohort?.status = Status.ARCHIVED;
-          //   }
-          // } else {
-          //   console.log("Cohort Not Archived");
-          // }
-            }
+            //   if (cohort) {
+            //     cohort?.status = Status.ARCHIVED;
+            //   }
+            // } else {
+            //   console.log("Cohort Not Archived");
+            // }
+          }
           setCohortIdForDelete("");
         } else {
           console.log("No Cohort Selected");
@@ -314,7 +314,7 @@ const State: React.FC = () => {
       //   ],
       //   queryFn: () => getCohortList(reqParams),
       // });
-      const response = await getCohortList(reqParams)
+      const response = await getCohortList(reqParams);
 
       const activeDistricts = response?.results?.cohortDetails || [];
 
@@ -336,8 +336,8 @@ const State: React.FC = () => {
   };
   const handleAddStateSubmit = async (
     name: string,
-    value: string,
-  //  selectedState: any
+    value: string
+    //  selectedState: any
   ) => {
     const newState = {
       options: [{ name, value }],
@@ -353,27 +353,21 @@ const State: React.FC = () => {
     };
     try {
       if (fieldId) {
-      //  const isUpdating = selectedState !== null;
+        //  const isUpdating = selectedState !== null;
         const response = await createOrUpdateOption(fieldId, newEntity, t);
         const queryParameters = {
           name: name,
           type: CohortTypes.COUNTRY,
           status: Status.ACTIVE,
-         
         };
         const cohortCreateResponse = await createCohort(queryParameters);
         queryClient.invalidateQueries({
           queryKey: [QueryKeys.GET_COHORT_MEMBER_LIST],
         });
         queryClient.invalidateQueries({
-          queryKey: [
-            QueryKeys.FIELD_OPTION_READ,          
-          "STATE",
-          searchKeyword
-        ],
+          queryKey: [QueryKeys.FIELD_OPTION_READ, "STATE", searchKeyword],
         });
         fetchStateData();
-
       }
     } catch (error) {
       console.error("Error creating/updating state:", error);
@@ -383,10 +377,10 @@ const State: React.FC = () => {
   };
 
   const handleUpdateCohortSubmit = async (
-  //  type: string,
+    //  type: string,
     name: string,
-    value: string,
-   // controllingField: string,
+    value: string
+    // controllingField: string,
   ) => {
     const updatedBy = localStorage.getItem("userId");
     if (!updatedBy) return;
@@ -407,7 +401,7 @@ const State: React.FC = () => {
       isCreate: false,
       options: [
         {
-         // controllingfieldfk: controllingField,
+          // controllingfieldfk: controllingField,
           name,
           value,
           updatedBy,
@@ -435,7 +429,6 @@ const State: React.FC = () => {
         //   });
         //   fetchDistricts();
         // }
-      
 
         const queryParameters = {
           name: name,
@@ -444,7 +437,7 @@ const State: React.FC = () => {
 
         try {
           const cohortCreateResponse = await updateCohort(
-           cohortIdForEdit,
+            cohortIdForEdit,
             queryParameters
           );
           if (cohortCreateResponse) {
@@ -453,20 +446,14 @@ const State: React.FC = () => {
             //   await getCohortSearchBlock(selectedDistrict);
             // }
 
-
             showToastMessage(t("COMMON.STATE_UPDATED_SUCCESS"), "success");
- queryClient.invalidateQueries({
-          queryKey: [QueryKeys.GET_COHORT_MEMBER_LIST],
-        });
-        queryClient.invalidateQueries({
-          queryKey: [
-            QueryKeys.FIELD_OPTION_READ,          
-          "STATE",
-          searchKeyword
-        ],
-        });
-        fetchStateData();
-           
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.GET_COHORT_MEMBER_LIST],
+            });
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.FIELD_OPTION_READ, "STATE", searchKeyword],
+            });
+            fetchStateData();
           } else if (cohortCreateResponse.responseCode === 409) {
             showToastMessage(t("COMMON.STATE_DUPLICATION_FAILURE"), "error");
           }
@@ -498,9 +485,8 @@ const State: React.FC = () => {
   ) => {
     setPageOffset(value - 1);
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -508,16 +494,15 @@ const State: React.FC = () => {
         cdata: [],
       },
       edata: {
-        id: 'change-page-number:'+value,
+        id: "change-page-number:" + value,
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
   };
- 
+
   const PagesSelector = () => (
     <Box sx={{ display: { xs: "block" } }}>
       <Pagination
@@ -547,80 +532,77 @@ const State: React.FC = () => {
   }, [stateValueForDelete]);
   return (
     <>
-     <HeaderComponent
-      userType={t("MASTER.COUNTRY")}
-      searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_COUNTRY")}
-      showStateDropdown={false}
-      handleSortChange={handleSortChange}
-      showAddNew={ !!isActiveYear && userRole === Role.ADMIN}
-      showSort={true}
-      shouldFetchDistricts={false}
-      selectedSort={selectedSort}
-      showFilter={false}
-      handleSearch={handleSearch}
-      handleAddUserClick={handleAddStateClick}
-      handleDelete={handleDelete}
-    >
-      {loading ? (
-        <Box
-          width={"100%"}
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"center"}
-        >
-          <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-        </Box>
-      ) : (
-        <div style={{ marginTop: "40px" }}>
-          {stateData.length > 0 ? (
-            <KaTableComponent
-              columns={getStateDataMaster(t, isMobile)}
-              data={filteredCohortOptionData()}
-              limit={pageLimit}
-              offset={pageOffset}
-              paginationEnable={paginationCount >= Numbers.FIVE}
-              PagesSelector={PagesSelector}
-              pagination={pagination}
-              PageSizeSelector={PageSizeSelectorFunction}
-              pageSizes={pageSizeArray}
-              onEdit={handleEdit}
-              extraActions={[]}
-              onDelete={handleDelete}
-            />
-          ) : (
-            !loading && (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="20vh"
-              >
-                <Typography marginTop="10px" textAlign="center">
-                  {t("COMMON.COUNTRY_NOT_FOUND")}
-                </Typography>
-              </Box>
-            )
-          )}
-        </div>
-      )}
-    </HeaderComponent>
-    
-    <AddStateModal
+      <HeaderComponent
+        userType={t("MASTER.COUNTRY")}
+        searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_COUNTRY")}
+        showStateDropdown={false}
+        handleSortChange={handleSortChange}
+        showAddNew={!!isActiveYear && userRole === Role.ADMIN}
+        showSort={true}
+        shouldFetchDistricts={false}
+        selectedSort={selectedSort}
+        showFilter={false}
+        handleSearch={handleSearch}
+        handleAddUserClick={handleAddStateClick}
+        handleDelete={handleDelete}
+      >
+        {loading ? (
+          <Box
+            width={"100%"}
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+          >
+            <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+          </Box>
+        ) : (
+          <div style={{ marginTop: "40px" }}>
+            {stateData.length > 0 ? (
+              <KaTableComponent
+                columns={getStateDataMaster(t, isMobile)}
+                data={filteredCohortOptionData()}
+                limit={pageLimit}
+                offset={pageOffset}
+                paginationEnable={paginationCount >= Numbers.FIVE}
+                PagesSelector={PagesSelector}
+                pagination={pagination}
+                PageSizeSelector={PageSizeSelectorFunction}
+                pageSizes={pageSizeArray}
+                onEdit={handleEdit}
+                extraActions={[]}
+                onDelete={handleDelete}
+              />
+            ) : (
+              !loading && (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="20vh"
+                >
+                  <Typography marginTop="10px" textAlign="center">
+                    {t("COMMON.COUNTRY_NOT_FOUND")}
+                  </Typography>
+                </Box>
+              )
+            )}
+          </div>
+        )}
+      </HeaderComponent>
+
+      <AddStateModal
         open={addStateModalOpen}
         onClose={() => setAddStateModalOpen(false)}
         onSubmit={(name, value, controllingField) => {
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               name?.toLowerCase(),
-              value,
+              value
               // districtFieldId,
               // selectedStateForEdit?.value
             );
           } else {
-            handleAddStateSubmit(
-              name?.toLowerCase(),
-              value,
-            );
+            handleAddStateSubmit(name?.toLowerCase(), value);
           }
         }}
         fieldId={""}
@@ -633,13 +615,13 @@ const State: React.FC = () => {
             : {}
         }
       />
-       <ConfirmationModal
+      <ConfirmationModal
         modalOpen={confirmationDialogOpen}
         message={
           countOfDistricts > 0
             ? t("COMMON.ARE_YOU_SURE_DELETE_STATE", {
-              district: `${countOfDistricts}`,
-            })
+                district: `${countOfDistricts}`,
+              })
             : t("COMMON.NO_ACTIVE_BLOCKS_DELETE")
         }
         handleAction={handleConfirmDelete}
@@ -651,7 +633,6 @@ const State: React.FC = () => {
         handleCloseModal={() => setConfirmationDialogOpen(false)}
       />
     </>
-   
   );
 };
 export default State;

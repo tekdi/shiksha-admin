@@ -41,7 +41,11 @@ import { showToastMessage } from "@/components/Toastify";
 import AddNewBatch from "@/components/AddNewBatch";
 import { getCenterTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
-import { firstLetterInUpperCase, mapFields, transformLabel } from "@/utils/Helper";
+import {
+  firstLetterInUpperCase,
+  mapFields,
+  transformLabel,
+} from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
@@ -51,7 +55,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
-import axios from 'axios';
+import axios from "axios";
 type cohortFilterDetails = {
   city?: string;
   country?: string;
@@ -82,7 +86,7 @@ const Center: React.FC = () => {
   const store = useStore();
   const isActiveYear = store.isActiveYearSelected;
 
-  const { t , i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state.adminInformation
   );
@@ -131,9 +135,7 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
-  const isArchived = useSubmittedButtonStore(
-    (state: any) => state.isArchived
-  );
+  const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
@@ -185,7 +187,6 @@ const Center: React.FC = () => {
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
     setSubmittedButtonStatus(false);
-
   };
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
@@ -255,7 +256,7 @@ const Center: React.FC = () => {
       //     JSON.stringify(data.sort),
       //   ],
       //   queryFn: () => getCohortList(data),
-      // }); 
+      // });
       if (resp) {
         const result = resp?.results?.cohortDetails;
         const resultData: centerData[] = [];
@@ -267,9 +268,10 @@ const Center: React.FC = () => {
           cohortIds?.map(async (cohortId: string) => {
             return await getCohortMemberlistData(cohortId);
           })
-        ); 
-        const finalResult = result
-          ?.filter((cohort: any) => cohort.type === "COHORT")
+        );
+        const finalResult = result?.filter(
+          (cohort: any) => cohort.type === "COHORT"
+        );
         finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
@@ -283,26 +285,25 @@ const Center: React.FC = () => {
             totalActiveMembers: 0,
             totalArchivedMembers: 0,
           };
-
           const requiredData = {
             name: item?.name,
             status: item?.status,
             updatedBy: item?.updatedBy,
             createdBy: item?.createdBy,
-            createdAt: item?.createdAt,
-            updatedAt: item?.updatedAt,
+            createdAt: new Date(item?.createdAt).toISOString().split("T")[0],
+            updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
             cohortId: item?.cohortId,
             customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",
             totalActiveMembers: counts?.totalActiveMembers,
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
-        }); 
+        });
         setCohortData(resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
 
-        setPagination(totalCount > 10);
+        setPagination(totalCount > 1);
         setPageSizeArray(
           totalCount > 15
             ? [5, 10, 15]
@@ -315,13 +316,11 @@ const Center: React.FC = () => {
         const pageCount = Math.ceil(totalCount / pageLimit);
         setPageCount(pageCount);
         setLoading(false);
-      }
-      else {
+      } else {
         setCohortData([]);
-
       }
     } catch (error) {
-      console.log("not data found")
+      console.log("not data found");
       setCohortData([]);
       setLoading(false);
       console.error("Error fetching user list:", error);
@@ -365,11 +364,15 @@ const Center: React.FC = () => {
     if (response?.result) {
       const userDetails = response.result.userDetails;
       const getActiveMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ACTIVE && member?.role === Role.STUDENT);
+        (member: any) =>
+          member?.status === Status.ACTIVE && member?.role === Role.STUDENT
+      );
       const totalActiveMembers = getActiveMembers?.length || 0;
 
       const getArchivedMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ARCHIVED && member?.role === Role.STUDENT);
+        (member: any) =>
+          member?.status === Status.ARCHIVED && member?.role === Role.STUDENT
+      );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
       return {
@@ -388,13 +391,15 @@ const Center: React.FC = () => {
     try {
       //const response = await getFormRead("cohorts", "cohort");
       if (cohortFormData) {
-        const { schema, uiSchema } = GenerateSchemaAndUiSchema(cohortFormData, t);
+        const { schema, uiSchema } = GenerateSchemaAndUiSchema(
+          cohortFormData,
+          t
+        );
 
         setSchema(schema);
         setUiSchema(uiSchema);
         console.log("Schema:-------", schema);
         console.log("UiSchema:-------", uiSchema);
-        
       } else {
         console.log("Unexpected response format");
       }
@@ -406,10 +411,18 @@ const Center: React.FC = () => {
 
   useEffect(() => {
     // if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
-      fetchUserList();
+    fetchUserList();
     // }
     getFormData();
-  }, [pageOffset, pageLimit, sortBy, filters, filters.states, filters.status, createCenterStatus]);
+  }, [
+    pageOffset,
+    pageLimit,
+    sortBy,
+    filters,
+    filters.states,
+    filters.status,
+    createCenterStatus,
+  ]);
 
   // handle functions
   const handleChange = (event: SelectChangeEvent<typeof pageSize>) => {
@@ -423,9 +436,8 @@ const Center: React.FC = () => {
   ) => {
     setPageOffset(value - 1);
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -433,14 +445,13 @@ const Center: React.FC = () => {
         cdata: [],
       },
       edata: {
-        id: 'change-page-number:' + value,
+        id: "change-page-number:" + value,
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
   };
 
   const PagesSelector = () => (
@@ -485,19 +496,16 @@ const Center: React.FC = () => {
       query: {
         ...newQuery,
         state: code?.join(","),
-      }
+      },
     });
     setSelectedDistrict([]);
     setSelectedBlock([]);
     setSelectedState(selected);
 
-
     // setSelectedCenterCode([])
-
 
     setSelectedBlockCode("");
     setSelectedDistrictCode("");
-
 
     if (selected[0] === "") {
       if (filters.status)
@@ -517,7 +525,7 @@ const Center: React.FC = () => {
   };
 
   const handleDistrictChange = (selected: string[], code: string[]) => {
-    const newQuery = { ...router.query }; 
+    const newQuery = { ...router.query };
     if (newQuery.center) {
       delete newQuery.center;
     }
@@ -527,23 +535,20 @@ const Center: React.FC = () => {
     setSelectedBlock([]);
     setSelectedDistrict(selected);
     setSelectedBlockCode("");
-    localStorage.setItem('selectedDistrict', selected[0])
+    localStorage.setItem("selectedDistrict", selected[0]);
 
-    setSelectedDistrictStore(selected[0])
+    setSelectedDistrictStore(selected[0]);
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
-      if (filters.status) { 
+      if (filters.status) {
         setFilters({
           country: selectedStateCode,
           status: filters.status,
           type: "COHORT",
-
         });
       } else {
         setFilters({
-
           country: selectedStateCode,
           type: "COHORT",
-
         });
       }
       if (newQuery.district) {
@@ -554,7 +559,7 @@ const Center: React.FC = () => {
         query: {
           ...newQuery,
           state: selectedStateCode,
-        }
+        },
       });
     } else {
       router.replace({
@@ -562,27 +567,23 @@ const Center: React.FC = () => {
         query: {
           ...newQuery,
           state: selectedStateCode,
-          district: code?.join(",")
-        }
+          district: code?.join(","),
+        },
       });
       const districts = code?.join(",");
       setSelectedDistrictCode(districts);
       if (filters.status) {
         setFilters({
-
           country: selectedStateCode,
           states: districts,
           status: filters.status,
           //type:"COHORT",
-
         });
       } else {
         setFilters({
-
           country: selectedStateCode,
           states: districts,
           // type:"COHORT",
-
         });
       }
     }
@@ -597,12 +598,10 @@ const Center: React.FC = () => {
     }
     if (newQuery.block) {
       delete newQuery.block;
-    } 
+    }
 
-
-
-    localStorage.setItem('selectedBlock', selected[0])
-    setSelectedBlockStore(selected[0])
+    localStorage.setItem("selectedBlock", selected[0]);
+    setSelectedBlockStore(selected[0]);
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_BLOCKS")) {
       if (newQuery.block) {
         delete newQuery.block;
@@ -613,24 +612,20 @@ const Center: React.FC = () => {
           ...newQuery,
           state: selectedStateCode,
           district: selectedDistrictCode,
-        }
+        },
       });
       if (filters.status) {
         setFilters({
-
           country: selectedStateCode,
           states: selectedDistrictCode,
           status: filters.status,
           type: "COHORT",
-
         });
       } else {
         setFilters({
-
           country: selectedStateCode,
           states: selectedDistrictCode,
           type: "COHORT",
-
         });
       }
     } else {
@@ -640,29 +635,25 @@ const Center: React.FC = () => {
           ...newQuery,
           state: selectedStateCode,
           district: selectedDistrictCode,
-          block: code?.join(",")
-        }
+          block: code?.join(","),
+        },
       });
       const blocks = code?.join(",");
       setSelectedBlockCode(blocks);
       if (filters.status) {
         setFilters({
-
           country: selectedStateCode,
           states: selectedDistrictCode,
           city: blocks,
           status: filters.status,
           type: "COHORT",
-
         });
       } else {
         setFilters({
-
           country: selectedStateCode,
           states: selectedDistrictCode,
           city: blocks,
           type: "COHORT",
-
         });
       }
     }
@@ -682,7 +673,7 @@ const Center: React.FC = () => {
         showToastMessage(t("BATCHES.CENTER_DELETE_SUCCESSFULLY"), "success");
 
         const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
 
         const telemetryInteract = {
@@ -691,9 +682,9 @@ const Center: React.FC = () => {
             cdata: [],
           },
           edata: {
-            id: 'delete-center-success',
+            id: "delete-center-success",
             type: TelemetryEventType.CLICK,
-            subtype: '',
+            subtype: "",
             pageid: cleanedUrl,
           },
         };
@@ -727,9 +718,8 @@ const Center: React.FC = () => {
     }
     setSelectedSort(event.target.value);
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -737,17 +727,16 @@ const Center: React.FC = () => {
         cdata: [],
       },
       edata: {
-        id: 'sort-by:' + event.target?.value,
+        id: "sort-by:" + event.target?.value,
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
   };
 
-  const handleSearch = (keyword: string) => { 
+  const handleSearch = (keyword: string) => {
     setPageOffset(Numbers.ZERO);
     setPageCount(Numbers.ONE);
     if (keyword?.length > 3) {
@@ -789,17 +778,13 @@ const Center: React.FC = () => {
         status: [Status.ARCHIVED],
       }));
       setIsArchived(true);
-
     } else if (newValue === Status.ALL_LABEL) {
-
       setFilters((prevFilters) => ({
         ...prevFilters,
         status: "",
       }));
       setIsArchived(false);
-
     } else {
-
       setFilters((prevFilters) => {
         const { status, ...restFilters } = prevFilters;
         return {
@@ -807,10 +792,9 @@ const Center: React.FC = () => {
         };
       });
       setIsArchived(false);
-
     }
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
 
     const telemetryInteract = {
@@ -819,9 +803,9 @@ const Center: React.FC = () => {
         cdata: [],
       },
       edata: {
-        id: 'changed-tab-to:' + newValue,
+        id: "changed-tab-to:" + newValue,
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
@@ -914,8 +898,6 @@ const Center: React.FC = () => {
       const fieldSchema = schemaProperties[fieldKey];
       const fieldId = fieldSchema?.fieldId;
 
-       
-
       if (fieldId === null || fieldId === "null") {
         if (typeof fieldValue !== "object") {
           apiBody[fieldKey] = fieldValue;
@@ -960,7 +942,7 @@ const Center: React.FC = () => {
       }
       const cohortDetails = {
         name: (formData?.name).toLowerCase(),
-        updatedBy: localStorage.getItem('userId'),
+        updatedBy: localStorage.getItem("userId"),
         customFields: customFields,
       };
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
@@ -968,9 +950,8 @@ const Center: React.FC = () => {
         showToastMessage(t("BATCHES.CENTER_UPDATE_SUCCESSFULLY"), "success");
 
         const windowUrl = window.location.pathname;
-        const cleanedUrl = windowUrl.replace(/^\//, '');
+        const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
-
 
         const telemetryInteract = {
           context: {
@@ -978,9 +959,9 @@ const Center: React.FC = () => {
             cdata: [],
           },
           edata: {
-            id: 'center-updated-success',
+            id: "center-updated-success",
             type: TelemetryEventType.CLICK,
-            subtype: '',
+            subtype: "",
             pageid: cleanedUrl,
           },
         };
@@ -995,9 +976,7 @@ const Center: React.FC = () => {
         if (error.response.status === 409) {
           showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
         }
-      }
-      else
-        showToastMessage(t("BATCHES.CENTER_UPDATE_FAILED"), "error");
+      } else showToastMessage(t("BATCHES.CENTER_UPDATE_FAILED"), "error");
     } finally {
       setLoading(false);
       setConfirmButtonDisable(false);
@@ -1009,9 +988,8 @@ const Center: React.FC = () => {
 
   const handleAddUserClick = () => {
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -1019,9 +997,9 @@ const Center: React.FC = () => {
         cdata: [],
       },
       edata: {
-        id: 'click-on-add-new',
+        id: "click-on-add-new",
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
@@ -1043,30 +1021,36 @@ const Center: React.FC = () => {
         if (typeof window !== "undefined" && window.localStorage) {
           const admin = localStorage.getItem("adminInfo");
           if (admin) {
-            const stateField = JSON.parse(admin).customFields.find((field: any) => field.label === "STATES");
-            if (!stateField.value.includes(',')) {
+            const stateField = JSON.parse(admin).customFields.find(
+              (field: any) => field.label === "STATES"
+            );
+            if (!stateField.value.includes(",")) {
               setSelectedState([stateField.value]);
-              setSelectedStateCode(stateField.code)
-              if (selectedDistrictCode && selectedDistrict.length !== 0 && selectedDistrict[0] !== t("COMMON.ALL_DISTRICTS")) {
-
+              setSelectedStateCode(stateField.code);
+              if (
+                selectedDistrictCode &&
+                selectedDistrict.length !== 0 &&
+                selectedDistrict[0] !== t("COMMON.ALL_DISTRICTS")
+              ) {
                 setFilters({
-
                   states: stateField.code,
                   districts: selectedDistrictCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
-
                 });
               }
-              if (selectedBlockCode && selectedBlock.length !== 0 && selectedBlock[0] !== t("COMMON.ALL_BLOCKS")) {
+              if (
+                selectedBlockCode &&
+                selectedBlock.length !== 0 &&
+                selectedBlock[0] !== t("COMMON.ALL_BLOCKS")
+              ) {
                 setFilters({
                   states: stateField.code,
                   districts: selectedDistrictCode,
                   blocks: selectedBlockCode,
                   status: filters.status,
                   type: CohortTypes.COHORT,
-
-                })
+                });
               }
             }
           }
@@ -1079,7 +1063,6 @@ const Center: React.FC = () => {
     fetchData();
   }, [selectedBlockCode, selectedDistrictCode]);
 
-
   const handleMemberClick = async (
     type: "active" | "archived",
     count: number,
@@ -1089,7 +1072,6 @@ const Center: React.FC = () => {
       console.error("No members available for this cohort.");
       return;
     }
- 
 
     try {
       const data = {
@@ -1140,17 +1122,15 @@ const Center: React.FC = () => {
         );
       }
 
-
       if (urlData) {
         // router.push(
         //   `learners?state=${urlData.stateCode}&district=${urlData.districtCode}&block=${urlData.blockCode}&status=${urlData.type}`
         // );
       }
- 
     } catch (error) {
       console.log("Error handling member click:", error);
     }
-  }; 
+  };
 
   // props to send in header
   const userProps = {
@@ -1159,7 +1139,7 @@ const Center: React.FC = () => {
     selectedState: selectedState,
     selectedStateCode: selectedStateCode,
     selectedDistrict: selectedDistrict,
-    showStateDropdown:false,
+    showStateDropdown: false,
     // selectedDistrictCode: selectedDistrictCode,
     // selectedBlockCode: selectedBlockCode,
     selectedBlock: selectedBlock,
@@ -1182,7 +1162,7 @@ const Center: React.FC = () => {
     setSelectedDistrictCode: setSelectedDistrictCode,
     setSelectedStateCode: setSelectedStateCode,
     setSelectedDistrict: setSelectedDistrict,
-    setSelectedBlock: setSelectedBlock
+    setSelectedBlock: setSelectedBlock,
   };
 
   return (
@@ -1192,13 +1172,13 @@ const Center: React.FC = () => {
           message={
             selectedRowData?.totalActiveMembers > 0
               ? t("BATCHES.YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS", {
-                activeMembers: `${selectedRowData?.totalActiveMembers}`,
-              })
+                  activeMembers: `${selectedRowData?.totalActiveMembers}`,
+                })
               : t("BATCHES.SURE_DELETE_CENTER") +
-              transformLabel(inputName) +
-              " " +
-              t("BATCHES.BATCHES") +
-              "?"
+                transformLabel(inputName) +
+                " " +
+                t("BATCHES.BATCHES") +
+                "?"
           }
           handleAction={handleActionForDelete}
           buttonNames={
@@ -1227,7 +1207,7 @@ const Center: React.FC = () => {
               data={cohortData}
               limit={pageLimit}
               offset={pageOffset}
-              paginationEnable={totalCount > Numbers.TEN}
+              paginationEnable={totalCount > Numbers.ONE}
               PagesSelector={PagesSelector}
               pagination={pagination}
               PageSizeSelector={PageSizeSelectorFunction}
@@ -1324,7 +1304,6 @@ const Center: React.FC = () => {
           </SimpleModal>
         </HeaderComponent>
       </ProtectedRoute>
-
     </>
   );
 };
