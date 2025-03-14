@@ -8,7 +8,7 @@ export const customFields = {
 };
 export const GenerateSchemaAndUiSchema = (
   formData: FormData,
-  t: (key: string) => string,
+  t: (key: string) => string
 ) => {
   const schema: JSONSchema7 = {
     //Form schema
@@ -21,11 +21,11 @@ export const GenerateSchemaAndUiSchema = (
   };
   const uiSchema: UiSchema = {}; //form ui schema
   const formValues: any = {};
-   formData?.fields?.forEach(field => {
+  formData?.fields?.forEach((field) => {
     if (field.isHidden === true) {
-        field.isEditable = false;
+      field.isEditable = false;
     }
-});
+  });
   formData?.fields?.forEach((field: Field) => {
     const {
       label,
@@ -39,7 +39,7 @@ export const GenerateSchemaAndUiSchema = (
       dependsOn,
       pattern,
       required,
-      isRequired
+      isRequired,
     } = field;
     const fieldSchema: any = {
       title: t(`FORM.${label}`),
@@ -68,7 +68,7 @@ export const GenerateSchemaAndUiSchema = (
         if (field?.minLength !== undefined && field?.minLength !== null) {
           fieldSchema.minimum = Number(field.minLength);
         }
-        fieldUiSchema['ui:widget'] = 'CustomNumberWidget';
+        fieldUiSchema["ui:widget"] = "CustomNumberWidget";
 
         // fieldUiSchema['ui:field'] = 'NumberInputField';
         break;
@@ -92,9 +92,9 @@ export const GenerateSchemaAndUiSchema = (
           oneOf: options?.map((opt: FieldOption) => ({
             const: opt.value,
             title:
-            t(`FORM.${opt.value}`) === `FORM.${opt.value}`
-              ? opt.value
-              : t(`FORM.${opt.value}`),
+              t(`FORM.${opt.value}`) === `FORM.${opt.value}`
+                ? opt.value
+                : t(`FORM.${opt.value}`),
           })),
         };
         fieldSchema.uniqueItems = true;
@@ -109,29 +109,29 @@ export const GenerateSchemaAndUiSchema = (
               ? opt.label
               : t(`FORM.${opt.label}`),
         }));
-         fieldUiSchema["ui:widget"] = "CustomRadioWidget";
+        fieldUiSchema["ui:widget"] = "CustomRadioWidget";
         break;
-        case "file":
-          fieldSchema.type = "array";
-    fieldSchema.items = {
-      type: "string",
-      format: "data-url", // Represents files as base64-encoded strings
-    };
-    fieldUiSchema["ui:widget"] = "files"; // Use the 'file' widget
-  
-          if (field?.hint) {
-            fieldUiSchema["ui:help"] = t(`FORM.${field?.hint}`);
-          }
+      case "file":
+        fieldSchema.type = "array";
+        fieldSchema.items = {
+          type: "string",
+          format: "data-url", // Represents files as base64-encoded strings
+        };
+        fieldUiSchema["ui:widget"] = "files"; // Use the 'file' widget
 
-          if (field?.pattern) {
-            fieldUiSchema['ui:options'] = { accept: field.pattern };
-          }
-          break;
-          case 'date':
-            fieldSchema.type = 'string';
-            fieldSchema.format = 'date';
-            fieldUiSchema['ui:widget'] = 'date';
-            break;
+        if (field?.hint) {
+          fieldUiSchema["ui:help"] = t(`FORM.${field?.hint}`);
+        }
+
+        if (field?.pattern) {
+          fieldUiSchema["ui:options"] = { accept: field.pattern };
+        }
+        break;
+      case "date":
+        fieldSchema.type = "string";
+        fieldSchema.format = "date";
+        fieldUiSchema["ui:widget"] = "date";
+        break;
       default:
         break;
     }
@@ -166,7 +166,7 @@ export const GenerateSchemaAndUiSchema = (
       fieldSchema.enumNames = options?.map((opt: FieldOption) =>
         t(`FORM.${opt.label}`) === `FORM.${opt.label}`
           ? opt.label
-          : t(`FORM.${opt.label}`),
+          : t(`FORM.${opt.label}`)
       );
       if (maxSelections) {
         fieldSchema.maxItems = maxSelections;
@@ -234,13 +234,13 @@ export const GenerateSchemaAndUiSchema = (
       fieldSchema.default = field.default;
     }
     if (field?.validation) {
-      if (field?.validation?.includes('numeric')) {
+      if (field?.validation?.includes("numeric")) {
         // fieldUiSchema['ui:field'] = 'NumberInputField';
       }
-      if (field?.validation?.includes('currentYear')) {
+      if (field?.validation?.includes("currentYear")) {
         fieldSchema.pattern = getCurrentYearPattern();
       }
-      if (field?.validation?.includes('dob')) {
+      if (field?.validation?.includes("dob")) {
         // fieldSchema.minimum = '1900-01-01';
         //  fieldSchema.maximum = getLastDayDate()
       }

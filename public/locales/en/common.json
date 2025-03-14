@@ -506,7 +506,13 @@
     "QUALIFICATIONS": "Qualification",
     "DETAILED_ADDRESS": "Detailed Address",
     "COURSES": "Courses",
-    "HIGHEST_QUALIFICATION": "Highest Qualification"
+    "HIGHEST_QUALIFICATION": "Highest Qualification",
+    "TVETS_ENROLLMENT_NUMBER": "TVETs Enrollment Number",
+    "PASS_YEAR": "Pass Year",
+    "SKILL": "Skills",
+    "highest education qualification": "Highest Education Qualification",
+    "TVETS": "TVETs",
+    "MIDDLE_NAME": "Middle Name"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
