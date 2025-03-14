@@ -80,7 +80,9 @@ export function OpportunitiesList({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
-      setIsAdmin(adminInfo?.role === "Admin");
+      setIsAdmin(
+        adminInfo?.role === "Admin" || adminInfo?.role === "Center Admin"
+      );
     }
   }, []);
 
