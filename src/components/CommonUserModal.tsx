@@ -541,6 +541,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     "{UserName}": formData?.email,
                     "{Password}": password,
                   };
+                  if (userType === FormContextType.TEAM_LEADER) {
+                    replacements["{appUrl}"] =
+                      `${process.env.NEXT_PUBLIC_ADMINAPP_URL}`;
+                  } else if (userType === FormContextType.TEACHER) {
+                    replacements["{appUrl}"] =
+                      `${process.env.NEXT_PUBLIC_TRAINERAPP_URL}`;
+                  }
                 }
               }
               const sendTo = {
