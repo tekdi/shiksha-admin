@@ -161,7 +161,7 @@ export function OpportunityForm({
         ]);
         setSkills(skillsResponse?.result);
         setCategories(categoriesResponse?.result);
-        setOrganisation(organisationResponse?.result);
+        setOrganisation(organisationResponse?.result?.data);
         setCountries(countriesResponse.result);
         setBenefits(benefitsResponse?.result);
       } catch (e) {
