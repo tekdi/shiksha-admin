@@ -181,6 +181,41 @@ export const getCenterTableData = (
   return generateColumns(t, configs, isMobile);
 };
 
+export const getBatchTableData = (
+  t: any,
+  isMobile: boolean,
+  isArchived: any
+) => {
+  const configs: ColumnConfig[] = [
+    { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
+    // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
+    { key: "location", titleKey: "TABLE_TITLE.LOCATION", width: 130 },
+    // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
+    { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 130 },
+    { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
+
+    // {
+    //   key: "totalActiveMembers",
+    //   titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
+    //   width: 130,
+    // },
+    // {
+    //   key: "totalArchivedMembers",
+    //   titleKey: "TABLE_TITLE.ARCHIVED_LEARNERS",
+    //   width: 130,
+    // },
+  ];
+  // Conditionally add the "actions" column if isActiveYear is true
+  if (isActiveYear && !isArchived) {
+    configs.push({
+      key: "actions",
+      titleKey: "TABLE_TITLE.ACTIONS",
+      width: 125,
+    });
+  }
+  return generateColumns(t, configs, isMobile);
+};
+
 //master data
 export const getStateDataMaster = (
   t: any,

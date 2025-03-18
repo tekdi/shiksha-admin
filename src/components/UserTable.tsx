@@ -52,7 +52,7 @@ import {
   getUserFullName,
 } from "../utils/Helper";
 import CommonUserModal from "./CommonUserModal";
-// import ReassignCenterModal from "./ReassignCenterModal";
+import ReassignCenterModal from "./ReassignCenterModal";
 import { showToastMessage } from "./Toastify";
 type UserDetails = {
   userId: any;
@@ -1652,7 +1652,7 @@ const UserTable: React.FC<UserTableProps> = ({
         userName={userName}
         userType={userType}
       />
-      {/* <ReassignCenterModal
+      <ReassignCenterModal
         open={isReassignCohortModalOpen}
         onClose={handleCloseReassignModal}
         userType={userType}
@@ -1666,7 +1666,7 @@ const UserTable: React.FC<UserTableProps> = ({
         cohortId={cohortId}
         centers={assignedCenters}
         userName={userName}
-      /> */}
+      />
 
       <CommonUserModal
         open={openAddLearnerModal}
