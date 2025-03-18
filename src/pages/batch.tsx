@@ -39,12 +39,13 @@ import {
 import { CustomField } from "@/utils/Interfaces";
 import { showToastMessage } from "@/components/Toastify";
 import AddNewBatch from "@/components/AddNewBatch";
-import { getCenterTableData } from "@/data/tableColumns";
+import { getBatchTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
 import {
   firstLetterInUpperCase,
   mapFields,
   transformLabel,
+  capitalizeFirstLetter,
 } from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
@@ -140,12 +141,12 @@ const Center: React.FC = () => {
     (state: any) => state.setIsArchived
   );
   const {
-    data: cohortFormData,
-    isLoading: cohortFormDataLoading,
-    error: cohortFormDataError,
+    data: batchFormData,
+    isLoading: batchFormDataLoading,
+    error: batchFormDataError,
   } = useQuery<any>({
-    queryKey: ["cohortFormData"],
-    queryFn: () => getFormRead(FormContext.COHORTS, FormContextType.COHORT),
+    queryKey: ["batchFormData"],
+    queryFn: () => getFormRead(FormContext.COHORTS, FormContextType.COHORTS),
     staleTime: apiCatchingDuration.GETREADFORM,
   });
   const selectedBlockStore = useSubmittedButtonStore(
@@ -229,7 +230,7 @@ const Center: React.FC = () => {
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
-  }, [cohortFormData, i18n.language]);
+  }, [batchFormData, i18n.language]);
 
   const fetchUserList = async () => {
     setLoading(true);
@@ -289,6 +290,12 @@ const Center: React.FC = () => {
             name: item?.name,
             status: item?.status,
             updatedBy: item?.updatedBy,
+            location:
+              capitalizeFirstLetter(item?.customFields[0]?.value) +
+              ", " +
+              capitalizeFirstLetter(item?.customFields[3]?.value) +
+              ", " +
+              capitalizeFirstLetter(item?.customFields[1]?.value),
             createdBy: item?.createdBy,
             createdAt: new Date(item?.createdAt).toISOString().split("T")[0],
             updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
@@ -330,8 +337,8 @@ const Center: React.FC = () => {
   const getFormData = async () => {
     try {
       // const res = await getFormRead("cohorts", "cohort");
-      if (cohortFormData && cohortFormData?.fields) {
-        const formData = cohortFormData?.fields;
+      if (batchFormData && batchFormData?.fields) {
+        const formData = batchFormData?.fields;
         setFormData(formData);
       } else {
         console.log("No response Data");
@@ -390,9 +397,9 @@ const Center: React.FC = () => {
   const getAddCenterFormData = async () => {
     try {
       //const response = await getFormRead("cohorts", "cohort");
-      if (cohortFormData) {
+      if (batchFormData) {
         const { schema, uiSchema } = GenerateSchemaAndUiSchema(
-          cohortFormData,
+          batchFormData,
           t
         );
 
@@ -834,7 +841,7 @@ const Center: React.FC = () => {
 
       const cohortDetails = resp?.results?.cohortDetails?.[0] || {};
 
-      setEditFormData(mapFields(cohortFormData, cohortDetails));
+      setEditFormData(mapFields(batchFormData, cohortDetails));
       setLoading(false);
       setIsEditForm(true);
     }
@@ -1203,7 +1210,7 @@ const Center: React.FC = () => {
             </Box>
           ) : cohortData?.length > 0 ? (
             <KaTableComponent
-              columns={getCenterTableData(t, isMobile, isArchived)}
+              columns={getBatchTableData(t, isMobile, isArchived)}
               data={cohortData}
               limit={pageLimit}
               offset={pageOffset}

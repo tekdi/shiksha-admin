@@ -5,7 +5,12 @@ import {
 } from "@/components/GeneratedSchemas";
 import SimpleModal from "@/components/SimpleModal";
 import { createCohort } from "@/services/CohortService/cohortService";
-import { CohortTypes, FormContextType, TelemetryEventType, apiCatchingDuration } from "@/utils/app.constant";
+import {
+  CohortTypes,
+  FormContextType,
+  TelemetryEventType,
+  apiCatchingDuration,
+} from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
 import useSubmittedButtonStore from "@/utils/useSharedState";
@@ -19,7 +24,7 @@ import { transformArray } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 import FrameworkCategories from "./FrameworkCategories";
 import { showToastMessage } from "./Toastify";
-import { createOrUpdateOption } from "@/services/MasterDataService"
+import { createOrUpdateOption } from "@/services/MasterDataService";
 
 interface CustomField {
   fieldId: string;
@@ -60,7 +65,7 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
   const { t } = useTranslation();
   const roleType = FormContextType.ADMIN_CENTER;
   const {
-        country,
+    country,
     states,
     districts,
     blocks,
@@ -96,9 +101,12 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     (state: any) => state.setSubmittedButtonStatus
   );
 
-
-  const { data: cohortFormData, isLoading: cohortFormDataLoading, error: cohortFormDataError } = useQuery<any[]>({
-    queryKey: ["cohortFormData"],
+  const {
+    data: batchFormData,
+    isLoading: batchFormDataLoading,
+    error: batchFormDataError,
+  } = useQuery<any[]>({
+    queryKey: ["batchFormData"],
     queryFn: () => Promise.resolve([]),
     staleTime: apiCatchingDuration.GETREADFORM,
     enabled: false,
@@ -119,10 +127,9 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
   }
   useEffect(() => {
     if (!open) {
-      setShowForm(false)
-    }
-    else {
-setShowForm(true)
+      setShowForm(false);
+    } else {
+      setShowForm(true);
     }
   }, [onClose, open]);
   useEffect(() => {
@@ -141,10 +148,8 @@ setShowForm(true)
       try {
         //    const response = await getFormRead("cohorts", "cohort");
 
-
-
-        if (cohortFormData) {
-          const updatedFormResponse = removeHiddenFields(cohortFormData);
+        if (batchFormData) {
+          const updatedFormResponse = removeHiddenFields(batchFormData);
           if (updatedFormResponse) {
             const { schema, uiSchema } = GenerateSchemaAndUiSchema(
               updatedFormResponse,
@@ -152,7 +157,7 @@ setShowForm(true)
             );
             setSchema(schema);
             setUiSchema(uiSchema);
-            setCustomFormData(cohortFormData);
+            setCustomFormData(batchFormData);
           }
         }
       } catch (error) {
@@ -160,7 +165,7 @@ setShowForm(true)
       }
     };
     getAddLearnerFormData();
-  }, [cohortFormData, i18n?.language]);
+  }, [batchFormData, i18n?.language]);
 
   const handleDependentFieldsChange = () => {
     setShowForm(true);
@@ -171,7 +176,7 @@ setShowForm(true)
     event: React.FormEvent<any>
   ) => {
     const formData = data?.formData;
-    const name = (formData.name).toLowerCase();
+    const name = formData.name.toLowerCase();
     const fieldId = "94befdc4-3173-4af3-998f-aa366d91ade7";
 
     const newEntity = {
@@ -190,105 +195,104 @@ setShowForm(true)
 
     // const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
 
-      const parentId = selectedCenterCode;
-      const cohortDetails: CohortDetails = {
-        name: (formData.name).toLowerCase(),
-        type: CohortTypes.BATCH,
-        parentId: parentId,
-        customFields: [
-          {
-            fieldId: stateFieldId,
-            value: [selectedStateCode],
-          },
-          {
-            fieldId: districtFieldId,
-            value: [selectedDistrictCode],
-          },
-          {
-            fieldId: blockFieldId,
-            value: [selectedBlockCode],
-          },
-          {
-            fieldId: centerFieldId,
-            value: [selectedCenterId],
-          }
-        ],
-      };
+    const parentId = selectedCenterCode;
+    const cohortDetails: CohortDetails = {
+      name: formData.name.toLowerCase(),
+      type: CohortTypes.BATCH,
+      parentId: parentId,
+      customFields: [
+        {
+          fieldId: stateFieldId,
+          value: [selectedStateCode],
+        },
+        {
+          fieldId: districtFieldId,
+          value: [selectedDistrictCode],
+        },
+        {
+          fieldId: blockFieldId,
+          value: [selectedBlockCode],
+        },
+        {
+          fieldId: centerFieldId,
+          value: [selectedCenterId],
+        },
+      ],
+    };
 
-      Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
-        const fieldSchema = schema?.properties[fieldKey];
-        const fieldId = fieldSchema?.fieldId;
+    Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
+      const fieldSchema = schema?.properties[fieldKey];
+      const fieldId = fieldSchema?.fieldId;
 
-        if (fieldId !== null) {
-          cohortDetails?.customFields?.push({
-            fieldId: fieldId,
-            value: formData?.cohort_type,
-          });
-        }
-
-        // if (bmgsData) {
-        //   cohortDetails?.customFields?.push({
-        //     fieldId: bmgsData?.board.fieldId,
-        //     value: bmgsData?.board.boardName,
-        //   });
-        //   cohortDetails?.customFields?.push({
-        //     fieldId: bmgsData.medium.fieldId,
-        //     value: bmgsData.medium.mediumName,
-        //   });
-        //   cohortDetails?.customFields?.push({
-        //     fieldId: bmgsData.grade.fieldId,
-        //     value: bmgsData.grade.gradeName,
-        //   });
-        // }
-      });
-
-      console.log(cohortDetails,"cohortDetails---------");
-
-
-      if (
-        cohortDetails?.customFields &&
-        cohortDetails?.customFields?.length > 0 &&
-        cohortDetails?.name
-      ) {
-        cohortDetails.customFields = Array.from(
-          new Map(
-            cohortDetails.customFields.map((item) => [item.fieldId, item])
-          ).values()
-        );
-
-        const cohortData = await createCohort(cohortDetails, t);
-        if (cohortData) {
-          showToastMessage(t('BATCHES.BATCH_CREATED_SUCCESSFULLY'), 'success');
-          const windowUrl = window.location.pathname;
-          const cleanedUrl = windowUrl.replace(/^\//, '');
-          const env = cleanedUrl.split("/")[0];
-
-
-          const telemetryInteract = {
-            context: {
-              env: env,
-              cdata: [],
-            },
-            edata: {
-              id: 'center-created-successfully',
-              type: TelemetryEventType.CLICK,
-              subtype: '',
-              pageid: cleanedUrl,
-            },
-          };
-          telemetryFactory.interact(telemetryInteract);
-
-          createCenterStatus ? setCreateCenterStatus(false) : setCreateCenterStatus(true)
-          setOpenAddNewCohort(false);
-          onClose();
-          localStorage.removeItem("BMGSData");
-        }
-      } else {
-        showToastMessage("Please Input Data", "warning");
+      if (fieldId !== null) {
+        cohortDetails?.customFields?.push({
+          fieldId: fieldId,
+          value: formData?.cohort_type,
+        });
       }
 
-    onClose();
+      // if (bmgsData) {
+      //   cohortDetails?.customFields?.push({
+      //     fieldId: bmgsData?.board.fieldId,
+      //     value: bmgsData?.board.boardName,
+      //   });
+      //   cohortDetails?.customFields?.push({
+      //     fieldId: bmgsData.medium.fieldId,
+      //     value: bmgsData.medium.mediumName,
+      //   });
+      //   cohortDetails?.customFields?.push({
+      //     fieldId: bmgsData.grade.fieldId,
+      //     value: bmgsData.grade.gradeName,
+      //   });
+      // }
+    });
 
+    console.log(cohortDetails, "cohortDetails---------");
+
+    if (
+      cohortDetails?.customFields &&
+      cohortDetails?.customFields?.length > 0 &&
+      cohortDetails?.name
+    ) {
+      cohortDetails.customFields = Array.from(
+        new Map(
+          cohortDetails.customFields.map((item) => [item.fieldId, item])
+        ).values()
+      );
+
+      const cohortData = await createCohort(cohortDetails, t);
+      if (cohortData) {
+        showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
+        const windowUrl = window.location.pathname;
+        const cleanedUrl = windowUrl.replace(/^\//, "");
+        const env = cleanedUrl.split("/")[0];
+
+        const telemetryInteract = {
+          context: {
+            env: env,
+            cdata: [],
+          },
+          edata: {
+            id: "center-created-successfully",
+            type: TelemetryEventType.CLICK,
+            subtype: "",
+            pageid: cleanedUrl,
+          },
+        };
+        telemetryFactory.interact(telemetryInteract);
+
+        createCenterStatus
+          ? setCreateCenterStatus(false)
+          : setCreateCenterStatus(true);
+        setOpenAddNewCohort(false);
+        onClose();
+        localStorage.removeItem("BMGSData");
+      }
+    } else {
+      showToastMessage("Please Input Data", "warning");
+    }
+
+    onClose();
   };
 
   const handleChangeForm = (event: IChangeEvent<any>) => {
@@ -317,23 +321,23 @@ setShowForm(true)
         >
           <AreaSelection
             country={transformArray(country)}
-                          states={transformArray(states)}
-                          districts={transformArray(districts)}
-                          blocks={transformArray(blocks)}
-                          selectedState={selectedState}
-                          selectedDistrict={selectedDistrict}
-                          selectedBlock={selectedBlock}
-                          handleCountryChangeWrapper={handleCountryChangeWrapper}
-                          handleStateChangeWrapper={handleStateChangeWrapper}
-                          handleBlockChangeWrapper={handleBlockChangeWrapper}
-                          isMobile={isMobile}
-                          isMediumScreen={isMediumScreen}
-                          iscenterCreate={false}
-                          allCenters={allCenters}
-                          selectedCenter={selectedCenter}
-                          handleCenterChangeWrapper={handleCenterChangeWrapper}
-                          inModal={true}
-                          stateDefaultValue={stateDefaultValue}
+            states={transformArray(states)}
+            districts={transformArray(districts)}
+            blocks={transformArray(blocks)}
+            selectedState={selectedState}
+            selectedDistrict={selectedDistrict}
+            selectedBlock={selectedBlock}
+            handleCountryChangeWrapper={handleCountryChangeWrapper}
+            handleStateChangeWrapper={handleStateChangeWrapper}
+            handleBlockChangeWrapper={handleBlockChangeWrapper}
+            isMobile={isMobile}
+            isMediumScreen={isMediumScreen}
+            iscenterCreate={false}
+            allCenters={allCenters}
+            selectedCenter={selectedCenter}
+            handleCenterChangeWrapper={handleCenterChangeWrapper}
+            inModal={true}
+            stateDefaultValue={stateDefaultValue}
           />
         </Box>
         {/* <FrameworkCategories

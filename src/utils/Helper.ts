@@ -1,9 +1,15 @@
 import FingerprintJS from "fingerprintjs2";
 import { getUserDetailsInfo } from "../services/UserList";
-import { Role, FormContextType, FormValues, InputTypes, Storage } from "./app.constant";
-import { State,Batch } from "./Interfaces";
+import {
+  Role,
+  FormContextType,
+  FormValues,
+  InputTypes,
+  Storage,
+} from "./app.constant";
+import { State, Batch } from "./Interfaces";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from 'axios';
+import axios from "axios";
 
 interface Value {
   value: string;
@@ -61,9 +67,13 @@ export const getInitials = (name: any) => {
   return words?.length > 1
     ? words[0][0].toUpperCase() + words[1][0].toUpperCase()
     : words[0][0].toUpperCase();
-}
+};
 
-export const getUserFullName = (user?: { firstName?: string, lastName: string, name?: string }): string => {
+export const getUserFullName = (user?: {
+  firstName?: string;
+  lastName: string;
+  name?: string;
+}): string => {
   let userData;
   if (user) {
     userData = user;
@@ -79,8 +89,8 @@ export const getUserFullName = (user?: { firstName?: string, lastName: string, n
     return userData.name;
   }
 
-  return '';
-}
+  return "";
+};
 
 export const getDeviceId = () => {
   return new Promise((resolve) => {
@@ -148,6 +158,13 @@ export const transformBatchArray = (arr: Batch[]): Batch[] => {
   }));
 };
 
+export const capitalizeFirstLetter = (str: string) => {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
 
 export const firstLetterInUpperCase = (label: string): string => {
   if (!label) {
@@ -228,7 +245,7 @@ export const mapFields = (formFields: any, Details: any) => {
       } else {
         if (
           field?.value === FormValues.FEMALE ||
-          field?.value === FormValues.MALE||
+          field?.value === FormValues.MALE ||
           field?.value === FormValues.TRANSGENDER
         ) {
           return field?.value?.toLowerCase();
@@ -444,7 +461,6 @@ export const filterAndMapAssociations = (
     }));
 };
 
-
 export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
   return dataURLs.map((dataURL) => {
     const [header, base64Data] = dataURL.split(",");
@@ -462,9 +478,9 @@ export const dataURLToBlob = (dataURLs: string[]): Blob[] => {
   });
 };
 
-
-
-export const getFilenameFromDataURL = (dataURLs: string[]): (string | null)[] => {
+export const getFilenameFromDataURL = (
+  dataURLs: string[]
+): (string | null)[] => {
   return dataURLs?.map((dataURL) => {
     // Check if the dataURL has a custom filename parameter
     const matches = dataURL.match(/filename=([^;&]+)/); // Look for `filename` in the query
@@ -477,12 +493,12 @@ export const getFilenameFromDataURL = (dataURLs: string[]): (string | null)[] =>
 };
 const convertImageUrlToDataUrl = async (imageUrl: string): Promise<string> => {
   try {
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    const base64 = Buffer.from(response.data, "binary").toString("base64");
     return `data:image/png;base64,${base64}`;
   } catch (error) {
-    console.error('Error converting image URL to Data URL:', error);
-    throw new Error('Failed to convert image to data URL');
+    console.error("Error converting image URL to Data URL:", error);
+    throw new Error("Failed to convert image to data URL");
   }
 };
 
@@ -490,14 +506,14 @@ export default async ({ req, res }: any) => {
   const { imageUrl } = req.query;
 
   if (!imageUrl) {
-    return res.status(400).json({ error: 'Image URL is required' });
+    return res.status(400).json({ error: "Image URL is required" });
   }
 
   try {
     const dataUrl = await convertImageUrlToDataUrl(imageUrl);
     res.status(200).json({ dataUrl });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to convert image' });
+    res.status(500).json({ error: "Failed to convert image" });
   }
 };
 
@@ -512,28 +528,27 @@ export const convertAllImagesToDataUrls = async (imageUrls: string[]) => {
   return dataUrls;
 };
 
-
 export function convertImageToDataURL(imagePath: string, callback: any) {
   // Fetch the image as a blob
   fetch(imagePath)
-    .then(response => response.blob())
-    .then(blob => {
+    .then((response) => response.blob())
+    .then((blob) => {
       // Create a FileReader to convert the blob into a Data URL
       const reader = new FileReader();
 
       reader.onloadend = function () {
         // This is the Data URL of the image
         const dataUrl = reader.result;
-        callback(dataUrl);  // Call the callback with the Data URL
+        callback(dataUrl); // Call the callback with the Data URL
       };
 
       // Read the blob as a Data URL
       reader.readAsDataURL(blob);
     })
-    .catch(error => console.error("Error converting image:", error));
+    .catch((error) => console.error("Error converting image:", error));
 }
 
-export const getLastDayDate= (): string => {
+export const getLastDayDate = (): string => {
   const currentDate = new Date();
   currentDate.setDate(currentDate.getDate() - 1); // Subtract 1 day
   const year = currentDate.getFullYear();
@@ -543,13 +558,13 @@ export const getLastDayDate= (): string => {
 };
 
 export const toPascalCase = (name: string | any) => {
-  if (typeof name !== 'string') {
+  if (typeof name !== "string") {
     return name;
   }
 
   return name
     ?.toLowerCase()
-    .split(' ')
+    .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(" ");
 };

@@ -228,7 +228,7 @@
     "CITY": "City",
     "BLOCK": "Block",
     "NEW_FACILITATOR": "New Trainer",
-    "SEARCHBAR_PLACEHOLDER": "Search Facilitators..",
+    "SEARCHBAR_PLACEHOLDER": "Search Trainers",
     "FACILITATOR_CREATED_SUCCESSFULLY": "Trainer is created, and credentials sent successfully!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Trainer is created ,credentials will be sent soon",
     "FACILITATOR_UPDATED_SUCCESSFULLY": "Trainer has been successfully updated!",
@@ -238,7 +238,7 @@
     "SEARCHBAR_PLACEHOLDER": "Search course, topic, student, pdf etc.."
   },
   "LEARNERS": {
-    "SEARCHBAR_PLACEHOLDER": "Search Learners..",
+    "SEARCHBAR_PLACEHOLDER": "Search Learners",
     "NEW_LEARNER": "New Youth",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
     "LEARNER_CREATED_SUCCESSFULLY": "Youth has been successfully created!",
@@ -256,7 +256,7 @@
     "EDIT_TEAM_LEADER": "Edit Center Admin"
   },
   "CENTER_ADMIN": {
-    "SEARCHBAR_PLACEHOLDER": "Search Center Admin..",
+    "SEARCHBAR_PLACEHOLDER": "Search Center Admin",
     "NEW_CENTER_ADMIN": "New Center Admin",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
     "TEAM_LEADER_CREATED_SUCCESSFULLY": "Team Leader is created, and credentials sent successfully!",
@@ -268,7 +268,7 @@
     "ADMIN_UPDATED_SUCCESSFULLY": "Admin has been successfully updated!"
   },
   "COHORTS": {
-    "SEARCHBAR_PLACEHOLDER": "Search Center.."
+    "SEARCHBAR_PLACEHOLDER": "Search Center"
   },
   "COURSE_PLANNER": {
     "GRADE": "Grade",
@@ -311,6 +311,8 @@
   "MASTER": {
     "COUNTRY": "Country",
     "CITY": "Sub-County",
+    "STATE": "County",
+    "CITY": "Sub-county",
     "STATE": "County",
     "STATE_NAMES": "State Name",
     "SORT": "Sort",
@@ -359,7 +361,7 @@
     "CENTER_UPDATE_SUCCESSFULLY": "Center has been successfully updated",
     "CENTER_DELETE_SUCCESSFULLY": "Center has been successfully deleted",
     "CENTER_CREATED_SUCCESSFULLY": "Center Created successfully",
-    "SEARCHBAR_PLACEHOLDER": "Search Center..",
+    "SEARCHBAR_PLACEHOLDER": "Search Center",
     "CENTER_UPDATE_FAILED": "Something went wrong while updating center",
     "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the center because it has {{activeMembers}} Active Learners"
   },
@@ -514,7 +516,10 @@
     "SKILL": "Skills",
     "highest education qualification": "Highest Education Qualification",
     "TVETS": "TVETs",
-    "MIDDLE_NAME": "Middle Name"
+    "MIDDLE_NAME": "Middle Name",
+    "NOTE_THIS_WILL_BE_BATCH_NAME": "Note : This Will be Batch Name",
+    "BATCH_NAME": "Batch Name",
+    "CENTER_NAME": "Center Name"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -560,7 +565,8 @@
     "DISTRICT": "District",
     "DOB": "Date of Birth",
     "CITY": "City",
-    "COUNTRY": "Country"
+    "COUNTRY": "Country",
+    "LOCATION": "Location"
   },
   "WORKSPACE": {
     "EDITOR_WORKSPACE": "Editor Workspace",
@@ -571,7 +577,7 @@
     "CONTENT_CREATOR": "Content Creator",
     "CONTENT_REVIEWER": "Content Reviewer",
     "CONTENT_CREATOR_REVIEWER": "Content Creator/Reviewer",
-    "SEARCH_CONTENT_CREATOR": "Search content creator...",
+    "SEARCH_CONTENT_CREATOR": "Search content creator",
     "EDIT_CONTENT_CREATOR": "Edit content creator",
     "CREATE_CONTENT_CREATOR": "Create content creator",
     "EDIT_CONTENT_REVIEWER": "Edit content reviewer"
@@ -612,7 +618,7 @@
   "OPPORTUNITY": {
     "OPPORTUNITIES": "Opportunities",
     "ALL_OPPORTUNITIES": "All Opportunities",
-    "SEARCH_OPPORTUNITIES": "Search...",
+    "SEARCH_OPPORTUNITIES": "Search",
     "NO_OPPORTUNITIES_FOUND": "No opportunities found",
     "NO_RESULT_FOUND": "No opportunities found",
     "NO_OPPORTUNITY_EXPIRED": "No opportunities expired",
@@ -650,7 +656,7 @@
     "NO_YOUTH_FOUND": "No Youth found",
     "UPDATE": "Update",
     "SELECT_BATCH": "Select Batch",
-    "SEARCH_YOUTH": "Search Youth...",
+    "SEARCH_YOUTH": "Search Youth",
     "ADD": "Add",
     "MAP_YOUTH_TO_OPPORTUNITY": "Map Youth to Opportunity : ",
     "BACK_TO_OPPORTUNITY": "Back to Opportunites",
