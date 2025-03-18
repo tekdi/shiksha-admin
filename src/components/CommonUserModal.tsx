@@ -207,6 +207,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     handleBatchChangeWrapper,
     selectedBatch,
     selectedCenterCode,
+    selectedBatchCode,
     selectedBlockCohortId,
     blockFieldId,
     districtFieldId,
@@ -341,7 +342,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
     if (result !== null) {
       const { username, password } = result;
-      console.log(selectedBatch, "selectedBatch-----");
+      console.log(selectedCenterCode, "selectedCenterCode-----");
+      console.log(selectedBatchCode, "selectedBatchCode-----");
 
       const apiBody: any = {
         username:
@@ -360,7 +362,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     : RoleId.TEAM_LEADER,
             cohortIds:
               userType !== "CENTER ADMIN"
-                ? [selectedCenterCode, selectedBatch[0]]
+                ? [selectedCenterCode, selectedBatchCode]
                 : [selectedCenterCode],
             // userType === FormContextType.TEAM_LEADER
             //   ? [selectedBlockCohortId]
@@ -595,7 +597,11 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     ? [adminInfo?.email]
                     : [formData?.email],
               };
-              if (Object.keys(replacements).length !== 0 && sendTo) {
+              if (
+                Object.keys(replacements).length !== 0 &&
+                sendTo &&
+                userType !== FormContextType.STUDENT
+              ) {
                 const response = await sendCredentialService({
                   isQueue,
                   context,
@@ -630,11 +636,15 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                   }
                 }
               } else {
-                showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+                if (userType !== FormContextType.STUDENT) {
+                  showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+                }
               }
             }
           } else {
-            showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+            if (userType !== FormContextType.STUDENT) {
+              showToastMessage(t("COMMON.SOMETHING_WENT_WRONG"), "error");
+            }
           }
         }
         onSubmit(true);
