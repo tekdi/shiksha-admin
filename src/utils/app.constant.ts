@@ -74,6 +74,7 @@ export enum FormContextType {
   ADMIN = "ADMIN",
   ADMIN_CENTER = "ADMIN_CENTER",
   COHORT = "center",
+  COHORTS = "cohort",
   CONTENT_CREATOR = "CONTENT_CREATOR",
 }
 

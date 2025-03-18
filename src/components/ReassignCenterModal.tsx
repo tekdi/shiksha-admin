@@ -20,7 +20,7 @@ import { cohortMemberList, getUserDetailsInfo } from "@/services/UserList";
 import { updateUser } from "@/services/CreateUserService";
 import { useLocationState } from "@/utils/useLocationState";
 import AreaSelection from "./AreaSelection";
-import { transformArray } from "../utils/Helper";
+import { transformArray, transformBatchArray } from "../utils/Helper";
 import { firstLetterInUpperCase } from "./../utils/Helper";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import useNotification from "@/hooks/useNotification";
@@ -38,16 +38,13 @@ interface ReassignCohortModalProps {
   districtCode?: any;
   cohortId?: any;
   centers: any;
-  userName?:any
-
+  userName?: any;
 }
 
 interface Cohort {
   value: string;
   label: string;
 }
-
-
 
 type FilterDetails = {
   role: any;
@@ -71,7 +68,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   districtName,
   districtCode,
   centers,
-  userName
+  userName,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -79,10 +76,12 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   const defaultBlock = blockName;
 
   const {
+    country,
     states,
     districts,
     blocks,
     allCenters,
+    batches,
     isMobile,
     isMediumScreen,
     selectedState,
@@ -98,24 +97,23 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     handleBlockChangeWrapper,
     handleCenterChangeWrapper,
     handleBatchChangeWrapper,
+    selectedBatch,
     selectedCenterCode,
+    selectedBatchCode,
     selectedBlockCohortId,
     blockFieldId,
     districtFieldId,
     stateFieldId,
     dynamicFormForBlock,
     stateDefaultValue,
-    setSelectedBlock,
-    setSelectedDistrict,
-    setSelectedDistrictCode,
-    setSelectedBlockCode,
+    selectedStateCohortId,
   } = useLocationState(open, onClose, roleType, true);
   const cohorts: Cohort[] = allCenters?.map(
-  (cohort: { value: string; label: string }) => ({
-    label: cohort.label,
-    value: cohort.value,
-  })
-); 
+    (cohort: { value: string; label: string }) => ({
+      label: cohort.label,
+      value: cohort.value,
+    })
+  );
   const names = cohortData.map((item: any) => item.name);
   const setReassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setReassignButtonStatus
@@ -141,7 +139,8 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     useState("");
   const [selectedTLUserID, setSelectedTLUserID] = useState(userId);
 
-  
+  console.log("inside reassign center");
+
   // const [reassignOpen, setReassignOpen] = useState(false);
 
   //const [selectedBlockId, setselectedBlockId] = useState(blockName);
@@ -159,6 +158,8 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     setCheckedCenters([]);
     onClose();
   };
+
+  console.log(allCenters, "allCenters");
 
   const handleToggle = (name: string) => {
     if (userType === Role.LEARNERS) {
@@ -179,21 +180,24 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     if (centers) {
       if (userType !== Role.TEAM_LEADERS)
         setCheckedCenters(
-          centers?.split(",").map((center: any) => center?.trim()?.toLowerCase())
+          centers
+            ?.split(",")
+            .map((center: any) => center?.trim()?.toLowerCase())
         );
     }
-  }, [blockName, centers, open]); 
+  }, [blockName, centers, open]);
 
   const { getNotification } = useNotification();
-  const handleReassign = async () => { 
-
+  const handleReassign = async () => {
     try {
       let selectedData;
       let unSelectedData: string[];
       if (userType !== Role.TEAM_LEADERS) {
         selectedData = cohorts
           .filter(
-            (center) => center?.label && checkedCenters.includes((center?.label)?.toLowerCase())
+            (center) =>
+              center?.label &&
+              checkedCenters.includes(center?.label?.toLowerCase())
           )
           .map((center) => center!.value);
 
@@ -215,7 +219,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           )
           .map((center) => center!.label);
       }
- 
 
       let payload;
       if (userType !== Role.TEAM_LEADERS) {
@@ -229,37 +232,28 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         await bulkCreateCohortMembers(payload);
         let customFields;
 
-        
-        if (selectedBlock[0] !== blockName) { 
-
+        if (selectedBlock[0] !== blockName) {
           const userDetails = await getUserDetailsInfo(userId);
-          if(userType === Role.FACILITATORS){
-
-          getNotification(selectedTLUserID, "FACILITATOR_BLOCK_UPDATE");
- 
-          
-        }
+          if (userType === Role.FACILITATORS) {
+            getNotification(selectedTLUserID, "FACILITATOR_BLOCK_UPDATE");
+          }
           const blockField = userDetails?.userData?.customFields.find(
             (field: any) => field.label === "BLOCKS"
-          ); 
+          );
           customFields = [
             {
               fieldId: blockField.fieldId,
               value: selectedBlockCode,
             },
           ];
-        
 
-
-          if (selectedDistrict[0] !== districtName) { 
+          if (selectedDistrict[0] !== districtName) {
             const userDetails = await getUserDetailsInfo(userId);
-             if(userType === Role.TEAM_LEADERS){
+            if (userType === Role.TEAM_LEADERS) {
+              getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
+              getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
+            }
 
-          getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
-          getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
-
-        }
-          
             const blockField = userDetails?.userData?.customFields.find(
               (field: any) => field.label === "BLOCKS"
             );
@@ -273,9 +267,8 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                 value: selectedBlockCode,
               },
             ];
-          }
-          else { 
-             getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
+          } else {
+            getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
           }
         }
 
@@ -297,26 +290,27 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           "success"
         );
         reassignButtonStatus
-            ? setReassignButtonStatus(false)
-            : setReassignButtonStatus(true);
-        if( userType === Role.FACILITATORS) {
-          if (selectedDistrict[0] !== districtName) 
-          {
-                    if (selectedBlock[0] !== blockName) {
-                      getNotification(userId, "FACILITATOR_BLOCK_UPDATE");
-
-                    } 
+          ? setReassignButtonStatus(false)
+          : setReassignButtonStatus(true);
+        if (userType === Role.FACILITATORS) {
+          if (selectedDistrict[0] !== districtName) {
+            if (selectedBlock[0] !== blockName) {
+              getNotification(userId, "FACILITATOR_BLOCK_UPDATE");
+            }
             getNotification(userId, "FACILITATOR_DISTRICT_UPDATE");
-
           }
           getNotification(userId, "FACILITATOR_CENTER_REASSIGNMENT");
         }
-      
-        if(userType === Role.LEARNERS) {
+
+        if (userType === Role.LEARNERS) {
           const replacements = {
-            "{learnerName}":userName
-           }
-          getNotification(selectedTLUserID, "LEARNER_REASSIGNMENT_NOTIFICATION", replacements);
+            "{learnerName}": userName,
+          };
+          getNotification(
+            selectedTLUserID,
+            "LEARNER_REASSIGNMENT_NOTIFICATION",
+            replacements
+          );
         }
       } else {
         const reassignBlockObject = {
@@ -338,7 +332,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           cohortId: selectedBlockCohortId,
           role: Role.TEAM_LEADER,
           status: [Status.ACTIVE],
-        }; 
+        };
         const sort = ["name", "asc"];
         let resp;
         try {
@@ -359,7 +353,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           setReassignAlertModal(true);
           setAssignedTeamLeader(resp?.userDetails?.length);
           setSelectedBlockForTL(checkedCenters[0]);
-          const userNames = resp?.userDetails?.map((user: any) => firstLetterInUpperCase(user.name));
+          const userNames = resp?.userDetails?.map((user: any) =>
+            firstLetterInUpperCase(user.name)
+          );
 
           setSelectedTLUserID(userId);
           setAssignedTeamLeaderNames(userNames);
@@ -411,7 +407,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
               fieldId: blockField.fieldId,
               value: cohortCode,
             },
-          ]; 
+          ];
           if (selectedDistrict[0] !== districtName) {
             customFields = [
               {
@@ -437,22 +433,14 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
             ? setReassignButtonStatus(false)
             : setReassignButtonStatus(true);
 
-            if (selectedDistrict[0] !== districtName) { 
-               if(userType === Role.TEAM_LEADERS){
-  
-            getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
+          if (selectedDistrict[0] !== districtName) {
+            if (userType === Role.TEAM_LEADERS) {
+              getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
+              getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
+            }
+          } else {
             getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
-  
           }
-        
-        }
-          else{
-            getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
-
-          }
-
-
-
         }
       }
     } catch (error) {
@@ -495,14 +483,18 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       value: cohort.value,
     }));
 
-const formattedBlocks = filteredCBlocks?.map(location => ({
-  ...location,
-  label: location.label
-    ? location.label.split(' ')
-        .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ')
-    : ''
-})); 
+  const formattedBlocks = filteredCBlocks?.map((location) => ({
+    ...location,
+    label: location.label
+      ? location.label
+          .split(" ")
+          .map(
+            (word: any) =>
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          )
+          .join(" ")
+      : "",
+  }));
 
   const handleToggle2 = (centerName: string) => {
     if (checkedCenters.includes(centerName)) {
@@ -516,7 +508,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
   };
 
   const wrappedHandleReassignAction = async () => {
-    try { 
+    try {
       // await handleDeleteAction();
       const previousBlockObject = {
         limit: 0,
@@ -535,7 +527,7 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
       )?.cohortId;
 
       const unSelectedBlockCohortIds: string[] = [];
- 
+
       unSelectedBlockCohortIds.push(previousBlockId);
       const cohortCode = formattedBlocks
         .filter((item: any) => item.label === selectedBlockForTL)
@@ -566,13 +558,10 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
           value: selectedCenterCode,
         },
       ];
-      if ( selectedDistrict[0]  && selectedDistrict[0] !== districtName) {
-        if(userType === Role.TEAM_LEADERS){
-
+      if (selectedDistrict[0] && selectedDistrict[0] !== districtName) {
+        if (userType === Role.TEAM_LEADERS) {
           getNotification(selectedTLUserID, "TL_DISTRICT_UPDATE");
           getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
-
-          
         }
         customFields = [
           {
@@ -583,12 +572,10 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
             fieldId: districtFieldId,
             value: selectedDistrictCode,
           },
-          
         ];
-      } 
-      else {
-             getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
-          }
+      } else {
+        getNotification(selectedTLUserID, "TL_BLOCK_REASSIGNMENT");
+      }
       const updateObject = {
         userData: {},
         customFields: customFields,
@@ -644,33 +631,29 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
         primaryBtnDisabled={checkedCenters.length === 0}
       >
         <AreaSelection
-          country={transformArray(states)}
+          country={transformArray(country)}
           states={transformArray(states)}
           districts={transformArray(districts)}
           blocks={transformArray(blocks)}
+          allCenters={transformArray(allCenters)}
+          batches={transformBatchArray(batches)}
           selectedState={selectedState}
           selectedDistrict={selectedDistrict}
           selectedBlock={selectedBlock}
+          selectedBatch={selectedBatch}
+          handleCountryChangeWrapper={handleCountryChangeWrapper}
           handleStateChangeWrapper={handleStateChangeWrapper}
-          handleCountryChangeWrapper={handleStateChangeWrapper}
           handleBlockChangeWrapper={handleBlockChangeWrapper}
-          isMobile={true}
+          handleBatchChangeWrapper={handleBatchChangeWrapper}
+          isMobile={isMobile}
           isMediumScreen={isMediumScreen}
-          isCenterSelection={false}
-          allCenters={allCenters}
+          isCenterSelection={true}
           selectedCenter={selectedCenter}
           handleCenterChangeWrapper={handleCenterChangeWrapper}
           inModal={true}
-          stateDefaultValue={stateDefaultValue}
-          reAssignModal={true}
           userType={userType}
-            //  setSelectedDistrict={    setSelectedDistrict}
-          //  selectedState={selectedState}
-
-          districtDefaultValue={districtName}
-          blockDefaultValue={
-            userType === Role.TEAM_LEADERS ? undefined : blockName
-          }
+          stateDefaultValue={stateDefaultValue}
+          isUserAdd={true}
         />
         {selectedBlock.length === 0 && userType !== Role.TEAM_LEADERS ? (
           <>
@@ -722,11 +705,14 @@ const formattedBlocks = filteredCBlocks?.map(location => ({
                         <Checkbox
                           checked={
                             center?.name
-                              ? checkedCenters.includes(center.name?.toLowerCase())
+                              ? checkedCenters.includes(
+                                  center.name?.toLowerCase()
+                                )
                               : false
                           }
                           onChange={() =>
-                            center?.name && handleToggle((center.name)?.toLowerCase())
+                            center?.name &&
+                            handleToggle(center.name?.toLowerCase())
                           }
                           sx={{
                             color: theme.palette.text.primary,
