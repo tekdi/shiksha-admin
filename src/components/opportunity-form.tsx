@@ -50,7 +50,7 @@ const formSchema = z
     status: z.string().min(1, "Status is required"),
     role_type: z.string().min(1, "Role type is required"),
     work_nature: z.string().min(1, "Work nature is required"),
-    benefits: z.string().min(1, "Benefits are required"),
+    benefits: z.array(z.string()).min(1, "Benefits are required"),
     country: z.string().min(1, "Country is required"),
     state: z.string().min(1, "State is required"),
     city: z.string().min(1, "City is required"),
@@ -60,7 +60,7 @@ const formSchema = z
   })
   .superRefine((data, ctx) => {
     if (
-      data.benefits === "51d25808-371b-4ba3-9d85-a16e3a5793be" &&
+      data.benefits.includes("51d25808-371b-4ba3-9d85-a16e3a5793be") &&
       !data.otherBenefits
     ) {
       ctx.addIssue({
@@ -119,7 +119,7 @@ export function OpportunityForm({
     status: "approved",
     role_type: "",
     work_nature: "",
-    benefits: "",
+    benefits: [],
     offer_letter_provided: false,
     pricing_type: "",
     ...initialData,
@@ -467,6 +467,7 @@ export function OpportunityForm({
                   <Select
                     label={t("OPPORTUNITY.BENIFITS")}
                     {...field}
+                    multiple
                     value={field.value || ""} // Ensure single select
                     onChange={(event) => field.onChange(event.target.value)} // Set single value
                     input={<OutlinedInput label="Benefits" />}
@@ -493,7 +494,9 @@ export function OpportunityForm({
             />
           </Grid>
 
-          {watch("benefits") === "51d25808-371b-4ba3-9d85-a16e3a5793be" && (
+          {watch("benefits").includes(
+            "51d25808-371b-4ba3-9d85-a16e3a5793be"
+          ) && (
             <Grid item xs={12}>
               <Controller
                 name="otherBenefits"
@@ -541,7 +544,7 @@ export function OpportunityForm({
                     {...field}
                     label={t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
                   >
-                    {["Remote", "On-site", "Hybrid", "Work From Home"].map(
+                    {["Remote", "On-site", "Hybrid", "Work From Office"].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
                           {role}

@@ -20,7 +20,7 @@ export interface Opportunity {
   role_type: string;
   // salary: string;
   work_nature: string;
-  benefits: string;
+  benefits: string[];
   // stipend:string;
   // skillDetails:Array<any>;
   // work_experience:string;
@@ -55,7 +55,7 @@ export interface OpportunityList {
   role_type: string;
   salary: string;
   work_nature: string;
-  benefits: string;
+  benefits: string[];
   stipend: string;
   skillDetails: Array<any>;
   work_experience: string;
