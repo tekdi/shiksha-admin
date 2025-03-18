@@ -60,6 +60,10 @@ const Menuitems = [
         title: 'MASTER.CITY',
         href: ['/block'],
       },
+      {
+        title: 'MASTER.ORGANISATION',
+        href: ['/organisations'],
+      },
     ],
   },
   ...(isActiveYear

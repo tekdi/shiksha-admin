@@ -16,7 +16,7 @@ export function CustomPagination({
   if (totalPages <= 1) return null;
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
       <Pagination
         count={totalPages}
         page={currentPage}
@@ -25,9 +25,9 @@ export function CustomPagination({
           <PaginationItem
             {...item}
             sx={{
-              "&.Mui-selected": {
-                backgroundColor: "primary.main",
-                color: "white",
+              '&.Mui-selected': {
+                backgroundColor: '#fdbe16 !important',
+                color: 'white',
               },
             }}
           />

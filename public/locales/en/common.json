@@ -37,21 +37,21 @@
     "NO_ACTIVE_CENTERS_DELETE": "There are no active centers in this block. Do you want to delete it?",
     "CONFIRM_DELETE": "Confirm Delete",
     "ADD_COUNTRY": "Add New Country",
-    "ADD_STATE": "Add New State",
+    "ADD_STATE": "Add New County",
     "ADD_STATE_CODE": "Code",
     "NAME_REQUIRED": "Name is Required",
     "CODE_REQUIRED": "Code is Required",
     "CODE_NOTIFICATION": "Code should contain 2-3 characters (e.g.MH)",
     "USER_DELETE_SUCCSSFULLY": "User deleted Successfully",
     "COUNTRY_NAME": "Country Name",
-    "STATE_NAME": "State Name",
+    "STATE_NAME": "County Name",
     "INVALID_TEXT": "Invalid Text",
     "INVALID_CODE": "Invalid Code",
     "FILTER_BY_STATUS": "Filter By Status :",
-    "DISTRICT_NAME": "District Name",
+    "DISTRICT_NAME": "Sub-County Name",
     "DISTRICT_CODE": "District Code",
     "CONTROLLING_FIELD": "Controlling Field",
-    "ADD_DISTRICT": "Add New District",
+    "ADD_DISTRICT": "Add New Sub-County",
     "ERROR_MESSAGE_SOMETHING_WRONG": "Something Went Wrong",
     "UPDATE": "Update",
     "UPDATE_COUNTRY": "Update Country",
@@ -60,9 +60,9 @@
     "UPDATE_BLOCK": "Update Block",
     "UPDATE_CITY": "Update City",
     "ADD_BLOCK": "Add New Block",
-    "ADD_CITY": "Add New City",
+    "ADD_CITY": "Add New Sub-County",
     "BLOCK_NAME": "Block Name",
-    "CITY_NAME": "City Name",
+    "CITY_NAME": "Sub-County Name",
     "BLOCK_CODE": "Block Code",
     "BLOCKS_NOT_FOUND": "Cities not found",
     "STATE_NOT_FOUND": "States not found",
@@ -89,7 +89,7 @@
     "DISTRICT_UPDATED_FAILURE": "Unable to update district",
     "BLOCK_DELETED_SUCCESS": "Block Deleted Successfully!",
     "BLOCK_DELETED_FAILURE": "Unable to delete block",
-    "BLOCK_ADDED_SUCCESS": "Block Added Successfully!",
+    "BLOCK_ADDED_SUCCESS": "Sub-County Added Successfully!",
     "BLOCK_ADDED_FAILURE": "Unable to add block",
     "BLOCK_UPDATED_SUCCESS": "Block Updated Successfully!",
     "BLOCK_UPDATED_FAILURE": "Unable to update block",
@@ -221,7 +221,7 @@
     "WORKSPACE": "Workspace"
   },
   "FACILITATORS": {
-    "STATE": "State",
+    "STATE": "County",
     "COUNTRY": "Country",
     "COUNTY": "County",
     "SUB_COUNTY": "Sub-County",
@@ -229,9 +229,9 @@
     "BLOCK": "Block",
     "NEW_FACILITATOR": "New Trainer",
     "SEARCHBAR_PLACEHOLDER": "Search Facilitators..",
-    "FACILITATOR_CREATED_SUCCESSFULLY": "Teacher is created, and credentials sent successfully!",
-    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Teacher is created ,credentials will be sent soon",
-    "FACILITATOR_UPDATED_SUCCESSFULLY": "Teacher has been successfully updated!",
+    "FACILITATOR_CREATED_SUCCESSFULLY": "Trainer is created, and credentials sent successfully!",
+    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Trainer is created ,credentials will be sent soon",
+    "FACILITATOR_UPDATED_SUCCESSFULLY": "Trainer has been successfully updated!",
     "EDIT_FACILITATOR": "Edit Facilitator"
   },
   "NAVBAR": {
@@ -241,10 +241,10 @@
     "SEARCHBAR_PLACEHOLDER": "Search Learners..",
     "NEW_LEARNER": "New Youth",
     "FIRST_SELECT_REQUIRED_FIELDS": "First select required fields",
-    "LEARNER_CREATED_SUCCESSFULLY": "Learner has been successfully created!",
-    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Learner is created, credentials will be sent soon",
-    "LEARNER_UPDATED_SUCCESSFULLY": "Learner has been successfully updated!",
-    "EDIT_LEARNER": "Edit Learner"
+    "LEARNER_CREATED_SUCCESSFULLY": "Youth has been successfully created!",
+    "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Youth is created, credentials will be sent soon",
+    "LEARNER_UPDATED_SUCCESSFULLY": "Youth has been successfully updated!",
+    "EDIT_LEARNER": "Edit Youth"
   },
   "TEAM_LEADERS": {
     "SEARCHBAR_PLACEHOLDER": "Search Team leaders..",
@@ -253,7 +253,7 @@
     "TEAM_LEADER_CREATED_SUCCESSFULLY": "Team Leader is created, and credentials sent successfully!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Team Leader is created ,credentials will be sent soon",
     "TEAM_LEADER_UPDATED_SUCCESSFULLY": "Team Leader has been successfully updated!",
-    "EDIT_TEAM_LEADER": "Edit Trainer"
+    "EDIT_TEAM_LEADER": "Edit Center Admin"
   },
   "CENTER_ADMIN": {
     "SEARCHBAR_PLACEHOLDER": "Search Center Admin..",
@@ -310,8 +310,8 @@
   },
   "MASTER": {
     "COUNTRY": "Country",
-    "CITY": "City",
-    "STATE": "States",
+    "CITY": "Sub-County",
+    "STATE": "County",
     "STATE_NAMES": "State Name",
     "SORT": "Sort",
     "DISTRICT_NAMES": "District Name",
@@ -332,7 +332,8 @@
     "DISTRICT_CODE": "District Code",
     "BLOCK_CODE": "Block Code",
     "CODE": "Code",
-    "MASTER": "Master"
+    "MASTER": "Master",
+    "ORGANISATION": "Organisation"
   },
   "CENTERS": {
     "CENTER": "center",
@@ -385,10 +386,11 @@
     "SURE_DELETE_CENTER": "Are you sure you want to delete ",
     "CENTER_UPDATE_SUCCESSFULLY": "Batch has been successfully updated",
     "CENTER_DELETE_SUCCESSFULLY": "Batch has been successfully deleted",
-    "CENTER_CREATED_SUCCESSFULLY": "Batch Created successfully",
+    " ": "Batch Created successfully",
     "SEARCHBAR_PLACEHOLDER": "Search Batch..",
     "CENTER_UPDATE_FAILED": "Something went wrong while updating Batch",
-    "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the Batch because it has {{activeMembers}} Active Learners"
+    "YOU_CANT_DELETE_CENTER_HAS_ACTIVE_LEARNERS": "You can't delete the Batch because it has {{activeMembers}} Active Learners",
+    "BATCH_CREATED_SUCCESSFULLY": "Batch Created successfully"
   },
   "FORM": {
     "FULL_NAME": "Full Name",
@@ -453,7 +455,7 @@
     "REGULAR": "Regular",
     "REMOTE": "Remote",
     "NOTE_THIS_WILL_BE_CENTER_NAME": "Note : This will be center name",
-    "STATE": "State",
+    "STATE": "County",
     "DISTRICT": "District",
     "BLOCK": "Block",
     "ACTION": "Actions",
@@ -543,7 +545,7 @@
     "UPDATED_BY": "Updated By",
     "ACTIONS": "Actions",
     "TYPE": "Type",
-    "STATE": "State",
+    "STATE": "County",
     "DISTRICT_BLOCK": "District, Block",
     "BLOCK": "Block",
     "CENTER": "Centers",

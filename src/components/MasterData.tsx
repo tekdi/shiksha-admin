@@ -67,8 +67,8 @@ type DistrictDetail = {
   status: Status;
   updatedBy: any;
   createdBy: any;
- 
- 
+
+
   controllingField: string;
 };
 
@@ -175,7 +175,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
- 
+
   const [filters, setFilters] = useState({
     name: searchKeyword,
     country: stateCode,
@@ -192,7 +192,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       const userData = JSON.parse(storedUserData);
       setUserRole(userData.role);
     }
-  }, []); 
+  }, []);
   useEffect(() => {
     const fetchUserDetail = async () => {
       let userId: any;
@@ -217,7 +217,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
          // setStateParentId(result[0]?.cohortId);
          setSelectedState(result[0]?.label);
          console.log(result[0],"result[0]?.label");
-         
+
           // setDefaultStates(result[0]);
         } else if (statesField) {
           setStateValue(statesField.value);
@@ -260,7 +260,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
 
         const districtFieldID = data?.result?.fieldId || "";
         setDistrictFieldId(districtFieldID);
-      
+
     } catch (error) {
       console.error("Error fetching districts", error);
     }
@@ -305,7 +305,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
         })
         const districts = data?.result?.values || [];
         setDistrictsOptionRead(districts);
-      const cohortDetails = response?.results?.cohortDetails || []; 
+      const cohortDetails = response?.results?.cohortDetails || [];
       const filteredDistrictData = cohortDetails
         .map(
           (districtDetail: {
@@ -323,7 +323,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
                 district?.label?.toLowerCase() ===
                 transformedName?.toLowerCase()
             );
-            
+
             return {
               label: transformedName,
               value: matchingDistrict ? matchingDistrict.value : null,
@@ -343,7 +343,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       if (isFirstVisit) {
         if (
           filteredDistrictData.length > 0 &&
-          selectedDistrict !== t("COMMON.ALL") 
+          selectedDistrict !== t("COMMON.ALL")
         ) {
           setSelectedDistrict(filteredDistrictData[0].value);
           setSelectedDistrictLabel(filteredDistrictData[0].label);
@@ -355,10 +355,10 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       setDistrictData(filteredDistrictData);
       const totalCount = filteredDistrictData.length;
       setPaginationCount(totalCount);
-      setPageCount(Math.ceil(totalCount / pageLimit)); 
+      setPageCount(Math.ceil(totalCount / pageLimit));
       setLoading(false);
       }
-      
+
     } catch (error) {
       console.error("Error fetching and filtering cohort districts", error);
     } finally {
@@ -373,7 +373,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
     }
     return baseDeps;
   }, [isFirstVisit, searchKeyword, stateCode,sortBy]);
-  
+
   useEffect(() => {
     if (stateCode) {
       getFilteredCohortData();
@@ -558,7 +558,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
         )
         .filter((block: { name: string }) =>
           blockNameArr.includes(block.name?.toLowerCase())
-        ); 
+        );
       setBlockData(filteredBlockData);
       setShowAllBlocks(filteredBlockData);
 
@@ -631,18 +631,18 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
     const startIndex = pageOffset * pageLimit;
     const endIndex = startIndex + pageLimit;
     let transformedData;
-        
+
     if (cohortType === CohortTypes.BLOCK) {
       transformedData = blockData?.map((item) => ({
         ...item,
         label: transformLabels(item.label),
-      }));      
+      }));
       return transformedData.slice(startIndex, endIndex);
     } else if (cohortType === CohortTypes.STATE) {
       transformedData = districtData.map((item) => ({
         ...item,
         label: transformLabels(item.label),
-      })); 
+      }));
       return transformedData.slice(startIndex, endIndex);
     } else {
       transformedData = blockData?.map((item) => ({
@@ -697,7 +697,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
 
     const selectedDistrictData = districtData.find(
       (district) => district.value === selectedDistrict
-    ); 
+    );
 setSelectedDistrictLabel(selectedDistrictData?.label||"");
 
     const cohortId = selectedDistrictData?.cohortId as any | null;
@@ -767,7 +767,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     }
   }, [blockNameArr, searchKeyword, pageLimit, pageOffset, selectedDistrict]);
 
-  const handleEdit = (rowData: any) => { 
+  const handleEdit = (rowData: any) => {
    cohortType === CohortTypes.BLOCK? setModalOpen(true): setDistrictModalOpen(true);
     const cohortIdForEDIT = rowData.cohortId;
     setCohortIdForEdit(cohortIdForEDIT);
@@ -796,7 +796,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       block: "",
       label: "",
     };    }
-    
+
     setSelectedStateForEdit(updatedRowData);
   };
   useEffect(() => {
@@ -915,7 +915,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
             (state) => state.value !== selectedStateForDelete.value
           )
         );
-        
+
 
         if (cohortType === CohortTypes.BLOCK) {
           showToastMessage(t("COMMON.BLOCK_DELETED_SUCCESS"), "success")
@@ -938,8 +938,8 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           fetchDistricts();
         }
       }
-        
-        
+
+
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
@@ -1071,8 +1071,8 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
     cohortId?: string,
     stateParentId?: string,
     stateCodeForCreate?: string
-   
-  ) => { 
+
+  ) => {
 
     const fieldId = type === "block" ? blocksFieldId : districtFieldId;
     const toastSuccessMessage =
@@ -1108,10 +1108,10 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       }
       let queryParameters;
       console.log(type,"type-----");
-      
+
       if (type === "block") {
         console.log(stateCodeForCreate,"stateCodeForCreate-----");
-        
+
         queryParameters = {
           name: name,
           type: CohortTypes.CITY,
@@ -1218,7 +1218,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           });
           fetchDistricts();
         }
-      
+
 
         const queryParameters = {
           name: name,
@@ -1281,7 +1281,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.FIELD_OPTION_READ, stateCode, "states"],
       });
-      setBlockData([]); 
+      setBlockData([]);
       // setStateParentId(cohortIdOfState);
       if(selectedCodes[0]!==stateCode)
       setDistrictData([]);
@@ -1356,7 +1356,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
           fieldId?: string,
           districtId?: string,
           stateCode?: string
-        ) => { 
+        ) => {
           if (selectedStateForEdit) {
             handleUpdateCohortSubmit(
               "block",
@@ -1370,7 +1370,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
             handleCreateCohortSubmit(
               "block",
               name?.toLowerCase(),
-              
+
               controllingField,
               cohortId,
               blocksFieldId,
@@ -1400,9 +1400,9 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
             handleUpdateCohortSubmit(
               "state",
               name?.toLowerCase(),
-              
+
               controllingField,
-              
+
               stateParentId
               // districtFieldId,
               // selectedStateForEdit?.value
@@ -1411,7 +1411,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
             handleCreateCohortSubmit(
               "state",
               name?.toLowerCase(),
-              
+
               controllingField,
               cohortId,
               stateParentId
@@ -1655,7 +1655,7 @@ setSelectedDistrictLabel(selectedDistrictData?.label||"");
                 </Box>
               ) : null}
             </Box>
-            
+
           </>
         )}
       </HeaderComponent>

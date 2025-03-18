@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import {
   Container,
   Typography,
@@ -14,46 +14,46 @@ import {
   CircularProgress,
   Tabs,
   Tab,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 // import Header from '@/components/Header';
-import { OpportunityForm } from "@/components/opportunity-form";
-import { OpportunitiesList } from "@/components/opportunities-table";
-import CloseIcon from "@mui/icons-material/Close";
-import { SearchInput } from "@/components/search-input";
-import { OpportunityFilters } from "@/components/opportunity-filters";
-import { CustomPagination } from "@/components/pagination";
+import { OpportunityForm } from '@/components/opportunity-form';
+import { OpportunitiesList } from '@/components/opportunities-table';
+import CloseIcon from '@mui/icons-material/Close';
+import { SearchInput } from '@/components/search-input';
+import { OpportunityFilters } from '@/components/opportunity-filters';
+import { CustomPagination } from '@/components/pagination';
 import type {
   Opportunity,
   OpportunityFormData,
   OpportunityList,
-} from "@/types/opportunity";
+} from '@/types/opportunity';
 import {
   getOpportunities,
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
-} from "@/lib/api";
-import { Switch, FormControlLabel } from "@mui/material";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+} from '@/lib/api';
+import { Switch, FormControlLabel } from '@mui/material';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export default function OpportunitiesPage() {
   const router = useRouter();
   const {
-    page = "1",
-    search = "",
+    page = '1',
+    search = '',
     industry,
     skills,
     category,
-    status = "approved",
+    status = 'approved',
     location,
   } = router.query;
   const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] =
     useState<Opportunity | null>(null);
-  const [selectedTab, setSelectedTab] = useState("all"); // "all" or "createdByMe"
+  const [selectedTab, setSelectedTab] = useState('all'); // "all" or "createdByMe"
   const [opportunities, setOpportunities] = useState<{
     items: OpportunityList[];
     total: number;
@@ -77,11 +77,11 @@ export default function OpportunitiesPage() {
       let created_by = undefined;
       let finalStatus = status as string;
 
-      if (selectedTab === "createdByMe") {
-        created_by = localStorage.getItem("userId") || undefined;
+      if (selectedTab === 'createdByMe') {
+        created_by = localStorage.getItem('userId') || undefined;
         finalStatus = status as string;
-      } else if (selectedTab === "newRequest") {
-        finalStatus = "pending";
+      } else if (selectedTab === 'newRequest') {
+        finalStatus = 'pending';
       }
 
       const result = await getOpportunities(search as string, Number(page), {
@@ -113,14 +113,14 @@ export default function OpportunitiesPage() {
   }
 
   async function handleDelete(opportunity: Opportunity) {
-    if (confirm("Are you sure you want to delete this opportunity?")) {
+    if (confirm('Are you sure you want to delete this opportunity?')) {
       await deleteOpportunity(opportunity.id);
       loadOpportunities();
     }
   }
 
   function handleSearch(term: string) {
-    const query = { ...router.query, search: term, page: "1" } as {
+    const query = { ...router.query, search: term, page: '1' } as {
       search?: string;
       page: string;
     };
@@ -132,10 +132,10 @@ export default function OpportunitiesPage() {
   }
 
   function handleFilterChange(name: string, value: string) {
-    console.log(value, "value");
+    console.log(value, 'value');
 
-    const query = { ...router.query, [name]: value, page: "1" };
-    if (value === "all") delete query?.[name];
+    const query = { ...router.query, [name]: value, page: '1' };
+    if (value === 'all') delete query?.[name];
     router.push({
       pathname: router.pathname,
       query,
@@ -143,7 +143,7 @@ export default function OpportunitiesPage() {
   }
 
   function handleClearFilters() {
-    const query = { page: "1" }; // Reset to default query with page 1
+    const query = { page: '1' }; // Reset to default query with page 1
     router.push({
       pathname: router.pathname,
       query,
@@ -179,58 +179,58 @@ export default function OpportunitiesPage() {
         {/* Tabs for All Opportunities and Created by Me */}
         {/* Tabs for All Opportunities and Created by Me */}
         <Box
-          boxShadow={"0px 2px 6px 2px #00000026"}
-          bgcolor={"white"}
-          pt={2}
+          boxShadow={'0px 2px 6px 2px #00000026'}
+          bgcolor={'white'}
+          py={2}
           borderRadius={2}
         >
-          <Box borderBottom={"1px solid #0000001f"}>
+          <Box borderBottom={'1px solid #0000001f'}>
             <Tabs
               value={selectedTab}
               onChange={(_, newValue) => setSelectedTab(newValue)}
             >
-              <Tab label={t("OPPORTUNITY.ALL_OPPORTUNITIES")} value="all" />
-              <Tab label={t("OPPORTUNITY.CREATED_BY_ME")} value="createdByMe" />
-              <Tab label={t("OPPORTUNITY.NEW_REQUEST")} value="newRequest" />
+              <Tab label={t('OPPORTUNITY.ALL_OPPORTUNITIES')} value="all" />
+              <Tab label={t('OPPORTUNITY.CREATED_BY_ME')} value="createdByMe" />
+              <Tab label={t('OPPORTUNITY.NEW_REQUEST')} value="newRequest" />
             </Tabs>
           </Box>
 
           <Box>
-            <Box p={2} borderBottom={"1px solid #0000001f"} pb={0}>
+            <Box p={2} borderBottom={'1px solid #0000001f'} pb={0}>
               <Box
                 sx={{
-                  display: { xs: "block", sm: "flex" },
+                  display: { xs: 'block', sm: 'flex' },
                   // flexDirection: { xs: 'column', sm: 'row' }, // Column on small screens, row on md+
                   gap: 2,
                   mb: 2,
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Box
                   sx={{
-                    display: "flex",
+                    display: 'flex',
                     gap: 2,
                     mb: 2,
-                    alignItems: "center",
-                    justifyContent: "space-between",
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
                   <SearchInput
-                    placeholder={t("OPPORTUNITY.SEARCH_OPPORTUNITIES")}
+                    placeholder={t('OPPORTUNITY.SEARCH_OPPORTUNITIES')}
                     defaultValue={search as string}
                     onSearch={handleSearch}
                   />
                   <Box
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                     }}
                   >
                     <FormControlLabel
-                      sx={{ whiteSpace: "nowrap" }}
-                      label={showFilters ? "Hide Filters" : "Show Filters"}
+                      sx={{ whiteSpace: 'nowrap' }}
+                      label={showFilters ? 'Hide Filters' : 'Show Filters'}
                       control={
                         <Switch
                           checked={showFilters}
@@ -246,7 +246,7 @@ export default function OpportunitiesPage() {
                   <Button
                     variant="contained"
                     color="primary"
-                    sx={{ fontWeight: "500", py: "10px", whiteSpace: "nowrap" }}
+                    sx={{ fontWeight: '500', py: '10px', whiteSpace: 'nowrap' }}
                     fullWidth
                     startIcon={<AddIcon />}
                     onClick={() => {
@@ -254,35 +254,49 @@ export default function OpportunitiesPage() {
                       setIsDialogOpen(true);
                     }}
                   >
-                    {t("OPPORTUNITY.CREATE_NEW_OPPORTUNITY")}
+                    {t('OPPORTUNITY.CREATE_NEW_OPPORTUNITY')}
                   </Button>
                 </Box>
               </Box>
 
               {showFilters && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: { xs: "column", md: "row" },
-                    gap: 2,
-                    alignItems: { xs: "stretch", md: "center" },
-                    justifyContent: "space-between",
-                    mb: 2,
-                  }}
-                >
-                  <OpportunityFilters
-                    selectedCategory={category as string}
-                    selectedSkills={skills as string}
-                    selectedStatus={status as string}
-                    onFilterChange={handleFilterChange}
-                  />
-                  <Button
-                    variant="outlined"
-                    color="secondary"
+                <Box>
+                  <Box
+                    // variant="outlined"
+                    // color="secondary"
+                    sx={{
+                      whiteSpace: 'nowrap',
+                      py: '10px',
+                      border: 'none !important',
+                      bgcolor: 'transparent !important',
+                      display: 'flex',
+                      justifyContent: 'end',
+                      width: '100%',
+                      color: '#101828',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                    }}
                     onClick={handleClearFilters}
                   >
-                    {t("OPPORTUNITY.CLEAR_FILTERS")}
-                  </Button>
+                    {t('OPPORTUNITY.CLEAR_FILTERS')}
+                  </Box>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: { xs: 'column', md: 'row' },
+                      gap: 2,
+                      alignItems: { xs: 'stretch', md: 'start' },
+                      justifyContent: 'space-between',
+                      mb: 2,
+                    }}
+                  >
+                    <OpportunityFilters
+                      selectedCategory={category as string}
+                      selectedSkills={skills as string}
+                      selectedStatus={status as string}
+                      onFilterChange={handleFilterChange}
+                    />
+                  </Box>
                 </Box>
               )}
             </Box>
@@ -291,14 +305,14 @@ export default function OpportunitiesPage() {
               elevation={2}
               sx={{
                 mb: 3,
-                overflow: "hidden",
-                boxShadow: "none",
-                padding: "10px",
-                bgcolor: "transparent",
+                overflow: 'hidden',
+                boxShadow: 'none',
+                padding: '10px',
+                bgcolor: 'transparent',
               }}
             >
               {isLoading ? (
-                <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
                   <CircularProgress />
                 </Box>
               ) : (
@@ -316,7 +330,7 @@ export default function OpportunitiesPage() {
               )}
             </Paper>
 
-            <Box sx={{ display: "flex", justifyContent: "end" }}>
+            <Box sx={{ display: 'flex', justifyContent: 'end' }}>
               <CustomPagination
                 totalPages={Math.ceil(opportunities.total / 9)}
                 currentPage={opportunities.currentPage}
@@ -326,39 +340,43 @@ export default function OpportunitiesPage() {
 
             <Dialog
               open={isDialogOpen}
-              onClose={() => setIsDialogOpen(false)}
+              onClose={(e, reason) => {
+                if (reason === 'backdropClick') {
+                  return;
+                }
+              }}
               fullWidth
               PaperProps={{
-                sx: { maxWidth: "650px" },
+                sx: { maxWidth: '650px' },
               }}
             >
               <DialogTitle
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  borderBottom: "1px solid #D0C5B4",
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderBottom: '1px solid #D0C5B4',
                 }}
               >
                 <Typography
                   variant="h2"
-                  color={"#4D4639"}
-                  fontWeight={"500"}
+                  color={'#4D4639'}
+                  fontWeight={'500'}
                   component="h2"
                   mb={0}
                 >
                   {selectedOpportunity
-                    ? "Edit Opportunity"
-                    : "Add New Opportunity"}
+                    ? 'Edit Opportunity'
+                    : 'Add New Opportunity'}
                 </Typography>
 
                 <CloseIcon
                   onClick={() => setIsDialogOpen(false)}
                   sx={{
                     ml: 2,
-                    fontSize: "24px",
-                    color: "#4D4639",
-                    cursor: "pointer",
+                    fontSize: '24px',
+                    color: '#4D4639',
+                    cursor: 'pointer',
                   }}
                 />
               </DialogTitle>
@@ -379,7 +397,7 @@ export default function OpportunitiesPage() {
 export async function getStaticProps({ locale }: any) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale, ['common'])),
       // Will be passed to the page component as props
     },
   };

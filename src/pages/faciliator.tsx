@@ -31,8 +31,8 @@ const Faciliator: React.FC = () => {
     <>
       <UserTable
         role={Role.TRAINER}
-        userType={t("SIDEBAR.FACILITATORS")}
-        searchPlaceholder={t("FACILITATORS.SEARCHBAR_PLACEHOLDER")}
+        userType={Role.TRAINER}
+        searchPlaceholder={t('FACILITATORS.SEARCHBAR_PLACEHOLDER')}
         handleAddUserClick={handleAddFaciliatorClick}
         parentState={submitValue}
       />

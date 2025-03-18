@@ -187,9 +187,9 @@ setShowForm(true)
 
     // const response = await createOrUpdateOption(fieldId, newEntity, t)
     // console.log(response, "response------");
-    
+
     // const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
-    
+
       const parentId = selectedCenterCode;
       const cohortDetails: CohortDetails = {
         name: (formData.name).toLowerCase(),
@@ -243,7 +243,7 @@ setShowForm(true)
       });
 
       console.log(cohortDetails,"cohortDetails---------");
-      
+
 
       if (
         cohortDetails?.customFields &&
@@ -258,7 +258,7 @@ setShowForm(true)
 
         const cohortData = await createCohort(cohortDetails, t);
         if (cohortData) {
-          showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
+          showToastMessage(t('BATCHES.BATCH_CREATED_SUCCESSFULLY'), 'success');
           const windowUrl = window.location.pathname;
           const cleanedUrl = windowUrl.replace(/^\//, '');
           const env = cleanedUrl.split("/")[0];
@@ -286,7 +286,7 @@ setShowForm(true)
       } else {
         showToastMessage("Please Input Data", "warning");
       }
-    
+
     onClose();
 
   };
