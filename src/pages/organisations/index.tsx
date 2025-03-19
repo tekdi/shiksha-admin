@@ -20,6 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useTheme } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -30,6 +31,7 @@ import {
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export default function Organisations() {
+  const theme = useTheme<any>();
   const [organisations, setOrganisations] = useState([]);
   const [open, setOpen] = useState(false);
   const [currentOrg, setCurrentOrg] = useState({
@@ -57,7 +59,7 @@ export default function Organisations() {
   };
 
   const handleOpen = (
-    org = { name: '', description: '', website: '', id: '' }
+    org = { name: '', description: '', website: '', id: '' },
   ) => {
     setCurrentOrg(org);
     setEditMode(!!org.id);
@@ -77,7 +79,7 @@ export default function Organisations() {
         await createOrganisation(
           currentOrg.name,
           currentOrg.description,
-          currentOrg.website
+          currentOrg.website,
         );
       }
       fetchOrganisations();
@@ -138,9 +140,15 @@ export default function Organisations() {
             {/* Create Organisation Button */}
             <Box sx={{ width: { xs: '100%', sm: 'fit-content' } }} width={{}}>
               <Button
-                variant="contained"
-                color="primary"
-                sx={{ fontWeight: '500', py: '10px', whiteSpace: 'nowrap' }}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '14px',
+                  color: theme.palette.primary['100'],
+                  minWidth: '200px',
+                  p: '8px 16px',
+                  border: '1px solid #1E1B16',
+                  boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+                }}
                 fullWidth
                 startIcon={<AddIcon />}
                 onClick={() => handleOpen()}
@@ -152,20 +160,62 @@ export default function Organisations() {
 
           <TableContainer component={Paper} sx={{ overflowX: 'auto', mt: 0 }}>
             <Table>
-              <TableHead sx={{ bgcolor: '#fdbe16' }}>
+              <TableHead sx={{ bgcolor: '#F8EFE7' }}>
                 <TableRow>
-                  <TableCell sx={{ minWidth: 120 }}>Name</TableCell>
-                  <TableCell sx={{ minWidth: 200 }}>Description</TableCell>
-                  <TableCell sx={{ minWidth: 200 }}>Website</TableCell>
-                  <TableCell sx={{ minWidth: 150 }}>Actions</TableCell>
+                  <TableCell
+                    sx={{
+                      minWidth: 120,
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: '#635E57',
+                      border: 'none',
+                    }}
+                  >
+                    Name
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      minWidth: 200,
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: '#635E57',
+                      border: 'none',
+                    }}
+                  >
+                    Description
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      minWidth: 200,
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: '#635E57',
+                      border: 'none',
+                    }}
+                  >
+                    Website
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      minWidth: 150,
+                      fontSize: '12px',
+                      fontWeight: '400',
+                      color: '#635E57',
+                      border: 'none',
+                    }}
+                  >
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {organisations.map((org: any) => (
                   <TableRow key={org.id}>
-                    <TableCell>{org.name}</TableCell>
-                    <TableCell>{org.description}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ color: '#353C44' }}>{org.name}</TableCell>
+                    <TableCell sx={{ color: '#353C44' }}>
+                      {org.description}
+                    </TableCell>
+                    <TableCell sx={{ color: '#353C44' }}>
                       <a
                         href={org.website}
                         target="_blank"
@@ -174,7 +224,7 @@ export default function Organisations() {
                         {org.website}
                       </a>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ color: '#353C44' }}>
                       <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}

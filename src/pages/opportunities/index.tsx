@@ -16,6 +16,7 @@ import {
   Tab,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useTheme } from '@mui/material/styles';
 import { showToastMessage } from '@/components/Toastify';
 // import Header from '@/components/Header';
 import { OpportunityForm } from '@/components/opportunity-form';
@@ -41,6 +42,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 export default function OpportunitiesPage() {
   const router = useRouter();
+  const theme = useTheme<any>();
   const {
     page = '1',
     search = '',
@@ -246,9 +248,15 @@ export default function OpportunitiesPage() {
 
                 <Box mb={2}>
                   <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ fontWeight: '500', py: '10px', whiteSpace: 'nowrap' }}
+                    sx={{
+                      textTransform: 'none',
+                      fontSize: '14px',
+                      color: theme.palette.primary['100'],
+                      minWidth: '200px',
+                      p: '8px 16px',
+                      border: '1px solid #1E1B16',
+                      boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+                    }}
                     fullWidth
                     startIcon={<AddIcon />}
                     onClick={() => {
