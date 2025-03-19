@@ -262,7 +262,7 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
 
       const cohortData = await createCohort(cohortDetails, t);
       if (cohortData) {
-        showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
+        showToastMessage(t('BATCHES.BATCH_CREATED'), 'success');
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
