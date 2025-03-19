@@ -202,11 +202,14 @@ export function OpportunitiesList({
   };
 
   const handleReject = async (opportunity_id: any) => {
-    await updateOpportunity(opportunity_id, {
+    const response = await updateOpportunity(opportunity_id, {
       status: "rejected",
       rejection_reason,
     });
-    alert("Opportunity rejected successfully!");
+    if (response) {
+      showToastMessage("Opportunity rejected successfully!");
+    }
+
     setOpenRejectModal(false);
   };
 
@@ -686,6 +689,7 @@ export function OpportunitiesList({
               variant="contained"
               color="primary"
               sx={{ py: "10px", width: "100%", fontWeight: "500" }}
+              disabled={!rejection_reason}
               onClick={(e) => {
                 e.stopPropagation();
                 handleReject(selected);
