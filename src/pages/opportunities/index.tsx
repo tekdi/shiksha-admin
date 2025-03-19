@@ -16,6 +16,7 @@ import {
   Tab,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { showToastMessage } from './Toastify';
 // import Header from '@/components/Header';
 import { OpportunityForm } from '@/components/opportunity-form';
 import { OpportunitiesList } from '@/components/opportunities-table';
@@ -101,6 +102,7 @@ export default function OpportunitiesPage() {
   async function handleCreate(data: OpportunityFormData) {
     await createOpportunity(data);
     setIsDialogOpen(false);
+    showToastMessage(t('OPPORTUNITY.OPPORTUNITY_CREATED_SUCCESSFULLY'), 'success');
     loadOpportunities();
   }
 
