@@ -16,7 +16,7 @@ import {
   Tab,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { showToastMessage } from './Toastify';
+import { showToastMessage } from '@/components/Toastify';
 // import Header from '@/components/Header';
 import { OpportunityForm } from '@/components/opportunity-form';
 import { OpportunitiesList } from '@/components/opportunities-table';
