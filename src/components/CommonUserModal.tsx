@@ -523,7 +523,23 @@ const CommonUserModal: React.FC<UserModalProps> = ({
             apiBody.mobile = apiBody?.phone_number;
           }
 
+          if (apiBody?.dob) {
+            const dob = new Date(apiBody.dob);
+            const today = new Date();
+            const age = today.getFullYear() - dob.getFullYear();
+            const is18YearsOld =
+              age > 18 ||
+              (age === 18 &&
+                today >= new Date(dob.setFullYear(dob.getFullYear() + 18)));
+
+            if (!is18YearsOld) {
+              showToastMessage('User must be at least 18 years old.', 'error');
+              return; // Stop further execution
+            }
+          }
+
           const response = await createUser(apiBody);
+          console.log("response =>",response)
           if (response) {
             const messageKey = messageKeyMap[userType];
 
