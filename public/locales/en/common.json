@@ -616,6 +616,7 @@
   },
 
   "OPPORTUNITY": {
+    "OPPORTUNITY_CREATED_SUCCESSFULLY": "Opportunity created successfully!",
     "OPPORTUNITIES": "Opportunities",
     "ALL_OPPORTUNITIES": "All Opportunities",
     "SEARCH_OPPORTUNITIES": "Search",
