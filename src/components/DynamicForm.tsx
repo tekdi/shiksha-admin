@@ -179,7 +179,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         }
         case "dob": {
           const property = error.property.substring(1);
-          console.log("property", property);
           const currentDate = new Date();
           if (localFormData?.dob) {
             console.log("localFormData?.dob", localFormData?.dob);

@@ -286,10 +286,6 @@ const Center: React.FC = () => {
             totalActiveMembers: 0,
             totalArchivedMembers: 0,
           };
-          // console.log(
-          //   item?.customFields.length(),
-          //   "item?.customFields.length()"
-          // );
 
           const location = [
             item?.customFields[0]?.value,
