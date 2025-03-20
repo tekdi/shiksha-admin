@@ -177,27 +177,24 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           }
           break;
         }
-        // case "dob": {
-        //   const property = error.property.substring(1);
-        //   console.log("property",property)
-        //   const currentDate = new Date();
-        //   if(localFormData?.dob)
-        //   {
-        //     console.log("localFormData?.dob",localFormData?.dob)
-        //     const dobDate = new Date(localFormData?.dob);
-        //     currentDate.setHours(0, 0, 0, 0);
-        //     dobDate.setHours(0, 0, 0, 0);
+        case "dob": {
+          const property = error.property.substring(1);
+          const currentDate = new Date();
+          if (localFormData?.dob) {
+            console.log("localFormData?.dob", localFormData?.dob);
+            const dobDate = new Date(localFormData?.dob);
+            currentDate.setHours(0, 0, 0, 0);
+            dobDate.setHours(0, 0, 0, 0);
 
-        //     if (dobDate >= currentDate) {
-        //       error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY")
-        //     }
-
-        //   }
-        //   // if (localFormData[property] === today) {
-        //   //   error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY");
-        //   // }
-        //   break;
-        // }
+            if (dobDate >= currentDate) {
+              error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY");
+            }
+          }
+          // if (localFormData[property] === today) {
+          //   error.message = t("FORM_ERROR_MESSAGES.DATE_CANNOT_BE_TODAY");
+          // }
+          break;
+        }
         case "pattern": {
           const pattern = error?.params?.pattern;
           const property = error.property.substring(1);
