@@ -519,7 +519,9 @@
     "MIDDLE_NAME": "Middle Name",
     "NOTE_THIS_WILL_BE_BATCH_NAME": "Note : This Will be Batch Name",
     "BATCH_NAME": "Batch Name",
-    "CENTER_NAME": "Center Name"
+    "CENTER_NAME": "Center Name",
+    "MIDDLE_NAME_OR_FATHER/MOTHER_NAME": "Middle Name Or Father/Mother Name",
+    "QUALIFICATIONS_DETAILS": "Qualification Details"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",
@@ -641,7 +643,7 @@
     "BENIFITS": "Benefits",
     "OTHERBENIFITS": "Other Benefits",
     "STIPEND": "Stipend",
-    "WORK_EXPERIENCE_NATURE": "Work Experience Nature",
+    "WORK_EXPERIENCE_NATURE": "Work Mode",
     "SKILLS": "Skills",
     "ALL_SKILLS": "All Skills",
     "NUMBER_OF_VACUNCIES": "Number of Vacancies",

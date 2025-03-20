@@ -45,6 +45,7 @@ import {
   firstLetterInUpperCase,
   mapFields,
   transformLabel,
+  capitalizeFirstLetter,
 } from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
@@ -285,6 +286,19 @@ const Center: React.FC = () => {
             totalActiveMembers: 0,
             totalArchivedMembers: 0,
           };
+          // console.log(
+          //   item?.customFields.length(),
+          //   "item?.customFields.length()"
+          // );
+
+          const location = [
+            item?.customFields[0]?.value,
+            item?.customFields[2]?.value,
+            item?.customFields[1]?.value,
+          ]
+            .filter((value) => value !== undefined)
+            .map((value) => capitalizeFirstLetter(value))
+            .join(", ");
 
           const requiredData = {
             name: item?.name,
@@ -293,6 +307,7 @@ const Center: React.FC = () => {
             createdBy: item?.createdBy,
             createdAt: new Date(item?.createdAt).toISOString().split("T")[0],
             updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
+            location: item?.customFields[0]?.value ? location : "-",
             cohortId: item?.cohortId,
             customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",
             totalActiveMembers: counts?.totalActiveMembers,

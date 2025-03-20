@@ -1037,7 +1037,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 : "-",
               createdAt: new Date(user.createdAt).toISOString().split("T")[0],
               updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
-              createdBy: user.createdBy,
+              CreatedBy: user.createdBy ? user.createdBy : "-",
               updatedBy: user.updatedBy,
               stateCode: stateField?.code,
               districtCode: districtField?.code,

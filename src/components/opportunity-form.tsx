@@ -56,7 +56,7 @@ const formSchema = z
     city: z.string().min(1, "City is required"),
     otherBenefits: z.string().optional(),
     pricing_type: z.string(),
-    offer_letter_provided: z.boolean(),
+    offer_letter_provided: z.string(),
   })
   .superRefine((data, ctx) => {
     if (
@@ -120,7 +120,7 @@ export function OpportunityForm({
     role_type: "",
     work_nature: "",
     benefits: [],
-    offer_letter_provided: false,
+    offer_letter_provided: "false",
     pricing_type: "",
     ...initialData,
   };
@@ -382,11 +382,13 @@ export function OpportunityForm({
                 <FormControl fullWidth error={!!errors.role_type}>
                   <InputLabel>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
                   <Select {...field} label={t("OPPORTUNITY.ROLETYPE")}>
-                    {["Part-time", "Full-time", "Contract"].map((role) => (
-                      <MenuItem key={role} value={role}>
-                        {role}
-                      </MenuItem>
-                    ))}
+                    {["Part-time", "Full-time", "Intern", "Attachment"].map(
+                      (role) => (
+                        <MenuItem key={role} value={role}>
+                          {role}
+                        </MenuItem>
+                      )
+                    )}
                   </Select>
                   {errors.role_type && (
                     <FormHelperText>{errors.role_type.message}</FormHelperText>
@@ -407,8 +409,8 @@ export function OpportunityForm({
                   <RadioGroup
                     row
                     {...field}
-                    value={field.value ? "true" : "false"}
-                    onChange={(e) => field.onChange(e.target.value === "true")}
+                    value={field.value || "false"} // Default to "false" if no value is set
+                    onChange={(e) => field.onChange(e.target.value)}
                   >
                     <FormControlLabel
                       value="true"
@@ -419,6 +421,11 @@ export function OpportunityForm({
                       value="false"
                       control={<Radio />}
                       label="No"
+                    />
+                    <FormControlLabel
+                      value="Cant say"
+                      control={<Radio />}
+                      label="Can't Say"
                     />
                   </RadioGroup>
                 </FormControl>
@@ -447,9 +454,9 @@ export function OpportunityForm({
                       label="Paid"
                     />
                     <FormControlLabel
-                      value="free"
+                      value="unpaid"
                       control={<Radio />}
-                      label="Free"
+                      label="Unpaid"
                     />
                   </RadioGroup>
                 </FormControl>
@@ -544,13 +551,11 @@ export function OpportunityForm({
                     {...field}
                     label={t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
                   >
-                    {["Remote", "On-site", "Hybrid", "Work From Office"].map(
-                      (role) => (
-                        <MenuItem key={role} value={role}>
-                          {role}
-                        </MenuItem>
-                      )
-                    )}
+                    {["Remote", "Hybrid", "Work From Office"].map((role) => (
+                      <MenuItem key={role} value={role}>
+                        {role}
+                      </MenuItem>
+                    ))}
                   </Select>
                   {errors.work_nature && (
                     <FormHelperText>
