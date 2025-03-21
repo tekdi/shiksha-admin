@@ -229,7 +229,7 @@ export const getStateDataMaster = (
       titleKey: "TABLE_TITLE.COUNTRY",
       width: 130,
     },
-    { key: "value", titleKey: "TABLE_TITLE.CODE", width: 130 },
+    // { key: "value", titleKey: "TABLE_TITLE.CODE", width: 130 },
     {
       key: "createdBy",
       titleKey: "TABLE_TITLE.CREATED_BY",
@@ -297,7 +297,7 @@ export const getDistrictTableData = (
       titleKey: t("TABLE_TITLE.STATE").toUpperCase(),
       width: 130,
     },
-    { key: "value", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
+    // { key: "value", titleKey: t("TABLE_TITLE.CODE").toUpperCase(), width: 130 },
     {
       key: "createdBy",
       titleKey: t("TABLE_TITLE.CREATED_BY").toUpperCase(),
@@ -346,7 +346,7 @@ export const getBlockTableData = (
 ) => {
   const configs: ColumnConfig[] = [
     { key: "name", titleKey: "TABLE_TITLE.CITY", width: 130 },
-    { key: "code", titleKey: "TABLE_TITLE.CODE", width: 130 },
+    // { key: "code", titleKey: "TABLE_TITLE.CODE", width: 130 },
     {
       key: "createdBy",
       titleKey: "TABLE_TITLE.CREATED_BY",
