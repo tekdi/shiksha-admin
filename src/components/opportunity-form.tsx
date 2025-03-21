@@ -46,10 +46,10 @@ const formSchema = z
     category: z.string().min(1, "At least one category is required"),
     company: z.string().min(1, "Organisation is required"),
     skills: z.array(z.string()).min(1, "At least one skill is required"),
-    no_of_candidates: z.number().min(1, "Number of candidates is required"),
+    no_of_candidates: z.number().min(1, "Number of vacaniceis is required"),
     status: z.string().min(1, "Status is required"),
     role_type: z.string().min(1, "Role type is required"),
-    work_nature: z.string().min(1, "Work nature is required"),
+    work_nature: z.string().min(1, "Work Mode is required"),
     benefits: z.array(z.string()).min(1, "Benefits are required"),
     country: z.string().min(1, "Country is required"),
     state: z.string().min(1, "State is required"),
@@ -533,6 +533,7 @@ export function OpportunityForm({
                   label={t("OPPORTUNITY.STIPEND")}
                   error={!!errors.title}
                   helperText={errors.title?.message}
+                  type="number"
                 />
               )}
             />

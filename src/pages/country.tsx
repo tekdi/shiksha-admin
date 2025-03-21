@@ -257,7 +257,7 @@ const State: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedStateForDelete) {
       try {
-        await deleteOption("states", selectedStateForDelete.value);
+        await deleteOption("country", selectedStateForDelete.value);
         setStateData((prevStateData) =>
           prevStateData.filter(
             (state) => state.value !== selectedStateForDelete.value

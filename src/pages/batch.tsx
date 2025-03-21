@@ -1233,7 +1233,7 @@ const Center: React.FC = () => {
               height="20vh"
             >
               <Typography marginTop="10px" textAlign={"center"}>
-                {t("COMMON.NO_CENTER_FOUND")}
+                {t("COMMON.NO_BATCH_FOUND")}
               </Typography>
             </Box>
           )}
@@ -1250,7 +1250,7 @@ const Center: React.FC = () => {
             open={isEditForm}
             onClose={onCloseEditForm}
             showFooter={false}
-            modalTitle={t("COMMON.UPDATE_CENTER")}
+            modalTitle={t("COMMON.UPDATE_BATCH")}
           >
             {schema && uiSchema && (
               <DynamicForm

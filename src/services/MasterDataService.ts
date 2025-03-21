@@ -174,7 +174,7 @@ export const getCenterList = async ({
 };
 
 export const deleteOption = async (
-  type: "states" | "districts" | "blocks",
+  type: "country" | "states" | "city",
   option: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/options/delete/${type}?option=${option}`;
@@ -194,23 +194,25 @@ export const createOrUpdateOption = async (
   fieldId: string,
   fieldParams: {
     isCreate?: boolean;
-    options: { name: string;  controllingfieldfk?: string ,updatedBy?:string}[];
+    options: {
+      name: string;
+      controllingfieldfk?: string;
+      updatedBy?: string;
+    }[];
   },
-  t?:any
+  t?: any
   // stateId?: string
 ): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/fields/update/${fieldId}`;
 
-  
-
   try {
-    const response = await patch(apiUrl, { fieldParams }); 
+    const response = await patch(apiUrl, { fieldParams });
     return response?.data;
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 409) {
         showToastMessage(t("COMMON.COHORT_CODE_EXISTS"), "error");
-     } 
+      }
     }
     console.error(
       "Error in createOrUpdateOption:",

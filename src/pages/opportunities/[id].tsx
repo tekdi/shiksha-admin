@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import {
   Container,
   Typography,
@@ -14,58 +14,61 @@ import {
   Chip,
   Grid,
   CircularProgress,
-} from "@mui/material"
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import PeopleIcon from "@mui/icons-material/People"
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PeopleIcon from "@mui/icons-material/People";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import type { OpportunityList } from "@/types/opportunity"
-import { getOpportunity } from "@/lib/api"
-import { GetStaticPaths } from 'next';
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import type { OpportunityList } from "@/types/opportunity";
+import { getOpportunity } from "@/lib/api";
+import { GetStaticPaths } from "next";
 // import Header from '@/components/Header';
 
 export default function OpportunityDetailPage() {
-  const router = useRouter()
-  const { id } = router.query
-  const [opportunity, setOpportunity] = useState<OpportunityList | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const { id } = router.query;
+  const [opportunity, setOpportunity] = useState<OpportunityList | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
-      loadOpportunity()
+      loadOpportunity();
     }
-  }, [id])
+  }, [id]);
 
   async function loadOpportunity() {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const data = await getOpportunity(id as string)
-      setOpportunity(data.result.data)
+      const data = await getOpportunity(id as string);
+      setOpportunity(data.result.data);
     } catch (error) {
-      console.error("Failed to load opportunity:", error)
-      router.push("/opportunities")
+      console.error("Failed to load opportunity:", error);
+      router.push("/opportunities");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4, display: "flex", justifyContent: "center" }}>
+      <Container
+        maxWidth="lg"
+        sx={{ py: 4, display: "flex", justifyContent: "center" }}
+      >
         <CircularProgress />
       </Container>
-    )
+    );
   }
 
   if (!opportunity) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h5">{t('OPPORTUNITY.NO_RESULT_FOUND')}</Typography>
+        <Typography variant="h5">{t("OPPORTUNITY.NO_RESULT_FOUND")}</Typography>
       </Container>
-    )
+    );
   }
 
   return (
@@ -75,27 +78,27 @@ export default function OpportunityDetailPage() {
         <Box sx={{ mb: 4 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => router.push('/opportunities')}
+            onClick={() => router.push("/opportunities")}
             sx={{ mb: 2 }}
           >
-            {t('OPPORTUNITY.BACK_TO_OPPORTUNITY')}
+            {t("OPPORTUNITY.BACK_TO_OPPORTUNITY")}
           </Button>
 
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
             }}
           >
             <Box
-              display={{ md: 'flex' }}
-              justifyContent={{ sm: 'space-between' }}
-              width={'100%'}
+              display={{ md: "flex" }}
+              justifyContent={{ sm: "space-between" }}
+              width={"100%"}
             >
               <Typography
                 variant="h1"
-                color={'#4D4639'}
+                color={"#4D4639"}
                 component="h1"
                 gutterBottom
               >
@@ -103,20 +106,20 @@ export default function OpportunityDetailPage() {
               </Typography>
               <Box
                 sx={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
+                  display: "flex",
+                  flexWrap: "wrap",
                   gap: 3,
-                  color: 'text.secondary',
+                  color: "text.secondary",
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
                   <Typography variant="body2" mb={0}>
                     {opportunity.location.city} (
-                    {opportunity.is_remote ? 'Remote' : 'On-site'})
+                    {opportunity.is_remote ? "Remote" : "On-site"})
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon fontSize="small" sx={{ mr: 0.5 }} />
                   <Typography variant="body2" mb={0}>
                     {opportunity.no_of_candidates} openings
@@ -141,24 +144,24 @@ export default function OpportunityDetailPage() {
         <Grid
           container
           spacing={3}
-          flexDirection={{ xs: 'column-reverse', md: 'row' }}
+          flexDirection={{ xs: "column-reverse", md: "row" }}
         >
           <Grid item xs={12} md={8}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Card
                 sx={{
-                  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
                 }}
               >
                 <CardHeader
                   sx={{
-                    fontSize: '16px',
-                    borderBottom: '1px solid #D0C5B4',
+                    fontSize: "16px",
+                    borderBottom: "1px solid #D0C5B4",
                   }}
                   title="Description"
                 />
                 <CardContent>
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                  <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
                     {opportunity.description}
                   </Typography>
                 </CardContent>
@@ -166,18 +169,18 @@ export default function OpportunityDetailPage() {
 
               <Card
                 sx={{
-                  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
                 }}
               >
                 <CardHeader
                   sx={{
-                    fontSize: '16px',
-                    borderBottom: '1px solid #D0C5B4',
+                    fontSize: "16px",
+                    borderBottom: "1px solid #D0C5B4",
                   }}
                   title="Required Skills"
                 />
                 <CardContent>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
                     {opportunity.skillDetails.map((skill: any) => (
                       <Chip key={skill.skill_name} label={skill.skill_name} />
                     ))}
@@ -188,13 +191,13 @@ export default function OpportunityDetailPage() {
               {opportunity.work_experience && (
                 <Card
                   sx={{
-                    boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                    boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
                   }}
                 >
                   <CardHeader
                     sx={{
-                      fontSize: '16px',
-                      borderBottom: '1px solid #D0C5B4',
+                      fontSize: "16px",
+                      borderBottom: "1px solid #D0C5B4",
                     }}
                     title="Work Experience"
                   />
@@ -208,39 +211,41 @@ export default function OpportunityDetailPage() {
 
               <Card
                 sx={{
-                  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
                 }}
               >
-                <CardContent>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      p: '10px',
-                    }}
-                    color="primary"
-                    fullWidth
-                    onClick={() =>
-                      router.push(`/opportunities/map-youth/${id}`)
-                    }
-                  >
-                    {t('OPPORTUNITY.MAP_YOUTH_TO_OPPORTUNITY')}
-                  </Button>
-                </CardContent>
+                {opportunity?.status === "approved" && (
+                  <CardContent>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        p: "10px",
+                      }}
+                      color="primary"
+                      fullWidth
+                      onClick={() =>
+                        router.push(`/opportunities/map-youth/${id}`)
+                      }
+                    >
+                      {t("OPPORTUNITY.MAP_YOUTH_TO_OPPORTUNITY")}
+                    </Button>
+                  </CardContent>
+                )}
               </Card>
             </Box>
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Card
                 sx={{
-                  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px',
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
                 }}
               >
                 <CardHeader
                   sx={{
-                    fontSize: '16px',
-                    borderBottom: '1px solid #D0C5B4',
+                    fontSize: "16px",
+                    borderBottom: "1px solid #D0C5B4",
                   }}
                   title="Opportunity Details"
                 />
@@ -293,7 +298,7 @@ export default function OpportunityDetailPage() {
 export async function getStaticProps({ locale }: any) {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(locale, ["common"])),
       // Will be passed to the page component as props
     },
   };
@@ -302,6 +307,6 @@ export async function getStaticProps({ locale }: any) {
 export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   return {
     paths: [], //indicates that no page needs be created at build time
-    fallback: 'blocking', //indicates the type of fallback
+    fallback: "blocking", //indicates the type of fallback
   };
 };
