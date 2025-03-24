@@ -285,6 +285,11 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       return error;
     });
   };
+
+  useEffect(() => {
+    // Update localFormData whenever formData prop changes
+    setLocalFormData(formData ?? {});
+  }, [formData]);
   useEffect(() => {
     const updatedFormData = Object.fromEntries(
       Object.entries(localFormData)?.map(([key, value]) => [
