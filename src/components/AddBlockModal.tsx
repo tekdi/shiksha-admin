@@ -33,8 +33,7 @@ interface AddBlockModalProps {
     cohortId: string,
     fieldId: string,
     districtId?: string,
-    stateCode?: string,
-
+    stateCode?: string
   ) => void;
   fieldId: string;
   initialValues?: {
@@ -42,8 +41,7 @@ interface AddBlockModalProps {
     value?: string;
     controllingField?: string;
     controllingFieldLabel?: string;
-    stateLabel?: string
-
+    stateLabel?: string;
   };
   districtId?: string;
 }
@@ -81,7 +79,6 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const [userRole, setUserRole] = useState("");
   const [selectedState, setSelectedState] = useState<string>("");
   const [disabledDistrict, setDisabledDistrict] = useState<boolean>(true);
-
 
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -169,17 +166,15 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
   useEffect(() => {
     setDistrictsOptionRead([]);
-   fetchDistricts();
+    fetchDistricts();
   }, [open, formData.controllingField, stateCode]);
   const handleStateChangeWrapper = async (
     selectedNames: string[],
     selectedCodes: string[]
   ) => {
     try {
-
       // setSelectedNames(selectedNames);
       console.log(selectedCodes, "selectedCodes");
-
 
       setStateCode(selectedCodes[0]);
       setSelectedState(selectedNames[0]);
@@ -199,8 +194,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         filters: {
           // name: stateName,
           type: CohortTypes.STATE,
-          status: ["active"]
-
+          status: ["active"],
         },
       };
 
@@ -215,8 +209,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
       // });
       const response = await getCohortList(reqParams);
       const cohortDetails = response?.results?.cohortDetails || [];
-      console.log(districts,"districts----------");
-
+      console.log(districts, "districts----------");
 
       const filteredDistrictData = cohortDetails
         .map(
@@ -250,7 +243,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         .filter((district: { label: any }) =>
           districtNameArr.includes(district?.label?.toLowerCase())
         );
-        console.log("filteredDistrictData--------", filteredDistrictData);
+      console.log("filteredDistrictData--------", filteredDistrictData);
 
       setDistricts(filteredDistrictData);
     } catch (error) {
@@ -298,22 +291,22 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
 
   const handleChange =
     (field: keyof typeof formData) =>
-      async (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
-        let value = typeof e.target.value === "string" ? e.target.value : "";
+    async (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
+      let value = typeof e.target.value === "string" ? e.target.value : "";
 
-        if (field === "value") {
-          value = value.toUpperCase().slice(0, 3);
-        }
+      if (field === "value") {
+        value = value.toUpperCase().slice(0, 3);
+      }
 
-        setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
 
-        const errorMessage: string | null = validateField(field, value, "");
+      const errorMessage: string | null = validateField(field, value, "");
 
-        setErrors((prev) => ({
-          ...prev,
-          [field]: errorMessage,
-        }));
-      };
+      setErrors((prev) => ({
+        ...prev,
+        [field]: errorMessage,
+      }));
+    };
 
   const validateForm = () => {
     const newErrors = {
@@ -344,8 +337,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
   const handleSubmit = () => {
     if (validateForm()) {
       const currentCohortId: any = cohortIdAddNewDropdown;
-      console.log(stateCode,"stateCode");
-
+      console.log(stateCode, "stateCode");
 
       onSubmit(
         formData.name,
@@ -363,15 +355,15 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         controllingField: "",
       });
       setDefaultStates("");
-      setSelectedState("")
-      setDistricts([])
-      setDisabledDistrict(true)
+      setSelectedState("");
+      setDistricts([]);
+      setDisabledDistrict(true);
 
       onClose();
     }
   };
   if (formData.controllingField === "") {
-    console.log("trueeee")
+    console.log("trueeee");
   }
   const isEditing = !!initialValues.name;
   const buttonText = isEditing ? t("COMMON.UPDATE") : t("COMMON.SUBMIT");
@@ -383,8 +375,8 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
     <Dialog
       open={open}
       onClose={(event, reason) => {
-        if (reason !== 'backdropClick') {
-          setDefaultStates('');
+        if (reason !== "backdropClick") {
+          setDefaultStates("");
           setDistricts([]);
           setDisabledDistrict(true);
 
@@ -392,7 +384,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         }
       }}
     >
-      <DialogTitle sx={{ fontSize: '14px' }}>{dialogTitle}</DialogTitle>
+      <DialogTitle sx={{ fontSize: "14px" }}>{dialogTitle}</DialogTitle>
       <Divider />
       <DialogContent>
         {userRole === Role.ADMIN && (
@@ -400,10 +392,10 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
             names={states?.map(
               (state) =>
                 state.label?.toLowerCase().charAt(0).toUpperCase() +
-                state.label?.toLowerCase().slice(1),
+                state.label?.toLowerCase().slice(1)
             )}
             codes={states?.map((state) => state.value)}
-            tagName={t('FACILITATORS.COUNTRY')}
+            tagName={t("FACILITATORS.COUNTRY")}
             selectedCategories={
               initialValues.stateLabel
                 ? [initialValues.stateLabel]
@@ -417,30 +409,30 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
             // defaultValue={defaultStates?.label}
           />
         )}
-        {!(formData.controllingField === 'All') &&
+        {!(formData.controllingField === "All") &&
           !initialValues.controllingField && (
             <>
-              <FormControl fullWidth sx={{ marginTop: '8px' }}>
+              <FormControl fullWidth sx={{ marginTop: "8px" }}>
                 {!disabledDistrict && (
                   <InputLabel id="district-label">
-                    {t('MASTER.STATE')}
+                    {t("MASTER.STATE")}
                   </InputLabel>
                 )}
                 <Select
                   labelId="district-label"
-                  label={!disabledDistrict ? 'County' : null}
+                  label={!disabledDistrict ? "County" : null}
                   value={
-                    formData.controllingField !== '' &&
+                    formData.controllingField !== "" &&
                     formData.controllingField
                       ? formData.controllingField
-                      : 'district'
+                      : "district"
                   }
                   onChange={(e) =>
-                    handleChange('controllingField')(
-                      e as React.ChangeEvent<HTMLInputElement>,
+                    handleChange("controllingField")(
+                      e as React.ChangeEvent<HTMLInputElement>
                     )
                   }
-                  sx={{ marginTop: '8px' }}
+                  sx={{ marginTop: "8px" }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
@@ -455,7 +447,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                 >
                   {/* Default MenuItem */}
                   {disabledDistrict && (
-                    <MenuItem value="district">{t('MASTER.STATE')}</MenuItem>
+                    <MenuItem value="district">{t("MASTER.STATE")}</MenuItem>
                   )}
 
                   {/* District Options */}
@@ -467,7 +459,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                     ))
                   ) : (
                     <MenuItem value="no_districts" disabled>
-                      {t('COMMON.NO_DISTRICTS')}
+                      {t("COMMON.NO_DISTRICTS")}
                     </MenuItem>
                   )}
                 </Select>
@@ -476,10 +468,10 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
           )}
 
         {initialValues.controllingField &&
-          !(formData.controllingField === 'All') && (
+          !(formData.controllingField === "All") && (
             <FormControl fullWidth disabled>
-              <InputLabel id="district-label" sx={{ marginTop: '8px' }}>
-                State
+              <InputLabel id="district-label" sx={{ marginTop: "8px" }}>
+                County
               </InputLabel>
               <Select
                 labelId="district-label"
@@ -487,7 +479,7 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
                 value={initialValues.controllingFieldLabel}
                 label="District"
                 fullWidth
-                sx={{ marginTop: '8px' }}
+                sx={{ marginTop: "8px" }}
                 // variant="outlined"
                 //     margin="dense"
               >
@@ -504,12 +496,12 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         )}
         <TextField
           margin="dense"
-          label={t('COMMON.CITY_NAME')}
+          label={t("COMMON.CITY_NAME")}
           type="text"
           fullWidth
           variant="outlined"
           value={formData.name}
-          onChange={handleChange('name')}
+          onChange={handleChange("name")}
           error={!!errors.name}
           helperText={errors.name}
         />
@@ -537,31 +529,31 @@ export const AddBlockModal: React.FC<AddBlockModalProps> = ({
         <Button
           onClick={() => {
             {
-              setSelectedState('');
-              setDefaultStates('');
+              setSelectedState("");
+              setDefaultStates("");
               setDistricts([]);
               setDisabledDistrict(true);
               onClose();
             }
           }}
           sx={{
-            border: 'none',
-            color: 'secondary',
-            fontSize: '14px',
-            fontWeight: '500',
-            '&:hover': {
-              border: 'none',
-              backgroundColor: 'transparent',
+            border: "none",
+            color: "secondary",
+            fontSize: "14px",
+            fontWeight: "500",
+            "&:hover": {
+              border: "none",
+              backgroundColor: "transparent",
             },
           }}
           variant="outlined"
         >
-          {t('COMMON.CANCEL')}
+          {t("COMMON.CANCEL")}
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
-          sx={{ fontSize: '14px' }}
+          sx={{ fontSize: "14px" }}
           color="primary"
         >
           {buttonText}

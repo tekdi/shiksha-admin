@@ -151,18 +151,23 @@ export function OpportunitiesList({
 
   const handleUpdateStatus = async () => {
     try {
-      const updatePromises = userList.map(async (user: any) => {
-        if (user.status !== user.originalStatus) {
-          await updateApplicationStatus(user.applicationId, user.status);
-        }
+      const usersToUpdate = userList.filter(
+        (user: any) => user.status !== user.originalStatus
+      );
+
+      const updatePromises = usersToUpdate.map(async (user: any) => {
+        await updateApplicationStatus(user.applicationId, user.status);
       });
 
-      await Promise.all(updatePromises);
-      showToastMessage("Statuses updated successfully!");
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+        showToastMessage("Status updated successfully!"); // Display success message only once
+      }
+
       setOpenModal(false);
     } catch (error) {
-      console.error("Error updating statuses:", error);
-      showToastMessage("Failed to update statuses.", "error");
+      console.error("Error updating status:", error);
+      showToastMessage("Failed to update status.", "error");
     }
   };
 

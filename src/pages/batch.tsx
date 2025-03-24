@@ -31,7 +31,7 @@ import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import Loader from "@/components/Loader";
 import { getFormRead } from "@/services/CreateUserService";
 import ProtectedRoute from "../components/ProtectedRoute";
-
+import { getUserCohortList } from "@/services/CohortService/cohortService";
 import {
   GenerateSchemaAndUiSchema,
   customFields,
@@ -136,7 +136,9 @@ const Center: React.FC = () => {
   const [isEditForm, setIsEditForm] = useState(false);
   const [statesInformation, setStatesInformation] = useState<any>([]);
   const [selectedRowData, setSelectedRowData] = useState<any>("");
+  const [isCenterAdmin, setIsCenterAdmin] = useState(false);
   const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
+  const [batchList, setBatchList] = useState<any>([]);
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
@@ -333,6 +335,46 @@ const Center: React.FC = () => {
       console.error("Error fetching user list:", error);
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsCenterAdmin(adminInfo?.role === "Center Admin");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCenterAdmin) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const getMyCohortList = async () => {
+            const response = await getUserCohortList(userId);
+            console.log(response, "response---");
+
+            const extractBatchCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "COHORT") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  cohorts = cohorts.concat(extractBatchCohorts(item.childData)); // Recursively process child data
+                }
+              });
+              return cohorts;
+            };
+
+            const batchData = extractBatchCohorts(response);
+            console.log(batchData, "batchData---------");
+
+            setBatchList(batchData);
+          };
+          getMyCohortList();
+        }
+      }
+    }
+  }, [isCenterAdmin]);
 
   const getFormData = async () => {
     try {

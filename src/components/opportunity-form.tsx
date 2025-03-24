@@ -531,8 +531,8 @@ export function OpportunityForm({
                   {...field}
                   fullWidth
                   label={t("OPPORTUNITY.STIPEND")}
-                  error={!!errors.title}
-                  helperText={errors.title?.message}
+                  error={!!errors.max_salary}
+                  helperText={errors.max_salary?.message}
                   type="number"
                 />
               )}

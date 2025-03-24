@@ -3,9 +3,10 @@ import { capitalizeFirstLetterOfEachWordInArray } from "@/utils/Helper";
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "next-i18next";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MultipleSelectCheckmarks from "./FormControl";
 import { useRouter } from "next/router";
+import { getUserCohortList } from "@/services/CohortService/cohortService";
 
 interface State {
   value: string;
@@ -117,14 +118,81 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   const [singleState, setSingleState] = useState<boolean>(true);
   const [stateValue, setStateValue] = useState<string>("");
   const [stateCode, setStateCode] = useState<string>("");
+  const [isCenterAdmin, setIsCenterAdmin] = useState(false);
+  const [cohortID, setCohortId] = useState("");
+  const [myCohort, setMyCohorts] = useState<any>([]);
+  const [batchList, setBatchList] = useState<any>([]);
   const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("sm")
   );
-  const isbatchselection = userType === "YOUTH" || userType === "TRAINER";
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsCenterAdmin(adminInfo?.role === "Center Admin");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCenterAdmin) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const getMyCohortList = async () => {
+            const response = await getUserCohortList(userId);
+
+            const extractBatchCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "COHORT") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  cohorts = cohorts.concat(extractBatchCohorts(item.childData)); // Recursively process child data
+                }
+              });
+              return cohorts;
+            };
+
+            const batchData = extractBatchCohorts(response);
+
+            setBatchList(batchData);
+
+            const extractCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "CENTER") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  cohorts = cohorts.concat(extractCohorts(item.childData));
+                }
+              });
+              return cohorts;
+            };
+
+            const cohortList = extractCohorts(response);
+            const cohortNames = cohortList.map((cohort) => cohort.cohortName);
+            localStorage.setItem("adminCohort", cohortList[0].cohortId);
+            setMyCohorts(cohortNames);
+
+            if (cohortList?.length > 0) {
+              setCohortId(cohortList[0].cohortId);
+            }
+          };
+          getMyCohortList();
+        }
+      }
+    }
+  }, [isCenterAdmin]);
+
+  const isbatchselection = userType === "YOUTH";
   // isSmallScreen=isMobile?true: false;
   const centerNames = allCenters?.map((center) => center.label) || [];
 
-  const batch = batches?.map((batch) => batch.name) || [];
+  const batch = isCenterAdmin
+    ? batchList?.map((batch: any) => batch.name)
+    : batches?.map((batch) => batch.name) || [];
 
   const blockDisable = districtDefaultValue ? false : true;
   const shouldRenderSelectCheckmarks = !(
@@ -269,7 +337,18 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                     names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
                     codes={allCenters?.map((center) => center.value) || []}
                     tagName={t("CENTERS.CENTERS")}
-                    selectedCategories={selectedCenter}
+                    selectedCategories={
+                      isCenterAdmin
+                        ? allCenters
+                            ?.filter((center) =>
+                              capitalizeFirstLetterOfEachWordInArray(
+                                myCohort
+                              ).includes(center.label)
+                            )
+                            .map((center) => center.label)
+                        : selectedCenter
+                    }
+                    disabled={isCenterAdmin}
                     onCategoryChange={handleCenterChangeWrapper}
                   />
                 </Grid>
@@ -284,7 +363,11 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                 >
                   <MultipleSelectCheckmarks
                     names={capitalizeFirstLetterOfEachWordInArray(batch)}
-                    codes={batches?.map((batch) => batch.cohortId) || []}
+                    codes={
+                      isCenterAdmin
+                        ? batchList?.map((batch: any) => batch.cohortId)
+                        : batches?.map((batch) => batch.cohortId) || []
+                    }
                     tagName={t("BATCHES.BATCHES")}
                     selectedCategories={selectedBatch}
                     onCategoryChange={handleBatchChangeWrapper}

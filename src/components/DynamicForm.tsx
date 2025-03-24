@@ -129,13 +129,31 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   };
 
   const transformErrors = (errors: any) => {
-    const currentYearPattern = new RegExp(getCurrentYearPattern());
-
     console.log("errors", errors);
     errors.length === 0 ? setNoError(true) : setNoError(false);
+    const currentDate = new Date();
 
     return errors?.map((error: any) => {
-      console.log("error.name", error.name);
+      const property = error.property.substring(1); // Remove the leading "."
+
+      // Custom validation for DOB
+      if (property === "dob" && localFormData?.dob) {
+        const dobDate = new Date(localFormData.dob);
+        let age = currentDate.getFullYear() - dobDate.getFullYear(); // Use `let` instead of `const`
+        const monthDiff = currentDate.getMonth() - dobDate.getMonth();
+        const dayDiff = currentDate.getDate() - dobDate.getDate();
+
+        // Adjust age if the current date is before the user's birthday this year
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          age--; // Now `age` can be reassigned
+        }
+
+        if (age < 16) {
+          error.message = t(
+            "FORM_ERROR_MESSAGES.AGE_MUST_BE_AT_LEAST_16_YEARS"
+          );
+        }
+      }
       switch (error.name) {
         case "required": {
           error.message = submittedButtonStatus

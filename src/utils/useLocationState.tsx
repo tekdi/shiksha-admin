@@ -79,7 +79,7 @@ export const useLocationState = (
       try {
         setDistricts([]);
         setBlocks([]);
-        setAllCenters([]);
+        // setAllCenters([]);
         setSelectedStateCode(selectedCodes[0]);
         setSelectedBlockCohortId("");
 
@@ -147,7 +147,7 @@ export const useLocationState = (
         //  if(!reAssignModal)
         //  {
         setBlocks([]);
-        setAllCenters([]);
+        // setAllCenters([]);
 
         setSelectedDistrictCode(selectedCodes[0]);
         setSelectedBlockCohortId("");
@@ -176,7 +176,7 @@ export const useLocationState = (
         handleCenterChange([], []);
       }
       try {
-        setAllCenters([]);
+        // setAllCenters([]);
         console.log(userType, "userType----");
 
         if (
@@ -186,7 +186,7 @@ export const useLocationState = (
           userType === FormContextType.TEACHER
         ) {
           const object = {
-            controllingfieldfk: selectedCodes[0],
+            // controllingfieldfk: selectedCodes[0],
             fieldName: "center",
           };
           const response = await getStateBlockDistrictList(object);
@@ -277,7 +277,7 @@ export const useLocationState = (
       }
       handleBlockChange(selected, selectedCodes);
     },
-    [selectedBlockCode, selectedDistrictCode, selectedStateCode]
+    []
   );
 
   const handleCenterChangeWrapper = useCallback(
