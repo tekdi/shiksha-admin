@@ -80,7 +80,7 @@ export default function Organisations() {
   };
 
   const handleSave = async () => {
-    if (!validateWebsite(currentOrg.website)) {
+    if (currentOrg.website.trim() && !validateWebsite(currentOrg.website)) {
       setWebsiteError("Please enter a valid URL.");
       return;
     }

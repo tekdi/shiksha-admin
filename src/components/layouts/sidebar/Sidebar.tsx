@@ -19,7 +19,7 @@ import { useState } from "react";
 import LogoIcon from "../logo/LogoIcon";
 import Buynow from "./Buynow";
 import Menuitems from "./MenuItems";
-import {getFilteredMenuItems} from "./MenuItems";
+import { getFilteredMenuItems } from "./MenuItems";
 const Sidebar = ({
   isMobileSidebarOpen,
   onSidebarClose,
@@ -39,9 +39,9 @@ const Sidebar = ({
 
   const SidebarContent = (
     <Box
-      p={2}
+      p={1}
       height="100%"
-      bgcolor="#F8EFDA
+      bgcolor="#F8EFDA !important
 "
       sx={{
         background: "linear-gradient(to bottom, white, #F8EFDA)",

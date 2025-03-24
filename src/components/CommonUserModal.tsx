@@ -342,8 +342,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
     if (result !== null) {
       const { username, password } = result;
-      console.log(selectedCenterCode, "selectedCenterCode-----");
-      console.log(selectedBatchCode, "selectedBatchCode-----");
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      const isCenterAdmin = adminInfo?.role === "Center Admin";
+      const centerAdminCohort = localStorage.getItem("adminCohort");
 
       const apiBody: any = {
         username:
@@ -361,9 +362,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     ? RoleId.SCTA
                     : RoleId.TEAM_LEADER,
             cohortIds:
-              userType !== "CENTER ADMIN"
-                ? [selectedCenterCode, selectedBatchCode]
-                : [selectedCenterCode],
+              userType === "YOUTH"
+                ? [
+                    isCenterAdmin ? centerAdminCohort : selectedCenterCode,
+                    selectedBatchCode,
+                  ]
+                : [isCenterAdmin ? centerAdminCohort : selectedCenterCode],
             // userType === FormContextType.TEAM_LEADER
             //   ? [selectedBlockCohortId]
             //   : userType === FormContextType.CONTENT_CREATOR
@@ -533,13 +537,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 today >= new Date(dob.setFullYear(dob.getFullYear() + 18)));
 
             if (!is18YearsOld) {
-              showToastMessage('User must be at least 18 years old.', 'error');
+              showToastMessage("User must be at least 18 years old.", "error");
               return; // Stop further execution
             }
           }
 
           const response = await createUser(apiBody);
-          console.log("response =>",response)
+          console.log("response =>", response);
           if (response) {
             const messageKey = messageKeyMap[userType];
 

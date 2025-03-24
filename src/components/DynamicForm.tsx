@@ -135,7 +135,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     errors.length === 0 ? setNoError(true) : setNoError(false);
 
     return errors?.map((error: any) => {
-      console.log("error.name", error.name);
       switch (error.name) {
         case "required": {
           error.message = submittedButtonStatus
@@ -178,6 +177,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           break;
         }
         case "dob": {
+          console.log(localFormData?.dob, "localFormData?.dobs------");
+
           const property = error.property.substring(1);
           const currentDate = new Date();
           if (localFormData?.dob) {
