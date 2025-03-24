@@ -14,7 +14,7 @@ import {
 import { telemetryFactory } from "@/utils/telemetry";
 import { useLocationState } from "@/utils/useLocationState";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, MenuItem, Select } from "@mui/material";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -25,10 +25,11 @@ import AreaSelection from "./AreaSelection";
 import FrameworkCategories from "./FrameworkCategories";
 import { showToastMessage } from "./Toastify";
 import { createOrUpdateOption } from "@/services/MasterDataService";
+import { SelectChangeEvent } from "@mui/material";
 
 interface CustomField {
   fieldId: string;
-  value: string[];
+  value: string[] | any;
 }
 
 interface CohortDetails {
@@ -61,6 +62,28 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     React.useState<boolean>(false);
   const [showForm, setShowForm] = useState(false);
   const [customFormData, setCustomFormData] = useState<any>();
+  const [startMonth, setStartMonth] = useState<string>("");
+  const [endMonth, setEndMonth] = useState<string>("");
+  const [startYear, setStartYear] = useState<string>("");
+  const [endYear, setEndYear] = useState<string>("");
+  const [additionalText, setAdditionalText] = useState<string>(""); // New state for user input
+
+  // const [customFormData, setCustomFormData] = useState<any>({});
+  const [batchName, setBatchName] = useState<string>("");
+  const months = [
+    { label: "January", value: "Jan" },
+    { label: "February", value: "Feb" },
+    { label: "March", value: "Mar" },
+    { label: "April", value: "Apr" },
+    { label: "May", value: "May" },
+    { label: "June", value: "Jun" },
+    { label: "July", value: "Jul" },
+    { label: "August", value: "Aug" },
+    { label: "September", value: "Sep" },
+    { label: "October", value: "Oct" },
+    { label: "November", value: "Nov" },
+    { label: "December", value: "Dec" },
+  ];
 
   const { t } = useTranslation();
   const roleType = FormContextType.ADMIN_CENTER;
@@ -146,8 +169,6 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
         }
       }
       try {
-        //    const response = await getFormRead("cohorts", "cohort");
-
         if (batchFormData) {
           const updatedFormResponse = removeHiddenFields(batchFormData);
           if (updatedFormResponse) {
@@ -155,6 +176,9 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
               updatedFormResponse,
               t
             );
+            uiSchema.name = {
+              "ui:readonly": true,
+            };
             setSchema(schema);
             setUiSchema(uiSchema);
             setCustomFormData(batchFormData);
@@ -194,12 +218,15 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     // console.log(response, "response------");
 
     // const bmgsData = JSON?.parse(localStorage.getItem("BMGSData") ?? "");
+    const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+    const isCenterAdmin = adminInfo?.role === "Center Admin";
+    const centerAdminCohort = localStorage.getItem("adminCohort");
 
     const parentId = selectedCenterCode;
     const cohortDetails: CohortDetails = {
       name: formData.name.toLowerCase(),
       type: CohortTypes.BATCH,
-      parentId: parentId,
+      parentId: isCenterAdmin ? centerAdminCohort : parentId,
       customFields: [
         {
           fieldId: stateFieldId,
@@ -213,10 +240,10 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
           fieldId: blockFieldId,
           value: [selectedBlockCode],
         },
-        {
-          fieldId: centerFieldId,
-          value: [selectedCenterId],
-        },
+        // {
+        //   fieldId: centerFieldId,
+        //   value: [isCenterAdmin ? centerAdminCohort : selectedCenterId],
+        // },
       ],
     };
 
@@ -224,30 +251,14 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
       const fieldSchema = schema?.properties[fieldKey];
       const fieldId = fieldSchema?.fieldId;
 
-      if (fieldId !== null) {
+      // Validate fieldId and value before adding
+      if (fieldId && fieldValue !== undefined && fieldValue !== null) {
         cohortDetails?.customFields?.push({
           fieldId: fieldId,
-          value: formData?.cohort_type,
+          value: Array.isArray(fieldValue) ? fieldValue : [fieldValue], // Ensure value is an array
         });
       }
-
-      // if (bmgsData) {
-      //   cohortDetails?.customFields?.push({
-      //     fieldId: bmgsData?.board.fieldId,
-      //     value: bmgsData?.board.boardName,
-      //   });
-      //   cohortDetails?.customFields?.push({
-      //     fieldId: bmgsData.medium.fieldId,
-      //     value: bmgsData.medium.mediumName,
-      //   });
-      //   cohortDetails?.customFields?.push({
-      //     fieldId: bmgsData.grade.fieldId,
-      //     value: bmgsData.grade.gradeName,
-      //   });
-      // }
     });
-
-    console.log(cohortDetails, "cohortDetails---------");
 
     if (
       cohortDetails?.customFields &&
@@ -262,7 +273,7 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
 
       const cohortData = await createCohort(cohortDetails, t);
       if (cohortData) {
-        showToastMessage(t('BATCHES.BATCH_CREATED'), 'success');
+        showToastMessage(t("BATCHES.BATCH_CREATED"), "success");
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
@@ -295,12 +306,105 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     onClose();
   };
 
-  const handleChangeForm = (event: IChangeEvent<any>) => {
-    console.log("Form data changed:", event.formData);
-  };
+  // const handleChangeForm = (event: IChangeEvent<any>) => {
+  //   console.log("Form data changed:", event.formData);
+  // };
 
   const handleError = () => {
     console.log("error");
+  };
+
+  const years = Array.from(
+    { length: 5 },
+    (_, i) => new Date().getFullYear() + i
+  ).map((year) => ({ label: year.toString(), value: year.toString() }));
+
+  const handleStartMonthChange = (event: SelectChangeEvent<string>) => {
+    const selectedMonth = event.target.value;
+    setStartMonth(selectedMonth);
+
+    if (endMonth && startYear && endYear) {
+      validateAndSetBatchName(selectedMonth, endMonth, startYear, endYear);
+    }
+  };
+
+  const handleEndMonthChange = (event: SelectChangeEvent<string>) => {
+    const selectedMonth = event.target.value;
+
+    if (startMonth && startYear && endYear) {
+      const startIndex = months.findIndex((m) => m.value === startMonth);
+      const endIndex = months.findIndex((m) => m.value === selectedMonth);
+
+      if (startYear === endYear && endIndex <= startIndex) {
+        alert("End month must be after the start month.");
+        return;
+      }
+    }
+
+    setEndMonth(selectedMonth);
+
+    if (startMonth && startYear && endYear) {
+      validateAndSetBatchName(startMonth, selectedMonth, startYear, endYear);
+    }
+  };
+
+  const handleStartYearChange = (event: SelectChangeEvent<string>) => {
+    const selectedYear = event.target.value;
+    setStartYear(selectedYear);
+
+    if (startMonth && endMonth && endYear) {
+      validateAndSetBatchName(startMonth, endMonth, selectedYear, endYear);
+    }
+  };
+
+  const handleEndYearChange = (event: SelectChangeEvent<string>) => {
+    const selectedYear = event.target.value;
+
+    if (startYear && startMonth && selectedYear === startYear) {
+      const startIndex = months.findIndex((m) => m.value === startMonth);
+      const endIndex = months.findIndex((m) => m.value === endMonth);
+
+      if (endIndex <= startIndex) {
+        alert("End month must be after the start month.");
+        return;
+      }
+    }
+
+    setEndYear(selectedYear);
+
+    if (startMonth && endMonth && startYear) {
+      validateAndSetBatchName(startMonth, endMonth, startYear, selectedYear);
+    }
+  };
+
+  const validateAndSetBatchName = (
+    startMonth: string,
+    endMonth: string,
+    startYear: string,
+    endYear: string
+  ) => {
+    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear}`);
+    setCustomFormData((prevData: any) => ({
+      ...prevData,
+      name: `${startMonth} ${startYear} - ${endMonth} ${endYear}`,
+    }));
+  };
+
+  const handleAdditionalTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const text = event.target.value;
+    setAdditionalText(text);
+    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`);
+    setCustomFormData((prevData: any) => ({
+      ...prevData,
+      name: `${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`,
+    }));
+  };
+
+  const handleChangeForm = (event: IChangeEvent<any>) => {
+    // Update the form data when the user interacts with the form
+    setCustomFormData(event.formData);
   };
 
   return (
@@ -340,6 +444,101 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
             stateDefaultValue={stateDefaultValue}
           />
         </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            marginTop: "10px",
+          }}
+        >
+          <Typography variant="h6">Select Months and Years</Typography>
+          <Box sx={{ display: "flex", gap: "16px" }}>
+            <Select
+              value={startMonth}
+              onChange={handleStartMonthChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Select Start Month
+              </MenuItem>
+              {months.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={startYear}
+              onChange={handleStartYearChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Select Start Year
+              </MenuItem>
+              {years.map((year) => (
+                <MenuItem key={year.value} value={year.value}>
+                  {year.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box sx={{ display: "flex", gap: "16px" }}>
+            <Select
+              value={endMonth}
+              onChange={handleEndMonthChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Select End Month
+              </MenuItem>
+              {months.map((month) => (
+                <MenuItem key={month.value} value={month.value}>
+                  {month.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              value={endYear}
+              onChange={handleEndYearChange}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Select End Year
+              </MenuItem>
+              {years.map((year) => (
+                <MenuItem key={year.value} value={year.value}>
+                  {year.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box sx={{ marginTop: "16px" }}>
+            <Typography variant="body2">
+              Add Additional Text to Batch Name:
+            </Typography>
+            <input
+              type="text"
+              value={additionalText}
+              onChange={handleAdditionalTextChange}
+              placeholder="Enter additional text"
+              style={{
+                width: "94%",
+                padding: "17px",
+                marginTop: "8px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
+            />
+          </Box>
+          {/* <Typography variant="body1">
+            Batch Name: <strong>{batchName || "N/A"}</strong>
+          </Typography> */}
+        </Box>
         {/* <FrameworkCategories
           customFormData={customFormData}
           onFieldsChange={handleDependentFieldsChange}
@@ -354,6 +553,7 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
               uiSchema={uiSchema}
               onSubmit={handleSubmit}
               onChange={handleChangeForm}
+              formData={customFormData}
               onError={handleError}
               widgets={{}}
               showErrorList={true}

@@ -292,12 +292,16 @@ const Center: React.FC = () => {
             name: item?.name,
             status: item?.status,
             updatedBy: item?.updatedBy,
-            location:
-              capitalizeFirstLetter(item?.customFields[0]?.value) +
-              ", " +
-              capitalizeFirstLetter(item?.customFields[3]?.value) +
-              ", " +
-              capitalizeFirstLetter(item?.customFields[1]?.value),
+            location: ["CITY", "STATES", "COUNTRY"]
+              .map((label) =>
+                capitalizeFirstLetter(
+                  item?.customFields?.find(
+                    (field: any) => field.label === label
+                  )?.value || ""
+                )
+              )
+              .filter((value) => value)
+              .join(", "),
             createdBy: item?.createdBy,
             createdAt: new Date(item?.createdAt).toISOString().split("T")[0],
             updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
