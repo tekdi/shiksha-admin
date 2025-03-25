@@ -41,7 +41,7 @@ interface DropdownBoxProps {
   states: State[];
   districts: District[];
   blocks: Block[];
-  allCenters?: Centers[];
+  allCenters?: any[];
   batches?: Batches[];
   selectedState: string[];
   selectedDistrict: string[];
