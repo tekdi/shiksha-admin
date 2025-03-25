@@ -105,6 +105,7 @@ export default function MapYouth() {
 
   useEffect(() => {
     const getCohortMemberList = async () => {
+      setFilteredData([]);
       setLoading(true);
       try {
         if (cohortId && opportunityId) {
@@ -293,50 +294,63 @@ export default function MapYouth() {
         </FormControl>
 
         <List>
-          {filteredData.map((user) => (
-            <ListItem
-              key={user.userId}
+          {filteredData.length > 0 ? (
+            filteredData.map((user) => (
+              <ListItem
+                key={user.userId}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  borderTop: "1px solid #0000001A",
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar
+                    sx={{
+                      boxShadow:
+                        "0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D",
+                      border: "1.5px solid #B3B3B3",
+                      background: "white",
+                      color: "#1F1B13",
+                      fontSize: "16px",
+                      lineHeight: "24px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {getInitials(user.name)}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  sx={{
+                    color: "#2C2C2C",
+                    fontWeight: "400",
+                    "& p": {
+                      marginBottom: 0, // Remove bottom margin
+                    },
+                  }}
+                  primary={user.name}
+                  secondary={user.enrollmentNumber}
+                />
+                <Checkbox
+                  edge="end"
+                  checked={selectedUsers.includes(user.userId)}
+                  onClick={() => handleToggle(user.userId)}
+                  disableRipple
+                />
+              </ListItem>
+            ))
+          ) : (
+            <Typography
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                borderTop: "1px solid #0000001A",
+                textAlign: "center",
+                color: "#2C2C2C",
+                fontWeight: "500",
+                marginTop: "16px",
               }}
             >
-              <ListItemAvatar>
-                <Avatar
-                  sx={{
-                    boxShadow:
-                      "0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004D",
-                    border: "1.5px solid #B3B3B3",
-                    background: "white",
-                    color: "#1F1B13",
-                    fontSize: "16px",
-                    lineHeight: "24px",
-                    fontWeight: "500",
-                  }}
-                >
-                  {getInitials(user.name)}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                sx={{
-                  color: "#2C2C2C",
-                  fontWeight: "400",
-                  "& p": {
-                    marginBottom: 0, // Remove bottom margin
-                  },
-                }}
-                primary={user.name}
-                secondary={user.enrollmentNumber}
-              />
-              <Checkbox
-                edge="end"
-                checked={selectedUsers.includes(user.userId)}
-                onClick={() => handleToggle(user.userId)}
-                disableRipple
-              />
-            </ListItem>
-          ))}
+              No youth found
+            </Typography>
+          )}
         </List>
 
         <Box
