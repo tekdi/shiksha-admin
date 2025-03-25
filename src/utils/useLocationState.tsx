@@ -197,7 +197,7 @@ export const useLocationState = (
             fieldName: "center",
           };
           const response = await getStateBlockDistrictList(object);
-          setAllCenters(response?.result?.values);
+          // setAllCenters(response?.result?.values);
           const getCohortDetails = response?.result?.results?.cohortDetails;
 
           const blockId = getCohortDetails?.map((item: any) => {
