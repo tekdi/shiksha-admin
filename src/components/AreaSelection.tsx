@@ -257,7 +257,7 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                       ? districtDefaultValue
                       : selectedState.length > 0 && districts?.length === 0
                         ? t("COMMON.COUNTY")
-                        : t("COMMON.ALL_COUNTY")
+                        : t("COMMON.ALL_COUNTRY")
                   }
                   // defaultValue={stateDefaultValue}
                 />

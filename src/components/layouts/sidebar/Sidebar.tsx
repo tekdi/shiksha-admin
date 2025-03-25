@@ -39,7 +39,7 @@ const Sidebar = ({
 
   const SidebarContent = (
     <Box
-      p={1}
+      p={2}
       height="100%"
       bgcolor="#F8EFDA !important
 "
@@ -148,7 +148,7 @@ const Sidebar = ({
         variant="persistent"
         PaperProps={{
           sx: {
-            width: "284px",
+            width: "295px",
             border: "0 !important",
             boxShadow: "0px 7px 30px 0px rgb(113 122 131 / 11%)",
           },
@@ -165,7 +165,7 @@ const Sidebar = ({
       onClose={onSidebarClose}
       PaperProps={{
         sx: {
-          width: "284px",
+          width: "295px",
           border: "0 !important",
         },
       }}
