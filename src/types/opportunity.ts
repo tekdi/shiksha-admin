@@ -17,7 +17,7 @@ export interface Opportunity {
   created_at: string;
   updated_at: string;
   // organisation: string;
-  role_type: string;
+  opportunity_type: string;
   // salary: string;
   work_nature: string;
   benefits: string[];
@@ -39,7 +39,6 @@ export interface OpportunityList {
   description: string;
   location: any;
   is_remote: boolean;
-  opportunity_type: string;
   experience_level: string;
   min_experience: number;
   min_salary: number;
@@ -52,7 +51,7 @@ export interface OpportunityList {
   created_at: string;
   updated_at: string;
   organisation: string;
-  role_type: string;
+  opportunity_type: string;
   salary: string;
   work_nature: string;
   benefits: string[];

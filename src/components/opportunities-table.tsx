@@ -434,7 +434,7 @@ export function OpportunitiesList({
                       fullWidth
                       variant="contained"
                       sx={{
-                        bgcolor: "#EF5350 !important",
+                        bgcolor: "#EF5350",
                         color: "white",
                         py: "10px",
                       }}

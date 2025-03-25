@@ -68,6 +68,7 @@ type cohortFilterDetails = {
   name?: string;
   activeMembers?: string;
   archivedMembers?: string;
+  parentId?: string[] | null;
 };
 
 interface centerData {
@@ -139,6 +140,7 @@ const Center: React.FC = () => {
   const [isCenterAdmin, setIsCenterAdmin] = useState(false);
   const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
   const [batchList, setBatchList] = useState<any>([]);
+  const [parentId, setParentId] = useState();
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
@@ -234,6 +236,13 @@ const Center: React.FC = () => {
     getAdminInformation();
   }, [batchFormData, i18n.language]);
 
+  useEffect(() => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...(isCenterAdmin && parentId ? { parentId: [parentId] } : {}),
+    }));
+  }, [isCenterAdmin, parentId]);
+
   const fetchUserList = async () => {
     setLoading(true);
     try {
@@ -247,7 +256,10 @@ const Center: React.FC = () => {
         limit: limit,
         offset: offset,
         sort: sort,
-        filters: filters,
+        filters: {
+          ...filters,
+          ...(isCenterAdmin && parentId ? { parentId: [parentId] } : {}), // Add parentId only if it exists
+        },
       };
       const resp = await getCohortList(data);
       // const resp = await queryClient.fetchQuery({
@@ -354,12 +366,11 @@ const Center: React.FC = () => {
         if (userId) {
           const getMyCohortList = async () => {
             const response = await getUserCohortList(userId);
-            console.log(response, "response---");
-
+            setParentId(response[0]?.cohortId);
             const extractBatchCohorts = (data: any[]): any[] => {
               let cohorts: any[] = [];
               data.forEach((item) => {
-                if (item.type === "COHORT") {
+                if (item.type === "CENTER") {
                   cohorts.push(item);
                 }
                 if (item.childData && item.childData.length > 0) {
@@ -370,7 +381,6 @@ const Center: React.FC = () => {
             };
 
             const batchData = extractBatchCohorts(response);
-            console.log(batchData, "batchData---------");
 
             setBatchList(batchData);
           };
@@ -463,9 +473,13 @@ const Center: React.FC = () => {
   };
 
   useEffect(() => {
-    // if ((selectedBlockCode !== "") || (selectedDistrictCode !== "" && selectedBlockCode === "")) {
-    fetchUserList();
-    // }
+    if (isCenterAdmin) {
+      if (parentId) {
+        fetchUserList();
+      }
+    } else {
+      fetchUserList();
+    }
     getFormData();
   }, [
     pageOffset,
@@ -475,6 +489,7 @@ const Center: React.FC = () => {
     filters.states,
     filters.status,
     createCenterStatus,
+    parentId,
   ]);
 
   // handle functions

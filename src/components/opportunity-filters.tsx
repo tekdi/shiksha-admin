@@ -19,8 +19,6 @@ const statusOptions = [
   { label: "Pending", value: "pending" },
   { label: "Approved", value: "approved" },
   { label: "Rejected", value: "rejected" },
-  { label: "Open", value: "open" },
-  { label: "Closed", value: "closed" },
   { label: "Archived", value: "archived" },
 ];
 

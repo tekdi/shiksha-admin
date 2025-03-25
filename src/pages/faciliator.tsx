@@ -11,7 +11,9 @@ const Faciliator: React.FC = () => {
   const [openAddFacilitatorModal, setOpenAddFacilitatorModal] =
     React.useState(false);
   const [submitValue, setSubmitValue] = React.useState<boolean>(false);
-  const setSubmittedButtonStatus = useSubmittedButtonStore((state:any) => state.setSubmittedButtonStatus);
+  const setSubmittedButtonStatus = useSubmittedButtonStore(
+    (state: any) => state.setSubmittedButtonStatus
+  );
 
   const handleOpenAddFacilitatorModal = () => {
     setOpenAddFacilitatorModal(true);
@@ -20,7 +22,7 @@ const Faciliator: React.FC = () => {
     setSubmitValue(true);
   };
   const handleCloseAddFacilitatorModal = () => {
-    setSubmittedButtonStatus(false)
+    setSubmittedButtonStatus(false);
     setOpenAddFacilitatorModal(false);
   };
 
@@ -31,8 +33,8 @@ const Faciliator: React.FC = () => {
     <>
       <UserTable
         role={Role.TRAINER}
-        userType={Role.TRAINER}
-        searchPlaceholder={t('FACILITATORS.SEARCHBAR_PLACEHOLDER')}
+        userType={FormContextType.TEACHER}
+        searchPlaceholder={t("FACILITATORS.SEARCHBAR_PLACEHOLDER")}
         handleAddUserClick={handleAddFaciliatorClick}
         parentState={submitValue}
       />

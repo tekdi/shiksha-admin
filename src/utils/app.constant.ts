@@ -21,20 +21,20 @@ export const metaTags = {
 };
 
 export enum Role {
-  STUDENT = 'Youth',
-  TEACHER = 'Trainer',
-  TEAM_LEADER = 'Center Admin',
-  TEAM_LEADERS = 'Center Admin',
-  TRAINER = 'Trainer',
-  YOUTH = 'Youth',
-  ADMIN = 'Admin',
-  CENTRAL_ADMIN = 'Center Admin',
-  LEARNERS = 'Youth',
-  FACILITATORS = 'TRAINER',
-  CONTENT_CREATOR = 'Content Creator',
-  CONTENT_REVIEWER = 'Content Reviewer',
-  SCTA = 'State Content Team Associate (SCTA)',
-  CCTA = 'Central Content Team Associate (CCTA)',
+  STUDENT = "Youth",
+  TEACHER = "Trainer",
+  TEAM_LEADER = "Center Admin",
+  TEAM_LEADERS = "Center Admin",
+  TRAINER = "Trainer",
+  YOUTH = "Youth",
+  ADMIN = "Admin",
+  CENTRAL_ADMIN = "Center Admin",
+  LEARNERS = "Youth",
+  FACILITATORS = "TRAINER",
+  CONTENT_CREATOR = "Content Creator",
+  CONTENT_REVIEWER = "Content Reviewer",
+  SCTA = "State Content Team Associate (SCTA)",
+  CCTA = "Central Content Team Associate (CCTA)",
 }
 
 export enum Status {
