@@ -1597,11 +1597,15 @@ const UserTable: React.FC<UserTableProps> = ({
           // reassignCohort={reassignCohort}
           noDataMessage={data?.length === 0 ? t("COMMON.NO_USER_FOUND") : ""}
           reassignType={
-            userType === Role.TEAM_LEADERS
-              ? t("COMMON.REASSIGN_BLOCKS")
-              : userType === Role.CONTENT_CREATOR
-                ? undefined
-                : t("COMMON.REASSIGN_CENTERS")
+            userType === FormContextType.STUDENT
+              ? t("COMMON.REASSIGN_BATCH")
+              : userType === Role.TEAM_LEADERS
+                ? t("COMMON.REASSIGN_BLOCKS")
+                : userType === Role.CONTENT_CREATOR
+                  ? undefined
+                  : userType === FormContextType.STUDENT
+                    ? t("COMMON.REASSIGN_BATCH")
+                    : t("COMMON.REASSIGN_CENTERS")
           }
         />
       ) : (

@@ -25,6 +25,8 @@ interface FieldProp {
 }
 
 interface batchProp {
+  value: string;
+  label: string;
   name: string;
   cohortId: string;
 }

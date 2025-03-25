@@ -13,7 +13,7 @@ import { useTranslation } from "next-i18next";
 import { showToastMessage } from "./Toastify";
 import CustomModal from "./CustomModal";
 import SearchIcon from "@mui/icons-material/Search";
-import { Role, Status } from "@/utils/app.constant";
+import { Role, Status, FormContextType } from "@/utils/app.constant";
 import { bulkCreateCohortMembers } from "@/services/CohortService/cohortService";
 import { getCenterList } from "@/services/MasterDataService";
 import { cohortMemberList, getUserDetailsInfo } from "@/services/UserList";
@@ -24,12 +24,13 @@ import { transformArray, transformBatchArray } from "../utils/Helper";
 import { firstLetterInUpperCase } from "./../utils/Helper";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import useNotification from "@/hooks/useNotification";
+import { getUserCohortList } from "@/services/CohortService/cohortService";
 
 interface ReassignCohortModalProps {
   open: boolean;
   onClose: () => void;
   cohortData?: any;
-  userId?: string;
+  userId: string;
   userType?: string;
   blockList?: any;
   blockName?: any;
@@ -44,6 +45,8 @@ interface ReassignCohortModalProps {
 interface Cohort {
   value: string;
   label: string;
+  name: string;
+  cohortId: string;
 }
 
 type FilterDetails = {
@@ -108,12 +111,12 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     stateDefaultValue,
     selectedStateCohortId,
   } = useLocationState(open, onClose, roleType, true);
-  const cohorts: Cohort[] = allCenters?.map(
-    (cohort: { value: string; label: string }) => ({
-      label: cohort.label,
-      value: cohort.value,
-    })
-  );
+  // const cohorts: Cohort[] = batches?.map(
+  //   (cohort: { cohortId: string; name: string }) => ({
+  //     name: cohort.name,
+  //     cohortId: cohort.cohortId,
+  //   })
+  // );
   const names = cohortData.map((item: any) => item.name);
   const setReassignButtonStatus = useSubmittedButtonStore(
     (state: any) => state.setReassignButtonStatus
@@ -127,12 +130,15 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   //   status:[Status.ACTIVE]
 
   // });
+  const [cohorts, setCohorts] = useState<any>([]);
   const [searchInput, setSearchInput] = useState("");
   const [reassignAlertModal, setReassignAlertModal] = useState(false);
   const [assignedTeamLeader, setAssignedTeamLeader] = useState("");
   const [selectedBlockForTL, setSelectedBlockForTL] = useState("");
   const [assignedTeamLeaderNames, setAssignedTeamLeaderNames] = useState([]);
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
+  const [isCenterAdmin, setIsCenterAdmin] = useState(false);
+  const [batchList, setBatchList] = useState<any>([]);
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
   const [selectedBlockCohortIdForTL, setSelectedBlockCohortIdForTL] =
@@ -159,8 +165,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     onClose();
   };
 
-  console.log(allCenters, "allCenters");
-
   const handleToggle = (name: string) => {
     if (userType === Role.LEARNERS) {
       setCheckedCenters([name?.toLowerCase()]);
@@ -172,6 +176,51 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       );
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsCenterAdmin(adminInfo?.role === "Center Admin");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCenterAdmin) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const getMyCohortList = async () => {
+            const response = await getUserCohortList(userId);
+            const extractBatchCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "COHORT") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  const activeChildren = item.childData.filter(
+                    (child: any) => child.status === "active"
+                  ); // Filter children with active status
+                  if (activeChildren.length > 0) {
+                    cohorts = cohorts.concat(
+                      extractBatchCohorts(activeChildren)
+                    ); // Recursively process only active child data
+                  }
+                }
+              });
+              return cohorts;
+            };
+
+            const batchData = extractBatchCohorts(response);
+
+            setBatchList(batchData);
+            setCohorts(batchData);
+          };
+          getMyCohortList();
+        }
+      }
+    }
+  }, [isCenterAdmin]);
 
   useEffect(() => {
     if (blockName) {
@@ -192,20 +241,22 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     try {
       let selectedData;
       let unSelectedData: string[];
+
       if (userType !== Role.TEAM_LEADERS) {
         selectedData = cohorts
           .filter(
-            (center) =>
-              center?.label &&
-              checkedCenters.includes(center?.label?.toLowerCase())
+            (center: any) =>
+              center?.name &&
+              checkedCenters.includes(center?.name?.toLowerCase())
           )
-          .map((center) => center!.value);
+          .map((center: any) => center.cohortId);
 
         unSelectedData = cohorts
           .filter(
-            (center) => center?.label && !checkedCenters.includes(center.label)
+            (center: any) =>
+              center?.label && !checkedCenters.includes(center.label)
           )
-          .map((center) => center!.value);
+          .map((center: any) => center!.value);
       } else {
         selectedData = blocks
           .filter(
@@ -220,16 +271,44 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           .map((center) => center!.label);
       }
 
+      const userCohortData = await getUserCohortList(userId);
+      const extractBatchCohorts = (data: any[]): any[] => {
+        let cohorts: any[] = [];
+        data.forEach((item) => {
+          if (item.type === "COHORT") {
+            cohorts.push(item);
+          }
+          // if (item.childData && item.childData.length > 0) {
+          //   cohorts = cohorts.concat(extractBatchCohorts(item.childData)); // Recursively process child data
+          // }
+        });
+        return cohorts;
+      };
+
+      const batchData = extractBatchCohorts(userCohortData);
+      console.log(userCohortData, "userCohortData---------");
+
+      console.log(batchData, "batchdata---------");
+
       let payload;
       if (userType !== Role.TEAM_LEADERS) {
         payload = {
           userId: [userId],
           cohortId: selectedData,
-          removeCohortId:
-            unSelectedData.length === 0 ? cohortId : unSelectedData,
+          removeCohortId: [batchData[0]?.cohortId],
         };
 
         await bulkCreateCohortMembers(payload);
+        handleClose();
+
+        showToastMessage(
+          t(
+            userType === Role.TEAM_LEADERS
+              ? "COMMON.BLOCKS_REASSIGN_SUCCESSFULLY"
+              : "COMMON.CENTERS_REASSIGN_SUCCESSFULLY"
+          ),
+          "success"
+        );
         let customFields;
 
         if (selectedBlock[0] !== blockName) {
@@ -457,21 +536,21 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
     // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
-  const filteredCohorts = cohorts?.filter((cohort) =>
-    cohort?.label?.toLowerCase().includes(searchInput)
-  );
+  let filteredCohorts;
+  if (isCenterAdmin) {
+    filteredCohorts = batchList;
+  } else {
+    filteredCohorts = cohorts?.filter((cohort: any) =>
+      cohort?.label?.toLowerCase().includes(searchInput)
+    );
+  }
 
-  const formattedCohorts = filteredCohorts?.map((location) => ({
+  const formattedCohorts = filteredCohorts?.map((location: any) => ({
     ...location,
-    name: location.label
-      ? location.label
-          .split(" ")
-          .map(
-            (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-          )
-          .join(" ")
-      : "",
+    name: location.name,
   }));
+
+  console.log(formattedCohorts, "formattedCohorts------------");
 
   // const filteredCBlocks = blocks?.filter((cohort: any) =>
   //   cohort.label.toLowerCase().includes(searchInput)
@@ -614,6 +693,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       setConfirmButtonDisable(true);
     }
   }, [checkedConfirmation]);
+  console.log(userType, "userType in reassign");
 
   return (
     <>
@@ -622,15 +702,17 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         open={open}
         handleClose={handleClose}
         title={
-          userType === Role.TEAM_LEADERS
-            ? t("COMMON.REASSIGN_BLOCKS")
-            : t("COMMON.REASSIGN_CENTERS")
+          userType === Role.STUDENT
+            ? t("COMMON.REASSIGN_BATCH")
+            : userType === Role.TEAM_LEADERS
+              ? t("COMMON.REASSIGN_BLOCKS")
+              : t("COMMON.REASSIGN_CENTERS")
         }
         primaryBtnText={t("Reassign")}
         primaryBtnClick={handleReassign}
         primaryBtnDisabled={checkedCenters.length === 0}
       >
-        <AreaSelection
+        {/* <AreaSelection
           country={transformArray(country)}
           states={transformArray(states)}
           districts={transformArray(districts)}
@@ -654,17 +736,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           userType={userType}
           stateDefaultValue={stateDefaultValue}
           isUserAdd={true}
-        />
-        {selectedBlock.length === 0 && userType !== Role.TEAM_LEADERS ? (
-          <>
-            <Typography sx={{ mt: "20px" }}>
-              {t("COMMON.PLEASE_SELECT_BLOCK_LIST")}
-            </Typography>
-          </>
-        ) : (
+        /> */}
+        {userType === Role.STUDENT && (
           <>
             {" "}
-            <Box sx={{ p: 1 }}>
+            {/* <Box sx={{ p: 1 }}>
               <TextField
                 sx={{
                   backgroundColor: theme.palette.warning["A700"],
@@ -672,11 +748,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                   "& .MuiOutlinedInput-root fieldset": { border: "none" },
                   "& .MuiOutlinedInput-input": { borderRadius: 8 },
                 }}
-                placeholder={
-                  userType === Role.TEAM_LEADERS
-                    ? t("MASTER.SEARCHBAR_PLACEHOLDER_BLOCK")
-                    : t("CENTERS.SEARCHBAR_PLACEHOLDER")
-                }
+                placeholder={t("CENTERS.SEARCHBAR_PLACEHOLDER")}
                 value={searchInput}
                 onChange={handleSearchInputChange}
                 fullWidth
@@ -688,11 +760,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                   ),
                 }}
               />
-            </Box>
+            </Box> */}
             <Box sx={{ p: 3, maxHeight: "300px", overflowY: "auto" }}>
-              {userType !== Role.TEAM_LEADERS ? (
+              {userType === Role.STUDENT ? (
                 formattedCohorts && formattedCohorts.length > 0 ? (
-                  formattedCohorts.map((center) => (
+                  formattedCohorts.map((center: any) => (
                     <Box key={center.value}>
                       <Box
                         sx={{
