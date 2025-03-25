@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { limit } from "@/utils/app.constant";
 import useStore from "@/store/store";
 import { cohortMemberList } from "@/services/UserList";
+import { getCenterList } from "@/services/MasterDataService";
 import {
   Container,
   Typography,
@@ -57,41 +58,97 @@ export default function MapYouth() {
   const [myCohorts, setMyCohorts] = useState<any[]>([]);
   const [oppportunityName, setOpportuntiName] = useState("");
   const [cohortId, setCohortId] = useState<string>("");
+  const [isCenterAdmin, setIsCenterAdmin] = useState<boolean>();
+
+  useEffect(() => {
+    if (isCenterAdmin) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const getMyCohortList = async () => {
+            const response = await getUserCohortList(userId);
+            console.log(response);
+
+            const extractCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "COHORT") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  cohorts = cohorts.concat(extractCohorts(item.childData));
+                }
+              });
+              return cohorts;
+            };
+
+            const cohortList = extractCohorts(response);
+
+            setMyCohorts(cohortList); // Set only the filtered cohorts
+
+            if (cohortList?.length > 0) {
+              setCohortId(cohortList[0].cohortId); // Default to the first cohort
+            }
+          };
+          getMyCohortList();
+        }
+      }
+    }
+  }, [isCenterAdmin]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        const getMyCohortList = async () => {
-          const response = await getUserCohortList(userId);
-          console.log(response);
-
-          const extractCohorts = (data: any[]): any[] => {
-            let cohorts: any[] = [];
-            data.forEach((item) => {
-              if (item.type === "COHORT") {
-                cohorts.push(item);
-              }
-              if (item.childData && item.childData.length > 0) {
-                cohorts = cohorts.concat(extractCohorts(item.childData));
-              }
-            });
-            return cohorts;
-          };
-
-          const cohortList = extractCohorts(response);
-          console.log(cohortList, "cohortList");
-
-          setMyCohorts(cohortList); // Set only the filtered cohorts
-
-          if (cohortList?.length > 0) {
-            setCohortId(cohortList[0].cohortId); // Default to the first cohort
-          }
-        };
-        getMyCohortList();
-      }
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsCenterAdmin(adminInfo?.role === "Center Admin");
     }
   }, []);
+
+  useEffect(() => {
+    const fetchCohorts = async () => {
+      try {
+        const response = await getCenterList({
+          limit: 0,
+          offset: 0,
+          filters: {
+            type: "COHORT",
+            status: ["active"],
+          },
+        });
+
+        const cohortDetails = response?.result?.results?.cohortDetails || [];
+
+        const formattedCohorts = cohortDetails.map((cohort: any) => ({
+          cohortId: cohort.cohortId,
+          name: cohort.name,
+          city:
+            cohort.customFields.find((field: any) => field.label === "CITY")
+              ?.value || "",
+          country:
+            cohort.customFields.find((field: any) => field.label === "COUNTRY")
+              ?.value || "",
+          center:
+            cohort.customFields.find((field: any) => field.label === "CENTER")
+              ?.value || "",
+          state:
+            cohort.customFields.find((field: any) => field.label === "STATES")
+              ?.value || "",
+        }));
+
+        setMyCohorts(formattedCohorts);
+
+        if (formattedCohorts.length > 0) {
+          setCohortId(formattedCohorts[0].cohortId); // Default to the first cohort
+        }
+      } catch (error) {
+        console.error("Error fetching cohort list:", error);
+        showToastMessage("Failed to fetch cohorts", "error");
+      }
+    };
+
+    if (!isCenterAdmin) {
+      fetchCohorts();
+    }
+  }, [isCenterAdmin]);
 
   const getOpportunityDetails = async () => {
     const response = await getOpportunity(opportunityId);
