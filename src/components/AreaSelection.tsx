@@ -29,6 +29,8 @@ interface Block {
 interface Centers {
   value: string;
   label: string;
+  name: string;
+  cohortId: string;
 }
 interface Batches {
   name: string;
@@ -125,6 +127,8 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
   const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("sm")
   );
+
+  console.log(allCenters, "allcenterssssssssss");
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -334,18 +338,18 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
                   lg={inModal ? 12 : isCenterSelection ? 3 : 4}
                 >
                   <MultipleSelectCheckmarks
-                    names={capitalizeFirstLetterOfEachWordInArray(centerNames)}
-                    codes={allCenters?.map((center) => center.value) || []}
+                    names={capitalizeFirstLetterOfEachWordInArray(
+                      allCenters?.map((center) => center.name) || [] // Use the 'name' property
+                    )}
+                    codes={allCenters?.map((center) => center.cohortId) || []}
                     tagName={t("CENTERS.CENTERS")}
                     selectedCategories={
                       isCenterAdmin
                         ? allCenters
-                            ?.filter((center) =>
-                              capitalizeFirstLetterOfEachWordInArray(
-                                myCohort
-                              ).includes(center.label)
+                            ?.filter(
+                              (center) => myCohort.includes(center.name) // Match 'name' with 'myCohort'
                             )
-                            .map((center) => center.label)
+                            .map((center) => center.name)
                         : selectedCenter
                     }
                     disabled={isCenterAdmin}

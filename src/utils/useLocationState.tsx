@@ -33,6 +33,8 @@ interface batchProp {
 interface CenterProp {
   value: string;
   label: string;
+  name: string;
+  cohortId: string;
 }
 export const useLocationState = (
   open: boolean,
@@ -123,16 +125,19 @@ export const useLocationState = (
     setCountry(result);
   };
   const ListCenter = async () => {
-    const response = await queryClient.fetchQuery({
-      queryKey: [QueryKeys.FIELD_OPTION_READ, "center"],
-      queryFn: () =>
-        getStateBlockDistrictList({
-          fieldName: "center",
-        }),
-    });
-    setCenterFieldId(response?.result?.fieldId);
-    const result = response?.result?.values;
-    setAllCenters(result);
+    const reqBody = {
+      limit: 0,
+      offset: 0,
+      filters: {
+        type: "CENTER",
+        status: ["active"],
+        // center: code,
+      },
+    };
+
+    const response1 = await getCenterList(reqBody);
+    // setBatches(response1?.result?.results?.cohortDetails);
+    setAllCenters(response1?.result?.results?.cohortDetails);
   };
 
   useEffect(() => {
@@ -243,11 +248,11 @@ export const useLocationState = (
             limit: 0,
             offset: 0,
             filters: {
-              // "type":"COHORT",
+              type: "CENTER",
               status: ["active"],
-              states: selectedStateCode,
-              districts: selectedDistrictCode,
-              blocks: selectedCodes[0],
+              // states: selectedStateCode,
+              // districts: selectedDistrictCode,
+              // blocks: selectedCodes[0],
               // "name": selected[0]
             },
           };
@@ -335,7 +340,10 @@ export const useLocationState = (
   );
 
   const handleCenterChange = useCallback(
-    async (selected: string[], code: string[]) => {
+    async (selected: any, code: string[]) => {
+      // setSelectedCenterCode(selected);
+      // console.log(selected, "selected-------");
+
       // handle center change logic
       const object = {
         limit: 0,
@@ -560,32 +568,19 @@ export const useLocationState = (
                     const result = response?.result?.values;
                     const blockResult = await formatedBlocks(data.districtCode);
                     setBlocks(blockResult);
-                    const getCentersObject = {
+                    const reqBody = {
                       limit: 0,
                       offset: 0,
                       filters: {
-                        // "type":"COHORT",
+                        type: "CENTER",
                         status: ["active"],
-                        states: stateField.code,
-                        districts: data.districtCode,
-                        blocks: data.blockCode,
-                        // "name": selected[0]
+                        // center: code,
                       },
                     };
-                    const centerResponse =
-                      await getCenterList(getCentersObject);
 
-                    //   const result = response?.result?.cohortDetails;
-                    const dataArray =
-                      centerResponse?.result?.results?.cohortDetails;
-
-                    const cohortInfo = dataArray
-                      ?.filter((cohort: any) => cohort.type !== "BLOCK")
-                      .map((item: any) => ({
-                        cohortId: item?.cohortId,
-                        name: item?.name,
-                      }));
-                    setAllCenters(cohortInfo);
+                    const response1 = await getCenterList(reqBody);
+                    // setBatches(response1?.result?.results?.cohortDetails);
+                    // setAllCenters(response1?.result?.results?.cohortDetails);
                   }
                 } else {
                   setSelectedDistrict([districtResult[0]?.label]);
@@ -648,11 +643,11 @@ export const useLocationState = (
                         limit: 0,
                         offset: 0,
                         filters: {
-                          // "type":"COHORT",
+                          type: "CENTER",
                           status: ["active"],
-                          states: stateField.code,
-                          districts: districtResult[0]?.value,
-                          blocks: blockResult[0]?.value,
+                          // states: stateField.code,
+                          // districts: districtResult[0]?.value,
+                          // blocks: blockResult[0]?.value,
                           // "name": selected[0]
                         },
                       };
@@ -679,7 +674,19 @@ export const useLocationState = (
                           cohortId: item?.cohortId,
                           name: item?.name,
                         }));
-                      setAllCenters(cohortInfo);
+                      const reqBody = {
+                        limit: 0,
+                        offset: 0,
+                        filters: {
+                          type: "CENTER",
+                          status: ["active"],
+                          // center: code,
+                        },
+                      };
+
+                      const response1 = await getCenterList(reqBody);
+                      // setBatches(response1?.result?.results?.cohortDetails);
+                      // setAllCenters(response1?.result?.results?.cohortDetails);
                       setSelectedCenter([cohortInfo[0]?.name]);
                       setSelectedCenterCode(cohortInfo[0]?.cohortId);
                     }
