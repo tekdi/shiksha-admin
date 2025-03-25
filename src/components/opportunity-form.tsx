@@ -54,20 +54,20 @@ const formSchema = z
     country: z.string().min(1, "Country is required"),
     state: z.string().min(1, "State is required"),
     city: z.string().min(1, "City is required"),
-    otherBenefits: z.string().optional(),
+    otherBenefit: z.string().optional(),
     pricing_type: z.string(),
     offer_letter_provided: z.string(),
   })
   .superRefine((data, ctx) => {
     if (
       data.benefits.includes("51d25808-371b-4ba3-9d85-a16e3a5793be") &&
-      !data.otherBenefits
+      !data.otherBenefit
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
           "Other benefits are required when the specific benefit is selected",
-        path: ["otherBenefits"],
+        path: ["otherBenefit"],
       });
     }
   });
@@ -508,7 +508,7 @@ export function OpportunityForm({
           ) && (
             <Grid item xs={12}>
               <Controller
-                name="otherBenefits"
+                name="otherBenefit"
                 control={control}
                 render={({ field }) => (
                   <TextField
@@ -516,8 +516,8 @@ export function OpportunityForm({
                     fullWidth
                     required
                     label={t("OPPORTUNITY.OTHERBENIFITS")}
-                    // error={!!errors.otherBenefits}
-                    // helperText={errors.otherBenefits?.message}
+                    // error={!!errors.otherBenefit}
+                    // helperText={errors.otherBenefit?.message}
                   />
                 )}
               />
@@ -554,7 +554,7 @@ export function OpportunityForm({
                     {...field}
                     label={t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
                   >
-                    {["Remote", "Hybrid", "Work From Office"].map((role) => (
+                    {["Remote", "Hybrid", "Work from Office"].map((role) => (
                       <MenuItem key={role} value={role}>
                         {role}
                       </MenuItem>

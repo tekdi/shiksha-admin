@@ -24,7 +24,7 @@ export interface Opportunity {
   // stipend:string;
   // skillDetails:Array<any>;
   // work_experience:string;
-  otherBenefits?: string;
+  otherBenefit?: string;
   // is_remote:boolean;
   country: string;
   state: string;
@@ -58,7 +58,7 @@ export interface OpportunityList {
   stipend: string;
   skillDetails: Array<any>;
   work_experience: string;
-  otherBenefits?: string;
+  otherBenefit?: string;
   country: string;
   state: string;
   city: string;
