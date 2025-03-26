@@ -292,6 +292,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
               updatedResponse,
               t
             );
+            if (uiSchema.age) {
+              uiSchema.age["ui:disabled"] = true;
+            }
+            if (uiSchema.mobile_country_code) {
+              uiSchema.mobile_country_code["ui:disabled"] = true;
+            }
             setSchema(schema);
             setUiSchema(uiSchema);
           }
@@ -743,18 +749,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (schema && uiSchema) {
-      const updatedUiSchema = { ...uiSchema };
-      if (updatedUiSchema.age) {
-        updatedUiSchema.age["ui:disabled"] = true;
-      }
-      if (updatedUiSchema.mobile_country_code) {
-        updatedUiSchema.mobile_country_code["ui:disabled"] = true;
-      }
-      setUiSchema(updatedUiSchema);
-    }
-  }, [schema, uiSchema]);
   const handleError = (errors: any) => {};
   const handleBackAction = () => {
     setCreateFacilitator(false);
@@ -937,7 +931,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 // widgets={{}}
                 showErrorList={true}
                 customFields={customFields}
-                formData={customFormData}
+                formData={isEditModal ? formData : customFormData}
               >
                 {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
               </DynamicForm>
