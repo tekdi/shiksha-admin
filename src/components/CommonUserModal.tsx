@@ -752,6 +752,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       if (updatedUiSchema.mobile_country_code) {
         updatedUiSchema.mobile_country_code["ui:disabled"] = true;
       }
+
       setUiSchema(updatedUiSchema);
     }
   }, [schema, uiSchema]);
