@@ -7,7 +7,7 @@ export interface Opportunity {
   // opportunity_type: string;
   // experience_level: string;
   min_experience: number;
-  min_salary: number;
+  min_salary: string;
   max_salary: string;
   category: any;
   company: string;
@@ -41,7 +41,7 @@ export interface OpportunityList {
   is_remote: boolean;
   experience_level: string;
   min_experience: number;
-  min_salary: number;
+  min_salary: string;
   max_salary: string;
   category: any;
   company: string;
