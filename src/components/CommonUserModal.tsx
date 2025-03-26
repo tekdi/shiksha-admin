@@ -795,7 +795,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const wrappedHandleContinueAction = () => {
     handleCloseConfirmation();
     setOpenModal(true);
-    //onClose();
   };
 
   const handleCancelAction = async () => {
