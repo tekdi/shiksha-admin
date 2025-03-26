@@ -375,7 +375,6 @@ export const useLocationState = (
 
       setSelectedCenter(selected);
       const centers = code?.join(",");
-      console.log(centers, "centers----");
 
       setSelectedCenterId(centers);
       setDynamicForm(true);
@@ -386,7 +385,7 @@ export const useLocationState = (
         filters: {
           type: "COHORT",
           status: ["active"],
-          center: code,
+          parentId: [blockCohortId],
         },
       };
 

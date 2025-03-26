@@ -128,8 +128,6 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
     theme.breakpoints.down("sm")
   );
 
-  console.log(allCenters, "allcenterssssssssss");
-
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
       const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");

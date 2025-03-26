@@ -236,7 +236,7 @@
     "FACILITATOR_CREATED_SUCCESSFULLY": "Trainer is created, and credentials sent successfully!",
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "Trainer is created ,credentials will be sent soon",
     "FACILITATOR_UPDATED_SUCCESSFULLY": "Trainer has been successfully updated!",
-    "EDIT_FACILITATOR": "Edit Facilitator"
+    "EDIT_FACILITATOR": "Edit Trainer"
   },
   "NAVBAR": {
     "SEARCHBAR_PLACEHOLDER": "Search course, topic, student, pdf etc.."
@@ -536,7 +536,7 @@
     "MAX_LENGTH_DIGITS_ERROR": "Maximum {{maxLength}} Digits allowed",
     "MIN_LENGTH_CHARACTERS_ERROR": "Minimum {{minLength}} characters required",
     "MAX_LENGTH_DIGITS_ERROR_AGE": "Age should be less than or equal to {{maxLength}}",
-    "MIN_LENGTH_DIGITS_ERROR_AGE": "Age should be greater than or equal to {{minLength}}",
+    "MIN_LENGTH_DIGITS_ERROR_AGE": "Age should be greater than or equal to 16 {{minLength}}",
     "ENTER_VALID_YEAR": "Enter valid mobile number",
     "MAX_LENGTH_CHARACTERS_ERROR": "Maximum {{maxLength}} characters allowed",
     "NUMBER_AND_SPECIAL_CHARACTERS_NOT_ALLOWED": "Numbers and special characters are not allowed",

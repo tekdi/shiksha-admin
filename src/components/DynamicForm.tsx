@@ -163,6 +163,15 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             error.message = t("FORM_ERROR_MESSAGES.MIN_LENGTH_DIGITS_ERROR", {
               minLength: schema.properties?.[property]?.minLength,
             });
+            if (property === "dob") {
+              error.message = t(
+                "FORM_ERROR_MESSAGES.MIN_LENGTH_DIGITS_ERROR_AGE",
+                {
+                  minLength: schema.properties?.[property]?.minLength,
+                }
+              );
+              error.message = `Age should be greater than or equal to 16`;
+            }
 
             if (property === "age") {
               error.message = t(
@@ -171,18 +180,17 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                   minLength: schema.properties?.[property]?.minLength,
                 }
               );
-              //  error.message = `Age should be greater than or equal to ${error?.params?.limit}`
+              console.log(error, "errorerrorerrorerrorerrorerror");
+
+              error.message = `Age should be greater than or equal to 16`;
             }
           }
           break;
         }
         case "dob": {
-          console.log(localFormData?.dob, "localFormData?.dobs------");
-
           const property = error.property.substring(1);
           const currentDate = new Date();
           if (localFormData?.dob) {
-            console.log("localFormData?.dob", localFormData?.dob);
             const dobDate = new Date(localFormData?.dob);
             currentDate.setHours(0, 0, 0, 0);
             dobDate.setHours(0, 0, 0, 0);

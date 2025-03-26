@@ -15,6 +15,7 @@ import {
   firstLetterInUpperCase,
   generateUsernameAndPassword,
   getUserFullName,
+  calculateAge,
 } from "@/utils/Helper";
 import { FormData } from "@/utils/Interfaces";
 import {
@@ -80,6 +81,10 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const [adminInfo, setAdminInfo] = React.useState<any>();
   const [createTLAlertModal, setcreateTLAlertModal] = useState(false);
   const [confirmButtonDisable, setConfirmButtonDisable] = useState(true);
+  const [originalSchema, setOriginalSchema] = React.useState(schema);
+  const [customFormData, setCustomFormData] = React.useState<any>(
+    formData ?? {}
+  );
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
 
@@ -164,8 +169,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   //     ),
   //   staleTime: apiCatchingDuration.GETREADFORM,
   // })
-  console.log(isEditModal, "isEditModal");
-  console.log(userType, "userType");
 
   const modalTitle = !isEditModal
     ? userType === FormContextType.STUDENT
@@ -324,8 +327,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     event: React.FormEvent<any>
   ) => {
     const target = event?.target as HTMLFormElement;
-
-    console.log(selectedCenterCode, "selectedCenterCode-----");
 
     const formData = data.formData;
     const schemaProperties = schema.properties;
@@ -543,7 +544,6 @@ const CommonUserModal: React.FC<UserModalProps> = ({
           }
 
           const response = await createUser(apiBody);
-          console.log("response =>", response);
           if (response) {
             const messageKey = messageKeyMap[userType];
 
@@ -686,11 +686,45 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   };
 
   const handleChange = (event: IChangeEvent<any>) => {
-    console.log("Form data changed:", event.formData);
+    const { formData } = event;
+    let newFormData = { ...formData };
+
+    const dob = formData.dob;
+
+    if (dob) {
+      const age = calculateAge(new Date(dob));
+
+      newFormData.age = age;
+
+      if (age < 16) {
+        showToastMessage("Date of birth should be 16 or above.", "error");
+        setFormValue(newFormData);
+        return;
+      }
+    }
+
+    setFormValue(newFormData);
+
+    if (!isEditModal) {
+      const { firstName, lastName } = newFormData;
+      if (firstName && lastName) {
+        setCustomFormData({
+          ...newFormData,
+        });
+      }
+    }
   };
-  const handleError = (errors: any) => {
-    console.log("Form errors:", errors);
-  };
+
+  useEffect(() => {
+    if (schema && uiSchema) {
+      const updatedUiSchema = { ...uiSchema };
+      if (updatedUiSchema.age) {
+        updatedUiSchema.age["ui:disabled"] = true;
+      }
+      setUiSchema(updatedUiSchema);
+    }
+  }, [schema, uiSchema]);
+  const handleError = (errors: any) => {};
   const handleBackAction = () => {
     setCreateFacilitator(false);
     setOpenModal(false);
@@ -872,7 +906,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 // widgets={{}}
                 showErrorList={true}
                 customFields={customFields}
-                formData={formData}
+                formData={customFormData}
               >
                 {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
               </DynamicForm>
