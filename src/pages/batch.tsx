@@ -27,7 +27,14 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ConfirmationModal from "@/components/ConfirmationModal";
-import { Box, Button, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useMediaQuery,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Loader from "@/components/Loader";
 import { getFormRead } from "@/services/CreateUserService";
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -141,9 +148,30 @@ const Center: React.FC = () => {
   const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
   const [batchList, setBatchList] = useState<any>([]);
   const [parentId, setParentId] = useState();
+  const [startMonth, setStartMonth] = useState<string>("");
+  const [endMonth, setEndMonth] = useState<string>("");
+  const [startYear, setStartYear] = useState<string>("");
+  const [endYear, setEndYear] = useState<string>("");
+  const [additionalText, setAdditionalText] = useState<string>("");
+  const [batchName, setBatchName] = useState<string>("");
+  const [customFormData, setCustomFormData] = useState<any>();
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
+  const months = [
+    { label: "January", value: "Jan" },
+    { label: "February", value: "Feb" },
+    { label: "March", value: "Mar" },
+    { label: "April", value: "Apr" },
+    { label: "May", value: "May" },
+    { label: "June", value: "Jun" },
+    { label: "July", value: "Jul" },
+    { label: "August", value: "Aug" },
+    { label: "September", value: "Sep" },
+    { label: "October", value: "Oct" },
+    { label: "November", value: "Nov" },
+    { label: "December", value: "Dec" },
+  ];
   const {
     data: batchFormData,
     isLoading: batchFormDataLoading,
@@ -461,8 +489,9 @@ const Center: React.FC = () => {
 
         setSchema(schema);
         setUiSchema(uiSchema);
-        console.log("Schema:-------", schema);
-        console.log("UiSchema:-------", uiSchema);
+        uiSchema.name = {
+          "ui:readonly": true,
+        };
       } else {
         console.log("Unexpected response format");
       }
@@ -944,9 +973,6 @@ const Center: React.FC = () => {
     setInputName(updatedName);
   };
 
-  const handleChangeForm = (event: IChangeEvent<any>) => {
-    console.log("Form data changed:", event.formData);
-  };
   const handleError = () => {
     console.log("error");
   };
@@ -1233,6 +1259,99 @@ const Center: React.FC = () => {
     setSelectedBlock: setSelectedBlock,
   };
 
+  const years = Array.from(
+    { length: 5 },
+    (_, i) => new Date().getFullYear() + i
+  ).map((year) => ({ label: year.toString(), value: year.toString() }));
+
+  const handleStartMonthChange = (event: SelectChangeEvent<string>) => {
+    const selectedMonth = event.target.value;
+    setStartMonth(selectedMonth);
+
+    if (endMonth && startYear && endYear) {
+      validateAndSetBatchName(selectedMonth, endMonth, startYear, endYear);
+    }
+  };
+
+  const handleEndMonthChange = (event: SelectChangeEvent<string>) => {
+    const selectedMonth = event.target.value;
+
+    if (startMonth && startYear && endYear) {
+      const startIndex = months.findIndex((m) => m.value === startMonth);
+      const endIndex = months.findIndex((m) => m.value === selectedMonth);
+
+      if (startYear === endYear && endIndex <= startIndex) {
+        alert("End month must be after the start month.");
+        return;
+      }
+    }
+
+    setEndMonth(selectedMonth);
+
+    if (startMonth && startYear && endYear) {
+      validateAndSetBatchName(startMonth, selectedMonth, startYear, endYear);
+    }
+  };
+
+  const handleStartYearChange = (event: SelectChangeEvent<string>) => {
+    const selectedYear = event.target.value;
+    setStartYear(selectedYear);
+
+    if (startMonth && endMonth && endYear) {
+      validateAndSetBatchName(startMonth, endMonth, selectedYear, endYear);
+    }
+  };
+
+  const handleEndYearChange = (event: SelectChangeEvent<string>) => {
+    const selectedYear = event.target.value;
+
+    if (startYear && startMonth && selectedYear === startYear) {
+      const startIndex = months.findIndex((m) => m.value === startMonth);
+      const endIndex = months.findIndex((m) => m.value === endMonth);
+
+      if (endIndex <= startIndex) {
+        alert("End month must be after the start month.");
+        return;
+      }
+    }
+
+    setEndYear(selectedYear);
+
+    if (startMonth && endMonth && startYear) {
+      validateAndSetBatchName(startMonth, endMonth, startYear, selectedYear);
+    }
+  };
+
+  const validateAndSetBatchName = (
+    startMonth: string,
+    endMonth: string,
+    startYear: string,
+    endYear: string
+  ) => {
+    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear}`);
+    setCustomFormData((prevData: any) => ({
+      ...prevData,
+      name: `${startMonth} ${startYear} - ${endMonth} ${endYear}`,
+    }));
+  };
+
+  const handleAdditionalTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const text = event.target.value;
+    setAdditionalText(text);
+    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`);
+    setCustomFormData((prevData: any) => ({
+      ...prevData,
+      name: `${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`,
+    }));
+  };
+
+  const handleChangeForm = (event: IChangeEvent<any>) => {
+    // Update the form data when the user interacts with the form
+    setCustomFormData(event.formData);
+  };
+
   return (
     <>
       <ProtectedRoute>
@@ -1313,17 +1432,113 @@ const Center: React.FC = () => {
             showFooter={false}
             modalTitle={t("COMMON.UPDATE_BATCH")}
           >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                marginTop: "10px",
+              }}
+            >
+              <Typography variant="h6">Select Months and Years</Typography>
+              <Box sx={{ display: "flex", gap: "16px" }}>
+                <Select
+                  value={startMonth}
+                  onChange={handleStartMonthChange}
+                  displayEmpty
+                  fullWidth
+                >
+                  <MenuItem value="" disabled>
+                    Select Start Month
+                  </MenuItem>
+                  {months.map((month) => (
+                    <MenuItem key={month.value} value={month.value}>
+                      {month.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={startYear}
+                  onChange={handleStartYearChange}
+                  displayEmpty
+                  fullWidth
+                >
+                  <MenuItem value="" disabled>
+                    Select Start Year
+                  </MenuItem>
+                  {years.map((year) => (
+                    <MenuItem key={year.value} value={year.value}>
+                      {year.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Box sx={{ display: "flex", gap: "16px" }}>
+                <Select
+                  value={endMonth}
+                  onChange={handleEndMonthChange}
+                  displayEmpty
+                  fullWidth
+                >
+                  <MenuItem value="" disabled>
+                    Select End Month
+                  </MenuItem>
+                  {months.map((month) => (
+                    <MenuItem key={month.value} value={month.value}>
+                      {month.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={endYear}
+                  onChange={handleEndYearChange}
+                  displayEmpty
+                  fullWidth
+                >
+                  <MenuItem value="" disabled>
+                    Select End Year
+                  </MenuItem>
+                  {years.map((year) => (
+                    <MenuItem key={year.value} value={year.value}>
+                      {year.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Box sx={{ marginTop: "16px" }}>
+                <Typography variant="body2">
+                  Add Additional Text to Batch Name:
+                </Typography>
+                <input
+                  type="text"
+                  value={additionalText}
+                  onChange={handleAdditionalTextChange}
+                  placeholder="Enter additional text"
+                  style={{
+                    width: "94%",
+                    padding: "17px",
+                    marginTop: "8px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                  }}
+                />
+              </Box>
+              {/* <Typography variant="body1">
+            Batch Name: <strong>{batchName || "N/A"}</strong>
+          </Typography> */}
+            </Box>
             {schema && uiSchema && (
               <DynamicForm
                 schema={schema}
                 uiSchema={uiSchema}
                 onSubmit={handleUpdateAction}
                 onChange={handleChangeForm}
+                // formData={customFormData}
                 onError={handleError}
                 widgets={{}}
                 showErrorList={true}
                 customFields={customFields}
-                formData={editFormData}
+                formData={customFormData ? customFormData : editFormData}
                 id="update-center-form"
               >
                 <Box

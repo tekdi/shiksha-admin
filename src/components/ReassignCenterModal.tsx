@@ -145,8 +145,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     useState("");
   const [selectedTLUserID, setSelectedTLUserID] = useState(userId);
 
-  console.log("inside reassign center");
-
   // const [reassignOpen, setReassignOpen] = useState(false);
 
   //const [selectedBlockId, setselectedBlockId] = useState(blockName);
@@ -550,8 +548,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     name: location.name,
   }));
 
-  console.log(formattedCohorts, "formattedCohorts------------");
-
   // const filteredCBlocks = blocks?.filter((cohort: any) =>
   //   cohort.label.toLowerCase().includes(searchInput)
   // );
@@ -693,7 +689,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       setConfirmButtonDisable(true);
     }
   }, [checkedConfirmation]);
-  console.log(userType, "userType in reassign");
 
   return (
     <>
