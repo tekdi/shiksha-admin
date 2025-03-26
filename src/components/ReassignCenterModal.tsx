@@ -284,9 +284,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       };
 
       const batchData = extractBatchCohorts(userCohortData);
-      console.log(userCohortData, "userCohortData---------");
-
-      console.log(batchData, "batchdata---------");
 
       let payload;
       if (userType !== Role.TEAM_LEADERS) {

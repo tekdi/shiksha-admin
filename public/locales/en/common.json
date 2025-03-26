@@ -211,7 +211,7 @@
     "DASHBOARD": "Dashboard",
     "MANAGE_USERS": "Manage Users",
     "COURSE_PLANNER": "Curriculum Planner",
-    "CENTERS": "Vocational Trainning Centers(VTCs)",
+    "CENTERS": "Vocational Training Centers(VTCs)",
     "FACILITATORS": "Trainers",
     "LEARNERS": "Youth",
     "TEAM_LEADERS": "Center Admin",
@@ -343,7 +343,7 @@
   },
   "CENTERS": {
     "CENTER": "center",
-    "CENTERS": "Vocational Trainning Centers(VTCs)",
+    "CENTERS": "Vocational Training Centers(VTCs)",
     "REGULAR_CENTERS": "Regular Centers",
     "REMOTE_CENTERS": "Remote Centers",
     "REMOTE_CENTER": "Remote Center",
@@ -525,7 +525,8 @@
     "BATCH_NAME": "Batch Name",
     "CENTER_NAME": "Center Name",
     "MIDDLE_NAME_OR_FATHER/MOTHER_NAME": "Middle Name Or Father/Mother Name",
-    "QUALIFICATIONS_DETAILS": "Qualification Details"
+    "QUALIFICATIONS_DETAILS": "Qualification Details",
+    "COUNTRY_CODE": "Country Code"
   },
   "FORM_ERROR_MESSAGES": {
     "INVALID_INPUT": "Invalid Input.",

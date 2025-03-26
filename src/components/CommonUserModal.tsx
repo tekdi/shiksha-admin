@@ -85,6 +85,27 @@ const CommonUserModal: React.FC<UserModalProps> = ({
   const [customFormData, setCustomFormData] = React.useState<any>(
     formData ?? {}
   );
+  const countryCodeMapping: Record<string, string> = {
+    Burundi: "+257",
+    Comoros: "+269",
+    Djibouti: "+253",
+    Eritrea: "+291",
+    Ethiopia: "+251",
+    Kenya: "+254",
+    Madagascar: "+261",
+    Malawi: "+265",
+    Mauritius: "+230",
+    Mozambique: "+258",
+    Rwanda: "+250",
+    Seychelles: "+248",
+    Somalia: "+252",
+    "South Sudan": "+211",
+    Tanzania: "+255",
+    Uganda: "+256",
+    Zambia: "+260",
+    Zimbabwe: "+263",
+  };
+
   const [checkedConfirmation, setCheckedConfirmation] =
     useState<boolean>(false);
 
@@ -220,6 +241,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     assignedTeamLeader,
     assignedTeamLeaderNames,
     selectedStateCohortId,
+    selectedCountryName,
   } = useLocationState(open, onClose, roleType);
 
   useEffect(() => {
@@ -690,6 +712,12 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     let newFormData = { ...formData };
 
     const dob = formData.dob;
+    const countryName = selectedCountryName?.[0];
+    if (!isEditModal) {
+      if (countryName && countryCodeMapping[countryName]) {
+        newFormData.mobile_country_code = countryCodeMapping[countryName];
+      }
+    }
 
     if (dob) {
       const age = calculateAge(new Date(dob));
@@ -720,6 +748,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       const updatedUiSchema = { ...uiSchema };
       if (updatedUiSchema.age) {
         updatedUiSchema.age["ui:disabled"] = true;
+      }
+      if (updatedUiSchema.mobile_country_code) {
+        updatedUiSchema.mobile_country_code["ui:disabled"] = true;
       }
       setUiSchema(updatedUiSchema);
     }

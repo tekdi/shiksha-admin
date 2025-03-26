@@ -72,6 +72,7 @@ export const useLocationState = (
   const [stateFieldId, setStateFieldId] = useState("");
   const [districtFieldId, setDistrictFieldId] = useState("");
   const [centerFieldId, setCenterFieldId] = useState("");
+  const [selectedCountryName, setSelectedCountryName] = useState<string[]>([]);
   const [stateDefaultValue, setStateDefaultValue] = useState<string>("");
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -80,6 +81,7 @@ export const useLocationState = (
 
   const handleCountryChangeWrapper = useCallback(
     async (selectedNames: string[], selectedCodes: string[]) => {
+      setSelectedCountryName(selectedNames);
       try {
         setDistricts([]);
         setBlocks([]);
@@ -183,9 +185,6 @@ export const useLocationState = (
         handleCenterChange([], []);
       }
       try {
-        // setAllCenters([]);
-        console.log(userType, "userType----");
-
         if (
           userType === FormContextType.TEAM_LEADER ||
           userType === FormContextType.ADMIN_CENTER ||
@@ -391,10 +390,6 @@ export const useLocationState = (
 
       const response1 = await getCenterList(reqBody);
       setBatches(response1?.result?.results?.cohortDetails);
-      console.log(
-        response1?.result?.results?.cohortDetails,
-        "response1?.result?.results?.cohortDetails-----"
-      );
     },
     []
   );
@@ -700,7 +695,6 @@ export const useLocationState = (
                   label: stateField.value,
                 },
               ];
-              console.log(object2, "object2--------------");
 
               setStates(object2);
             }
@@ -769,5 +763,6 @@ export const useLocationState = (
     assignedTeamLeaderNames,
     assignedTeamLeader,
     selectedStateCohortId,
+    selectedCountryName,
   };
 };
