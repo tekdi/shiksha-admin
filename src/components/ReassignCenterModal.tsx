@@ -544,7 +544,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
   const response1 = getCenterList(reqBody);
   // setBatches(response1?.result?.results?.cohortDetails);
-  const centerList = response1;
+  const centerList = response1?.result?.results?.cohortDetails;
   let filteredCohorts;
   if (isCenterAdmin) {
     filteredCohorts = batchList;
