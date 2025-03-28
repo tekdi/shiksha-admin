@@ -386,7 +386,7 @@ export default function MapYouth() {
                     },
                   }}
                   primary={user.name}
-                  secondary={user.enrollmentNumber}
+                  // secondary={user.enrollmentNumber}
                 />
                 <Checkbox
                   edge="end"

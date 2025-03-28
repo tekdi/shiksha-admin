@@ -169,13 +169,11 @@ const State: React.FC = () => {
       const filteredStateData = statecohortDetails
         .map((stateDetail: any) => {
           const transformedName = transformLabel(stateDetail.name);
-          console.log("transformedName", transformedName);
 
           const matchingState = stateDataOption.find(
             (state: { label: string }) =>
               state?.label?.toLowerCase() === transformedName?.toLowerCase()
           );
-          console.log("matchingState", matchingState);
           return {
             label: transformedName,
             value: matchingState ? matchingState.value : null,
@@ -193,7 +191,6 @@ const State: React.FC = () => {
         .filter((state: { label: any }) =>
           stateNameArray.includes(state?.label?.toLowerCase())
         );
-      console.log("filteredStateData", filteredStateData);
 
       setStateData(filteredStateData);
 
@@ -367,7 +364,9 @@ const State: React.FC = () => {
         queryClient.invalidateQueries({
           queryKey: [QueryKeys.FIELD_OPTION_READ, "STATE", searchKeyword],
         });
+        await getStatecohorts();
         fetchStateData();
+        filteredCohortOptionData();
       }
     } catch (error) {
       console.error("Error creating/updating state:", error);
@@ -414,7 +413,7 @@ const State: React.FC = () => {
       const response = await createOrUpdateOption(fieldId, newEntity, t);
       if (response) {
         // if (type === "block") {
-        //   filteredCohortOptionData();
+        filteredCohortOptionData();
         // }
         // queryClient.invalidateQueries({
         //   queryKey: [
@@ -527,7 +526,7 @@ const State: React.FC = () => {
   );
   useEffect(() => {
     if (stateValueForDelete) {
-      getDistrictDataCohort();
+      // getDistrictDataCohort();
     }
   }, [stateValueForDelete]);
   return (

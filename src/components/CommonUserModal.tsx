@@ -474,7 +474,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
         if (isEditModal && userId) {
           const userData = {
             name: apiBody?.name,
-            mobile: String(apiBody?.phone_number),
+            mobile: String(apiBody?.mobile),
             father_name: apiBody?.father_name,
             email: apiBody?.email,
             updatedBy: localStorage.getItem("userId"),

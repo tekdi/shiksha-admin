@@ -531,13 +531,25 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
 
     // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
   };
+
+  const reqBody = {
+    limit: 0,
+    offset: 0,
+    filters: {
+      type: "CENTER",
+      status: ["active"],
+      // center: code,
+    },
+  };
+
+  const response1 = getCenterList(reqBody);
+  // setBatches(response1?.result?.results?.cohortDetails);
+  const centerList = response1?.result?.results?.cohortDetails;
   let filteredCohorts;
   if (isCenterAdmin) {
     filteredCohorts = batchList;
   } else {
-    filteredCohorts = cohorts?.filter((cohort: any) =>
-      cohort?.label?.toLowerCase().includes(searchInput)
-    );
+    filteredCohorts = centerList;
   }
 
   const formattedCohorts = filteredCohorts?.map((location: any) => ({

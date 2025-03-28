@@ -76,6 +76,7 @@ export function OpportunitiesList({
   const [isAdmin, setIsAdmin] = useState(false);
   const [rejection_reason, setReason] = useState<string>("");
   const [selected, setSelected] = useState("");
+  const [openApproveModal, setOpenApproveModal] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -203,6 +204,31 @@ export function OpportunitiesList({
       await updateOpportunity(opportunity_id, { status });
       showToastMessage("Opportunity approved successfully!");
       router.reload();
+    }
+  };
+  const handleApproveClick = (
+    opportunity: any,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.stopPropagation();
+    setSelectedOpportunity(opportunity);
+    setOpenApproveModal(true);
+  };
+
+  const handleApproveConfirm = async () => {
+    if (selectedOpportunity) {
+      try {
+        await updateOpportunity(selectedOpportunity.id, {
+          status: "approved",
+        });
+        showToastMessage("Opportunity approved successfully!");
+        setOpenApproveModal(false);
+        setSelectedOpportunity(null);
+        // Reload or refresh the opportunities list
+      } catch (error) {
+        console.error("Error approving opportunity:", error);
+        showToastMessage("Failed to approve opportunity.", "error");
+      }
     }
   };
 
@@ -410,14 +436,25 @@ export function OpportunitiesList({
                       />
                     )}
                   </Box>
+                  {opportunity?.status === "approved" && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 2,
+                        marginTop: "10px",
+                      }}
+                    >
+                      <Box>{`Hired ${opportunity?.stats?.hired}`}</Box>
+                      <Box>{`Rejected ${opportunity?.stats?.rejected}`}</Box>
+                    </Box>
+                  )}
                 </CardContent>
 
                 {isAdmin && opportunity.status === "pending" && (
                   <Box display={"flex"} gap={"10px"}>
                     <Button
                       onClick={(e) => {
-                        e.stopPropagation();
-                        handleApproveReject(opportunity.id, "approved", e);
+                        handleApproveClick(opportunity, e);
                       }}
                       fullWidth
                       variant="contained"
@@ -474,7 +511,6 @@ export function OpportunitiesList({
           </Grid>
         )}
       </Grid>
-
       <Modal open={openModal}>
         <Box
           pt={3}
@@ -705,6 +741,51 @@ export function OpportunitiesList({
           </Box>
         </Box>
       </Modal>
+      <Modal open={openApproveModal} onClose={() => setOpenApproveModal(false)}>
+        <Box
+          sx={{
+            position: "absolute", // Fixed the syntax here
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "white",
+            borderRadius: "8px",
+            p: 3,
+            width: "400px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h6">Confirm Approval</Typography>
+            <CloseIcon
+              onClick={() => setOpenApproveModal(false)}
+              sx={{ cursor: "pointer" }}
+            />
+          </Box>
+          <Typography mt={2}>
+            Are you sure you want to approve this opportunity?
+          </Typography>
+          <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
+            <Button
+              variant="outlined"
+              onClick={() => setOpenApproveModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleApproveConfirm}
+            >
+              Approve
+            </Button>
+          </Box>
+        </Box>
+      </Modal>{" "}
     </>
   );
 }
