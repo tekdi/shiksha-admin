@@ -70,7 +70,7 @@ export function OpportunitiesList({
   const [openModal, setOpenModal] = useState(false);
   const [statusOptions, setStatusOptions] = useState<StatusOption[]>([]);
   const [loadingStatus, setLoadingStatus] = useState(true);
-  const [selectedOpportunity, setSelectedOpportunity] = useState<any>();
+  const [selectedOpportunity, setSelectedOpportunity] = useState<string>();
   const { t } = useTranslation();
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
