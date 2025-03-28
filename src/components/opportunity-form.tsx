@@ -19,6 +19,7 @@ import {
   Switch,
   RadioGroup,
   Radio,
+  Checkbox,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -120,7 +121,7 @@ export function OpportunityForm({
     opportunity_type: "",
     work_nature: "",
     benefits: [],
-    offer_letter_provided: "No",
+    offer_letter_provided: "",
     pricing_type: "",
     ...initialData,
   };
@@ -269,7 +270,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.country}>
-                  <InputLabel>{t("OPPORTUNITY.COUNTRY")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.COUNTRY")}</InputLabel>
                   <Select {...field} label={t("OPPORTUNITY.COUNTRY")}>
                     {countries.map((item) => (
                       <MenuItem key={item.country} value={item.country}>
@@ -287,7 +288,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.state}>
-                  <InputLabel>{t("OPPORTUNITY.COUNTY")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.COUNTY")}</InputLabel>
                   <Select
                     {...field}
                     label={t("OPPORTUNITY.COUNTY")}
@@ -309,7 +310,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.city}>
-                  <InputLabel>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
                   <Select
                     label={t("OPPORTUNITY.SUBCOUNTY")}
                     {...field}
@@ -331,7 +332,9 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.company}>
-                  <InputLabel>{t("OPPORTUNITY.ORGANISATION")}</InputLabel>
+                  <InputLabel required>
+                    {t("OPPORTUNITY.ORGANISATION")}
+                  </InputLabel>
                   <Select
                     {...field}
                     label={t("OPPORTUNITY.ORGANISATION")}
@@ -356,7 +359,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.category}>
-                  <InputLabel>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
                   <Select
                     {...field}
                     label={t("OPPORTUNITY.CATEGORY")}
@@ -380,12 +383,12 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.opportunity_type}>
-                  <InputLabel>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
                   <Select {...field} label={t("OPPORTUNITY.ROLETYPE")}>
                     {["part-time", "full-time", "intern", "attachment"].map(
                       (role) => (
                         <MenuItem key={role} value={role}>
-                          {role}
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
                         </MenuItem>
                       )
                     )}
@@ -405,7 +408,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl component="fieldset">
-                  <FormLabel component="legend">
+                  <FormLabel component="legend" required>
                     {t("OPPORTUNITY.OFFER_LETTER_PROVIDED")}
                   </FormLabel>
                   <RadioGroup
@@ -441,7 +444,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl component="fieldset">
-                  <FormLabel component="legend">
+                  <FormLabel component="legend" required>
                     {t("OPPORTUNITY.PRICING_TYPE")}
                   </FormLabel>
                   <RadioGroup
@@ -472,14 +475,24 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.benefits}>
-                  <InputLabel>{t("OPPORTUNITY.BENIFITS")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.BENIFITS")}</InputLabel>
                   <Select
                     label={t("OPPORTUNITY.BENIFITS")}
                     {...field}
                     multiple
-                    value={field.value || ""} // Ensure single select
-                    onChange={(event) => field.onChange(event.target.value)} // Set single value
+                    value={field.value || []} // Ensure it's an array for multiselect
+                    onChange={(event) => field.onChange(event.target.value)} // Update selected values
                     input={<OutlinedInput label="Benefits" />}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => {
+                          const benefit = benefits.find((b) => b.id === value);
+                          return benefit ? (
+                            <Chip key={value} label={benefit.name} />
+                          ) : null;
+                        })}
+                      </Box>
+                    )}
                     MenuProps={{
                       PaperProps: {
                         sx: {
@@ -491,6 +504,7 @@ export function OpportunityForm({
                   >
                     {benefits.map((benefit) => (
                       <MenuItem key={benefit.id} value={benefit.id}>
+                        <Checkbox checked={field.value?.includes(benefit.id)} />
                         {benefit.name}
                       </MenuItem>
                     ))}
@@ -536,6 +550,7 @@ export function OpportunityForm({
                   error={!!errors.max_salary}
                   helperText={errors.max_salary?.message}
                   type="number"
+                  required
                 />
               )}
             />
@@ -547,7 +562,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.work_nature}>
-                  <InputLabel>
+                  <InputLabel required>
                     {t("OPPORTUNITY.WORK_EXPERIENCE_NATURE")}
                   </InputLabel>
                   <Select
@@ -576,7 +591,7 @@ export function OpportunityForm({
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth error={!!errors.skills}>
-                  <InputLabel>{t("OPPORTUNITY.SKILLS")}</InputLabel>
+                  <InputLabel required>{t("OPPORTUNITY.SKILLS")}</InputLabel>
                   <Select
                     {...field}
                     label={t("OPPORTUNITY.SKILLS")}
@@ -595,6 +610,7 @@ export function OpportunityForm({
                   >
                     {skills.map((skill) => (
                       <MenuItem key={skill.id} value={skill.id}>
+                        <Checkbox checked={field.value?.includes(skill.id)} />
                         {skill.name}
                       </MenuItem>
                     ))}
@@ -621,6 +637,7 @@ export function OpportunityForm({
                   helperText={errors.no_of_candidates?.message}
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                  required
                 />
               )}
             />
