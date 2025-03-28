@@ -274,13 +274,6 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
       const cohortData = await createCohort(cohortDetails, t);
       if (cohortData) {
         showToastMessage(t("BATCHES.BATCH_CREATED"), "success");
-        setStartMonth("");
-        setStartYear("");
-        setStartMonth("");
-        setEndYear("");
-        setBatchName("");
-        setAdditionalText("");
-        setCustomFormData("");
         const windowUrl = window.location.pathname;
         const cleanedUrl = windowUrl.replace(/^\//, "");
         const env = cleanedUrl.split("/")[0];
@@ -330,43 +323,14 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     const selectedMonth = event.target.value;
     setStartMonth(selectedMonth);
 
-    // Revalidate the batch name
     if (endMonth && startYear && endYear) {
-      const startIndex = months.findIndex((m) => m.value === selectedMonth);
-      const endIndex = months.findIndex((m) => m.value === endMonth);
-
-      if (startYear === endYear && endIndex <= startIndex) {
-        alert("End month must be after the start month.");
-        return;
-      }
       validateAndSetBatchName(selectedMonth, endMonth, startYear, endYear);
-    }
-  };
-
-  const handleStartYearChange = (event: SelectChangeEvent<string>) => {
-    const selectedYear = event.target.value;
-    setStartYear(selectedYear);
-
-    // Revalidate the batch name
-    if (startMonth && endMonth && endYear) {
-      const startIndex = months.findIndex((m) => m.value === startMonth);
-      const endIndex = months.findIndex((m) => m.value === endMonth);
-
-      if (
-        selectedYear > endYear ||
-        (selectedYear === endYear && endIndex <= startIndex) // If same year, end month must be after start month
-      ) {
-        alert("End date must be after the start date.");
-        return;
-      }
-      validateAndSetBatchName(startMonth, endMonth, selectedYear, endYear);
     }
   };
 
   const handleEndMonthChange = (event: SelectChangeEvent<string>) => {
     const selectedMonth = event.target.value;
 
-    // Validate end month
     if (startMonth && startYear && endYear) {
       const startIndex = months.findIndex((m) => m.value === startMonth);
       const endIndex = months.findIndex((m) => m.value === selectedMonth);
@@ -384,19 +348,24 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     }
   };
 
+  const handleStartYearChange = (event: SelectChangeEvent<string>) => {
+    const selectedYear = event.target.value;
+    setStartYear(selectedYear);
+
+    if (startMonth && endMonth && endYear) {
+      validateAndSetBatchName(startMonth, endMonth, selectedYear, endYear);
+    }
+  };
+
   const handleEndYearChange = (event: SelectChangeEvent<string>) => {
     const selectedYear = event.target.value;
 
-    // Validate end year
-    if (startYear && startMonth && endMonth) {
+    if (startYear && startMonth && selectedYear === startYear) {
       const startIndex = months.findIndex((m) => m.value === startMonth);
       const endIndex = months.findIndex((m) => m.value === endMonth);
 
-      if (
-        selectedYear < startYear || // End year must be greater than start year
-        (selectedYear === startYear && endIndex <= startIndex) // If same year, end month must be after start month
-      ) {
-        alert("End date must be after the start date.");
+      if (endIndex <= startIndex) {
+        alert("End month must be after the start month.");
         return;
       }
     }
