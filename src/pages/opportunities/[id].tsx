@@ -115,7 +115,8 @@ export default function OpportunityDetailPage() {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
                   <Typography variant="body2" mb={0}>
-                    {opportunity.location.city}
+                    {opportunity.location.city} (
+                    {opportunity.is_remote ? "Remote" : "On-site"})
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -282,24 +283,6 @@ export default function OpportunityDetailPage() {
                     </Typography>
                     <Typography variant="body1">
                       {opportunity.opportunity_type}
-                    </Typography>
-                  </Box>
-                  <Divider />
-                  <Box sx={{ py: 1.5 }}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Work Mode
-                    </Typography>
-                    <Typography variant="body1">
-                      {opportunity.work_nature}
-                    </Typography>
-                  </Box>
-                  <Divider />
-                  <Box sx={{ py: 1.5 }}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Experience level
-                    </Typography>
-                    <Typography variant="body1">
-                      {opportunity.experience_level}
                     </Typography>
                   </Box>
                 </CardContent>

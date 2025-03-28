@@ -24,16 +24,12 @@ interface MultipleSelectCheckmarksProps {
   codes: string[];
   tagName: string;
   selectedCategories: string[];
-  onCategoryChange: (
-    selectedNames: string[],
-    selectedCodes: string[],
-    selectedCohortId?: any
-  ) => void;
+  onCategoryChange: (selectedNames: string[], selectedCodes: string[], selectedCohortId?: any) => void;
   disabled?: boolean;
   overall?: boolean;
   defaultValue?: string;
-  width?: any;
-  cohortIds?: any;
+  width?:any
+  cohortIds?:any
 }
 
 const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
@@ -46,7 +42,7 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
   overall = false,
   defaultValue,
   width,
-  cohortIds,
+  cohortIds
 }) => {
   const { t } = useTranslation();
   const isSmallScreen = useMediaQuery((theme: any) =>
@@ -72,8 +68,8 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
     );
     const selectedCohortId = selectedNames?.map(
       (name) => cohortIds?.[names?.indexOf(name)]
-    );
-    //const selectedCohortId="";
+    ); 
+//const selectedCohortId="";
     onCategoryChange(selectedNames, selectedCodes, selectedCohortId);
   };
 
@@ -91,7 +87,7 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
                 : ""
               : selectedCategories
           }
-          sx={{ width: width ? width : undefined }}
+          sx={{ width: width? width:undefined }}
           onChange={handleChange}
           input={<OutlinedInput label={tagName} />}
           renderValue={(selected) => {
@@ -102,7 +98,11 @@ const MultipleSelectCheckmarks: React.FC<MultipleSelectCheckmarksProps> = ({
           }}
           MenuProps={MenuProps}
         >
-          {overall && <MenuItem value="all">{t("COMMON.ALL")}</MenuItem>}
+          {overall && (
+            <MenuItem value="all">
+              <em>{t("COMMON.ALL")}</em>
+            </MenuItem>
+          )}
 
           {names?.map((name) => (
             <MenuItem key={name} value={name}>
