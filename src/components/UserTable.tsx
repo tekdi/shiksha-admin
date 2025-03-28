@@ -165,9 +165,9 @@ const UserTable: React.FC<UserTableProps> = ({
   const [cohortsFetched, setCohortsFetched] = useState(false);
   const { t } = useTranslation();
   const [pageSize, setPageSize] = React.useState<string | number>("10");
-  const [sortBy, setSortBy] = useState(["name", "asc"]);
+  const [sortBy, setSortBy] = useState(["firstName", "asc"]);
   const [sortByForCohortMemberList, setsortByForCohortMemberList] = useState([
-    "name",
+    "firstName",
     SORT.ASCENDING,
   ]);
   const [statusValue, setStatusValue] = useState(Status.ACTIVE);
@@ -647,15 +647,15 @@ const UserTable: React.FC<UserTableProps> = ({
     // let sort;
     if (event.target?.value === "Z-A") {
       enableCenterFilter
-        ? setsortByForCohortMemberList(["name", SORT.DESCENDING])
-        : setSortBy(["name", SORT.DESCENDING]);
+        ? setsortByForCohortMemberList(["firstName", SORT.DESCENDING])
+        : setSortBy(["firstName", SORT.DESCENDING]);
     } else if (event.target?.value === "A-Z") {
       enableCenterFilter
-        ? setsortByForCohortMemberList(["name", SORT.ASCENDING])
-        : setSortBy(["name", SORT.ASCENDING]);
+        ? setsortByForCohortMemberList(["firstName", SORT.ASCENDING])
+        : setSortBy(["firstName", SORT.ASCENDING]);
     } else {
       enableCenterFilter
-        ? setsortByForCohortMemberList(["name", SORT.ASCENDING])
+        ? setsortByForCohortMemberList(["firstName", SORT.ASCENDING])
         : setSortBy(["createdAt", SORT.ASCENDING]);
     }
 
