@@ -65,8 +65,6 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
     theme.breakpoints.down("sm")
   );
 
-  console.log(data, "data----------");
-
   const handleCheckboxChange = (rowId: number) => {
     setSelectedRowIds((prevSelected) =>
       prevSelected.includes(rowId)
