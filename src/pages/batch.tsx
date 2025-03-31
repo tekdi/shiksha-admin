@@ -64,6 +64,9 @@ import { useRouter } from "next/router";
 import { telemetryFactory } from "@/utils/telemetry";
 import useStore from "@/store/store";
 import axios from "axios";
+import AreaSelection from "../components/AreaSelection";
+import { transformArray } from "../utils/Helper";
+import { useLocationState } from "@/utils/useLocationState";
 type cohortFilterDetails = {
   city?: string;
   country?: string;
@@ -105,9 +108,15 @@ const Center: React.FC = () => {
   const getUserStateName = state ? state.value : null;
   const stateCode = state ? state?.code : null;
   // handle states
-  const [selectedState, setSelectedState] = React.useState<string[]>([]);
-  const [selectedDistrict, setSelectedDistrict] = React.useState<string[]>([]);
-  const [selectedBlock, setSelectedBlock] = React.useState<string[]>([]);
+  const [selectedStateForFilter, setSelectedState] = React.useState<string[]>(
+    []
+  );
+  const [selectedDistrictForFilter, setSelectedDistrict] = React.useState<
+    string[]
+  >([]);
+  const [selectedBlockForFilter, setSelectedBlock] = React.useState<string[]>(
+    []
+  );
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [selectedFilter, setSelectedFilter] = useState("Active");
   const [cohortData, setCohortData] = useState<cohortFilterDetails[]>([]);
@@ -135,9 +144,9 @@ const Center: React.FC = () => {
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [pagination, setPagination] = useState(true);
   const [sortBy, setSortBy] = useState(["name", "asc"]);
-  const [selectedStateCode, setSelectedStateCode] = useState("");
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState("");
-  const [selectedBlockCode, setSelectedBlockCode] = useState("");
+  const [selectedStateCodeForFilter, setSelectedStateCode] = useState("");
+  const [selectedDistrictCodeForFilter, setSelectedDistrictCode] = useState("");
+  const [selectedBlockCodeForFilter, setSelectedBlockCode] = useState("");
   const [formdata, setFormData] = useState<any>();
   const [totalCount, setTotalCound] = useState<number>(0);
   const [editFormData, setEditFormData] = useState<any>([]);
@@ -155,6 +164,9 @@ const Center: React.FC = () => {
   const [additionalText, setAdditionalText] = useState<string>("");
   const [batchName, setBatchName] = useState<string>("");
   const [customFormData, setCustomFormData] = useState<any>();
+  const [selectedCountryForEdit, setSelectedCountryForEdit] = useState<any>();
+  const [selectedStateForEdit, setSelectedStateForEdit] = useState<any>();
+  const [selectedCityForEdit, setSelectedCityForEdit] = useState<any>();
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
   );
@@ -213,9 +225,9 @@ const Center: React.FC = () => {
   );
   const [filters, setFilters] = useState<cohortFilterDetails>({
     type: CohortTypes.BATCH,
-    country: selectedStateCode,
+    country: selectedStateCodeForFilter,
     status: [statusValue],
-    states: selectedDistrictCode,
+    states: selectedDistrictCodeForFilter,
   });
   const handleCloseAddLearnerModal = () => {
     setOpenAddNewCohort(false);
@@ -224,6 +236,39 @@ const Center: React.FC = () => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  const {
+    country,
+    states,
+    districts,
+    blocks,
+    allCenters,
+    // isMobile,
+    isMediumScreen,
+    selectedState,
+    selectedStateCode,
+    selectedDistrict,
+    selectedDistrictCode,
+    selectedCenter,
+    dynamicForm,
+    selectedBlock,
+    selectedBlockCode,
+    selectedCenterId,
+    handleCountryChangeWrapper,
+    handleStateChangeWrapper,
+    handleBlockChangeWrapper,
+    handleCenterChangeWrapper,
+    selectedCenterCode,
+    selectedBlockCohortId,
+    blockFieldId,
+    districtFieldId,
+    stateFieldId,
+    centerFieldId,
+    dynamicFormForBlock,
+    stateDefaultValue,
+    assignedTeamLeader,
+    assignedTeamLeaderNames,
+    selectedStateCohortId,
+  } = useLocationState(true, "Center Admin");
 
   const getAdminInformation = () => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -638,13 +683,13 @@ const Center: React.FC = () => {
     if (selected[0] === "" || selected[0] === t("COMMON.ALL_DISTRICTS")) {
       if (filters.status) {
         setFilters({
-          country: selectedStateCode,
+          country: selectedStateCodeForFilter,
           status: filters.status,
           type: "COHORT",
         });
       } else {
         setFilters({
-          country: selectedStateCode,
+          country: selectedStateCodeForFilter,
           type: "COHORT",
         });
       }
@@ -655,7 +700,7 @@ const Center: React.FC = () => {
         pathname: router.pathname,
         query: {
           ...newQuery,
-          state: selectedStateCode,
+          state: selectedStateCodeForFilter,
         },
       });
     } else {
@@ -663,7 +708,7 @@ const Center: React.FC = () => {
         pathname: router.pathname,
         query: {
           ...newQuery,
-          state: selectedStateCode,
+          state: selectedStateCodeForFilter,
           district: code?.join(","),
         },
       });
@@ -671,14 +716,14 @@ const Center: React.FC = () => {
       setSelectedDistrictCode(districts);
       if (filters.status) {
         setFilters({
-          country: selectedStateCode,
+          country: selectedStateCodeForFilter,
           states: districts,
           status: filters.status,
           //type:"COHORT",
         });
       } else {
         setFilters({
-          country: selectedStateCode,
+          country: selectedStateCodeForFilter,
           states: districts,
           // type:"COHORT",
         });
@@ -707,21 +752,21 @@ const Center: React.FC = () => {
         pathname: router.pathname,
         query: {
           ...newQuery,
-          state: selectedStateCode,
-          district: selectedDistrictCode,
+          state: selectedStateCodeForFilter,
+          district: selectedDistrictCodeForFilter,
         },
       });
       if (filters.status) {
         setFilters({
-          country: selectedStateCode,
-          states: selectedDistrictCode,
+          country: selectedStateCodeForFilter,
+          states: selectedDistrictCodeForFilter,
           status: filters.status,
           type: "COHORT",
         });
       } else {
         setFilters({
-          country: selectedStateCode,
-          states: selectedDistrictCode,
+          country: selectedStateCodeForFilter,
+          states: selectedDistrictCodeForFilter,
           type: "COHORT",
         });
       }
@@ -730,8 +775,8 @@ const Center: React.FC = () => {
         pathname: router.pathname,
         query: {
           ...newQuery,
-          state: selectedStateCode,
-          district: selectedDistrictCode,
+          state: selectedStateCodeForFilter,
+          district: selectedDistrictCodeForFilter,
           block: code?.join(","),
         },
       });
@@ -739,16 +784,16 @@ const Center: React.FC = () => {
       setSelectedBlockCode(blocks);
       if (filters.status) {
         setFilters({
-          country: selectedStateCode,
-          states: selectedDistrictCode,
+          country: selectedStateCodeForFilter,
+          states: selectedDistrictCodeForFilter,
           city: blocks,
           status: filters.status,
           type: "COHORT",
         });
       } else {
         setFilters({
-          country: selectedStateCode,
-          states: selectedDistrictCode,
+          country: selectedStateCodeForFilter,
+          states: selectedDistrictCodeForFilter,
           city: blocks,
           type: "COHORT",
         });
@@ -932,6 +977,20 @@ const Center: React.FC = () => {
       const cohortDetails = resp?.results?.cohortDetails?.[0] || {};
 
       setEditFormData(mapFields(batchFormData, cohortDetails));
+      const selectedCountryForEdit =
+        cohortDetails.customFields?.find((field) => field.label === "COUNTRY")
+          ?.value || "";
+      setSelectedCountryForEdit(selectedCountryForEdit);
+
+      const selectedStateForEdit =
+        cohortDetails.customFields?.find((field) => field.label === "STATES")
+          ?.value || "";
+      setSelectedStateForEdit(selectedStateForEdit);
+
+      const selectedCityForEdit =
+        cohortDetails.customFields?.find((field) => field.label === "CITY")
+          ?.value || "";
+      setSelectedCityForEdit(selectedCityForEdit);
       setLoading(false);
       setIsEditForm(true);
     }
@@ -985,8 +1044,37 @@ const Center: React.FC = () => {
     const formData = data?.formData;
     const schemaProperties = schema.properties;
 
+    console.log(selectedStateCode, "------");
+    console.log(selectedDistrictCode, "----------");
+    console.log(selectedBlockCode, "-----------");
+
     const apiBody: any = {
-      customFields: [],
+      customFields: [
+        ...(selectedStateCode
+          ? [
+              {
+                fieldId: stateFieldId,
+                value: [selectedStateCode],
+              },
+            ]
+          : []),
+        ...(selectedDistrictCode
+          ? [
+              {
+                fieldId: districtFieldId,
+                value: [selectedDistrictCode],
+              },
+            ]
+          : []),
+        ...(selectedBlockCode
+          ? [
+              {
+                fieldId: blockFieldId,
+                value: [selectedBlockCode],
+              },
+            ]
+          : []),
+      ],
     };
     Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
       const fieldSchema = schemaProperties[fieldKey];
@@ -1122,26 +1210,26 @@ const Center: React.FC = () => {
               setSelectedState([stateField.value]);
               setSelectedStateCode(stateField.code);
               if (
-                selectedDistrictCode &&
-                selectedDistrict.length !== 0 &&
-                selectedDistrict[0] !== t("COMMON.ALL_DISTRICTS")
+                selectedDistrictCodeForFilter &&
+                selectedDistrictForFilter.length !== 0 &&
+                selectedDistrictForFilter[0] !== t("COMMON.ALL_DISTRICTS")
               ) {
                 setFilters({
                   states: stateField.code,
-                  districts: selectedDistrictCode,
+                  districts: selectedDistrictCodeForFilter,
                   status: filters.status,
                   type: CohortTypes.COHORT,
                 });
               }
               if (
-                selectedBlockCode &&
-                selectedBlock.length !== 0 &&
-                selectedBlock[0] !== t("COMMON.ALL_BLOCKS")
+                selectedBlockCodeForFilter &&
+                selectedBlockForFilter.length !== 0 &&
+                selectedBlockForFilter[0] !== t("COMMON.ALL_BLOCKS")
               ) {
                 setFilters({
                   states: stateField.code,
-                  districts: selectedDistrictCode,
-                  blocks: selectedBlockCode,
+                  districts: selectedDistrictCodeForFilter,
+                  blocks: selectedBlockCodeForFilter,
                   status: filters.status,
                   type: CohortTypes.COHORT,
                 });
@@ -1155,7 +1243,7 @@ const Center: React.FC = () => {
     };
 
     fetchData();
-  }, [selectedBlockCode, selectedDistrictCode]);
+  }, [selectedBlockCodeForFilter, selectedDistrictCodeForFilter]);
 
   const handleMemberClick = async (
     type: "active" | "archived",
@@ -1230,13 +1318,13 @@ const Center: React.FC = () => {
   const userProps = {
     userType: t("SIDEBAR.BATCHES"),
     searchPlaceHolder: t("BATCHES.SEARCHBAR_PLACEHOLDER"),
-    selectedState: selectedState,
-    selectedStateCode: selectedStateCode,
-    selectedDistrict: selectedDistrict,
+    selectedState: selectedStateForFilter,
+    selectedStateCode: selectedStateCodeForFilter,
+    selectedDistrict: selectedDistrictForFilter,
     showStateDropdown: false,
     // selectedDistrictCode: selectedDistrictCode,
     // selectedBlockCode: selectedBlockCode,
-    selectedBlock: selectedBlock,
+    selectedBlock: selectedBlockForFilter,
     selectedSort: selectedSort,
     selectedFilter: selectedFilter,
     handleStateChange: handleStateChange,
@@ -1250,9 +1338,9 @@ const Center: React.FC = () => {
     statusValue: statusValue,
     setStatusValue: setStatusValue,
     showSort: true,
-    selectedBlockCode: selectedBlockCode,
+    selectedBlockCode: selectedBlockCodeForFilter,
     setSelectedBlockCode: setSelectedBlockCode,
-    selectedDistrictCode: selectedDistrictCode,
+    selectedDistrictCode: selectedDistrictCodeForFilter,
     setSelectedDistrictCode: setSelectedDistrictCode,
     setSelectedStateCode: setSelectedStateCode,
     setSelectedDistrict: setSelectedDistrict,
@@ -1440,6 +1528,50 @@ const Center: React.FC = () => {
                 marginTop: "10px",
               }}
             >
+              <AreaSelection
+                country={transformArray(country)}
+                states={transformArray(states)}
+                districts={transformArray(districts)}
+                blocks={transformArray(blocks)}
+                selectedState={
+                  selectedState.length > 0
+                    ? selectedState
+                    : [
+                        selectedCountryForEdit
+                          ? capitalizeFirstLetter(selectedCountryForEdit)
+                          : selectedCountryForEdit,
+                      ]
+                }
+                selectedDistrict={
+                  selectedDistrict.length > 0
+                    ? selectedDistrict
+                    : [
+                        selectedStateForEdit
+                          ? capitalizeFirstLetter(selectedStateForEdit)
+                          : selectedStateForEdit,
+                      ]
+                }
+                selectedBlock={
+                  selectedBlock.length > 0
+                    ? selectedBlock
+                    : [
+                        selectedCityForEdit
+                          ? capitalizeFirstLetter(selectedCityForEdit)
+                          : selectedCityForEdit,
+                      ]
+                }
+                handleCountryChangeWrapper={handleCountryChangeWrapper}
+                handleStateChangeWrapper={handleStateChangeWrapper}
+                handleBlockChangeWrapper={handleBlockChangeWrapper}
+                isMobile={isMobile}
+                isMediumScreen={true}
+                iscenterCreate={true}
+                // allCenters={allCenters}
+                // selectedCenter={selectedCenter}
+                // handleCenterChangeWrapper={handleCenterChangeWrapper}
+                inModal={true}
+                // stateDefaultValue={stateDefaultValue}
+              />
               <Typography variant="h6">Select Months and Years</Typography>
               <Box sx={{ display: "flex", gap: "16px" }}>
                 <Select
