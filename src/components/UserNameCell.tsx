@@ -48,7 +48,9 @@ const UserNameCell = ({ userId }: { userId: string }) => {
   return (
     <div>
       {userName ? (
-        `${firstLetterInUpperCase(userName)} ${firstLetterInUpperCase(userLastName)}`
+        `${firstLetterInUpperCase(userName)}${
+          userLastName ? ` ${firstLetterInUpperCase(userLastName)}` : ""
+        }`
       ) : (
         <Typography>-</Typography>
       )}
