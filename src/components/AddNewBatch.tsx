@@ -26,6 +26,7 @@ import FrameworkCategories from "./FrameworkCategories";
 import { showToastMessage } from "./Toastify";
 import { createOrUpdateOption } from "@/services/MasterDataService";
 import { SelectChangeEvent } from "@mui/material";
+import { log } from "node:console";
 
 interface CustomField {
   fieldId: string;
@@ -124,6 +125,8 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     (state: any) => state.setSubmittedButtonStatus
   );
 
+  console.log(selectedCenter, "selected Center-----------");
+
   const {
     data: batchFormData,
     isLoading: batchFormDataLoading,
@@ -148,6 +151,7 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
       fields: formResponse.fields.filter((field: any) => !field.isHidden),
     };
   }
+
   useEffect(() => {
     if (!open) {
       setShowForm(false);
@@ -414,10 +418,14 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     startYear: string,
     endYear: string
   ) => {
-    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear}`);
+    const centerPrefix = selectedCenter?.[0] || "";
+    const batchName =
+      `${centerPrefix} ${startMonth} ${startYear} - ${endMonth} ${endYear} ${additionalText}`.trim();
+
+    setBatchName(batchName);
     setCustomFormData((prevData: any) => ({
       ...prevData,
-      name: `${startMonth} ${startYear} - ${endMonth} ${endYear}`,
+      name: batchName,
     }));
   };
 
@@ -426,10 +434,14 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
   ) => {
     const text = event.target.value;
     setAdditionalText(text);
-    setBatchName(`${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`);
+    const centerPrefix = selectedCenter?.[0] || "";
+
+    setBatchName(
+      `${centerPrefix} ${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`
+    );
     setCustomFormData((prevData: any) => ({
       ...prevData,
-      name: `${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`,
+      name: `${centerPrefix} ${startMonth} ${startYear} - ${endMonth} ${endYear} ${text}`,
     }));
   };
 

@@ -187,6 +187,11 @@ const AreaSelection: React.FC<DropdownBoxProps> = ({
       }
     }
   }, [isCenterAdmin]);
+  useEffect(() => {
+    if (selectedState && selectedState.length > 0) {
+      handleCountryChangeWrapper;
+    }
+  }, [selectedState]);
 
   const isbatchselection = userType === "YOUTH";
   // isSmallScreen=isMobile?true: false;
