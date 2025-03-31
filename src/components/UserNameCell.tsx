@@ -7,6 +7,7 @@ import { firstLetterInUpperCase } from "./../utils/Helper";
 
 const UserNameCell = ({ userId }: { userId: string }) => {
   const [userName, setUserName] = useState<string | null>(null);
+  const [userLastName, setUserLastName] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -17,7 +18,9 @@ const UserNameCell = ({ userId }: { userId: string }) => {
           queryFn: () => getUserDetailsInfo(userId, false),
         });
 
-        const name = userDetails?.userData?.name;
+        const name = userDetails?.userData?.firstName;
+        const lastName = userDetails?.userData?.lastName;
+        setUserLastName(lastName);
         setUserName(name);
       } catch (error) {
         console.error("Error in fetching user name:", error);
@@ -44,7 +47,11 @@ const UserNameCell = ({ userId }: { userId: string }) => {
 
   return (
     <div>
-      {userName ? firstLetterInUpperCase(userName) : <Typography>-</Typography>}
+      {userName ? (
+        `${firstLetterInUpperCase(userName)} ${firstLetterInUpperCase(userLastName)}`
+      ) : (
+        <Typography>-</Typography>
+      )}
     </div>
   );
 };

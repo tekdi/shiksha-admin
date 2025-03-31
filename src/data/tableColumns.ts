@@ -100,8 +100,8 @@ export const getTLTableColumns = (
     // { key: "gender", titleKey: "TABLE_TITLE.GENDER", width: 90 },
     // { key: "district", titleKey: "TABLE_TITLE.DISTRICT_BLOCK", width: 150 },
     // { key: "blocks", titleKey: "TABLE_TITLE.BLOCK", width: 130 },
-    // { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
-    { key: "CreatedBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
+    { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
+    // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
     { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 160 },
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 160 },
   ];
@@ -155,7 +155,7 @@ export const getCenterTableData = (
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     { key: "location", titleKey: "TABLE_TITLE.LOCATION", width: 130 },
     // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
-    // { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
+    { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
     { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 130 },
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
@@ -191,15 +191,15 @@ export const getBatchTableData = (
     { key: "name", titleKey: "TABLE_TITLE.NAME", width: 130 },
     // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
     { key: "location", titleKey: "TABLE_TITLE.LOCATION", width: 130 },
-    // { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
+    { key: "createdBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     { key: "createdAt", titleKey: "TABLE_TITLE.CREATED_DATE", width: 130 },
     { key: "updatedAt", titleKey: "TABLE_TITLE.UPDATED_DATE", width: 130 },
 
-    // {
-    //   key: "totalActiveMembers",
-    //   titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
-    //   width: 130,
-    // },
+    {
+      key: "totalActiveMembers",
+      titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
+      width: 130,
+    },
     // {
     //   key: "totalArchivedMembers",
     //   titleKey: "TABLE_TITLE.ARCHIVED_LEARNERS",

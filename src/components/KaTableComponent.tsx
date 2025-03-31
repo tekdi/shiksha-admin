@@ -65,6 +65,8 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
     theme.breakpoints.down("sm")
   );
 
+  console.log(data, "data----------");
+
   const handleCheckboxChange = (rowId: number) => {
     setSelectedRowIds((prevSelected) =>
       prevSelected.includes(rowId)
@@ -92,7 +94,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
     <Paper>
       <div className="ka-table-wrapper">
         <Table
-         key={`${i18n.language}`}
+          key={`${i18n.language}`}
           {...tableProps}
           childComponents={{
             pagingSizes: {
@@ -135,7 +137,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                     />
                   );
                 }
-                 if (props.column.key === DataKey.CREATED_BY) {
+                if (props.column.key === DataKey.CREATED_BY) {
                   return <UserNameCell userId={props.rowData?.createdBy} />;
                 } else if (props.column.key === DataKey.UPDATED_BY) {
                   return <UserNameCell userId={props?.rowData?.updatedBy} />;

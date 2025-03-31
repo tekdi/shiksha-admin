@@ -913,6 +913,7 @@ const UserTable: React.FC<UserTableProps> = ({
           setData([]);
         }
         const result = isCenterAdmin ? resp?.userDetails : resp?.getUserDetails;
+
         if (resp?.totalCount >= 15) {
           setPagination(true);
 
@@ -1037,7 +1038,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 : "-",
               createdAt: new Date(user.createdAt).toISOString().split("T")[0],
               updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
-              CreatedBy: user.createdBy ? user.createdBy : "-",
+              createdBy: user.createdBy,
               updatedBy: user.updatedBy,
               stateCode: stateField?.code,
               districtCode: districtField?.code,
@@ -1058,7 +1059,6 @@ const UserTable: React.FC<UserTableProps> = ({
             if (!aStartsWith && bStartsWith) return 1;
             return 0;
           });
-
           setData(prioritizedResult);
         } else if (resp?.userDetails || resp?.getUserDetails) {
           setData(finalResult);
