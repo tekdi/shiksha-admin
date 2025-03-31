@@ -236,6 +236,12 @@ const Center: React.FC = () => {
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  const onClose = () => {
+    // Add any logic you want to execute when closing
+    console.log("onClose called");
+    setIsEditModalOpen(false); // Example: Close the edit modal
+    setIsEditForm(false); // Example: Close the edit form
+  };
   const {
     country,
     states,
@@ -268,7 +274,7 @@ const Center: React.FC = () => {
     assignedTeamLeader,
     assignedTeamLeaderNames,
     selectedStateCohortId,
-  } = useLocationState(true, "Center Admin");
+  } = useLocationState(true, onClose, "Center Admin");
 
   const getAdminInformation = () => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -978,17 +984,19 @@ const Center: React.FC = () => {
 
       setEditFormData(mapFields(batchFormData, cohortDetails));
       const selectedCountryForEdit =
-        cohortDetails.customFields?.find((field) => field.label === "COUNTRY")
-          ?.value || "";
+        cohortDetails.customFields?.find(
+          (field: any) => field.label === "COUNTRY"
+        )?.value || "";
       setSelectedCountryForEdit(selectedCountryForEdit);
 
       const selectedStateForEdit =
-        cohortDetails.customFields?.find((field) => field.label === "STATES")
-          ?.value || "";
+        cohortDetails.customFields?.find(
+          (field: any) => field.label === "STATES"
+        )?.value || "";
       setSelectedStateForEdit(selectedStateForEdit);
 
       const selectedCityForEdit =
-        cohortDetails.customFields?.find((field) => field.label === "CITY")
+        cohortDetails.customFields?.find((field: any) => field.label === "CITY")
           ?.value || "";
       setSelectedCityForEdit(selectedCityForEdit);
       setLoading(false);
