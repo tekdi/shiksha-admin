@@ -40,6 +40,7 @@ import { telemetryFactory } from "@/utils/telemetry";
 import { AddStateModal } from "@/components/AddStateModal";
 import useStore from "@/store/store";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import DownloadIcon from "@mui/icons-material/Download";
 export interface StateDetail {
   updatedAt: any;
   createdAt: any;
@@ -84,7 +85,9 @@ const State: React.FC = () => {
   const [userRole, setUserRole] = useState("");
   const [cohortIdForEdit, setCohortIdForEdit] = useState<any>();
   const [stateValueForDelete, setStateValueForDelete] = useState<any>("");
-
+  const [isExportingCSV, setIsExportingCSV] = useState<boolean | undefined>(
+    undefined
+  );
   const [countOfDistricts, setCountOfDistricts] = useState<number>(0);
   const [confirmationDialogOpen, setConfirmationDialogOpen] =
     useState<boolean>(false);
@@ -218,6 +221,99 @@ const State: React.FC = () => {
     pageOffset,
     sortBy,
   ]);
+
+  const fetchAllStateCohortsForCSV = async () => {
+    setIsExportingCSV(true);
+    let allData = [];
+
+    try {
+      const reqParams = {
+        limit: 0, // Fetch all data
+        offset: 0,
+        filters: {
+          name: searchKeyword,
+          type: "COUNTRY",
+          status: ["active"],
+        },
+        sort: sortBy,
+        includeDisplayValues: true,
+      };
+
+      const response = await getCohortList(reqParams);
+
+      const statecohortDetails = response?.results?.cohortDetails || [];
+      const filteredStateData = statecohortDetails
+        .map((stateDetail: any) => {
+          const transformedName = transformLabel(stateDetail.name);
+          const matchingState = stateDataOption.find(
+            (state: any) =>
+              state?.label?.toLowerCase() === transformedName?.toLowerCase()
+          );
+
+          return {
+            label: transformedName,
+            // value: matchingState ? matchingState.value : null,
+            createdAt: new Date(stateDetail.createdAt)
+              .toISOString()
+              .split("T")[0],
+            updatedAt: new Date(stateDetail.updatedAt)
+              .toISOString()
+              .split("T")[0],
+            createdBy: stateDetail.updatedByName,
+            updatedBy: stateDetail.createdByName,
+            // cohortId: stateDetail.cohortId,
+          };
+        })
+        .filter((state: any) =>
+          stateNameArray.includes(state?.label?.toLowerCase())
+        );
+
+      allData = filteredStateData;
+      setIsExportingCSV(false);
+      return allData;
+    } catch (error) {
+      console.error("Error fetching state cohorts for CSV:", error);
+      setIsExportingCSV(false);
+      return [];
+    }
+  };
+
+  const convertToCSV = (data: any[]) => {
+    if (data.length === 0) return "";
+
+    const headers = Object.keys(data[0]);
+    const csvRows = data.map((row) =>
+      headers
+        .map(
+          (field) => `"${(row[field] ?? "").toString().replace(/"/g, '""')}"`
+        )
+        .join(",")
+    );
+
+    return [headers.join(","), ...csvRows].join("\n");
+  };
+
+  const downloadCSV = (csvContent: string, filename = "export.csv") => {
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportStateCohortsCSV = async () => {
+    const allStateCohorts = await fetchAllStateCohortsForCSV();
+    if (allStateCohorts.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const csv = convertToCSV(allStateCohorts);
+    downloadCSV(csv, "country_export.csv");
+  };
 
   // const handleEdit = (rowData: StateDetail) => {
   //   setSelectedStateForEdit(rowData);
@@ -545,6 +641,32 @@ const State: React.FC = () => {
         handleAddUserClick={handleAddStateClick}
         handleDelete={handleDelete}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "12px",
+            marginRight: "10px",
+          }}
+        >
+          <button
+            onClick={handleExportStateCohortsCSV}
+            disabled={loading || isExportingCSV}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              backgroundColor: "#f5f5f5",
+              cursor: loading || isExportingCSV ? "not-allowed" : "pointer",
+            }}
+          >
+            <DownloadIcon />
+            {isExportingCSV ? "Exporting CSV" : "Export CSV"}
+          </button>
+        </Box>
         {loading ? (
           <Box
             width={"100%"}
