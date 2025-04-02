@@ -54,6 +54,8 @@ import {
 import CommonUserModal from "./CommonUserModal";
 import ReassignCenterModal from "./ReassignCenterModal";
 import { showToastMessage } from "./Toastify";
+import DownloadIcon from "@mui/icons-material/Download";
+
 type UserDetails = {
   userId: any;
   username: any;
@@ -197,7 +199,9 @@ const UserTable: React.FC<UserTableProps> = ({
   const [deleteUserState, setDeleteUserState] = useState(false);
   const [selectedCenter, setSelectedCenter] = useState<string[]>([]);
   const [selectedCenterCode, setSelectedCenterCode] = useState<string[]>([]);
-
+  const [isExportingCSV, setIsExportingCSV] = useState<boolean | undefined>(
+    undefined
+  );
   const [enableCenterFilter, setEnableCenterFilter] = useState<boolean>(
     center ? true : false
   );
@@ -873,212 +877,213 @@ const UserTable: React.FC<UserTableProps> = ({
     else setEnableCenterFilter(false);
   }, [center]);
 
-  useEffect(() => {
-    const fetchUserList = async () => {
-      setLoading(true);
-      try {
-        const fields = ["age", "districts", "states", "blocks", "gender"];
-        const limit = pageLimit;
-        let offset = pageOffset * limit;
-        const userData = JSON.parse(localStorage.getItem("adminInfo") || "{}");
-        const isCenterAdmin = userData?.role === "Center Admin";
+  const fetchUserList = async () => {
+    setLoading(true);
+    try {
+      const fields = ["age", "districts", "states", "blocks", "gender"];
+      const limit = pageLimit;
+      let offset = pageOffset * limit;
+      const userData = JSON.parse(localStorage.getItem("adminInfo") || "{}");
+      const isCenterAdmin = userData?.role === "Center Admin";
 
-        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
-        if (filters.firstName) {
-          offset = 0;
-        }
-        let resp;
-        if (enableCenterFilter || isCenterAdmin) {
-          const response = await getCohortList(userData.userId);
-          const filters = {
-            role: role,
-            status: [statusValue],
-            cohortId: response?.result?.cohortData[0]?.cohortId,
-          };
-
-          resp = await cohortMemberList({
-            limit,
-            filters,
-            sort,
-            offset,
-            fields,
-          });
-        } else {
-          resp = await userList({ limit, filters, sort, offset, fields });
-        }
-        if (!resp?.userDetails && enableCenterFilter) {
-          setData([]);
-          //showToastMessage("No data found", "info");
-        } else if (!resp?.getUserDetails) {
-          setData([]);
-        }
-        const result = isCenterAdmin ? resp?.userDetails : resp?.getUserDetails;
-
-        if (resp?.totalCount >= 15) {
-          setPagination(true);
-
-          setPageSizeArray([5, 10, 15]);
-        } else if (resp?.totalCount >= 10) {
-          setPagination(true);
-
-          // setPageSize(resp?.totalCount);
-          setPageSizeArray([5, 10]);
-        } else if (resp?.totalCount > 5) {
-          setPagination(false);
-
-          setPageSizeArray([5]);
-        } else if (resp?.totalCount <= 5) {
-          setPagination(false);
-          // setPageSize(resp?.totalCount);
-          //PageSizeSelectorFunction();
-        }
-
-        setPageCount(Math.ceil(resp?.totalCount / pageLimit));
-        let finalResult;
-        if (enableCenterFilter || center) {
-          finalResult = result?.map((user: any) => {
-            const ageField = user?.customField?.find(
-              (field: any) => field?.label === "AGE"
-            );
-            const genderField = user?.customField?.find(
-              (field: any) => field?.label === "GENDER"
-            );
-            const blockField = user?.customField?.find(
-              (field: any) => field?.label === "BLOCKS"
-            );
-            const districtField = user?.customField?.find(
-              (field: any) => field?.label === "DISTRICTS"
-            );
-            const stateField = user?.customField?.find(
-              (field: any) => field?.label === "STATES"
-            );
-            return {
-              userId: user?.userId,
-              username: user?.username,
-              status: user?.status,
-              name:
-                user?.firstName?.charAt(0).toUpperCase() +
-                user?.firstName?.slice(1).toLowerCase(),
-              role: user.role,
-              //  gender: user.gender,
-              mobile: user.mobile === "NaN" ? "-" : user.mobile,
-              age: ageField ? ageField?.value : "-",
-              district: districtField
-                ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
-                : "-",
-              state: stateField ? stateField?.value : "-",
-              blocks: blockField
-                ? firstLetterInUpperCase(blockField?.value)
-                : "-",
-              gender: user?.gender
-                ? user?.gender?.charAt(0)?.toUpperCase() +
-                  user?.gender?.slice(1).toLowerCase()
-                : "-",
-
-              //  createdAt: user?.createdAt,
-              //  updatedAt: user?.updatedAt,
-              createdBy: user?.createdBy,
-              updatedBy: user?.updatedBy,
-              stateCode: stateField?.code,
-              dob: user.dob ? user.dob : "-",
-
-              districtCode: districtField?.code,
-              blockCode: blockField?.code,
-              districtValue: districtField ? districtField?.value : "-",
-
-              // // centers: null,
-              // Programs: null,
-            };
-          });
-        } else {
-          finalResult = result?.map((user: any) => {
-            const ageField = user?.customFields?.find(
-              (field: any) => field?.label === "AGE"
-            );
-            const genderField = user?.customFields?.find(
-              (field: any) => field?.label === "GENDER"
-            );
-            const blockField = user?.customFields?.find(
-              (field: any) => field?.label === "BLOCKS"
-            );
-            const districtField = user?.customFields?.find(
-              (field: any) => field?.label === "DISTRICTS"
-            );
-            const stateField = user?.customFields?.find(
-              (field: any) => field?.label === "STATES"
-            );
-
-            return {
-              userId: user.userId,
-              username: user.username,
-              status: user.status,
-              dob: user.dob ? user.dob : "-",
-              name:
-                // user.name.charAt(0).toUpperCase() +
-                // user.name.slice(1).toLowerCase(),
-                getUserFullName(user) ?? "-",
-              role: user.role,
-              //  gender: user.gender,
-              mobile: user.mobile === "NaN" ? "-" : user?.mobile,
-              age: ageField ? ageField?.value : "-",
-              district: districtField
-                ? districtField?.value +
-                  " , " +
-                  firstLetterInUpperCase(blockField?.value)
-                : "-",
-              state: stateField ? stateField?.value : "-",
-              blocks: blockField
-                ? firstLetterInUpperCase(blockField?.value)
-                : "-",
-              gender: user?.gender
-                ? user?.gender?.charAt(0)?.toUpperCase() +
-                  user?.gender?.slice(1).toLowerCase()
-                : "-",
-              createdAt: new Date(user.createdAt).toISOString().split("T")[0],
-              updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
-              createdBy: user.createdBy,
-              updatedBy: user.updatedBy,
-              stateCode: stateField?.code,
-              districtCode: districtField?.code,
-              blockCode: blockField?.code,
-              districtValue: districtField ? districtField?.value : "-",
-              // centers: null,
-              // Programs: null,
-            };
-          });
-        }
-
-        if (filters?.name && resp?.getUserDetails) {
-          const prioritizedResult = finalResult.sort((a: any, b: any) => {
-            const aStartsWith = a.name.toLowerCase().startsWith(filters?.name);
-            const bStartsWith = b.name.toLowerCase().startsWith(filters?.name);
-
-            if (aStartsWith && !bStartsWith) return -1;
-            if (!aStartsWith && bStartsWith) return 1;
-            return 0;
-          });
-          setData(prioritizedResult);
-        } else if (resp?.userDetails || resp?.getUserDetails) {
-          setData(finalResult);
-        } else {
-          setData([]);
-        }
-
-        setLoading(false);
-        setCohortsFetched(false);
-      } catch (error: any) {
-        setLoading(false);
-
-        if (error?.response && error?.response.status === 404) {
-          setData([]);
-          //showToastMessage("No data found", "info");
-        }
-
-        console.log(error);
+      const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
+      if (filters.firstName) {
+        offset = 0;
       }
-    };
+      let resp;
+      if (enableCenterFilter || isCenterAdmin) {
+        const response = await getCohortList(userData.userId);
+        const filters = {
+          role: role,
+          status: [statusValue],
+          cohortId: response?.result?.cohortData[0]?.cohortId,
+        };
+
+        resp = await cohortMemberList({
+          limit,
+          filters,
+          sort,
+          offset,
+          fields,
+        });
+      } else {
+        resp = await userList({ limit, filters, sort, offset, fields });
+      }
+      if (!resp?.userDetails && enableCenterFilter) {
+        setData([]);
+        //showToastMessage("No data found", "info");
+      } else if (!resp?.getUserDetails) {
+        setData([]);
+      }
+      const result = isCenterAdmin ? resp?.userDetails : resp?.getUserDetails;
+
+      if (resp?.totalCount >= 15) {
+        setPagination(true);
+
+        setPageSizeArray([5, 10, 15]);
+      } else if (resp?.totalCount >= 10) {
+        setPagination(true);
+
+        // setPageSize(resp?.totalCount);
+        setPageSizeArray([5, 10]);
+      } else if (resp?.totalCount > 5) {
+        setPagination(false);
+
+        setPageSizeArray([5]);
+      } else if (resp?.totalCount <= 5) {
+        setPagination(false);
+        // setPageSize(resp?.totalCount);
+        //PageSizeSelectorFunction();
+      }
+
+      setPageCount(Math.ceil(resp?.totalCount / pageLimit));
+      let finalResult;
+      if (enableCenterFilter || center) {
+        finalResult = result?.map((user: any) => {
+          const ageField = user?.customField?.find(
+            (field: any) => field?.label === "AGE"
+          );
+          const genderField = user?.customField?.find(
+            (field: any) => field?.label === "GENDER"
+          );
+          const blockField = user?.customField?.find(
+            (field: any) => field?.label === "BLOCKS"
+          );
+          const districtField = user?.customField?.find(
+            (field: any) => field?.label === "DISTRICTS"
+          );
+          const stateField = user?.customField?.find(
+            (field: any) => field?.label === "STATES"
+          );
+          return {
+            userId: user?.userId,
+            username: user?.username,
+            status: user?.status,
+            name:
+              user?.firstName?.charAt(0).toUpperCase() +
+              user?.firstName?.slice(1).toLowerCase(),
+            role: user.role,
+            //  gender: user.gender,
+            mobile: user.mobile === "NaN" ? "-" : user.mobile,
+            age: ageField ? ageField?.value : "-",
+            district: districtField
+              ? districtField?.value +
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
+              : "-",
+            state: stateField ? stateField?.value : "-",
+            blocks: blockField
+              ? firstLetterInUpperCase(blockField?.value)
+              : "-",
+            gender: user?.gender
+              ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
+              : "-",
+
+            //  createdAt: user?.createdAt,
+            //  updatedAt: user?.updatedAt,
+            createdBy: user?.createdBy,
+            updatedBy: user?.updatedBy,
+            stateCode: stateField?.code,
+            dob: user.dob ? user.dob : "-",
+
+            districtCode: districtField?.code,
+            blockCode: blockField?.code,
+            districtValue: districtField ? districtField?.value : "-",
+
+            // // centers: null,
+            // Programs: null,
+          };
+        });
+      } else {
+        finalResult = result?.map((user: any) => {
+          const ageField = user?.customFields?.find(
+            (field: any) => field?.label === "AGE"
+          );
+          const genderField = user?.customFields?.find(
+            (field: any) => field?.label === "GENDER"
+          );
+          const blockField = user?.customFields?.find(
+            (field: any) => field?.label === "BLOCKS"
+          );
+          const districtField = user?.customFields?.find(
+            (field: any) => field?.label === "DISTRICTS"
+          );
+          const stateField = user?.customFields?.find(
+            (field: any) => field?.label === "STATES"
+          );
+
+          return {
+            userId: user.userId,
+            username: user.username,
+            status: user.status,
+            dob: user.dob ? user.dob : "-",
+            name:
+              // user.name.charAt(0).toUpperCase() +
+              // user.name.slice(1).toLowerCase(),
+              getUserFullName(user) ?? "-",
+            role: user.role,
+            //  gender: user.gender,
+            mobile: user.mobile === "NaN" ? "-" : user?.mobile,
+            age: ageField ? ageField?.value : "-",
+            district: districtField
+              ? districtField?.value +
+                " , " +
+                firstLetterInUpperCase(blockField?.value)
+              : "-",
+            state: stateField ? stateField?.value : "-",
+            blocks: blockField
+              ? firstLetterInUpperCase(blockField?.value)
+              : "-",
+            gender: user?.gender
+              ? user?.gender?.charAt(0)?.toUpperCase() +
+                user?.gender?.slice(1).toLowerCase()
+              : "-",
+            createdAt: new Date(user.createdAt).toISOString().split("T")[0],
+            updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
+            createdBy: user.createdBy,
+            updatedBy: user.updatedBy,
+            stateCode: stateField?.code,
+            districtCode: districtField?.code,
+            blockCode: blockField?.code,
+            districtValue: districtField ? districtField?.value : "-",
+            // centers: null,
+            // Programs: null,
+          };
+        });
+      }
+
+      if (filters?.name && resp?.getUserDetails) {
+        const prioritizedResult = finalResult.sort((a: any, b: any) => {
+          const aStartsWith = a.name.toLowerCase().startsWith(filters?.name);
+          const bStartsWith = b.name.toLowerCase().startsWith(filters?.name);
+
+          if (aStartsWith && !bStartsWith) return -1;
+          if (!aStartsWith && bStartsWith) return 1;
+          return 0;
+        });
+        setData(prioritizedResult);
+      } else if (resp?.userDetails || resp?.getUserDetails) {
+        setData(finalResult);
+      } else {
+        setData([]);
+      }
+
+      setLoading(false);
+      setCohortsFetched(false);
+    } catch (error: any) {
+      setLoading(false);
+
+      if (error?.response && error?.response.status === 404) {
+        setData([]);
+        //showToastMessage("No data found", "info");
+      }
+
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     // if (
     //   selectedBlockCode !== "" ||
     //   (selectedDistrictCode !== "" && selectedBlockCode === "") ||
@@ -1100,6 +1105,125 @@ const UserTable: React.FC<UserTableProps> = ({
     enableCenterFilter,
     userType,
   ]);
+
+  const fetchAllUserDataForCSV = async () => {
+    setIsExportingCSV(true);
+    let allData = [];
+    let offset = 0;
+    const limit = pageLimit;
+    let totalRecords = Infinity;
+
+    try {
+      while (allData.length < totalRecords) {
+        const fields = ["age", "districts", "states", "blocks", "gender"];
+        const userData = JSON.parse(localStorage.getItem("adminInfo") || "{}");
+        const isCenterAdmin = userData?.role === "Center Admin";
+        const sort = enableCenterFilter ? sortByForCohortMemberList : sortBy;
+
+        let resp;
+        if (enableCenterFilter || isCenterAdmin) {
+          const response = await getCohortList(userData.userId);
+          const filters = {
+            role: role,
+            status: [statusValue],
+            cohortId: response?.result?.cohortData[0]?.cohortId,
+          };
+
+          resp = await cohortMemberList({
+            limit,
+            filters,
+            sort,
+            offset,
+            fields,
+          });
+        } else {
+          resp = await userList({ limit, filters, sort, offset, fields });
+        }
+
+        if (!resp?.userDetails && enableCenterFilter) break;
+        if (!resp?.getUserDetails) break;
+
+        totalRecords = resp?.totalCount;
+        const result = isCenterAdmin ? resp?.userDetails : resp?.getUserDetails;
+
+        const formattedData = result.map((user: any) => ({
+          userId: user?.userId,
+          username: user?.username,
+          status: user?.status,
+          name: getUserFullName(user) ?? "-",
+          role: user.role,
+          mobile: user.mobile === "NaN" ? "-" : user?.mobile,
+          age:
+            user?.customFields?.find((field: any) => field?.label === "AGE")
+              ?.value || "-",
+          district:
+            user?.customFields?.find(
+              (field: any) => field?.label === "DISTRICTS"
+            )?.value || "-",
+          state:
+            user?.customFields?.find((field: any) => field?.label === "STATES")
+              ?.value || "-",
+          blocks:
+            user?.customFields?.find((field: any) => field?.label === "BLOCKS")
+              ?.value || "-",
+          gender: user?.gender
+            ? user?.gender.charAt(0).toUpperCase() +
+              user?.gender.slice(1).toLowerCase()
+            : "-",
+          createdAt: new Date(user.createdAt).toISOString().split("T")[0],
+          updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
+          createdBy: user.createdBy,
+          updatedBy: user.updatedBy,
+        }));
+
+        allData.push(...formattedData);
+        offset += limit;
+      }
+
+      setIsExportingCSV(false);
+      return allData;
+    } catch (error) {
+      console.error("Error fetching data for CSV export:", error);
+      setIsExportingCSV(false);
+      return [];
+    }
+  };
+
+  const convertToCSV = (data: any) => {
+    if (!data.length) return "";
+
+    const headers = Object.keys(data[0]).join(",");
+    const csvRows = data.map((row: any) =>
+      Object.values(row)
+        .map((value) => `"${(value ?? "").toString().replace(/"/g, '""')}"`)
+        .join(",")
+    );
+
+    return [headers, ...csvRows].join("\n");
+  };
+
+  const downloadCSV = (csvContent: any, filename = "export.csv") => {
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportCSV = async () => {
+    const allUserData = await fetchAllUserDataForCSV();
+    if (allUserData.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const csv = convertToCSV(allUserData);
+    downloadCSV(csv, "user_list_export.csv");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -1158,8 +1282,6 @@ const UserTable: React.FC<UserTableProps> = ({
             };
           })
         );
-        console.log("data", data);
-        console.log("newData", newData);
 
         setData(newData);
         setCohortsFetched(true);
@@ -1569,6 +1691,32 @@ const UserTable: React.FC<UserTableProps> = ({
 
   return (
     <HeaderComponent {...userProps}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "12px",
+          marginRight: "10px",
+        }}
+      >
+        <button
+          onClick={handleExportCSV}
+          disabled={loading || isExportingCSV}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "8px 16px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            backgroundColor: "#f5f5f5",
+            cursor: loading || isExportingCSV ? "not-allowed" : "pointer",
+          }}
+        >
+          <DownloadIcon />
+          {isExportingCSV ? "Exporting CSV" : "Export CSV"}
+        </button>
+      </Box>
       {loading ? (
         <Box
           width={"100%"}

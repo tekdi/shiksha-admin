@@ -1,6 +1,6 @@
 import { CohortMemberList } from "@/utils/Interfaces";
 import { get, post, put } from "../RestClient";
-import axios from 'axios';
+import axios from "axios";
 import { showToastMessage } from "@/components/Toastify";
 
 export interface cohortListFilter {
@@ -16,6 +16,7 @@ export interface cohortListData {
   offset?: Number;
   filter?: any;
   status?: any;
+  includeDisplayValues?: boolean;
 }
 export interface UpdateCohortMemberStatusParams {
   memberStatus: string;
@@ -83,11 +84,10 @@ export const createUser = async (userData: any): Promise<any> => {
   }
 };
 
-export const createCohort = async (userData: any, t?:any): Promise<any> => {
+export const createCohort = async (userData: any, t?: any): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohort/create`;
 
   try {
-
     const response = await post(apiUrl, userData);
     return response?.data;
   } catch (error) {
@@ -96,13 +96,10 @@ export const createCohort = async (userData: any, t?:any): Promise<any> => {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 409) {
         showToastMessage(t("COMMON.ALREADY_EXIST"), "error");
-
-   
-     } 
-      else
-     throw error;
+      } else throw error;
+    }
   }
-}};
+};
 
 export const fetchCohortMemberList = async ({
   limit,
@@ -124,19 +121,16 @@ export const fetchCohortMemberList = async ({
   }
 };
 
-
-
 export const bulkCreateCohortMembers = async (payload: any): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohortmember/bulkCreate`;
   try {
     const response = await post(apiUrl, payload);
     return response.data;
   } catch (error) {
-    console.error('Error in bulk creating cohort members', error);
+    console.error("Error in bulk creating cohort members", error);
     throw error;
   }
 };
-
 
 export const updateCohortMemberStatus = async ({
   memberStatus,
@@ -148,10 +142,10 @@ export const updateCohortMemberStatus = async ({
     const response = await put(apiUrl, {
       status: memberStatus,
       statusReason,
-    }); 
+    });
     return response?.data;
   } catch (error) {
-    console.error('error in attendance report api ', error);
+    console.error("error in attendance report api ", error);
     // throw error;
   }
 };
@@ -185,7 +179,7 @@ export const getUserCohortList = async (
     }
     return response?.data?.result;
   } catch (error) {
-    console.error('Error in getting cohort details', error);
+    console.error("Error in getting cohort details", error);
     // throw error;
   }
 };

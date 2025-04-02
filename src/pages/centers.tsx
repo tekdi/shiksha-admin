@@ -60,6 +60,7 @@ import axios from "axios";
 import AreaSelection from "../components/AreaSelection";
 import { transformArray } from "../utils/Helper";
 import { useLocationState } from "@/utils/useLocationState";
+import DownloadIcon from "@mui/icons-material/Download";
 
 type cohortFilterDetails = {
   city?: string;
@@ -124,6 +125,9 @@ const Center: React.FC = () => {
     React.useState<boolean>(false);
   const [inputName, setInputName] = React.useState<string>("");
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
+  const [isExportingCSV, setIsisExportingCSV] = useState<boolean | undefined>(
+    undefined
+  );
   const [userId, setUserId] = useState("");
   const [schema, setSchema] = React.useState<any>();
   const [uiSchema, setUiSchema] = React.useState<any>();
@@ -391,6 +395,131 @@ const Center: React.FC = () => {
       setLoading(false);
       console.error("Error fetching user list:", error);
     }
+  };
+
+  const fetchAllUserData = async () => {
+    setIsisExportingCSV(true);
+    let allData: any[] = [];
+    let offset = 0;
+    const limit = pageLimit; // Same as used in fetchUserList
+    let totalRecords = Infinity;
+
+    try {
+      while (allData.length < totalRecords) {
+        const data = {
+          limit: limit,
+          offset: offset,
+          sort: sortBy,
+          filters: filters,
+          includeDisplayValues: true,
+        };
+
+        const resp = await getCohortList(data);
+        if (resp) {
+          const result = resp?.results?.cohortDetails;
+          totalRecords = resp?.count;
+
+          const cohortIds = result.map((item: any) => item.cohortId);
+
+          const memberCounts = await Promise.all(
+            cohortIds.map(async (cohortId: string) => {
+              return await getCohortMemberlistData(cohortId);
+            })
+          );
+
+          const formattedData = result
+            ?.filter((cohort: any) => cohort.type === "CENTER")
+            .map((item: any, index: number) => {
+              const cohortType =
+                item?.customFields?.find(
+                  (field: any) => field.label === "TYPE_OF_COHORT"
+                )?.value ?? "-";
+
+              const counts = memberCounts[index] || {
+                totalActiveMembers: 0,
+                totalArchivedMembers: 0,
+              };
+
+              const location = [
+                item?.customFields[0]?.value,
+                item?.customFields[2]?.value,
+                item?.customFields[1]?.value,
+              ]
+                .filter((value) => value !== undefined)
+                .map((value) => capitalizeFirstLetter(value))
+                .join(", ");
+
+              return {
+                name: item?.name,
+                status: item?.status,
+                updatedBy: item?.updatedByName,
+                createdBy: item?.createdByName,
+                createdAt: new Date(item?.createdAt)
+                  .toISOString()
+                  .split("T")[0],
+                updatedAt: new Date(item?.updatedAt)
+                  .toISOString()
+                  .split("T")[0],
+                location: item?.customFields[0]?.value ? location : "-",
+                cohortId: item?.cohortId,
+                customFieldValues: cohortType
+                  ? transformLabel(cohortType)
+                  : "-",
+                totalActiveMembers: counts?.totalActiveMembers,
+                totalArchivedMembers: counts?.totalArchivedMembers,
+              };
+            });
+
+          allData.push(...formattedData);
+          offset += limit;
+        } else {
+          break;
+        }
+      }
+      setIsisExportingCSV(false);
+      return allData;
+    } catch (error) {
+      console.error("Error fetching user list for export:", error);
+      setIsisExportingCSV(false);
+      return [];
+    }
+  };
+
+  const convertToCSV = (data: any[]) => {
+    if (data.length === 0) return "";
+
+    const headers = Object.keys(data[0]);
+    const csvRows = data.map((row) =>
+      headers
+        .map(
+          (field) => `"${(row[field] ?? "").toString().replace(/"/g, '""')}"`
+        )
+        .join(",")
+    );
+
+    return [headers.join(","), ...csvRows].join("\n");
+  };
+
+  const downloadCSV = (csvContent: string, filename = "export.csv") => {
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportCSV = async () => {
+    const allUserData = await fetchAllUserData();
+    if (allUserData.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const csv = convertToCSV(allUserData);
+    downloadCSV(csv, "center_list_export.csv");
   };
 
   const getFormData = async () => {
@@ -1298,6 +1427,33 @@ const Center: React.FC = () => {
         />
 
         <HeaderComponent {...userProps}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "12px",
+              marginRight: "10px",
+            }}
+          >
+            <button
+              onClick={handleExportCSV}
+              disabled={loading || isExportingCSV}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 16px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "#f5f5f5",
+                cursor: loading || isExportingCSV ? "not-allowed" : "pointer",
+              }}
+            >
+              <DownloadIcon />
+              {isExportingCSV ? "Exporting CSV" : "Export CSV"}
+            </button>
+          </Box>
+
           {loading ? (
             <Box
               width={"100%"}

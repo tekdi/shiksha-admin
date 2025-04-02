@@ -136,7 +136,7 @@
     "USER_CREDENTIALS_WILL_BE_SEND_SOON": "User credentials will be sent soon",
     "REASSIGN_CENTERS": "Re-assign Center",
     "REASSIGN_BATCH": "Re-assign Batch",
-    "REASSIGN_BLOCKS": "Re-assign Blocks",
+    "REASSIGN_BLOCKS": "Re-assign Center",
     "REASSIGN": "Reassign",
     "COHORT_ID_NOT_FOUND": "Could not found center Id for {{block}} ",
     "CENTERS_REASSIGN_SUCCESSFULLY": "Center reassign successfully",

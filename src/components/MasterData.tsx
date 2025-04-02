@@ -47,6 +47,7 @@ import { formatedStates } from "@/services/formatedCohorts";
 import MultipleSelectCheckmarks from "@/components/FormControl";
 import AddDistrictModal from "./AddDistrictModal";
 import { getCohortList as getMyCohorts } from "@/services/GetCohortList";
+import DownloadIcon from "@mui/icons-material/Download";
 
 type StateDetail = {
   name: string | undefined;
@@ -172,7 +173,9 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
   const [states, setStates] = useState<State[]>([]);
   const [defaultStates, setDefaultStates] = useState<any>();
   const [districtValueForDelete, setDistrictValueForDelete] = useState<any>("");
-
+  const [isExportingCSV, setIsExportingCSV] = useState<boolean | undefined>(
+    undefined
+  );
   const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
   const setIsArchived = useSubmittedButtonStore(
     (state: any) => state.setIsArchived
@@ -625,7 +628,6 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
     const startIndex = pageOffset * pageLimit;
     const endIndex = startIndex + pageLimit;
     let transformedData;
-
     if (cohortType === CohortTypes.BLOCK) {
       transformedData = blockData?.map((item) => ({
         ...item,
@@ -650,6 +652,206 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
       label: transformLabels(item.label),
     }));
     return transformedData.slice(startIndex, endIndex);
+  };
+
+  const getCohortBlock = async (selectedDistrict: string) => {
+    try {
+      setLoading(true);
+      if (!blocksOptionRead.length || !blockNameArr.length) {
+        console.warn(
+          "blocksOptionRead or blockNameArr is empty, waiting for data..."
+        );
+        setLoading(false);
+        return;
+      }
+
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          name: searchKeyword,
+          country: stateCode,
+          states: selectedDistrict === t("COMMON.ALL") ? "" : selectedDistrict,
+          type: CohortTypes.CITY,
+          status: [statusValue],
+        },
+        sort: sortBy,
+        includeDisplayValues: true,
+      };
+
+      const response = await getCohortList(reqParams);
+
+      const cohortDetails = response?.results?.cohortDetails || [];
+      const filteredBlockData = cohortDetails
+        .map(
+          (blockDetail: {
+            parentId: any;
+            cohortId: any;
+            name: string;
+            code: string;
+            createdAt: any;
+            updatedAt: any;
+            createdBy: any;
+            updatedBy: any;
+            status: string;
+            createdByName: any;
+            updatedByName: any;
+          }) => {
+            const transformedName = blockDetail.name;
+
+            const matchingBlock = blocksOptionRead.find(
+              (block: BlockOption) =>
+                block?.label?.toLowerCase() === transformedName?.toLowerCase()
+            );
+            return {
+              name: transformedName,
+              //  code: matchingBlock?.value ?? "",
+              status: blockDetail.status,
+              createdAt: new Date(blockDetail.createdAt)
+                .toISOString()
+                .split("T")[0],
+              updatedAt: new Date(blockDetail.updatedAt)
+                .toISOString()
+                .split("T")[0],
+              createdBy: blockDetail.createdByName,
+              updatedBy: blockDetail.updatedByName,
+              //  cohortId: blockDetail.cohortId,
+              //  parentId: blockDetail.parentId,
+            };
+          }
+        )
+        .filter((block: { name: string }) =>
+          blockNameArr.includes(block.name?.toLowerCase())
+        );
+      return filteredBlockData;
+    } catch (error) {
+      console.error("Error fetching and filtering cohort blocks", error);
+      setLoading(false);
+    }
+  };
+
+  const getFilteredStateData = async () => {
+    try {
+      setLoading(true);
+      const reqParams = {
+        limit: 0,
+        offset: 0,
+        filters: {
+          name: searchKeyword,
+          country: stateCode,
+          type: CohortTypes.STATE,
+          status: ["active"],
+        },
+        sort: sortBy,
+        includeDisplayValues: true,
+      };
+      const response = await getCohortList(reqParams);
+      const data = await getDistrictsForState({
+        controllingfieldfk: stateCode,
+        fieldName: "states",
+      });
+      const districts = data?.result?.values || [];
+      setDistrictsOptionRead(districts);
+      const cohortDetails = response?.results?.cohortDetails || [];
+      const filteredDistrictData = cohortDetails
+        .map(
+          (districtDetail: {
+            cohortId: any;
+            name: string;
+            createdAt: any;
+            updatedAt: any;
+            createdBy: any;
+            updatedBy: any;
+            status: any;
+            createdByName: any;
+            updatedByName: any;
+          }) => {
+            const transformedName = districtDetail.name;
+            const matchingDistrict = districts.find(
+              (district: { label: string }) =>
+                district?.label?.toLowerCase() ===
+                transformedName?.toLowerCase()
+            );
+
+            return {
+              label: transformedName,
+              // value: matchingDistrict ? matchingDistrict.value : null,
+              createdAt: new Date(districtDetail.createdAt)
+                .toISOString()
+                .split("T")[0],
+              updatedAt: new Date(districtDetail.updatedAt)
+                .toISOString()
+                .split("T")[0],
+              createdBy: districtDetail.createdByName,
+              updatedBy: districtDetail.updatedByName,
+              // cohortId: districtDetail?.cohortId,
+              status: districtDetail?.status,
+            };
+          }
+        )
+        .filter((district: { label: any }) =>
+          districtNameArr.includes(district.label?.toLowerCase())
+        );
+      console.log(filteredDistrictData, "filteredDistrictData");
+
+      if (filteredDistrictData.length > 0) {
+        return filteredDistrictData;
+      }
+    } catch (error) {
+      console.error("Error fetching and filtering cohort districts", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const convertToCSV = (data: any[]) => {
+    if (data.length === 0) return "";
+
+    const headers = Object.keys(data[0]);
+    const csvRows = data.map((row) =>
+      headers
+        .map(
+          (field) => `"${(row[field] ?? "").toString().replace(/"/g, '""')}"`
+        )
+        .join(",")
+    );
+
+    return [headers.join(","), ...csvRows].join("\n");
+  };
+
+  const downloadCSV = (csvContent: string, filename = "export.csv") => {
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsExportingCSV(false);
+  };
+
+  const handleExportCohortsCSV = async () => {
+    setIsExportingCSV(true);
+    let allCohorts;
+    if (cohortType === CohortTypes.STATE) {
+      allCohorts = await getFilteredStateData();
+    } else {
+      allCohorts = await getCohortBlock(selectedDistrict);
+    }
+
+    if (allCohorts.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const csv = convertToCSV(allCohorts);
+    downloadCSV(
+      csv,
+      cohortType === CohortTypes.STATE
+        ? "county_export.csv"
+        : "sub_county_export.csv"
+    );
   };
 
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -1459,6 +1661,32 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
           ? blockUserProps
           : districtUserProps)}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: "12px",
+            marginRight: "10px",
+          }}
+        >
+          <button
+            onClick={handleExportCohortsCSV}
+            disabled={loading || isExportingCSV}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 16px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              backgroundColor: "#f5f5f5",
+              cursor: loading || isExportingCSV ? "not-allowed" : "pointer",
+            }}
+          >
+            <DownloadIcon />
+            {isExportingCSV ? "Exporting CSV" : "Export CSV"}
+          </button>
+        </Box>
         {loading ? (
           <Box
             width={"100%"}
