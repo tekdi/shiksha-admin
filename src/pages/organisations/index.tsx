@@ -31,6 +31,7 @@ import {
   updateOrganisation,
 } from "@/lib/api";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { CustomPagination } from "@/components/pagination";
 
 export default function Organisations() {
   const theme = useTheme<any>();
@@ -45,6 +46,9 @@ export default function Organisations() {
   const [editMode, setEditMode] = useState(false);
   const [search, setSearch] = useState("");
   const [websiteError, setWebsiteError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
 
   const validateWebsite = (url: string) => {
     const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,4}(\/[\w-]*)*\/?$/;
@@ -53,14 +57,19 @@ export default function Organisations() {
 
   useEffect(() => {
     fetchOrganisations();
-  }, [search]);
+  }, [search, currentPage]);
 
   const fetchOrganisations = async () => {
     try {
       const name = search;
-      const params = { name };
+      const params = {
+        name,
+        page: currentPage,
+        limit: itemsPerPage,
+      };
       const response = await getOrganizations(params);
       setOrganisations(response.result.data || []);
+      setTotalPages(Math.ceil(response.result.total / itemsPerPage));
     } catch (error) {
       console.error("Error fetching organisations", error);
     }
@@ -104,7 +113,6 @@ export default function Organisations() {
 
   return (
     <>
-      {/* <Header /> */}
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box
           boxShadow={"0px 2px 6px 2px #00000026"}
@@ -112,17 +120,12 @@ export default function Organisations() {
           pt={2}
           borderRadius={2}
         >
-          {/* <h1>Organisations</h1> */}
-
           <Box
             p={2}
-            // borderBottom={'1px solid #0000001f'}
-            // pb={0}
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", sm: "row" }, // Column on small screens, row on md+
+              flexDirection: { xs: "column", sm: "row" },
               gap: 2,
-              // mb: 0,
               alignItems: "center",
               justifyContent: "space-between",
             }}
@@ -150,8 +153,7 @@ export default function Organisations() {
               }}
             />
 
-            {/* Create Organisation Button */}
-            <Box sx={{ width: { xs: "100%", sm: "fit-content" } }} width={{}}>
+            <Box sx={{ width: { xs: "100%", sm: "fit-content" } }}>
               <Button
                 sx={{
                   textTransform: "none",
@@ -249,9 +251,6 @@ export default function Organisations() {
                             flexDirection: "column",
                             alignItems: "center",
                             cursor: "pointer",
-                            // color: disable
-                            //   ? theme?.palette?.secondary.contrastText
-                            //   : "",
                             backgroundColor: "#E3EAF0",
                             p: "10px",
                           }}
@@ -261,8 +260,7 @@ export default function Organisations() {
                             alt="Edit"
                             width={20}
                             height={20}
-                          />{" "}
-                          {/* Adjust size as needed */}
+                          />
                         </Box>
                       </Stack>
                     </TableCell>
@@ -272,7 +270,13 @@ export default function Organisations() {
             </Table>
           </TableContainer>
 
-          {/* Dialog for Add/Edit Organisation */}
+          <Box sx={{ display: "flex", justifyContent: "end" }}>
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page: number) => setCurrentPage(page)}
+            />
+          </Box>
           <Dialog
             open={open}
             onClose={(e, reason) => {

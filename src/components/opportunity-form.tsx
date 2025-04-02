@@ -44,8 +44,12 @@ const formSchema = z
     min_experience: z.number().min(0, "Minimum experience cannot be negative"),
     min_salary: z.string().min(0, "Minimum salary cannot be negative"),
     max_salary: z.string().min(1, "Stipend cannot be negative"),
-    category: z.string().min(1, "At least one category is required"),
-    company: z.string().min(1, "Organisation is required"),
+    category: z.any().refine((value) => value && value !== "", {
+      message: "At least one category is required",
+    }),
+    company: z.any().refine((value) => value && value !== "", {
+      message: "Organisation is required",
+    }),
     skills: z.array(z.string()).min(1, "At least one skill is required"),
     no_of_candidates: z.number().min(1, "Number of vacaniceis is required"),
     status: z.string().min(1, "Status is required"),
@@ -113,17 +117,20 @@ export function OpportunityForm({
     min_experience: 0,
     min_salary: "0",
     max_salary: "0",
-    category: "",
-    company: "",
     skills: [],
     no_of_candidates: 0,
-    status: "approved",
+    status: "pending",
     opportunity_type: "",
     work_nature: "",
     benefits: [],
     offer_letter_provided: "",
     pricing_type: "",
+    country: initialData?.location?.country || "",
+    state: initialData?.location?.state || "",
+    city: initialData?.location?.city || "",
     ...initialData,
+    category: initialData?.category?.id || "",
+    company: initialData?.company?.id || "",
   };
 
   async function handleFormSubmit(data: OpportunityFormData) {
@@ -268,18 +275,24 @@ export function OpportunityForm({
             <Controller
               name="country"
               control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.country}>
-                  <InputLabel required>{t("OPPORTUNITY.COUNTRY")}</InputLabel>
-                  <Select {...field} label={t("OPPORTUNITY.COUNTRY")}>
-                    {countries.map((item) => (
-                      <MenuItem key={item.country} value={item.country}>
-                        {item.country}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormControl fullWidth error={!!errors.country}>
+                    <InputLabel required>{t("OPPORTUNITY.COUNTRY")}</InputLabel>
+                    <Select
+                      label={t("OPPORTUNITY.COUNTRY")}
+                      {...field}
+                      value={field.value || ""}
+                    >
+                      {countries.map((item) => (
+                        <MenuItem key={item.country} value={item.country}>
+                          {item.country}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -291,8 +304,9 @@ export function OpportunityForm({
                   <InputLabel required>{t("OPPORTUNITY.COUNTY")}</InputLabel>
                   <Select
                     {...field}
-                    label={t("OPPORTUNITY.COUNTY")}
+                    value={field.value || ""}
                     disabled={!selectedCountry}
+                    label={t("OPPORTUNITY.COUNTY")}
                   >
                     {states.map((item) => (
                       <MenuItem key={item.state} value={item.state}>
@@ -312,9 +326,10 @@ export function OpportunityForm({
                 <FormControl fullWidth error={!!errors.city}>
                   <InputLabel required>{t("OPPORTUNITY.SUBCOUNTY")}</InputLabel>
                   <Select
-                    label={t("OPPORTUNITY.SUBCOUNTY")}
                     {...field}
+                    value={field.value || ""}
                     disabled={!selectedState}
+                    label={t("OPPORTUNITY.SUBCOUNTY")}
                   >
                     {cities.map((item) => (
                       <MenuItem key={item.city} value={item.city}>
@@ -330,27 +345,30 @@ export function OpportunityForm({
             <Controller
               name="company"
               control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.company}>
-                  <InputLabel required>
-                    {t("OPPORTUNITY.ORGANISATION")}
-                  </InputLabel>
-                  <Select
-                    {...field}
-                    label={t("OPPORTUNITY.ORGANISATION")}
-                    onChange={(event) => field.onChange(event.target.value)} // Store a single value
-                  >
-                    {organisation.map((org) => (
-                      <MenuItem key={org.id} value={org.id}>
-                        {org.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors.company && (
-                    <FormHelperText>{errors.company.message}</FormHelperText>
-                  )}
-                </FormControl>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormControl fullWidth error={!!errors.company}>
+                    <InputLabel required>
+                      {t("OPPORTUNITY.ORGANISATION")}
+                    </InputLabel>
+                    <Select
+                      {...field}
+                      value={field.value || ""}
+                      label="Organisation"
+                      onChange={(event) => {
+                        field.onChange(event.target.value);
+                      }}
+                    >
+                      {organisation.map((org) => (
+                        <MenuItem key={org.id} value={org.id}>
+                          {org.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errors.company && <FormHelperText></FormHelperText>}
+                  </FormControl>
+                );
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -362,6 +380,7 @@ export function OpportunityForm({
                   <InputLabel required>{t("OPPORTUNITY.CATEGORY")}</InputLabel>
                   <Select
                     {...field}
+                    value={field.value || ""}
                     label={t("OPPORTUNITY.CATEGORY")}
                     onChange={(event) => field.onChange(event.target.value)} // Store single value
                   >

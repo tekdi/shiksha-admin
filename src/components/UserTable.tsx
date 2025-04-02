@@ -684,17 +684,12 @@ const UserTable: React.FC<UserTableProps> = ({
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    response.userData.phone_number = response.userData.mobile
-      ? response.userData.mobile
-      : "";
-
-    const initialFormData: any = {};
+    let initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
         (field: any) => field.fieldId === item.fieldId
       );
-
       const getValue = (data: any, field: any) => {
         if (item.default) {
           return item.default;
@@ -713,18 +708,13 @@ const UserTable: React.FC<UserTableProps> = ({
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (
-              field?.value === "FEMALE" ||
-              field?.value === "MALE" ||
-              field?.value === "TRANSGENDER"
-            ) {
+            if (field?.value === "FEMALE" || field?.value === "MALE") {
               return field?.value?.toLowerCase();
             }
             return field?.value?.toLowerCase();
           }
         }
       };
-
       if (item.coreField) {
         if (item?.isMultiSelect) {
           if (userData[item.name] && item?.maxSelections > 1) {
@@ -745,13 +735,11 @@ const UserTable: React.FC<UserTableProps> = ({
         }
       } else {
         const fieldValue = getValue(userData, customFieldValue);
-
         if (fieldValue) {
           initialFormData[item.name] = fieldValue;
         }
       }
     });
-
     return initialFormData;
   };
   const handleEdit = async (rowData: any) => {
@@ -896,7 +884,7 @@ const UserTable: React.FC<UserTableProps> = ({
         const filters = {
           role: role,
           status: [statusValue],
-          cohortId: response?.result?.cohortData[0]?.cohortId,
+          cohortId: [response?.result?.cohortData[0]?.cohortId],
         };
 
         resp = await cohortMemberList({
@@ -1126,7 +1114,7 @@ const UserTable: React.FC<UserTableProps> = ({
           const filters = {
             role: role,
             status: [statusValue],
-            cohortId: response?.result?.cohortData[0]?.cohortId,
+            cohortId: [response?.result?.cohortData[0]?.cohortId],
           };
 
           resp = await cohortMemberList({
@@ -1745,7 +1733,7 @@ const UserTable: React.FC<UserTableProps> = ({
           // reassignCohort={reassignCohort}
           noDataMessage={data?.length === 0 ? t("COMMON.NO_USER_FOUND") : ""}
           reassignType={
-            userType === FormContextType.STUDENT
+            userType === Role.STUDENT
               ? t("COMMON.REASSIGN_BATCH")
               : userType === Role.TEAM_LEADERS
                 ? t("COMMON.REASSIGN_BLOCKS")
@@ -1753,7 +1741,7 @@ const UserTable: React.FC<UserTableProps> = ({
                   ? undefined
                   : userType === FormContextType.STUDENT
                     ? t("COMMON.REASSIGN_BATCH")
-                    : t("COMMON.REASSIGN_CENTERS")
+                    : undefined
           }
         />
       ) : (
