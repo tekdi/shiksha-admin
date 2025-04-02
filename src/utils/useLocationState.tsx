@@ -215,7 +215,7 @@ export const useLocationState = (
           }
 
           const filters: FilterDetails = {
-            cohortId: blockCohortId,
+            cohortId: [blockCohortId],
             role: Role.TEAM_LEADER,
             status: [Status.ACTIVE],
           };

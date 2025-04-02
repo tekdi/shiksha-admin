@@ -1,6 +1,11 @@
 import SearchBar from "@/components/layouts/header/SearchBar";
 import { formatedBlocks, formatedDistricts } from "@/services/formatedCohorts";
-import { QueryKeys, Role, Status, TelemetryEventType } from "@/utils/app.constant";
+import {
+  QueryKeys,
+  Role,
+  Status,
+  TelemetryEventType,
+} from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import AddIcon from "@mui/icons-material/Add";
@@ -10,7 +15,7 @@ import {
   FormControl,
   MenuItem,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
@@ -19,12 +24,12 @@ import Tabs from "@mui/material/Tabs";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "next-i18next";
 import { useRouter } from "next/router";
-import { useEffect, useState,useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 import {
   getCenterList,
   getStateBlockDistrictList,
 } from "../services/MasterDataService";
-import { transformArray } from "../utils/Helper";
+import { transformArray, firstLetterInUpperCase } from "../utils/Helper";
 import AreaSelection from "./AreaSelection";
 
 interface State {
@@ -83,7 +88,7 @@ const HeaderComponent = ({
   selectedCenterCode,
   setSelectedCenterCode,
   setSelectedStateCode,
-  isProgramPage=false
+  isProgramPage = false,
 }: any) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -99,9 +104,7 @@ const HeaderComponent = ({
   const [initialDistrict, setInitialDistrict] = useState<any>("");
   const [initialBlock, setInitialBlock] = useState<string>("");
   const [initialized, setInitialized] = useState(false);
-  const isArchived = useSubmittedButtonStore(
-    (state: any) => state.isArchived
-  );
+  const isArchived = useSubmittedButtonStore((state: any) => state.isArchived);
 
   const [blocks, setBlocks] = useState<Block[]>([]);
   const selectedBlockStore = useSubmittedButtonStore(
@@ -123,43 +126,39 @@ const HeaderComponent = ({
     (state: any) => state.setSelectedCenterStore
   );
 
-   const handleCountryChangeWrapper = useCallback(
-      async (selectedNames: string[], selectedCodes: string[]) => {
-        try {
-          setDistricts([]);
-          setBlocks([]);
-          setAllCenters([]);
-          setSelectedStateCode(selectedCodes[0]);
-          // setSelectedBlockCohortId("");
-  
-          // const object = {
-          //   controllingfieldfk: selectedCodes[0],
-          //   fieldName: "districts",
-          // };
-          // const response = await getStateBlockDistrictList(object);
-          const response = await queryClient.fetchQuery({
-            queryKey: [
-              QueryKeys.FIELD_OPTION_READ,
-              selectedCodes[0],
-              "states",
-            ],
-            queryFn: () =>
-              getStateBlockDistrictList({
-                controllingfieldfk: selectedCodes[0],
-                fieldName: "states",
-              }),
-          });
-  
-          // setDistrictFieldId(response?.result?.fieldId);
-          const result = response?.result?.values;
-          setDistricts(result);
-        } catch (error) {
-          console.log(error);
-        }
-        handleStateChange(selectedNames, selectedCodes);
-      },
-      [selectedStateCode]
-    );
+  const handleCountryChangeWrapper = useCallback(
+    async (selectedNames: string[], selectedCodes: string[]) => {
+      try {
+        setDistricts([]);
+        setBlocks([]);
+        setAllCenters([]);
+        setSelectedStateCode(selectedCodes[0]);
+        // setSelectedBlockCohortId("");
+
+        // const object = {
+        //   controllingfieldfk: selectedCodes[0],
+        //   fieldName: "districts",
+        // };
+        // const response = await getStateBlockDistrictList(object);
+        const response = await queryClient.fetchQuery({
+          queryKey: [QueryKeys.FIELD_OPTION_READ, selectedCodes[0], "states"],
+          queryFn: () =>
+            getStateBlockDistrictList({
+              controllingfieldfk: selectedCodes[0],
+              fieldName: "states",
+            }),
+        });
+
+        // setDistrictFieldId(response?.result?.fieldId);
+        const result = response?.result?.values;
+        setDistricts(result);
+      } catch (error) {
+        console.log(error);
+      }
+      handleStateChange(selectedNames, selectedCodes);
+    },
+    [selectedStateCode]
+  );
 
   const handleStateChangeWrapper = async (
     selectedNames: string[],
@@ -186,11 +185,9 @@ const HeaderComponent = ({
       //   controllingfieldfk: selectedCodes[0],
 
       //   fieldName: "districts",
-      // }; 
+      // };
       // const response = await getStateBlockDistrictList(object);
       const result = response?.result?.values;
-      console.log(result,"result---------1");
-      
       setBlocks(result);
     } catch (error) {
       console.log(error);
@@ -232,9 +229,8 @@ const HeaderComponent = ({
     handleDistrictChange(selected, selectedCodes);
 
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -242,14 +238,13 @@ const HeaderComponent = ({
         cdata: [],
       },
       edata: {
-        id: 'filter-by-district:' + selected[0],
+        id: "filter-by-district:" + selected[0],
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
     telemetryFactory.interact(telemetryInteract);
-
   };
 
   const handleBlockChangeWrapper = async (
@@ -277,7 +272,7 @@ const HeaderComponent = ({
       ],
       queryFn: () => getCenterList(getCentersObject),
     });
-    // const response = await getCenterList(getCentersObject); 
+    // const response = await getCenterList(getCentersObject);
     // setSelectedBlockCohortId(
     //   response?.result?.results?.cohortDetails[0].cohortId
     // );
@@ -289,13 +284,12 @@ const HeaderComponent = ({
       .map((item: any) => ({
         cohortId: item?.cohortId,
         name: item?.name,
-      })); 
+      }));
     setAllCenters(cohortInfo);
     handleBlockChange(selected, selectedCodes);
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -303,9 +297,9 @@ const HeaderComponent = ({
         cdata: [],
       },
       edata: {
-        id: 'filter-by-block:' + selected[0],
+        id: "filter-by-block:" + selected[0],
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
@@ -317,9 +311,8 @@ const HeaderComponent = ({
   ) => {
     handleCenterChange(selected, selectedCodes);
     const windowUrl = window.location.pathname;
-    const cleanedUrl = windowUrl.replace(/^\//, '');
+    const cleanedUrl = windowUrl.replace(/^\//, "");
     const env = cleanedUrl.split("/")[0];
-
 
     const telemetryInteract = {
       context: {
@@ -327,9 +320,9 @@ const HeaderComponent = ({
         cdata: [],
       },
       edata: {
-        id: 'filter-by-center:' + selected[0],
+        id: "filter-by-center:" + selected[0],
         type: TelemetryEventType.CLICK,
-        subtype: '',
+        subtype: "",
         pageid: cleanedUrl,
       },
     };
@@ -338,16 +331,15 @@ const HeaderComponent = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const { state, district, center } = router.query; 
+      const { state, district, center } = router.query;
       const fullPath = router.asPath;
-      console.log(fullPath,"fullPath");
-      
+      console.log(fullPath, "fullPath");
 
       // Extract query parameters
-      const queryString = fullPath.split("?")[1];  
+      const queryString = fullPath.split("?")[1];
       const params = new URLSearchParams(queryString);
       // const result= await formatedStates();
-     
+
       // setStates(result)
       // Check if 'block' is present
       const hasBlock = params.has("block");
@@ -368,7 +360,7 @@ const HeaderComponent = ({
         //     const stateField = JSON.parse(admin).customFields.find(
         //       (field: any) => field.label === "STATES"
         //     );
-                
+
         //     if (stateField.value.includes(",")) {
         //       console.log("The value contains more than one item.");
         //       setStateDefaultValue(t("COMMON.ALL_STATES"));
@@ -392,7 +384,7 @@ const HeaderComponent = ({
         //       //   controllingfieldfk: stateField.code,
 
         //       //   fieldName: "districts",
-        //       // }; 
+        //       // };
         //       // const response = await getStateBlockDistrictList(object);
         //       const result = response?.result?.values;
         //       const districtResult = await formatedDistricts();
@@ -408,7 +400,7 @@ const HeaderComponent = ({
         //         setSelectedDistrictStore(districtResult[0]?.label);
         //         blockResult = await formatedBlocks(
         //           districtResult[0]?.value
-        //         ); 
+        //         );
         //         if (blockResult?.message === "Request failed with status code 404") {
         //           setBlocks([]);
         //         }
@@ -486,12 +478,12 @@ const HeaderComponent = ({
         //         ],
         //         queryFn: () => getCenterList(getCentersObject),
         //       });
-        //       // const response = await getCenterList(getCentersObject); 
+        //       // const response = await getCenterList(getCentersObject);
         //       // setSelectedBlockCohortId(
         //       //   response?.result?.results?.cohortDetails[0].cohortId
         //       // );
         //       //   const result = response?.result?.cohortDetails;
-        //       const dataArray = centerResponse?.result?.results?.cohortDetails; 
+        //       const dataArray = centerResponse?.result?.results?.cohortDetails;
         //       const cohortInfo = dataArray
         //         ?.filter((cohort: any) => cohort.type !== "BLOCK")
         //         .map((item: any) => ({
@@ -499,13 +491,13 @@ const HeaderComponent = ({
         //           name: item?.name,
         //         }));
         //       setAllCenters(cohortInfo);
- 
+
         //       if (
         //         !hasCenter &&
         //         !hasBlock &&
         //         !hasDistrict &&
         //         userType !== Role.TEAM_LEADERS && userType !== Role.CONTENT_CREATOR
-        //       ) { 
+        //       ) {
         //         setSelectedCenter([t("COMMON.ALL_CENTERS")]);
         //         //  setSelectedCenterCode([cohortInfo[0]?.cohortId])
         //         //   localStorage.setItem('selectedCenter',cohortInfo[0]?.name )
@@ -521,7 +513,7 @@ const HeaderComponent = ({
         //           },
         //         });
         //       }
- 
+
         //     }
 
         //     const object = [
@@ -533,9 +525,8 @@ const HeaderComponent = ({
         //     setStates(object);
         //   }
         // }
-        console.log(result,"result----");
-        
-         setStates(result); 
+
+        setStates(result);
       } catch (error) {
         console.log(error);
       }
@@ -546,7 +537,6 @@ const HeaderComponent = ({
     }
   }, [shouldFetchDistricts, userType]);
   const handleChange = (event: React.SyntheticEvent, newValue: any) => {
-   
     setStatusValue(newValue);
   };
 
@@ -572,31 +562,21 @@ const HeaderComponent = ({
       if (state) {
         setSelectedStateCode(state.toString());
       }
-      console.log(district?.toString())
+      console.log(district?.toString());
       if (district) {
         setSelectedDistrictCode(district.toString());
         // setSelectedDistrict([selectedDistrictStore])
         setSelectedDistrict([localStorage.getItem("selectedDistrict")]);
         if (!localStorage.getItem("selectedDistrict")) {
           setSelectedDistrict([selectedDistrictStore]);
-
         }
         try {
-          const blockResult = await formatedBlocks(
-            district?.toString()
-          ); 
+          const blockResult = await formatedBlocks(district?.toString());
           if (blockResult.message === "Request failed with status code 404") {
             setBlocks([]);
-
-          }
-          else
-            setBlocks(blockResult);
-        }
-        catch { 
-        }
-
+          } else setBlocks(blockResult);
+        } catch {}
       }
-
 
       if (state && district && block) {
         setSelectedBlockCode(block.toString());
@@ -606,40 +586,37 @@ const HeaderComponent = ({
         if (!localStorage.getItem("selectedBlock"))
           setSelectedBlock([selectedBlockStore]);
 
-           
-          const getCentersObject = {
-            limit: 0,
-            offset: 0,
-            filters: {
-              // "type":"COHORT",
-              status: ["active"],
-              country: state.toString(),
-              states: district.toString(),
-              blocks: block.toString(),
-              // "name": selected[0]
-            },
-          };
-          const response = await getCenterList(getCentersObject)
-           
-          // const response = await getCenterList(getCentersObject); 
-          // setSelectedBlockCohortId(
-          //   response?.result?.results?.cohortDetails[0].cohortId
-          // );
-          //   const result = response?.result?.cohortDetails;
-          const dataArray = response?.result?.results?.cohortDetails;
-      
-          const cohortInfo = dataArray
-            ?.filter((cohort: any) => cohort.type !== "BLOCK")
-            .map((item: any) => ({
-              cohortId: item?.cohortId,
-              name: item?.name,
-            })); 
-          setAllCenters(cohortInfo);
+        const getCentersObject = {
+          limit: 0,
+          offset: 0,
+          filters: {
+            // "type":"COHORT",
+            status: ["active"],
+            country: state.toString(),
+            states: district.toString(),
+            blocks: block.toString(),
+            // "name": selected[0]
+          },
+        };
+        const response = await getCenterList(getCentersObject);
+
+        // const response = await getCenterList(getCentersObject);
+        // setSelectedBlockCohortId(
+        //   response?.result?.results?.cohortDetails[0].cohortId
+        // );
+        //   const result = response?.result?.cohortDetails;
+        const dataArray = response?.result?.results?.cohortDetails;
+
+        const cohortInfo = dataArray
+          ?.filter((cohort: any) => cohort.type !== "BLOCK")
+          .map((item: any) => ({
+            cohortId: item?.cohortId,
+            name: item?.name,
+          }));
+        setAllCenters(cohortInfo);
       }
 
-
-      if (center) { 
-
+      if (center) {
         setSelectedCenterCode([center.toString()]);
         // setSelectedCenter([selectedCenterStore])
         setSelectedCenter([localStorage.getItem("selectedCenter")]);
@@ -648,7 +625,7 @@ const HeaderComponent = ({
       }
 
       //  setInitialized(true)
-    }
+    };
     handleRouteparam();
   }, [router, userType]);
 
@@ -665,7 +642,7 @@ const HeaderComponent = ({
     >
       {!showStateDropdown && (
         <Typography variant="h1" sx={{ mt: isMobile ? "12px" : "20px" }}>
-          {userType}
+          {userType === "TRAINER" ? "Trainer" : userType}
         </Typography>
       )}
 
@@ -724,28 +701,32 @@ const HeaderComponent = ({
                           : "inherit",
                     }}
                   >
-                    { isProgramPage ? t("PROGRAM_MANAGEMENT.PUBLISHED"):t("COMMON.ACTIVE")}
+                    {isProgramPage
+                      ? t("PROGRAM_MANAGEMENT.PUBLISHED")
+                      : t("COMMON.ACTIVE")}
                   </Box>
                 }
-                value={isProgramPage ?Status.PUBLISHED:Status.ACTIVE}
+                value={isProgramPage ? Status.PUBLISHED : Status.ACTIVE}
               />
-              {isProgramPage &&(<Tab
-                label={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      color:
-                        statusValue === Status.ACTIVE
-                          ? theme.palette.primary["100"]
-                          : "inherit",
-                    }}
-                  >
-                    {t("PROGRAM_MANAGEMENT.DRAFTS")}
-                  </Box>
-                }
-                value={Status.DRAFT}
-              />)}
+              {isProgramPage && (
+                <Tab
+                  label={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color:
+                          statusValue === Status.ACTIVE
+                            ? theme.palette.primary["100"]
+                            : "inherit",
+                      }}
+                    >
+                      {t("PROGRAM_MANAGEMENT.DRAFTS")}
+                    </Box>
+                  }
+                  value={Status.DRAFT}
+                />
+              )}
               <Tab
                 label={
                   <Box
@@ -798,9 +779,9 @@ const HeaderComponent = ({
                 mr: "10px",
                 ml: isMobile ? "50px" : isMediumScreen ? "10px" : undefined,
                 mt: isMobile ? "10px" : isMediumScreen ? "10px" : undefined,
-                '@media (max-width: 600px)': {
+                "@media (max-width: 600px)": {
                   mx: "16px",
-                }
+                },
               }}
             >
               <Button

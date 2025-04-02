@@ -16,6 +16,8 @@ const MultiSelectDropdown: React.FC<WidgetProps> = ({
     return items && Array.isArray(items.enum);
   };
 
+  const transformedValue = typeof value === "string" ? value.split(",") : value;
+
   const selectOptions = isEnumArray(schema?.items)
     ? schema.items.enum.map((val, index) => ({
         value: val,
@@ -32,7 +34,9 @@ const MultiSelectDropdown: React.FC<WidgetProps> = ({
       multiple
       options={selectOptions}
       getOptionLabel={(option) => option.label}
-      value={selectOptions.filter((opt) => value.includes(opt.value))}
+      value={selectOptions.filter((opt) =>
+        transformedValue.includes(opt.value)
+      )}
       onChange={handleChange}
       disableCloseOnSelect
       disabled={disabled || readonly}

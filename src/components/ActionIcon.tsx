@@ -1,9 +1,9 @@
 import { Box, Tooltip, useTheme } from "@mui/material";
 import { useTranslation } from "next-i18next";
 import React from "react";
-import cohortIcon from '../../public/images/apartment.svg';
-import deleteIcon from '../../public/images/deleteIcon.svg';
-import editIcon from '../../public/images/editIcon.svg';
+import cohortIcon from "../../public/images/apartment.svg";
+import deleteIcon from "../../public/images/deleteIcon.svg";
+import editIcon from "../../public/images/editIcon.svg";
 
 import { TelemetryEventType } from "@/utils/app.constant";
 import { telemetryFactory } from "@/utils/telemetry";
@@ -16,7 +16,7 @@ interface ActionCellProps {
   reassignType?: string;
   rowData: any;
   disable: boolean;
-  userAction?:boolean
+  userAction?: boolean;
 }
 
 const ActionIcon: React.FC<ActionCellProps> = ({
@@ -24,9 +24,9 @@ const ActionIcon: React.FC<ActionCellProps> = ({
   onEdit,
   onDelete,
   reassignCohort,
-  userAction=false,
+  userAction = false,
   disable = false,
-  reassignType
+  reassignType,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
@@ -45,19 +45,23 @@ const ActionIcon: React.FC<ActionCellProps> = ({
           onClick={() => {
             onEdit(rowData);
             const windowUrl = window.location.pathname;
-            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const cleanedUrl = windowUrl.replace(/^\//, "");
             const env = cleanedUrl.split("/")[0];
-        
+
             const telemetryInteract = {
               context: {
                 env: env,
                 cdata: [],
               },
               edata: {
-                id: rowData?.cohortId?'click-edit-delete-action:'+rowData?.cohortId:rowData?.userId? 'edit-on-delete-action:'+rowData?.userId:'edit-on-delete-action',
+                id: rowData?.cohortId
+                  ? "click-edit-delete-action:" + rowData?.cohortId
+                  : rowData?.userId
+                    ? "edit-on-delete-action:" + rowData?.userId
+                    : "edit-on-delete-action",
 
                 type: TelemetryEventType.CLICK,
-                subtype: '',
+                subtype: "",
                 pageid: cleanedUrl,
               },
             };
@@ -69,13 +73,11 @@ const ActionIcon: React.FC<ActionCellProps> = ({
             alignItems: "center",
             cursor: "pointer",
             color: disable ? theme?.palette?.secondary.contrastText : "",
-            backgroundColor:"#E3EAF0",
-            p:"10px"
-
-
+            backgroundColor: "#E3EAF0",
+            p: "10px",
           }}
         >
-<Image src={editIcon} alt="" />
+          <Image src={editIcon} alt="" />
           {/* <Typography variant="body2" fontFamily={"Poppins"}>
             {t("COMMON.EDIT")}
           </Typography> */}
@@ -84,21 +86,24 @@ const ActionIcon: React.FC<ActionCellProps> = ({
       <Tooltip title={t("COMMON.DELETE")}>
         <Box
           onClick={() => {
-
             onDelete(rowData);
             const windowUrl = window.location.pathname;
-            const cleanedUrl = windowUrl.replace(/^\//, '');
+            const cleanedUrl = windowUrl.replace(/^\//, "");
             const env = cleanedUrl.split("/")[0];
-        
+
             const telemetryInteract = {
               context: {
                 env: env,
                 cdata: [],
               },
               edata: {
-                id: rowData?.cohortId?'click-on-delete-action:'+rowData?.cohortId:rowData?.userId? 'click-on-delete-action:'+rowData?.userId:'click-on-delete-action',
+                id: rowData?.cohortId
+                  ? "click-on-delete-action:" + rowData?.cohortId
+                  : rowData?.userId
+                    ? "click-on-delete-action:" + rowData?.userId
+                    : "click-on-delete-action",
                 type: TelemetryEventType.CLICK,
-                subtype: '',
+                subtype: "",
                 pageid: cleanedUrl,
               },
             };
@@ -110,62 +115,61 @@ const ActionIcon: React.FC<ActionCellProps> = ({
             alignItems: "center",
             cursor: "pointer",
             color: disable ? theme?.palette?.secondary.contrastText : "",
-            backgroundColor:"#F8EFE7",
-            p:"10px"
+            backgroundColor: "#F8EFE7",
+            p: "10px",
           }}
         >
-        <Image src={deleteIcon} alt="" />
-{/* 
+          <Image src={deleteIcon} alt="" />
+          {/* 
           <Typography variant="body2" fontFamily={"Poppins"}>
             {t("COMMON.DELETE")}
           </Typography> */}
         </Box>
       </Tooltip>
 
-     { userAction && reassignType && ( <Tooltip title={reassignType}>
-        <Box
-          onClick={() => {
-            if(reassignCohort)
-            {
-              reassignCohort(rowData);
-              const windowUrl = window.location.pathname;
-              const cleanedUrl = windowUrl.replace(/^\//, '');
-              const env = cleanedUrl.split("/")[0];
-          
-              const telemetryInteract = {
-                context: {
-                  env: env,
-                  cdata: [],
-                },
-                edata: {
-                  id: 'click-on-reassign-action:'+rowData?.userId,
-                  type: TelemetryEventType.CLICK,
-                  subtype: '',
-                  pageid: cleanedUrl,
-                },
-              };
-              telemetryFactory.interact(telemetryInteract);
-            }
+      {userAction && reassignType && (
+        <Tooltip title={reassignType}>
+          <Box
+            onClick={() => {
+              if (reassignCohort) {
+                reassignCohort(rowData);
+                const windowUrl = window.location.pathname;
+                const cleanedUrl = windowUrl.replace(/^\//, "");
+                const env = cleanedUrl.split("/")[0];
 
-          }}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            cursor: "pointer",
-            color: disable ? theme?.palette?.secondary.contrastText : "",
-            backgroundColor:"#E5E5E5",
-            p:"10px"
-          }}
-        >
-        <Image src={cohortIcon} alt=""  />
-{/* 
+                const telemetryInteract = {
+                  context: {
+                    env: env,
+                    cdata: [],
+                  },
+                  edata: {
+                    id: "click-on-reassign-action:" + rowData?.userId,
+                    type: TelemetryEventType.CLICK,
+                    subtype: "",
+                    pageid: cleanedUrl,
+                  },
+                };
+                telemetryFactory.interact(telemetryInteract);
+              }
+            }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              cursor: "pointer",
+              color: disable ? theme?.palette?.secondary.contrastText : "",
+              backgroundColor: "#E5E5E5",
+              p: "10px",
+            }}
+          >
+            <Image src={cohortIcon} alt="" />
+            {/* 
           <Typography variant="body2" fontFamily={"Poppins"}>
             {t("COMMON.DELETE")}
           </Typography> */}
-        </Box>
-      </Tooltip>)}
-      
+          </Box>
+        </Tooltip>
+      )}
     </Box>
   );
 };

@@ -167,7 +167,7 @@ export default function MapYouth() {
       try {
         if (cohortId && opportunityId) {
           const page = 0;
-          const filters = { cohortId };
+          const filters = { cohortId: [cohortId] };
 
           // Fetch all users in the cohort
           const response = await cohortMemberList({ limit, filters });

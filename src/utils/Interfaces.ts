@@ -1,6 +1,6 @@
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, RegistryFieldsType, WidgetProps } from "@rjsf/utils";
-import  { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export interface State {
   value: string;
@@ -18,7 +18,15 @@ export interface FieldOption {
 
 export interface Field {
   name: string;
-  type: "text" | "numeric" | "drop_down" | "checkbox" | "radio" | "email"| "file" |"date";
+  type:
+    | "text"
+    | "numeric"
+    | "drop_down"
+    | "checkbox"
+    | "radio"
+    | "email"
+    | "file"
+    | "date";
   label: string;
   order: string;
   coreField: number;
@@ -81,7 +89,7 @@ export interface CohortMemberList {
   limit: number;
   offset: number;
   filters: {
-    cohortId: string;
+    cohortId?: any;
     role?: string;
     status?: string[];
   };
@@ -227,8 +235,8 @@ export interface CentralizedModalProps {
   icon?: boolean;
 }
 export interface FormData {
-  dob?: string; 
-  [key: string]: any; 
+  dob?: string;
+  [key: string]: any;
 }
 export interface DynamicFormProps {
   schema: any;
@@ -242,7 +250,7 @@ export interface DynamicFormProps {
   onError: (errors: any) => void;
   showErrorList: boolean;
   id?: string; // Optional id prop
-  isProgramFields?:boolean
+  isProgramFields?: boolean;
   widgets?: {
     [key: string]: React.FC<WidgetProps<any, RJSFSchema, any>>;
   };
@@ -251,4 +259,3 @@ export interface DynamicFormProps {
   };
   children?: ReactNode;
 }
-

@@ -403,7 +403,7 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         )?.cohortId;
         setSelectedBlockCohortIdForTL(selectedBlockCohortId);
         const filters: FilterDetails = {
-          cohortId: selectedBlockCohortId,
+          cohortId: [selectedBlockCohortId],
           role: Role.TEAM_LEADER,
           status: [Status.ACTIVE],
         };

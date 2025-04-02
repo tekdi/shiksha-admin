@@ -39,7 +39,6 @@ export const userList = async ({
 
 export const cohortMemberList = async ({
   limit,
-  //  page,
   filters,
   sort,
   offset,
@@ -55,9 +54,16 @@ export const cohortMemberList = async ({
       fields,
     });
     return response?.data?.result;
-  } catch (error) {
-    console.error("error in getting user list", error);
-    throw error;
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      console.warn("No data found, returning empty result.");
+      return {
+        totalCount: 0,
+        userDetails: [],
+      }; // Return an empty result
+    }
+    console.error("Error in getting user list", error);
+    throw error; // Re-throw other errors
   }
 };
 
@@ -74,6 +80,3 @@ export const getUserDetailsInfo = async (
     return error;
   }
 };
-
-
-

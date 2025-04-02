@@ -18,7 +18,7 @@ import {
   createOrUpdateOption,
   updateCohort,
 } from "@/services/MasterDataService";
-import { transformLabel } from "@/utils/Helper";
+import { transformLabel, firstLetterInUpperCase } from "@/utils/Helper";
 import { showToastMessage } from "@/components/Toastify";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { AddBlockModal } from "@/components/AddBlockModal";
@@ -1721,7 +1721,7 @@ const MasterData: React.FC<MasterDataProps> = ({ cohortType }) => {
                   codes={states?.map((state) => state.value)}
                   cohortIds={states?.map((state) => state.cohortId)}
                   tagName={t("FACILITATORS.COUNTRY")}
-                  selectedCategories={[selectedState]}
+                  selectedCategories={[firstLetterInUpperCase(selectedState)]}
                   onCategoryChange={handleStateChangeWrapper}
                   disabled={stateValue ? true : false}
                   // overall={!inModal}

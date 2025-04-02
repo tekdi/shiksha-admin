@@ -542,7 +542,7 @@ const Center: React.FC = () => {
       limit: 0,
       offset: 0,
       filters: {
-        cohortId: cohortId,
+        cohortId: [cohortId],
       },
     };
     const response = await fetchCohortMemberList(data);
