@@ -11,6 +11,7 @@ export interface userListParam {
   fields?: any;
   sort?: object;
   offset?: number;
+  includeDisplayValues?: boolean;
 }
 
 export const userList = async ({
@@ -20,6 +21,7 @@ export const userList = async ({
   sort,
   offset,
   fields,
+  includeDisplayValues,
 }: userListParam): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/list`;
   try {
@@ -29,6 +31,7 @@ export const userList = async ({
       sort,
       offset,
       fields,
+      includeDisplayValues,
     });
     return response?.data?.result;
   } catch (error) {
@@ -43,6 +46,7 @@ export const cohortMemberList = async ({
   sort,
   offset,
   fields,
+  includeDisplayValues,
 }: userListParam): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_MIDDLEWARE_URL}/user/v1/cohortmember/list`;
   try {
@@ -52,6 +56,7 @@ export const cohortMemberList = async ({
       sort,
       offset,
       fields,
+      includeDisplayValues,
     });
     return response?.data?.result;
   } catch (error: any) {

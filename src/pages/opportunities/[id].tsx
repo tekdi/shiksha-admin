@@ -186,6 +186,29 @@ export default function OpportunityDetailPage() {
                   </Box>
                 </CardContent>
               </Card>
+              <Card
+                sx={{
+                  boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+                }}
+              >
+                <CardHeader
+                  sx={{
+                    fontSize: "16px",
+                    borderBottom: "1px solid #D0C5B4",
+                  }}
+                  title="Benifits"
+                />
+                <CardContent>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                    {opportunity.benefitsDetails.map((benifit: any) => (
+                      <Chip
+                        key={benifit.benefit_name}
+                        label={benifit.benefit_name}
+                      />
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
 
               {opportunity.work_experience && (
                 <Card

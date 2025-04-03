@@ -57,7 +57,7 @@ export default function MapYouth() {
   const { t } = useTranslation();
   const [myCohorts, setMyCohorts] = useState<any[]>([]);
   const [oppportunityName, setOpportuntiName] = useState("");
-  const [cohortId, setCohortId] = useState<string>("");
+  const [cohortId, setCohortId] = useState<any[]>([]);
   const [isCenterAdmin, setIsCenterAdmin] = useState<boolean>();
 
   useEffect(() => {
@@ -84,10 +84,14 @@ export default function MapYouth() {
 
             const cohortList = extractCohorts(response);
 
-            setMyCohorts(cohortList); // Set only the filtered cohorts
+            setMyCohorts(cohortList);
 
             if (cohortList?.length > 0) {
-              setCohortId(cohortList[0].cohortId); // Default to the first cohort
+              const allCohortIds = cohortList.map(
+                (cohort: any) => cohort.cohortId
+              );
+              setCohortId(allCohortIds);
+              //   setCohortId(cohortList[0].cohortId);
             }
           };
           getMyCohortList();
@@ -137,7 +141,11 @@ export default function MapYouth() {
         setMyCohorts(formattedCohorts);
 
         if (formattedCohorts.length > 0) {
-          setCohortId(formattedCohorts[0].cohortId); // Default to the first cohort
+          const allCohortIds = formattedCohorts.map(
+            (cohort: any) => cohort.cohortId
+          );
+          setCohortId(allCohortIds);
+          //   setCohortId(formattedCohorts[0].cohortId); // Default to the first cohort
         }
       } catch (error) {
         console.error("Error fetching cohort list:", error);
@@ -167,7 +175,7 @@ export default function MapYouth() {
       try {
         if (cohortId && opportunityId) {
           const page = 0;
-          const filters = { cohortId: [cohortId] };
+          const filters = { cohortId: cohortId };
 
           // Fetch all users in the cohort
           const response = await cohortMemberList({ limit, filters });
@@ -338,13 +346,22 @@ export default function MapYouth() {
           <InputLabel>{t("OPPORTUNITY.SELECT_BATCH")}</InputLabel>
           <Select
             label={t("OPPORTUNITY.SELECT_BATCH")}
-            value={cohortId}
-            onChange={(e) => setCohortId(e.target.value)}
+            value={cohortId.length > 1 ? "all" : cohortId}
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              if (selectedValue === "all") {
+                const allCohortIds = myCohorts.map((cohort) => cohort.cohortId);
+                setCohortId(allCohortIds);
+              } else {
+                setCohortId([selectedValue]);
+              }
+            }}
             fullWidth
           >
+            <MenuItem value="all">All Batch</MenuItem>
             {myCohorts?.map((cohort) => (
               <MenuItem key={cohort.cohortId} value={cohort.cohortId}>
-                {cohort.cohortName || cohort.name}{" "}
+                {cohort.cohortName || cohort.name}
               </MenuItem>
             ))}
           </Select>

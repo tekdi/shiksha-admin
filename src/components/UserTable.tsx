@@ -55,6 +55,7 @@ import CommonUserModal from "./CommonUserModal";
 import ReassignCenterModal from "./ReassignCenterModal";
 import { showToastMessage } from "./Toastify";
 import DownloadIcon from "@mui/icons-material/Download";
+import { fi } from "date-fns/locale";
 
 type UserDetails = {
   userId: any;
@@ -684,19 +685,27 @@ const UserTable: React.FC<UserTableProps> = ({
     telemetryFactory.interact(telemetryInteract);
   };
   const mapFields = (formFields: any, response: any) => {
-    let initialFormData: any = {};
+    response.userData.phone_number = response.userData.mobile
+      ? response.userData.mobile
+      : "";
+
+    const initialFormData: any = {};
     formFields.fields.forEach((item: any) => {
       const userData = response?.userData;
       const customFieldValue = userData?.customFields?.find(
         (field: any) => field.fieldId === item.fieldId
       );
+
       const getValue = (data: any, field: any) => {
         if (item.default) {
           return item.default;
         }
         if (item?.isMultiSelect) {
-          if (data[item.name] && item?.maxSelections > 1) {
-            return [field?.value];
+          if (item?.maxSelections > 1) {
+            if (item?.label === "COURSES") {
+              return field?.code?.split(",") || [];
+            }
+            return field?.value?.split(",") || [];
           } else if (item?.type === "checkbox") {
             return String(field?.code).split(",");
           } else {
@@ -708,17 +717,24 @@ const UserTable: React.FC<UserTableProps> = ({
           } else if (item?.type === "text") {
             return String(field?.value);
           } else {
-            if (field?.value === "FEMALE" || field?.value === "MALE") {
+            if (
+              field?.value === "FEMALE" ||
+              field?.value === "MALE" ||
+              field?.value === "TRANSGENDER"
+            ) {
               return field?.value?.toLowerCase();
             }
             return field?.value?.toLowerCase();
           }
         }
       };
+
       if (item.coreField) {
         if (item?.isMultiSelect) {
           if (userData[item.name] && item?.maxSelections > 1) {
-            initialFormData[item.name] = [userData[item.name]];
+            initialFormData[item.name] = Array.isArray(userData[item.name])
+              ? userData[item.name]
+              : [userData[item.name]]; // Ensure it's an array
           } else if (item?.type === "checkbox") {
             initialFormData[item.name] = String(userData[item.name]).split(",");
           } else {
@@ -734,12 +750,16 @@ const UserTable: React.FC<UserTableProps> = ({
           }
         }
       } else {
-        const fieldValue = getValue(userData, customFieldValue);
-        if (fieldValue) {
-          initialFormData[item.name] = fieldValue;
+        if (customFieldValue) {
+          const fieldValue = getValue(userData, customFieldValue);
+
+          if (fieldValue) {
+            initialFormData[item.name] = fieldValue;
+          }
         }
       }
     });
+
     return initialFormData;
   };
   const handleEdit = async (rowData: any) => {
@@ -881,10 +901,15 @@ const UserTable: React.FC<UserTableProps> = ({
       let resp;
       if (enableCenterFilter || isCenterAdmin) {
         const response = await getCohortList(userData.userId);
+        const cohortIds = response?.result[0]?.childData
+          ?.filter((child: any) => child.type === "COHORT") // Filter by type "COHORT"
+          .map((child: any) => child.cohortId);
+
         const filters = {
           role: role,
           status: [statusValue],
-          cohortId: [response?.result?.cohortData[0]?.cohortId],
+          cohortId:
+            role === "Youth" ? cohortIds : [response?.result[0]?.cohortId],
         };
 
         resp = await cohortMemberList({
@@ -1111,10 +1136,14 @@ const UserTable: React.FC<UserTableProps> = ({
         let resp;
         if (enableCenterFilter || isCenterAdmin) {
           const response = await getCohortList(userData.userId);
+          const cohortIds = response?.result[0]?.childData
+            ?.filter((child: any) => child.type === "COHORT") // Filter by type "COHORT"
+            .map((child: any) => child.cohortId);
           const filters = {
             role: role,
             status: [statusValue],
-            cohortId: [response?.result?.cohortData[0]?.cohortId],
+            cohortId:
+              role === "Youth" ? cohortIds : [response?.result[0]?.cohortId],
           };
 
           resp = await cohortMemberList({
@@ -1123,45 +1152,63 @@ const UserTable: React.FC<UserTableProps> = ({
             sort,
             offset,
             fields,
+            includeDisplayValues: true,
           });
         } else {
-          resp = await userList({ limit, filters, sort, offset, fields });
+          resp = await userList({
+            limit,
+            filters,
+            sort,
+            offset,
+            fields,
+            includeDisplayValues: true,
+          });
         }
 
-        if (!resp?.userDetails && enableCenterFilter) break;
-        if (!resp?.getUserDetails) break;
+        // if (!resp?.userDetails && enableCenterFilter) break;
+        // if (!resp?.getUserDetails) break;
 
         totalRecords = resp?.totalCount;
         const result = isCenterAdmin ? resp?.userDetails : resp?.getUserDetails;
 
         const formattedData = result.map((user: any) => ({
-          userId: user?.userId,
-          username: user?.username,
-          status: user?.status,
+          // userId: user?.userId,
+          // username: user?.username,
           name: getUserFullName(user) ?? "-",
+          status: user?.status,
           role: user.role,
           mobile: user.mobile === "NaN" ? "-" : user?.mobile,
-          age:
-            user?.customFields?.find((field: any) => field?.label === "AGE")
-              ?.value || "-",
-          district:
-            user?.customFields?.find(
-              (field: any) => field?.label === "DISTRICTS"
-            )?.value || "-",
-          state:
-            user?.customFields?.find((field: any) => field?.label === "STATES")
-              ?.value || "-",
-          blocks:
-            user?.customFields?.find((field: any) => field?.label === "BLOCKS")
-              ?.value || "-",
+          age: isCenterAdmin
+            ? user?.customField?.find((field: any) => field?.label === "AGE")
+                ?.value || "-"
+            : user?.customFields?.find((field: any) => field?.label === "AGE")
+                ?.value || "-",
+          country: isCenterAdmin
+            ? user?.customField?.find(
+                (field: any) => field?.label === "COUNTRY"
+              )?.value || "-"
+            : user?.customFields?.find(
+                (field: any) => field?.label === "COUNTRY"
+              )?.value || "-",
+          county: isCenterAdmin
+            ? user?.customField?.find((field: any) => field?.label === "STATES")
+                ?.value || "-"
+            : user?.customFields?.find(
+                (field: any) => field?.label === "STATES"
+              )?.value || "-",
+          sub_county: isCenterAdmin
+            ? user?.customField?.find((field: any) => field?.label === "CITY")
+                ?.value || "-"
+            : user?.customFields?.find((field: any) => field?.label === "CITY")
+                ?.value || "-",
           gender: user?.gender
             ? user?.gender.charAt(0).toUpperCase() +
               user?.gender.slice(1).toLowerCase()
             : "-",
           createdAt: new Date(user.createdAt).toISOString().split("T")[0],
           updatedAt: new Date(user.updatedAt).toISOString().split("T")[0],
-          createdBy: user.createdBy,
-          updatedBy: user.updatedBy,
+          createdBy: user.createdByName,
+          updatedBy: user.updatedByName,
         }));
 
         allData.push(...formattedData);
