@@ -57,6 +57,7 @@ export interface OpportunityList {
   benefits: string[];
   stipend: string;
   skillDetails: Array<any>;
+  benefitsDetails: Array<any>;
   work_experience: string;
   otherBenefit?: string;
   country: string;

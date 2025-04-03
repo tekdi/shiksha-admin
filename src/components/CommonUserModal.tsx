@@ -391,11 +391,8 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                     ? RoleId.SCTA
                     : RoleId.TEAM_LEADER,
             cohortIds:
-              userType === "YOUTH"
-                ? [
-                    isCenterAdmin ? centerAdminCohort : selectedCenterCode,
-                    selectedBatchCode,
-                  ]
+              userType === FormContextType.STUDENT
+                ? [selectedBatchCode]
                 : [isCenterAdmin ? centerAdminCohort : selectedCenterCode],
             // userType === FormContextType.TEAM_LEADER
             //   ? [selectedBlockCohortId]
