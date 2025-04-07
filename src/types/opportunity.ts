@@ -31,6 +31,7 @@ export interface Opportunity {
   city: string;
   offer_letter_provided: string;
   pricing_type: string;
+  currency?: string;
 }
 
 export interface OpportunityList {
@@ -66,6 +67,7 @@ export interface OpportunityList {
   offer_letter_provided: string;
   pricing_type: string;
   stats: any;
+  currency?: string;
 }
 
 export type OpportunityFormData = Omit<
