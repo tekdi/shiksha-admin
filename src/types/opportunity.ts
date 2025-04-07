@@ -44,7 +44,7 @@ export interface OpportunityList {
   min_salary: string;
   max_salary: string;
   category: any;
-  company: string;
+  company: any;
   skills: string[];
   no_of_candidates: number;
   status: string;
@@ -65,6 +65,7 @@ export interface OpportunityList {
   city: string;
   offer_letter_provided: string;
   pricing_type: string;
+  stats: any;
 }
 
 export type OpportunityFormData = Omit<

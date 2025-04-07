@@ -461,10 +461,10 @@ const Center: React.FC = () => {
                   .toISOString()
                   .split("T")[0],
                 location: item?.customFields[0]?.value ? location : "-",
-                cohortId: item?.cohortId,
-                customFieldValues: cohortType
-                  ? transformLabel(cohortType)
-                  : "-",
+                // cohortId: item?.cohortId,
+                // customFieldValues: cohortType
+                //   ? transformLabel(cohortType)
+                //   : "-",
                 totalActiveMembers: counts?.totalActiveMembers,
                 totalArchivedMembers: counts?.totalArchivedMembers,
               };

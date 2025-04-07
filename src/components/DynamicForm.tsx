@@ -227,6 +227,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               );
               break;
             }
+            case "^\\+?[0-9]{1,4}$": {
+              error.message = t("Enter Valid Country code");
+              break;
+            }
             case "^[0-9]{10}$": {
               if (
                 schema.properties?.[property]?.validation?.includes("mobile")

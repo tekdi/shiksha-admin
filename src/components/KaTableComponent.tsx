@@ -143,32 +143,14 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                   return (
                     <Typography
                       color={"green"}
-                      onClick={() =>
-                        handleMemberClick(
-                          Status.ACTIVE,
-                          props?.rowData?.totalActiveMembers,
-                          props?.rowData?.cohortId
-                        )
-                      }
                       sx={{
                         color: "green",
-                        cursor:
-                          props.rowData?.totalActiveMembers &&
-                          props.rowData?.totalActiveMembers >= 0
-                            ? "pointer"
-                            : "not-allowed",
+                        cursor: "default", // Show pointer only on hover
                       }}
                     >
-                      {props.rowData?.totalActiveMembers ? (
-                        <a
-                          href="#"
-                          style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                          {props.rowData?.totalActiveMembers}
-                        </a>
-                      ) : (
-                        "-"
-                      )}
+                      {props.rowData?.totalActiveMembers
+                        ? props.rowData?.totalActiveMembers
+                        : "-"}
                     </Typography>
                   );
                 } else if (props.column.key === DataKey.ARCHIVED_MEMBERS) {
