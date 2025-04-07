@@ -679,6 +679,7 @@
     "APPROVE": "Approve",
     "CLEAR_FILTERS": "Clear Filters",
     "OFFER_LETTER_PROVIDED": "Offer Letter Provided",
-    "PRICING_TYPE": "Pricing Type"
+    "PRICING_TYPE": "Pricing Type",
+    "CURRENCY": "Currency"
   }
 }

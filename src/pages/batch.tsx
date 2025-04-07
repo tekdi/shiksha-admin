@@ -368,9 +368,31 @@ const Center: React.FC = () => {
             return await getCohortMemberlistData(cohortId);
           })
         );
+
         const finalResult = result?.filter(
           (cohort: any) => cohort.type === "COHORT"
         );
+
+        const cohortNames = await Promise.all(
+          finalResult.map(async (item: any) => {
+            if (item?.parentId) {
+              const data = {
+                filters: {
+                  cohortId: item?.parentId,
+                },
+                limit: Numbers.TWENTY,
+                offset: 0,
+              };
+              const response = await getCohortList(data);
+
+              const cohortName =
+                response?.results?.cohortDetails[0]?.name || "-";
+              return cohortName;
+            }
+            return "-";
+          })
+        );
+
         finalResult?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.find(
@@ -384,6 +406,7 @@ const Center: React.FC = () => {
             totalActiveMembers: 0,
             totalArchivedMembers: 0,
           };
+
           const requiredData = {
             name: item?.name,
             status: item?.status,
@@ -403,11 +426,13 @@ const Center: React.FC = () => {
             updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
             cohortId: item?.cohortId,
             customFieldValues: cohortType[0] ? transformLabel(cohortType) : "-",
+            centers: firstLetterInUpperCase(cohortNames[index]), // Use the fetched cohort name
             totalActiveMembers: counts?.totalActiveMembers,
             totalArchivedMembers: counts?.totalArchivedMembers,
           };
           resultData?.push(requiredData);
         });
+
         setCohortData(resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
@@ -1176,10 +1201,6 @@ const Center: React.FC = () => {
     setLoading(true);
     const formData = data?.formData;
     const schemaProperties = schema.properties;
-
-    console.log(selectedStateCode, "------");
-    console.log(selectedDistrictCode, "----------");
-    console.log(selectedBlockCode, "-----------");
 
     const apiBody: any = {
       customFields: [

@@ -99,6 +99,7 @@ interface Cohort {
   customField: any[];
   cohortMemberStatus?: string;
   cohortMembershipId?: string;
+  cohortName: string;
 }
 interface UserTableProps {
   role: string;
@@ -1271,13 +1272,13 @@ const UserTable: React.FC<UserTableProps> = ({
             // const cohortNames = response?.result?.cohortData?.map(
             //   (cohort: Cohort) => cohort.name,
             // );
-            const cohortNames = response?.result?.cohortData
+            const cohortNames = response?.result
               ?.filter(
                 (cohort: Cohort) =>
                   cohort.type !== "BLOCK" &&
                   cohort?.cohortMemberStatus !== "archived"
               )
-              .map((cohort: Cohort) => cohort.name);
+              .map((cohort: Cohort) => cohort.cohortName);
             const cohortIds = response?.result?.cohortData
               ?.filter(
                 (cohort: Cohort) =>
@@ -1301,6 +1302,7 @@ const UserTable: React.FC<UserTableProps> = ({
               )
               .map((cohort: Cohort) => cohort.cohortMembershipId);
             //  const cohortMembershipId=response?.result?.cohortData?.cohortMembershipId;
+            console.log(cohortNames, "cohortNames-------");
 
             let finalArray;
             if (cohortNames?.length >= 1) {
