@@ -497,8 +497,8 @@ const Center: React.FC = () => {
               createdBy: item?.createdByName,
               createdAt: new Date(item?.createdAt).toISOString().split("T")[0],
               updatedAt: new Date(item?.updatedAt).toISOString().split("T")[0],
-              cohortId: item?.cohortId,
-              customFieldValues: cohortType ? transformLabel(cohortType) : "-",
+              // cohortId: item?.cohortId,
+              // customFieldValues: cohortType ? transformLabel(cohortType) : "-",
               totalActiveMembers: counts?.totalActiveMembers,
               totalArchivedMembers: counts?.totalArchivedMembers,
             };

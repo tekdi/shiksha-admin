@@ -39,6 +39,10 @@ import {
 import { Switch, FormControlLabel } from "@mui/material";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { saveAs } from "file-saver";
+import Papa from "papaparse";
+import { Description, Work } from "@mui/icons-material";
+import DownloadIcon from "@mui/icons-material/Download";
 
 export default function OpportunitiesPage() {
   const router = useRouter();
@@ -169,6 +173,42 @@ export default function OpportunitiesPage() {
     });
   }
 
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Extract only the date part
+  };
+
+  function handleExportCSV() {
+    if (opportunities.items.length === 0) {
+      showToastMessage(t("OPPORTUNITY.NO_DATA_TO_EXPORT"), "error");
+      return;
+    }
+
+    const csvData = opportunities.items.map((item) => ({
+      Title: item.title ? item.title : "-",
+      Description: item.description ? item.description : "-",
+      WorkType: item.work_nature ? item.work_nature : "-",
+      OpportunityType: item.opportunity_type ? item.opportunity_type : "-",
+      Category: item.category.name ? item.category.name : "-",
+      Organisation: item.company.name ? item.company.name : "-",
+      Status: item.status,
+      Location:
+        item.location.city +
+        ", " +
+        item.location.state +
+        ", " +
+        item.location.country,
+      Vacancies: item.no_of_candidates ? item.no_of_candidates : "-",
+      Mapped_Youth: item.stats.mapped ? item.stats.mapped : "-",
+      Hired_Youth: item.stats.hired ? item.stats.hired : "-",
+      CreatedAt: item.created_at ? formatDate(item.created_at) : "-",
+    }));
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "opportunities.csv");
+  }
+
   return (
     <>
       {/* <Header /> */}
@@ -196,7 +236,15 @@ export default function OpportunitiesPage() {
           py={2}
           borderRadius={2}
         >
-          <Box borderBottom={"1px solid #0000001f"}>
+          <Box
+            borderBottom={"1px solid #0000001f"}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {/* Tabs */}
             <Tabs
               value={selectedTab}
               onChange={(_, newValue) => setSelectedTab(newValue)}
@@ -205,6 +253,25 @@ export default function OpportunitiesPage() {
               <Tab label={t("OPPORTUNITY.CREATED_BY_ME")} value="createdByMe" />
               <Tab label={t("OPPORTUNITY.NEW_REQUEST")} value="newRequest" />
             </Tabs>
+
+            {/* Export CSV Button */}
+            <button
+              onClick={handleExportCSV}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 16px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "#f5f5f5",
+                cursor: "pointer",
+                marginRight: "10px",
+              }}
+            >
+              <DownloadIcon />
+              {"Export CSV"}
+            </button>
           </Box>
 
           <Box>

@@ -39,6 +39,9 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useTranslation } from "next-i18next";
 import type { OpportunityList } from "@/types/opportunity";
 import { showToastMessage } from "@/components/Toastify";
+import Papa from "papaparse";
+import { saveAs } from "file-saver";
+import DownloadIcon from "@mui/icons-material/Download";
 
 interface Status {
   status: string;
@@ -242,6 +245,28 @@ export function OpportunitiesList({
     }
 
     setOpenRejectModal(false);
+  };
+
+  const exportToCSV = () => {
+    if (userList.length === 0) {
+      showToastMessage("No data to export", "error");
+      return;
+    }
+
+    const csvData = userList.map((user: any) => ({
+      Youth_Name: user.name || "Unknown",
+      Status:
+        statusOptions.find((status) => status.value === user.status)?.label ||
+        "Unknown",
+    }));
+
+    const csv = Papa.unparse(csvData);
+    const fileName = selectedOpportunity?.title
+      ? `${selectedOpportunity.title.replace(/[^a-zA-Z0-9]/g, "_")}.csv`
+      : "mapped_users.csv";
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, fileName);
   };
 
   return (
@@ -551,22 +576,51 @@ export function OpportunitiesList({
               }}
             />
           </Box>
-
-          <Button
+          <Box
             sx={{
-              p: "24px 16px",
-              justifyContent: "start",
-              color: "#313131",
-              fontWeight: "500",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
+              marginTop: "16px",
             }}
-            variant="text"
-            endIcon={<PersonAddAltIcon />}
-            onClick={() =>
-              router.push(`opportunities/map-youth/${selectedOpportunity}`)
-            } // Navigate to youth mapping page
           >
-            {t("OPPORTUNITY.ADD_YOUTH")}
-          </Button>
+            {/* Add Youth Button */}
+            <Button
+              sx={{
+                p: "8px 16px",
+                justifyContent: "start",
+                color: "#313131",
+                fontWeight: "500",
+              }}
+              variant="text"
+              endIcon={<PersonAddAltIcon />}
+              onClick={() =>
+                router.push(`opportunities/map-youth/${selectedOpportunity}`)
+              } // Navigate to youth mapping page
+            >
+              {t("OPPORTUNITY.ADD_YOUTH")}
+            </Button>
+
+            {/* Export CSV Button */}
+            <button
+              onClick={exportToCSV}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 16px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "#f5f5f5",
+                cursor: "pointer",
+                marginRight: "7px",
+              }}
+            >
+              <DownloadIcon />
+              {"Export CSV"}
+            </button>
+          </Box>
           {loadingUsers ? (
             <Box display="flex" justifyContent="center" alignItems="center">
               <CircularProgress />
