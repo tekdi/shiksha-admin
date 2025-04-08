@@ -27,6 +27,7 @@ import { showToastMessage } from "./Toastify";
 import { createOrUpdateOption } from "@/services/MasterDataService";
 import { SelectChangeEvent } from "@mui/material";
 import { log } from "node:console";
+import { getUserCohortList } from "@/services/CohortService/cohortService";
 
 interface CustomField {
   fieldId: string;
@@ -68,6 +69,8 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
   const [startYear, setStartYear] = useState<string>("");
   const [endYear, setEndYear] = useState<string>("");
   const [additionalText, setAdditionalText] = useState<string>(""); // New state for user input
+  const [isCenterAdmin, setIsCenterAdmin] = useState(false);
+  const [myCohort, setMyCohorts] = useState<any>([]);
 
   // const [customFormData, setCustomFormData] = useState<any>({});
   const [batchName, setBatchName] = useState<string>("");
@@ -325,6 +328,45 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     console.log("error");
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
+      setIsCenterAdmin(adminInfo?.role === "Center Admin");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isCenterAdmin) {
+      if (typeof window !== "undefined" && window.localStorage) {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const getMyCohortList = async () => {
+            const response = await getUserCohortList(userId);
+
+            const extractCohorts = (data: any[]): any[] => {
+              let cohorts: any[] = [];
+              data.forEach((item) => {
+                if (item.type === "CENTER") {
+                  cohorts.push(item);
+                }
+                if (item.childData && item.childData.length > 0) {
+                  cohorts = cohorts.concat(extractCohorts(item.childData));
+                }
+              });
+              return cohorts;
+            };
+
+            const cohortList = extractCohorts(response);
+            const cohortNames = cohortList.map((cohort) => cohort.cohortName);
+            localStorage.setItem("adminCohort", cohortList[0].cohortId);
+            setMyCohorts(cohortNames);
+          };
+          getMyCohortList();
+        }
+      }
+    }
+  }, [isCenterAdmin]);
+
   const years = Array.from(
     { length: 5 },
     (_, i) => new Date().getFullYear() + i
@@ -418,7 +460,9 @@ const AddNewBatch: React.FC<AddLearnerModalProps> = ({
     startYear: string,
     endYear: string
   ) => {
-    const centerPrefix = selectedCenter?.[0] || "";
+    const centerPrefix = isCenterAdmin
+      ? myCohort[0]
+      : selectedCenter?.[0] || "";
     const batchName =
       `${centerPrefix} ${startMonth} ${startYear} - ${endMonth} ${endYear} ${additionalText}`.trim();
 
