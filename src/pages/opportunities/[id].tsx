@@ -291,7 +291,7 @@ export default function OpportunityDetailPage() {
                     </Typography>
                   </Box>
                   <Divider />
-                  <Box sx={{ py: 1.5 }}>
+                  {/* <Box sx={{ py: 1.5 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Experience Level
                     </Typography>
@@ -299,7 +299,7 @@ export default function OpportunityDetailPage() {
                       {opportunity.experience_level}
                     </Typography>
                   </Box>
-                  <Divider />
+                  <Divider /> */}
                   <Box sx={{ py: 1.5 }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Type
