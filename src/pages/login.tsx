@@ -37,7 +37,7 @@ import { Role } from "@/utils/app.constant";
 import { AcademicYear } from "@/utils/Interfaces";
 import { getAcademicYear } from "@/services/AcademicYearService";
 import useStore from "@/store/store";
-import loginImg from "../../public/images/login-image.jpg";
+import loginImg from "../../public/images/login-image.png";
 
 const LoginPage = () => {
   const { t } = useTranslation();
