@@ -39,7 +39,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import KaTableComponent from "../components/KaTableComponent";
 import Loader from "../components/Loader";
-import { deleteUser } from "../services/DeleteUser";
+import { deleteUser, updateCohortMember } from "../services/DeleteUser";
 import { getCohortList } from "../services/GetCohortList";
 import {
   cohortMemberList,
@@ -188,6 +188,9 @@ const UserTable: React.FC<UserTableProps> = ({
   const [initialized, setInitialized] = useState(false);
 
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedCohortMembershipId, setSelectedCohortMembershipId] =
+    useState("");
+
   const [cohortId, setCohortId] = useState([]);
 
   const [block, setBlock] = useState("");
@@ -805,6 +808,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
     setBlockMembershipIdList(rowData.blockMembershipIdList);
     setCenterMembershipIdList(rowData.centerMembershipIdList);
+    setSelectedCohortMembershipId(rowData.cohortMembershipId);
     setSelectedUserId(rowData.userId);
     if (userType === Role.TEAM_LEADERS) {
       setUserCohorts(rowData.blocks);
@@ -1004,6 +1008,7 @@ const UserTable: React.FC<UserTableProps> = ({
             districtCode: districtField?.code,
             blockCode: blockField?.code,
             districtValue: districtField ? districtField?.value : "-",
+            cohortMembershipId: user?.cohortMembershipId,
 
             // // centers: null,
             // Programs: null,
@@ -1061,6 +1066,7 @@ const UserTable: React.FC<UserTableProps> = ({
             districtCode: districtField?.code,
             blockCode: blockField?.code,
             districtValue: districtField ? districtField?.value : "-",
+            cohortMembershipId: user?.cohortMembershipId,
             // centers: null,
             // Programs: null,
           };
@@ -1622,6 +1628,9 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const handleDeleteUser = async (category: string) => {
+    const memberStatus = Status.ARCHIVED;
+    const statusReason = selectedReason;
+    const membershipId = selectedCohortMembershipId;
     try {
       const userId = selectedUserId;
       const userData = {
@@ -1631,6 +1640,14 @@ const UserTable: React.FC<UserTableProps> = ({
         },
       };
       const cohortDeletionResponse = await deleteUser(userId, userData);
+      if (selectedCohortMembershipId) {
+        const membershipDeletion = await updateCohortMember({
+          memberStatus,
+          statusReason,
+          membershipId,
+        });
+      }
+
       if (cohortDeletionResponse) {
         deleteUserState ? setDeleteUserState(false) : setDeleteUserState(true);
       }
