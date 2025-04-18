@@ -120,7 +120,7 @@ export function OpportunityForm({
     max_salary: "0",
     skills: [],
     no_of_candidates: 0,
-    status: "pending",
+    status: "approved",
     opportunity_type: "",
     work_nature: "",
     benefits: [],
@@ -250,6 +250,7 @@ export function OpportunityForm({
                   label={t("OPPORTUNITY.TITLE")}
                   error={!!errors.title}
                   helperText={errors.title?.message}
+                  required
                 />
               )}
             />
@@ -268,6 +269,7 @@ export function OpportunityForm({
                   label={t("OPPORTUNITY.DESCRIPTION")}
                   error={!!errors.description}
                   helperText={errors.description?.message}
+                  required
                 />
               )}
             />
