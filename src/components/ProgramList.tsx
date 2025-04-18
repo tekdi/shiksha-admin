@@ -17,10 +17,10 @@ import Loader from "@/components/Loader";
 import useStore from "@/store/store";
 import ProgramCard from "./ProgramCard";
 import { getProgramList, programSearch } from "@/services/ProgramServices";
-import loginImg from "../../public/images/login-image.jpg";
+import loginImg from "../../public/images/login-image.png";
 import AddProgram from "./AddProgram";
 import useSubmittedButtonStore from "@/utils/useSharedState";
-import {  limit } from "@/utils/app.constant";
+import { limit } from "@/utils/app.constant";
 
 interface Program {
   tenantId: string;
@@ -69,115 +69,110 @@ const ProgramList: React.FC = () => {
   useEffect(() => {
     const fetchProgramList = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
 
-        let programListObject ;
-        if(statusValue===Status.PUBLISHED){
+        let programListObject;
+        if (statusValue === Status.PUBLISHED) {
           programListObject = {
             limit,
             offset: 0,
-          filters: {
-            status: [Status.PUBLISHED],
-          },
+            filters: {
+              status: [Status.PUBLISHED],
+            },
           };
-        }
-      else if(statusValue===Status.DRAFT){
+        } else if (statusValue === Status.DRAFT) {
           programListObject = {
             limit,
             offset: 0,
-          filters: {
-            status: [Status.DRAFT],
-          },
+            filters: {
+              status: [Status.DRAFT],
+            },
           };
-        }
-        else
-        {
+        } else {
           programListObject = {
             limit,
             offset: 0,
-          filters: {
-            status: ["archived"],
-          },
+            filters: {
+              status: ["archived"],
+            },
           };
         }
-        
-        const result=await programSearch(programListObject);
+
+        const result = await programSearch(programListObject);
         // const result = await getProgramList();
         console.log("result", result?.result);
-        
+
         // Format the program list based on the searchKeyword
-        const programSummaries = result?.getTenantDetails?.map((program: any) => ({
-          name: program.name,
-          domain: program.domain,
-          status: program.status,
-          description: program.description,
-          programImages: program.programImages || ["No image available"],
-          tenantId:program.tenantId
-        }))
-        .filter((program: any) => 
-          program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
-        
-        );
-  
-        const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
-          if (selectedSort === "A-Z") {
-            return a.name.localeCompare(b.name);  
-          } else if (selectedSort === "Z-A") {
-            return b.name.localeCompare(a.name);  
+        const programSummaries = result?.getTenantDetails
+          ?.map((program: any) => ({
+            name: program.name,
+            domain: program.domain,
+            status: program.status,
+            description: program.description,
+            programImages: program.programImages || ["No image available"],
+            tenantId: program.tenantId,
+          }))
+          .filter((program: any) =>
+            program.name.toLowerCase().includes(searchKeyword.toLowerCase())
+          );
+
+        const sortedProgramSummaries = programSummaries.sort(
+          (a: any, b: any) => {
+            if (selectedSort === "A-Z") {
+              return a.name.localeCompare(b.name);
+            } else if (selectedSort === "Z-A") {
+              return b.name.localeCompare(a.name);
+            }
+            return a.name.localeCompare(b.name);
           }
-          return a.name.localeCompare(b.name);
-                });
-        
+        );
+
         setPrograms(sortedProgramSummaries);
         setFilteredPrograms(sortedProgramSummaries);
-        setLoading(false)
-
+        setLoading(false);
       } catch (error) {
-        setPrograms([])
+        setPrograms([]);
         setFilteredPrograms([]);
-        setLoading(false)
+        setLoading(false);
         console.error("Error fetching program list:", error);
       }
     };
-  
+
     fetchProgramList();
-  }, [statusValue, fetchPrograms, searchKeyword]);  
-   
+  }, [statusValue, fetchPrograms, searchKeyword]);
+
   useEffect(() => {
+    const programSummaries = programs.filter((program: any) =>
+      program.name.toLowerCase().includes(searchKeyword.toLowerCase())
+    );
 
-   const  programSummaries = programs.filter((program: any) => 
-    program.name.toLowerCase().includes(searchKeyword.toLowerCase()) 
-  );
+    const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
+      if (selectedSort === "A-Z") {
+        return a.name.localeCompare(b.name);
+      } else if (selectedSort === "Z-A") {
+        return b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
 
-  const sortedProgramSummaries = programSummaries.sort((a: any, b: any) => {
-    if (selectedSort === "A-Z") {
-      return a.name.localeCompare(b.name);  
-    } else if (selectedSort === "Z-A") {
-      return b.name.localeCompare(a.name);  
-    }
-    return 0;  
-  });
-  
-  setFilteredPrograms(sortedProgramSummaries);
-    
-  }, [ selectedSort,  searchKeyword, programs]);  
+    setFilteredPrograms(sortedProgramSummaries);
+  }, [selectedSort, searchKeyword, programs]);
   const handleFilterChange = async (
     event: React.SyntheticEvent,
     newValue: any
   ) => {
     setStatusValue(newValue);
-    if (newValue === Status.PUBLISHED) { 
-     
+    if (newValue === Status.PUBLISHED) {
       setIsArchived(false);
     } else if (newValue === Status.ARCHIVED) {
-      
       setIsArchived(true);
     } else {
       setIsArchived(false);
-  }};
+    }
+  };
 
   const handleDelete = (rowData: any) => {};
-  
+
   const handleSortChange = async (event: SelectChangeEvent) => {
     const sortOrder =
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
@@ -186,16 +181,14 @@ const ProgramList: React.FC = () => {
   };
   const handleConfirmDelete = async () => {};
   const handleSearch = (keyword: string) => {
-     setSearchKeyword(keyword);
+    setSearchKeyword(keyword);
   };
   const handleAddProgramClick = () => {
     setOpenAddNewProgram(true);
-
   };
   const handleCloseAddProgram = () => {
     setOpenAddNewProgram(false);
-   // setSubmittedButtonStatus(false);
-
+    // setSubmittedButtonStatus(false);
   };
   return (
     <>
@@ -213,52 +206,49 @@ const ProgramList: React.FC = () => {
         handleSearch={handleSearch}
         handleAddUserClick={handleAddProgramClick}
         handleDelete={handleDelete}
-        handleFilterChange={handleFilterChange} 
+        handleFilterChange={handleFilterChange}
         isProgramPage={true}
       >
-         {loading ? (
-            <Box
-              width={"100%"}
-              id="check"
-              display={"flex"}
-              flexDirection={"column"}
-              alignItems={"center"}
-            >
-              <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
-            </Box>
-          ) :
-       ( <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            flexDirection: "row",
-            gap: "20px",
-            margin: "20px",
-          }}
-        >
-          { filteredPrograms?.map((program: any) => (
-            <ProgramCard
-              programId={program.tenantId}
-              programName={program.name}
-              description={program.description}
-              // domain={program.domain}
-              status={program.status}
-              imageUrl={program.programImages || loginImg}
-              userRole={userRole}
-            />
-          ))}
-          {filteredPrograms.length === 0 && (<Typography ml="40%">
-            {t("PROGRAM_MANAGEMENT.NO_PROGRAMS_FOUND")}
-          </Typography>)
-          }
-        </Box>)
-}
+        {loading ? (
+          <Box
+            width={"100%"}
+            id="check"
+            display={"flex"}
+            flexDirection={"column"}
+            alignItems={"center"}
+          >
+            <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              flexDirection: "row",
+              gap: "20px",
+              margin: "20px",
+            }}
+          >
+            {filteredPrograms?.map((program: any) => (
+              <ProgramCard
+                programId={program.tenantId}
+                programName={program.name}
+                description={program.description}
+                // domain={program.domain}
+                status={program.status}
+                imageUrl={program.programImages || loginImg}
+                userRole={userRole}
+              />
+            ))}
+            {filteredPrograms.length === 0 && (
+              <Typography ml="40%">
+                {t("PROGRAM_MANAGEMENT.NO_PROGRAMS_FOUND")}
+              </Typography>
+            )}
+          </Box>
+        )}
       </HeaderComponent>
-      <AddProgram
-            open={openAddNewProgram}
-            onClose={handleCloseAddProgram}
-         
-          />
+      <AddProgram open={openAddNewProgram} onClose={handleCloseAddProgram} />
     </>
   );
 };
