@@ -21,6 +21,7 @@ import {
   SORT,
   Status,
   Storage,
+  Role,
 } from "@/utils/app.constant";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -45,7 +46,12 @@ import { showToastMessage } from "@/components/Toastify";
 import AddNewCenters from "@/components/AddNewCenters";
 import { getCenterTableData } from "@/data/tableColumns";
 import { Theme } from "@mui/system";
-import { adjustTime, convertTo12HourFormat, firstLetterInUpperCase, mapFields } from "@/utils/Helper";
+import {
+  adjustTime,
+  convertTo12HourFormat,
+  firstLetterInUpperCase,
+  mapFields,
+} from "@/utils/Helper";
 import SimpleModal from "@/components/SimpleModal";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
@@ -84,13 +90,13 @@ interface CohortDetails {
 }
 
 interface Option {
-  value: string; 
+  value: string;
   label: string;
 }
 
 interface CohortDetail {
-  name: string; 
-  [key: string]: any; 
+  name: string;
+  [key: string]: any;
 }
 
 const Center: React.FC = () => {
@@ -325,12 +331,14 @@ const Center: React.FC = () => {
     if (response?.result) {
       const userDetails = response.result.userDetails;
       const getActiveMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ACTIVE
+        (member: any) =>
+          member?.status === Status.ACTIVE && member?.role === Role.STUDENT
       );
       const totalActiveMembers = getActiveMembers?.length || 0;
 
       const getArchivedMembers = userDetails?.filter(
-        (member: any) => member?.status === Status.ARCHIVED
+        (member: any) =>
+          member?.status === Status.ARCHIVED && member?.role === Role.STUDENT
       );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
@@ -355,21 +363,22 @@ const Center: React.FC = () => {
         offset: 0,
         filters: {
           type: CohortTypes.SCHOOL,
-          status: [Status.ACTIVE]
+          status: [Status.ACTIVE],
         },
         sort: ["name", "asc"],
       };
 
       const Schoolresponse = await getCohortList(reqParams);
-      
-      
 
       const options: Option[] = response?.fields[0]?.options || [];
-      const cohortDetails: CohortDetail[] = Schoolresponse?.results?.cohortDetails || [];
+      const cohortDetails: CohortDetail[] =
+        Schoolresponse?.results?.cohortDetails || [];
 
       const filteredOptions: Option[] = options.filter((option: Option) =>
-        cohortDetails.some((cohort: CohortDetail) => cohort.name === option.label)
-      );      
+        cohortDetails.some(
+          (cohort: CohortDetail) => cohort.name === option.label
+        )
+      );
 
       if (response) {
         response.fields[0].options = filteredOptions;
@@ -691,9 +700,9 @@ const Center: React.FC = () => {
 
   const handleActivateCohort = (rowData: any) => {
     setSelectedCohortId(rowData.cohortId);
-    if (rowData.cohortId){
+    if (rowData.cohortId) {
       handleActionForActivate(rowData);
-    }  
+    }
   };
 
   const handleAddFacilitator = () => {
@@ -812,7 +821,6 @@ const Center: React.FC = () => {
   //   }
   // };
 
-
   const handleUpdateAction = async (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
@@ -865,7 +873,6 @@ const Center: React.FC = () => {
     const toTimeFieldId = toTimeOption?.fieldId || "";
     const schoolFieldId = schoolOption?.fieldId || "";
     const classFieldId = classOption?.fieldId || "";
-
 
     const getFromTime = convertTo12HourFormat(formData?.from_time);
     const getToTime = convertTo12HourFormat(formData?.to_time);
@@ -1254,10 +1261,14 @@ const Center: React.FC = () => {
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
-            ? t("CENTERS.ARE_YOU_SURE_WANT_TO_DELETE_CLASS_HAS_ACTIVE_LEARNERS", {
-                activeMembers: `${selectedRowData?.totalActiveMembers}`,
-              })
-            : t("CENTERS.SURE_DELETE_CLASS") + " " +
+            ? t(
+                "CENTERS.ARE_YOU_SURE_WANT_TO_DELETE_CLASS_HAS_ACTIVE_LEARNERS",
+                {
+                  activeMembers: `${selectedRowData?.totalActiveMembers}`,
+                }
+              )
+            : t("CENTERS.SURE_DELETE_CLASS") +
+              " " +
               inputName +
               " " +
               t("CENTERS.CENTER") +
@@ -1267,10 +1278,11 @@ const Center: React.FC = () => {
         buttonNames={
           // selectedRowData?.totalActiveMembers > 0
           //   ? { secondary: t("COMMON.CANCEL") }
-            // : 
-            { 
-              primary: t("COMMON.YES"), secondary: t("COMMON.CANCEL")
-             }
+          // :
+          {
+            primary: t("COMMON.YES"),
+            secondary: t("COMMON.CANCEL"),
+          }
         }
         handleCloseModal={handleCloseModal}
         modalOpen={confirmationModalOpen}

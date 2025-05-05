@@ -14,7 +14,10 @@ import {
 } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "next-i18next";
-import { getDistrictsForState,getStateBlockDistrictList } from "@/services/MasterDataService";
+import {
+  getDistrictsForState,
+  getStateBlockDistrictList,
+} from "@/services/MasterDataService";
 import { getCohortList } from "@/services/CohortService/cohortService";
 import { transformLabel } from "@/utils/Helper";
 import { Status } from "@/utils/app.constant";
@@ -63,30 +66,33 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
   const [clusters, setClusters] = useState<{ value: string; label: string }[]>(
     []
   );
+  const [clusterFieldId, setClusterFieldId] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [matchedClusters, setMatchedClusters] = useState<DistrictDetail[]>([]);
   const { t } = useTranslation();
   const [cohortData, setCohortData] = useState<Array<any>>([]);
 
-   const fetchCohortData = async (type: string) => {
-      const reqParams = {
-        limit: 0,
-        offset: 0,
-        filters: {
-          type: type,
-          status: [Status.ACTIVE]
-        },
-        sort: ["name", "asc"],
-      };
-    
-      try {
-        const response = await getCohortList(reqParams);
-        setCohortData(response?.results?.cohortDetails);
-        return response?.results?.cohortDetails || [];
-      } catch (error) {
-        console.error("Error fetching cohort data", error);
-        return [];
-      }
+  const fetchCohortData = async (type: string) => {
+    const reqParams = {
+      limit: 0,
+      offset: 0,
+      filters: {
+        type: type,
+        status: [Status.ACTIVE],
+      },
+      sort: ["name", "asc"],
     };
+
+    try {
+      const response = await getCohortList(reqParams);
+      setCohortData(response?.results?.cohortDetails);
+      return response?.results?.cohortDetails || [];
+    } catch (error) {
+      console.error("Error fetching cohort data", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     setFormData({
@@ -99,28 +105,30 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
 
   useEffect(() => {
     const fetchClusters = async () => {
-        try {
-          const data = await getStateBlockDistrictList({
-            fieldName: "clusters",
-          });
-    
-          const clusters = data?.result?.values || [];
-          setClusters(clusters);
-    
-          const clusterFieldId = data?.result?.fieldId || "";
-          setClusters(clusterFieldId);
-    
-          if (clusters.length > 0) {
-            const cohortSearchResp = await fetchCohortData("CLUSTER");
-            const matchedClusters = clusters.filter((item: { label: any }) =>
-              cohortSearchResp.some((data: { name: any }) => data.name === item.label)
-            );
-            setMatchedClusters(matchedClusters);
-          }
-        } catch (error) {
-          console.error("Error fetching clusters", error);
+      try {
+        const data = await getStateBlockDistrictList({
+          fieldName: "clusters",
+        });
+
+        const clusters = data?.result?.values || [];
+        setClusters(clusters);
+
+        const clusterFieldId = data?.result?.fieldId || "";
+        setClusterFieldId(clusterFieldId);
+
+        if (clusters.length > 0) {
+          const cohortSearchResp = await fetchCohortData("CLUSTER");
+          const matchedClusters = clusters.filter((item: { label: any }) =>
+            cohortSearchResp.some(
+              (data: { name: any }) => data.name === item.label
+            )
+          );
+          setMatchedClusters(matchedClusters);
         }
-      };
+      } catch (error) {
+        console.error("Error fetching clusters", error);
+      }
+    };
 
     if (open) fetchClusters();
   }, [open, formData.controllingField]);
@@ -141,7 +149,7 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
       const exists = validateDuplicateData?.some(
         (item: any) => item[fieldName] === value
       );
-      return !exists; 
+      return !exists;
     };
 
     if (field === "name" && !isUnique("name", value)) {
@@ -182,38 +190,39 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
 
   const handleChange =
     (field: keyof typeof formData) =>
-  (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
-    let value = typeof e.target.value === "string" ? e.target.value : "";
+    (e: React.ChangeEvent<HTMLInputElement | { value: unknown }>) => {
+      let value = typeof e.target.value === "string" ? e.target.value : "";
 
-    setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
 
-    let errorMessage: string | null = null;
+      let errorMessage: string | null = null;
 
-    if (field === "name") { // Removed validation- && !/^[a-zA-Z0-9-_]+$/.test(value)
-      errorMessage = validateField(
-        field,
-        value,
-        t("COMMON.SCHOOL_NAME_REQUIRED")
-      );
-    } else if (field === "value") {
-      errorMessage = validateField(
-        field,
-        value,
-        t("COMMON.SCHOOL_CODE_REQUIRED")
-      );
-    } else if (field === "controllingField") {
-      errorMessage = validateField(
-        field,
-        value,
-        t("COMMON.CLUSTER_NAME_REQUIRED")
-      );
-    }
+      if (field === "name") {
+        // Removed validation- && !/^[a-zA-Z0-9-_]+$/.test(value)
+        errorMessage = validateField(
+          field,
+          value,
+          t("COMMON.SCHOOL_NAME_REQUIRED")
+        );
+      } else if (field === "value") {
+        errorMessage = validateField(
+          field,
+          value,
+          t("COMMON.SCHOOL_CODE_REQUIRED")
+        );
+      } else if (field === "controllingField") {
+        errorMessage = validateField(
+          field,
+          value,
+          t("COMMON.CLUSTER_NAME_REQUIRED")
+        );
+      }
 
-    setErrors((prev) => ({
-      ...prev,
-      [field]: errorMessage,
-    }));
-  };
+      setErrors((prev) => ({
+        ...prev,
+        [field]: errorMessage,
+      }));
+    };
 
   const validateForm = () => {
     const newErrors = {
@@ -281,7 +290,7 @@ export const AddSchoolModal: React.FC<AddSchoolModalProps> = ({
           margin="dense"
           error={!!errors.controllingField}
         >
-         <MenuItem value="">{t("COMMON.SELECT_CLUSTER")}</MenuItem>
+          <MenuItem value="">{t("COMMON.SELECT_CLUSTER")}</MenuItem>
           {matchedClusters && matchedClusters.length > 0 ? (
             matchedClusters.map((districtDetail) => (
               <MenuItem key={districtDetail.value} value={districtDetail.value}>
