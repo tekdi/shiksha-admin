@@ -408,13 +408,17 @@ export function OpportunityForm({
                 <FormControl fullWidth error={!!errors.opportunity_type}>
                   <InputLabel required>{t("OPPORTUNITY.ROLETYPE")}</InputLabel>
                   <Select {...field} label={t("OPPORTUNITY.ROLETYPE")}>
-                    {["part-time", "full-time", "intern", "attachment"].map(
-                      (role) => (
-                        <MenuItem key={role} value={role}>
-                          {role.charAt(0).toUpperCase() + role.slice(1)}
-                        </MenuItem>
-                      )
-                    )}
+                    {[
+                      "part-time",
+                      "full-time",
+                      "intern",
+                      "attachment",
+                      "casual-labour",
+                    ].map((role) => (
+                      <MenuItem key={role} value={role}>
+                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                      </MenuItem>
+                    ))}
                   </Select>
                   {errors.opportunity_type && (
                     <FormHelperText>
