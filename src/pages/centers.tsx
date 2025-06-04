@@ -232,7 +232,7 @@ const Center: React.FC = () => {
         const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
         // Fetch member counts for each cohort
-        const memberCounts = await Promise.all(
+        const members = await Promise.all(
           cohortIds?.map(async (cohortId: string) => {
             return await getCohortMemberlistData(cohortId);
           })
@@ -244,14 +244,15 @@ const Center: React.FC = () => {
               firstLetterInUpperCase(field?.value)
             ) ?? "-";
 
-          const counts = memberCounts[index] || {
+          const counts = members[index] || {
             totalActiveMembers: 0,
             totalArchivedMembers: 0,
           };
-
+          const teacher = counts?.teacher;
           console.log("cohortType", cohortType);
           const requiredData = {
             className: item?.name,
+            teacher: teacher?.name || "-",
             status: item?.status,
             updatedBy: item?.updatedBy,
             createdBy: item?.createdBy,
@@ -342,15 +343,22 @@ const Center: React.FC = () => {
       );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
+      const teacher = userDetails?.find(
+        (member: any) =>
+          member?.status === Status.ACTIVE && member?.role === Role.TEACHER
+      );
+      
       return {
         totalActiveMembers,
         totalArchivedMembers,
+        teacher
       };
     }
 
     return {
       totalActiveMembers: 0,
       totalArchivedMembers: 0,
+      teacher: null,
     };
   };
 

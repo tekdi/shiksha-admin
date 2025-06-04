@@ -467,6 +467,7 @@
     "ACTIVE_LEARNERS": "Active Students",
     "ARCHIVED_LEARNERS": " Archived Students",
     "PROGRAM":"Program",
-    "SUPERVISOR":"Supervisor"
+    "SUPERVISOR":"Supervisor",
+    "TEACHER":"Teacher"
   }
 }

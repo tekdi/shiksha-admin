@@ -84,6 +84,8 @@ export const getTLTableColumns = (t: any, isMobile: boolean) => {
 export const getCenterTableData = (t: any, isMobile: boolean) => {
   const configs: ColumnConfig[] = [
     { key: "className", titleKey: "TABLE_TITLE.NAME", width: 250 },
+    { key: "teacher", titleKey: "TABLE_TITLE.TEACHER", width: 150 },
+
     // { key: "customFieldValues", titleKey: "TABLE_TITLE.TYPE", width: 130 },
     // { key: "updatedBy", titleKey: "TABLE_TITLE.UPDATED_BY", width: 130 },
     { key: "createdBy", titleKey: "TABLE_TITLE.CREATED_BY", width: 130 },
@@ -93,12 +95,12 @@ export const getCenterTableData = (t: any, isMobile: boolean) => {
     {
       key: "totalActiveMembers",
       titleKey: "TABLE_TITLE.ACTIVE_LEARNERS",
-      width: 130,
+      width: 120,
     },
     {
       key: "totalArchivedMembers",
       titleKey: "TABLE_TITLE.ARCHIVED_LEARNERS",
-      width: 130,
+      width: 120,
     },
     { key: "actions", titleKey: "TABLE_TITLE.ACTIONS", width: 125 },
   ];
