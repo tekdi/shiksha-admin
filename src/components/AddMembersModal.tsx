@@ -10,7 +10,16 @@ import { addCohortMembers } from "@/services/CohortService/cohortService";
 
 const PAGE_SIZE = 20;
 
-const AddMembersModal = ({ open, onClose, onAdd, cohortId, roleId, title, showCohortFilters}) => {
+type AddMembersModalProps = {
+  open: boolean;
+  onClose: () => void;
+  onAdd: (payload: any) => void;
+  cohortId: any;
+  roleId: any;
+  title?: any;
+  showCohortFilters?: boolean;
+};
+const AddMembersModal: React.FC<AddMembersModalProps> = ({ open, onClose, onAdd, cohortId, roleId, title, showCohortFilters}) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -210,7 +219,7 @@ const AddMembersModal = ({ open, onClose, onAdd, cohortId, roleId, title, showCo
     }
   };
 
-  const handlePageChange = (event, value) => {
+const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 

@@ -73,6 +73,7 @@ interface CenterProp {
 }
 interface Cohort {
   cohortId: string;
+  cohortName: string;
   name: string;
   parentId: string | null;
   type: string;

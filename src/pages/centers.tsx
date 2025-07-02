@@ -630,13 +630,13 @@ const onAfterUsersAdd = async (teacherIds: string[]) => {
   fetchCohortList();
 };
 
-const handleAddTeachers = async (rowData) => {
+const handleAddTeachers = async (rowData:any) => {
   setCurrentCohortId(rowData?.cohortId);
   setRoleId(RoleId.TEACHER);
   setAddMembersModalOpen(true);
 }
 
-const handleAddStudents = async (rowData) => {
+const handleAddStudents = async (rowData:any) => {
   setCurrentCohortId(rowData?.cohortId);
   setRoleId(RoleId.STUDENT);
   setAddMembersModalOpen(true);
