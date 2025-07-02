@@ -8,16 +8,23 @@ const useStore = create(
       // state: "",
       // district: "",
       // block: "",
-      setPid: (newPid) => set((state) => ({ pid: newPid })),
+      isActiveYearSelected: '',
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
       // setPid: (newPid) => set((state) => ({ pid: newPid })),
+      // setPid: (newPid) => set((state) => ({ pid: newPid })),
+      setIsActiveYearSelected: (newYear) => set(() => ({ isActiveYearSelected: newYear })),
     }),
     {
-      name: "adminApp",
+      name: "adminAppStore",
       getStorage: () => localStorage,
     }
   )
 );
+
+export const store = {
+  getState: useStore.getState,
+  setState: useStore.setState,
+};
 
 export default useStore;

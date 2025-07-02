@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState} from "react";
 import FeatherIcon from "feather-icons-react";
 import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
@@ -10,28 +10,55 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import Menu from '@mui/material/Menu';
 import SearchBar from "./SearchBar";
 import { useRouter } from 'next/router';
-
-
+import { AcademicYear } from "@/utils/Interfaces";
 import { useTranslation } from "next-i18next";
 import { createTheme } from "@mui/material/styles";
+import { useQueryClient } from "@tanstack/react-query";
 import Profile from "./Profile";
+import useStore from "@/store/store";
 
 const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
   const { t } = useTranslation();
   const theme = createTheme();
   const [lang, setLang] = useState("");
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
+  const setIsActiveYearSelected = useStore(
+    (state: { setIsActiveYearSelected: any }) => state.setIsActiveYearSelected
+  );
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
-
+  const [academicYearList, setAcademicYearList] = useState<AcademicYear[]>([]);
+  const [selectedSessionId, setSelectedSessionId] = useState<string>("");
+  
   const [language, setLanguage] = useState(selectedLanguage);
   useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const lang = localStorage.getItem('preferredLanguage') || 'en';
       setLanguage(lang);
-   
+       const storedList = localStorage.getItem("academicYearList");
+      try {
+        const parsedList = storedList ? JSON.parse(storedList) : [];
+        const modifiedList = parsedList.map(
+          (item: { isActive: any; session: any }) => {
+            if (item.isActive) {
+              return {
+                ...item,
+                session: `${item.session} (${t("COMMON.ACTIVE")})`,
+              };
+            }
+            return item;
+          }
+        );
+        setAcademicYearList(modifiedList);
+        const selectedAcademicYearId = localStorage.getItem("academicYearId");
+        setSelectedSessionId(selectedAcademicYearId ?? "");
+      } catch (error) {
+        console.error("Error parsing stored academic year list:", error);
+        setAcademicYearList([]);
+        setSelectedSessionId("");
+      }
     }
   }, [setLanguage]);
 
@@ -61,6 +88,22 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
     }
     handleClose();
   };
+    const handleSelectChange = (event: SelectChangeEvent) => {
+      setSelectedSessionId(event.target.value);
+      localStorage.setItem("academicYearId", event.target.value);
+      // Check if the selected academic year is active
+      const selectedYear = academicYearList?.find(
+        (year) => year.id === event.target.value
+      );
+      const isActive = selectedYear ? selectedYear.isActive : false;
+      // localStorage.setItem('isActiveYearSelected', JSON.stringify(isActive));
+      setIsActiveYearSelected(isActive);
+  
+      queryClient.clear();
+      // window.location.reload();
+      if (router.pathname === "/centers") window.location.reload();
+      else router.push("/centers");
+    };
   return (
     <AppBar sx={sx} position={position} elevation={0} className={customClass}>
       <Toolbar>
@@ -89,7 +132,34 @@ const Header = ({ sx, customClass, toggleMobileSidebar, position }: any) => {
         {/* ------------ End Menu icon ------------- */}
 
         <Box flexGrow={1} />
-
+         <Box sx={{ flexBasis: "20%" }}>
+              {/* <FormControl className="drawer-select" sx={{ width: '100%' }}> */}
+              <Select
+                onChange={handleSelectChange}
+                value={selectedSessionId}
+                className="select-languages"
+                displayEmpty
+                sx={{
+                  borderRadius: "0.5rem",
+                  // color: theme.palette.warning['200'],
+                  width: "100%",
+                  marginBottom: "0rem",
+                  height: "30px",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  "& .MuiSvgIcon-root": {
+                    color: "#fff",
+                  },
+                }}
+              >
+                {academicYearList.map(({ id, session }) => (
+                  <MenuItem key={id} value={id}>
+                    {session}
+                  </MenuItem>
+                ))}
+              </Select>
+              {/* </FormControl> */}
+            </Box>
         
 <Box
         

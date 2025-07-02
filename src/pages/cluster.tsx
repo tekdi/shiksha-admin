@@ -69,7 +69,7 @@ const State: React.FC = () => {
     useState<StateDetail | null>(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [fieldId, setFieldId] = useState<string>("");
-  const [sortBy, setSortBy] = useState<[string, string]>(["label", "asc"]);
+  const [sortBy, setSortBy] = useState<[string, string]>(["cluster_name", "asc"]);
   const [pageCount, setPageCount] = useState<number>(Numbers.ONE);
   const [pageOffset, setPageOffset] = useState<number>(Numbers.ZERO);
   const [pageLimit, setPageLimit] = useState<number>(Numbers.TEN);
@@ -122,7 +122,7 @@ const State: React.FC = () => {
   const matchedData = useMemo(() => {
     return stateData
     ?.filter((item) =>
-      cohortData?.some((data) => data.name === item.label)
+      cohortData?.some((data) => data.name == item.label)
     );
   }, [stateData, cohortData]);
 
@@ -174,7 +174,7 @@ const State: React.FC = () => {
   const handleSortChange = async (event: SelectChangeEvent) => {
     const sortOrder =
       event.target.value === "Z-A" ? SORT.DESCENDING : SORT.ASCENDING;
-    setSortBy(["name", sortOrder]);
+    setSortBy(["cluster_name", sortOrder]);
     setSelectedSort(event.target.value);
   };
 
@@ -291,7 +291,6 @@ const State: React.FC = () => {
     setDataToDisplay(extractedData)
   };
 
-
   useEffect(() => {
     setDataToDisplay(matchedData ?? []);
   }, [matchedData]);
@@ -300,7 +299,6 @@ const State: React.FC = () => {
   const extraActions: any = [
     { name: t("COMMON.EDIT"), onClick: handleEdit, icon: EditIcon },
     { name: t("COMMON.DELETE"), onClick: handleDelete, icon: DeleteIcon },
-    //{ name: t("COMMON.ADDFACILITATOR"), onClick: handleAddFacilitator, icon: EditIcon },
   ];
 
   const PagesSelector = () => (
@@ -409,7 +407,7 @@ const State: React.FC = () => {
         modalOpen={confirmationModalOpen}
       />
       <HeaderComponent
-        userType={t("MASTER.CLUSTER")}
+        title={t("MASTER.CLUSTER")}
         searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLUSTER")}
         showStateDropdown={false}
         handleSortChange={handleSortChange}
@@ -419,7 +417,8 @@ const State: React.FC = () => {
         showFilter={false}
         handleSearch={handleSearch}
         handleAddUserClick={handleAddStateClick}
-      >
+      > </HeaderComponent>
+
         {matchedData.length === 0 && !loading ? (
           <Box display="flex" marginLeft="40%" gap="20px">
             <Typography marginTop="10px" variant="h2">
@@ -465,7 +464,6 @@ const State: React.FC = () => {
             )}
           </div>
         )}
-      </HeaderComponent>
     </>
   );
 };

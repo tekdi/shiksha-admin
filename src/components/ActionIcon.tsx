@@ -38,7 +38,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
       sx={{
         display: "flex",
         flexDirection: "row",
-        gap: "20px",
+        gap: "5px",
         alignItems: "center",
         // pointerEvents: disable ? "none" : "auto",
         pointerEvents: "auto",
@@ -58,7 +58,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               // color: disable ? theme?.palette?.secondary.contrastText : "",
               color: "",
               backgroundColor: "#E3EAF0",
-              p: "10px",
+              p: "5px",
             }}
           >
             <Image src={editIcon} alt="" />
@@ -82,7 +82,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               // color: disable ? theme?.palette?.secondary.contrastText : "",
               color: "",
               backgroundColor: "#F8EFE7",
-              p: "10px",
+              p: "5px",
             }}
           >
             <Image src={Restore} alt="" />
@@ -104,7 +104,8 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               // color: disable ? theme?.palette?.secondary.contrastText : "",
               color: "",
               backgroundColor: "#F8EFE7",
-              p: "10px",
+              p: "5px",
+              gap: "2px"
             }}
           >
             <Image src={deleteIcon} alt="" />
@@ -130,7 +131,7 @@ const ActionIcon: React.FC<ActionCellProps> = ({
               // color: disable ? theme?.palette?.secondary.contrastText : "",
               color: "",
               backgroundColor: "#E5E5E5",
-              p: "10px",
+              p: "5px",
             }}
           >
             <Image src={cohortIcon} alt="" />

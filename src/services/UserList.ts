@@ -39,6 +39,27 @@ export const userList = async ({
   }
 };
 
+export const getEligibleUsers = async ({
+  cohortId,
+  limit,
+  offset,
+  filters
+}: any): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/eligible`;
+  try {
+    const response = await post(apiUrl,{
+    cohortId: cohortId,
+    offset,
+    limit,
+    filters: filters
+  })
+    return response?.data?.result;
+  } catch (error) {
+    console.error("error in getting user list", error);
+    throw error;
+  }
+};
+
 export const cohortMemberList = async ({
   limit,
   //  page,

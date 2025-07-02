@@ -23,10 +23,12 @@ import AreaSelection from "./AreaSelection";
 import { transformArray } from "../utils/Helper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import { getSchoolNames } from "../services/CohortService/cohortService";
 
-interface State {
-  value: string;
+interface School {
+  code: string;
   label: string;
+  clusterName: string
 }
 
 interface District {
@@ -46,39 +48,33 @@ const Sort = ["A-Z", "Z-A"];
 const Filter = ["Active", "InActive"];
 
 const HeaderComponent = ({
+  title,
   children,
-  userType,
   searchPlaceHolder,
-  selectedState,
-  selectedStateCode,
-  selectedDistrictCode,
-  selectedBlockCode,
-  selectedDistrict,
-  selectedBlock,
+  selectedSchool,
   selectedSort,
   selectedFilter,
-  handleStateChange,
+  handleSchoolChange,
   handleDistrictChange,
   handleBlockChange,
   handleSortChange,
   handleFilterChange,
   showSort = true,
   showAddNew = true,
-  showStateDropdown = true,
   showFilter = true,
   handleSearch,
   handleAddUserClick,
   selectedCenter,
   handleCenterChange,
   statusValue,
-
   setStatusValue,
+  showSchoolFilter
 }: any) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const isMobile = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(max-width:986px)");
-  const [states, setStates] = useState<State[]>([]);
+  const [schools, setSchools] = useState<any>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [stateDefaultValue, setStateDefaultValue] = useState<string>("");
   const [allCenters, setAllCenters] = useState<CenterProp[]>([]);
@@ -179,48 +175,12 @@ const HeaderComponent = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const object = {
-          // "limit": 20,
-          // "offset": 0,
-          fieldName: "states",
-        };
-        // const response = await getStateBlockDistrictList(object);
-        // const result = response?.result?.values;
-        if (typeof window !== "undefined" && window.localStorage) {
-          const admin = localStorage.getItem("adminInfo");
-          if (admin) {
-            const stateField = JSON.parse(admin).customFields.find(
-              (field: any) => field.label === "STATES"
-            );
-            console.log(stateField.value, stateField.code);
-            if (stateField.value.includes(",")) {
-              console.log("The value contains more than one item.");
-              setStateDefaultValue(t("COMMON.ALL_STATES"));
-            } else {
-              setStateDefaultValue(stateField.value);
-
-              const object = {
-                controllingfieldfk: stateField.code,
-
-                fieldName: "districts",
-              };
-              console.log(object);
-              const response = await getStateBlockDistrictList(object);
-              const result = response?.result?.values;
-              setDistricts(result);
-            }
-
-            const object = [
-              {
-                value: stateField.code,
-                label: stateField.value,
-              },
-            ];
-            setStates(object);
-          }
-        }
-        //  setStates(result);
-        console.log(typeof states);
+        const schoolsData = await getSchoolNames();
+        // const schoolsArray: any = Object.entries(schoolsData).map(([key, value]: [string, any]) => ({
+        //   code: key,
+        //   label: value.name
+        // }));
+        setSchools(schoolsData);
       } catch (error) {
         console.log(error);
       }
@@ -244,175 +204,171 @@ const HeaderComponent = ({
         borderRadius: "8px",
       }}
     >
-      {!showStateDropdown && (
         <Typography variant="h1" sx={{ mt: isMobile ? "12px" : "20px" }}>
-          {userType}
+          {title}
         </Typography>
-      )}
-
-      {showStateDropdown && (
-        <AreaSelection
-          states={transformArray(states)}
-          districts={transformArray(districts)}
-          blocks={transformArray(blocks)}
-          selectedState={selectedState}
-          selectedDistrict={selectedDistrict}
-          selectedBlock={selectedBlock}
-          handleStateChangeWrapper={handleStateChangeWrapper}
-          handleDistrictChangeWrapper={handleDistrictChangeWrapper}
-          handleBlockChangeWrapper={handleBlockChangeWrapper}
-          isMobile={isMobile}
-          isMediumScreen={isMediumScreen}
-          inModal={false}
-          isCenterSelection={
-            userType === Role.FACILITATORS || userType === Role.LEARNERS
-          }
-          stateDefaultValue={stateDefaultValue}
-          allCenters={allCenters}
-          selectedCenter={selectedCenter}
-          handleCenterChangeWrapper={handleCenterChangeWrapper}
-          userType={userType}
-        />
-      )}
-
-<Box
-        sx={{
-          backgroundColor: "white",
-          paddingTop: "20px",
-        }}
-      >
-        {showFilter && (
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={statusValue}
-              onChange={handleFilterChange}
-              aria-label="Tabs where selection follows focus"
-              selectionFollowsFocus
-            >
-              <Tab
-                label={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      color:
-                        statusValue === Status.ACTIVE
-                          ? theme.palette.primary["100"]
-                          : "inherit",
-                    }}
-                  >
-                    {Status.ACTIVE_LABEL}
-                  </Box>
-                }
-                value={Status.ACTIVE}
-              />
-              <Tab
-                label={
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      color:
-                        statusValue === Status.ARCHIVED
-                          ? theme.palette.primary["100"]
-                          : "inherit",
-                    }}
-                  >
-                    {Status.INACTIVE}
-                  </Box>
-                }
-                value={Status.ARCHIVED}
-              />
-            </Tabs>
-          </Box>
-        )}
+    
         <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile || isMediumScreen ? "column" : "row",
-            gap: isMobile || isMediumScreen ? "8px" : "5%",
-            marginTop: "20px",
-          }}
-        >
-          <Box sx={{ flex: 1, paddingLeft: "16px", paddingRight: "16px" }}>
-            <SearchBar
-              onSearch={handleSearch}
-              placeholder={searchPlaceHolder}
-            />
-          </Box>
-          {showAddNew && (
-            <Box
-              display={"flex"}
-              gap={1}
-              alignItems={"center"}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                // height: "40px",
-                width: isMobile ? "70%" : "200px",
-                borderRadius: "20px",
-                border: "1px solid #1E1B16",
-                //  mt: isMobile ? "10px" : "16px",
-                boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                mr: "10px",
-                ml: isMobile ? "50px" : isMediumScreen ? "10px" : undefined,
-                mt: isMobile ? "10px" : isMediumScreen ? "10px" : undefined,
-              }}
-            >
-              <Button
-                //  variant="contained"
-                startIcon={<AddIcon />}
-                sx={{
-                  textTransform: "none",
-                  fontSize: "14px",
-                  color: theme.palette.primary["100"],
-                }}
-                onClick={handleAddUserClick}
-              >
-                {t("COMMON.ADD_NEW")}
-              </Button>
-            </Box>
-          )}
-        </Box>
-        {/* {showAddNew && ( */}
-          <Box
             sx={{
-              display: "flex",
-
-              ml: "10px",
-              mt: isMobile ? "10px" : "16px",
-              mb: "10px",
-              gap: "15px", // boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "white",
+            paddingTop: "20px",
             }}
-          >
-            {showSort && (
-              <FormControl sx={{ minWidth: "120px" }}>
-                <Select
-                  value={selectedSort}
-                  onChange={handleSortChange}
-                  displayEmpty
-                  style={{
-                    borderRadius: "8px",
-                    height: "40px",
-                    marginLeft: "5px",
-                    fontSize: "14px",
-                    backgroundColor: theme.palette.secondary["100"],
-                  }}
+        >
+            {showFilter && (
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs
+                value={statusValue}
+                onChange={handleFilterChange}
+                aria-label="Tabs where selection follows focus"
+                selectionFollowsFocus
                 >
-                  <MenuItem value="Sort">{t("COMMON.SORT")}</MenuItem>
-                  {Sort?.map((state, index) => (
-                    <MenuItem value={state} key={index}>
-                      {state}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                <Tab
+                    label={
+                    <Box
+                        sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color:
+                            statusValue === Status.ACTIVE
+                            ? theme.palette.primary["100"]
+                            : "inherit",
+                        }}
+                    >
+                        {Status.ACTIVE_LABEL}
+                    </Box>
+                    }
+                    value={Status.ACTIVE}
+                />
+                <Tab
+                    label={
+                    <Box
+                        sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color:
+                            statusValue === Status.ARCHIVED
+                            ? theme.palette.primary["100"]
+                            : "inherit",
+                        }}
+                    >
+                        {Status.INACTIVE}
+                    </Box>
+                    }
+                    value={Status.ARCHIVED}
+                />
+                </Tabs>
+            </Box>
             )}
-          </Box>
-        {/* )} */}
-        {children}
-      </Box>
+            <Box
+            sx={{
+                display: "flex",
+                flexDirection: isMobile || isMediumScreen ? "column" : "row",
+                gap: isMobile || isMediumScreen ? "8px" : "5%",
+                marginTop: "20px",
+            }}
+            >
+            <Box sx={{ flex: 1, paddingLeft: "16px", paddingRight: "16px" }}>
+                <SearchBar
+                onSearch={handleSearch}
+                placeholder={searchPlaceHolder}
+                />
+            </Box>
+            {showAddNew && (
+                <Box
+                display={"flex"}
+                gap={1}
+                alignItems={"center"}
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    // height: "40px",
+                    width: isMobile ? "70%" : "200px",
+                    borderRadius: "20px",
+                    border: "1px solid #1E1B16",
+                    //  mt: isMobile ? "10px" : "16px",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                    mr: "10px",
+                    ml: isMobile ? "50px" : isMediumScreen ? "10px" : undefined,
+                    mt: isMobile ? "10px" : isMediumScreen ? "10px" : undefined,
+                }}
+                >
+                <Button
+                    //  variant="contained"
+                    startIcon={<AddIcon />}
+                    sx={{
+                    textTransform: "none",
+                    fontSize: "14px",
+                    color: theme.palette.primary["100"],
+                    }}
+                    onClick={handleAddUserClick}
+                >
+                    {t("COMMON.ADD_NEW")}
+                </Button>
+                </Box>
+            )}
+            </Box>
+            {/* {showAddNew && ( */}
+            <Box
+                sx={{
+                display: "flex",
+                flexDirection: "row", // Ensure row direction
+                ml: "10px",
+                mt: isMobile ? "10px" : "16px",
+                mb: "10px",
+                gap: "15px", // boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                  {showSort && (
+                    <FormControl sx={{ minWidth: "120px" }}>
+                      <Select
+                      value={selectedSort}
+                      onChange={handleSortChange}
+                      displayEmpty
+                      style={{
+                          borderRadius: "8px",
+                          height: "40px",
+                          marginLeft: "5px",
+                          fontSize: "14px",
+                          backgroundColor: theme.palette.secondary["100"],
+                      }}
+                      >
+                      <MenuItem value="Sort">{t("COMMON.SORT")}</MenuItem>
+                      {Sort?.map((state, index) => (
+                          <MenuItem value={state} key={index}>
+                          {state}
+                          </MenuItem>
+                      ))}
+                      </Select>
+                    </FormControl>
+                  )}
+                  {showSchoolFilter && (
+                    <FormControl sx={{ minWidth: "120px" }}>
+                      <Select
+                        name="selectedSchool"             
+                        value={selectedSchool ?? ""}
+                        onChange={handleSchoolChange}
+                        displayEmpty
+                        style={{
+                            borderRadius: "8px",
+                            height: "40px",
+                            marginLeft: "5px",
+                            fontSize: "14px",
+                            backgroundColor: theme.palette.secondary["100"],
+                        }}
+                        >
+                        <MenuItem value="">{t("MASTER.SCHOOL")}</MenuItem>
+                        {Object.entries(schools).map(([code, school]: [string, any]) => (
+                          <MenuItem value={code} key={code}>
+                            {school.name} ({school.clusterName})
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
+            </Box>
+            {/* )} */}
+        </Box>
     </Box>
   );
 };

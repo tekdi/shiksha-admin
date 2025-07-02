@@ -293,7 +293,7 @@ const State: React.FC = () => {
         initialValues={{}}
       />
       <HeaderComponent
-        userType={t("MASTER.CLASSES")}
+        title={t("MASTER.CLASSES")}
         searchPlaceHolder={t("MASTER.SEARCHBAR_PLACEHOLDER_CLASS")}
         showStateDropdown={false}
         handleSortChange={handleSortChange}
@@ -303,7 +303,7 @@ const State: React.FC = () => {
         showFilter={false}
         handleSearch={handleSearch}
         handleAddUserClick={handleAddClassClick}
-      >
+      ></HeaderComponent>
         {classData.length === 0 && !loading ? (
           <Box display="flex" marginLeft="40%" gap="20px">
             <Typography marginTop="10px" variant="h2">
@@ -349,7 +349,6 @@ const State: React.FC = () => {
             )}
           </div>
         )}
-      </HeaderComponent>
     </React.Fragment>
   );
 };
