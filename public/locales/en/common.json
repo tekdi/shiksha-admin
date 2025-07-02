@@ -1,5 +1,6 @@
 {
   "COMMON": {
+    "ACTIVE": "Active",
     "LANGUAGE": "Language",
     "LOADING": "Loading",
     "ADD_NEW": "Add New",
@@ -153,7 +154,9 @@
     "SCHOOL_NAME_REQUIRED": "School Name Required",
     "SCHOOL_CODE_REQUIRED": "School Code Required",
     "CLUSTER_NAME_REQUIRED": "Cluster Name Required",
-    "SCHOOL_CODE_NOT_UNIQUE": "School Code Not Unique"
+    "SCHOOL_CODE_NOT_UNIQUE": "School Code Not Unique",
+    "ADD_TEACHERS": "Add Teacher(s)",
+    "ADD_STUDENTS": "Add Student(s)"
   },
   "LOGIN_PAGE": {
     "USERNAME": "Username",
@@ -467,6 +470,8 @@
     "ACTIVE_LEARNERS": "Active Students",
     "ARCHIVED_LEARNERS": " Archived Students",
     "PROGRAM":"Program",
-    "SUPERVISOR":"Supervisor"
+    "SUPERVISOR":"Supervisor",
+    "TEACHER":"Teacher",
+    "CLUSTER":"Cluster"
   }
 }

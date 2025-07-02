@@ -58,6 +58,7 @@ export enum DataKey {
   CENTERS = "centers",
   MOBILE = "mobile",
   CLASS_NAME = "className",
+  USER_PROFILE_DETAILS = "userProfileDetails",
 }
 
 export enum DateFormat {

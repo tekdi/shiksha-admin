@@ -17,6 +17,7 @@ import KaTableComponent from "../components/KaTableComponent";
 import Loader from "../components/Loader";
 import { deleteUser } from "../services/DeleteUser";
 import { getCohortList } from "../services/GetCohortList";
+import { getSchoolNames } from "../services/CohortService/cohortService";
 import {
   userList,
   getUserDetailsInfo,
@@ -55,7 +56,7 @@ type UserDetails = {
   districtCode?: any;
   blockCode?: any;
   centerMembershipIdList?: any;
-  blockMembershipIdList?: any;
+  clusterMembershipIdList?: any;
 };
 type FilterDetails = {
   role: any;
@@ -97,7 +98,6 @@ const UserTable: React.FC<UserTableProps> = ({
   handleAddUserClick,
   parentState,
 }) => {
-  console.log(userType);
   const [selectedState, setSelectedState] = React.useState<string[]>([]);
   const [blockMembershipIdList, setBlockMembershipIdList] = React.useState<
     string[]
@@ -634,12 +634,10 @@ const UserTable: React.FC<UserTableProps> = ({
           offset,
         });
       }
-      console.log(resp?.getUserDetails);
       const result = enableCenterFilter
         ? resp?.userDetails
         : resp?.getUserDetails;
-      console.log(result);
-      console.log(resp?.totalCount);
+      
       if (resp?.totalCount >= 15) {
         setPagination(true);
 
@@ -660,7 +658,6 @@ const UserTable: React.FC<UserTableProps> = ({
       }
 
       setPageCount(Math.ceil(resp?.totalCount / pageLimit));
-      console.log(result);
       let finalResult;
       if (enableCenterFilter) {
         finalResult = result?.map((user: any) => {
@@ -679,16 +676,21 @@ const UserTable: React.FC<UserTableProps> = ({
           const stateField = user?.customField?.find(
             (field: any) => field?.fieldname === "STATES"
           );
+          const name = user?.name?.charAt(0).toUpperCase() +
+              user?.name?.slice(1).toLowerCase();
+          const mobile= user.mobile === "NaN" ? "-" : user.mobile;
+
+          const userProfileDetails = name + "</n>" + mobile;
+
           return {
             userId: user?.userId,
             username: user?.username,
             status: user?.status,
-            name:
-              user?.name?.charAt(0).toUpperCase() +
-              user?.name?.slice(1).toLowerCase(),
+            name: name,
+            mobile: mobile,
+            userProfileDetails: userProfileDetails,
             role: user.role,
             //  gender: user.gender,
-            mobile: user.mobile === "NaN" ? "-" : user.mobile,
             age: ageField ? ageField?.fieldvalues : "-",
             district: districtField
               ? districtField?.fieldvalues + " , " + blockField?.fieldvalues
@@ -730,16 +732,21 @@ const UserTable: React.FC<UserTableProps> = ({
           const supervisorField = user?.customFields.find((field: any) => field.label === "SUPERVISOR");
           const supervisor = supervisorField?.value || "-";
 
+           const name = user?.name?.charAt(0).toUpperCase() +
+              user?.name?.slice(1).toLowerCase();
+          const mobile= user.mobile === "NaN" ? "-" : user.mobile;
+
+          const userProfileDetails = name + "<br />" + mobile;
+
           return {
             userId: user.userId,
             username: user.username,
             status: user.status,
-            name:
-              user.name.charAt(0).toUpperCase() +
-              user.name.slice(1).toLowerCase(),
+            userProfileDetails: userProfileDetails,
+            name:name,
             role: user.role,
             //  gender: user.gender,
-            mobile: user.mobile === "NaN" || null ? "-" : user.mobile,
+            mobile: mobile,
             age: ageField ? ageField.value : "-",
             district: districtField
               ? districtField.value + " , " + blockField.value
@@ -817,47 +824,36 @@ const UserTable: React.FC<UserTableProps> = ({
         const newData = await Promise.all(
           data?.map(async (user) => {
             const response = await getCohortList(user.userId);
-            // const cohortNames = response?.result?.cohortData?.map(
-            //   (cohort: Cohort) => cohort.name,
-            // );
-            const cohortNames = response?.result?.cohortData
+           
+               // Retrieve and parse schoolNames from localStorage
+            const schools = await getSchoolNames();
+            const cohortNames = response?.result
               ?.filter(
                 (cohort: Cohort) =>
-                  cohort.type !== "BLOCK" &&
+                  cohort.type == "COHORT" &&
                   cohort?.cohortMemberStatus !== "archived"
               ) // Filter out cohorts with type 'block'
-              .map((cohort: Cohort) => cohort.name);
+              .map((cohort: Cohort) => 
+              {
+                const school = cohort.parentId ? schools[cohort.parentId] : undefined;
+                const className = `${(school as { clusterName?: string })?.clusterName || "-"}, ${(school as { name?: string })?.name || "-"}, ${cohort["cohortName"]}`; // School, Class format 
+                return className;
+              });
             const centerMembershipIdList = response?.result?.cohortData
               ?.filter(
                 (cohort: Cohort) =>
-                  cohort.type !== "BLOCK" &&
+                  cohort.type == "COHORT" &&
                   cohort?.cohortMemberStatus !== "archived"
               ) // Filter out cohorts with type 'block'
               .map((cohort: Cohort) => cohort.cohortMembershipId);
-            const blockMembershipIdList = response?.result?.cohortData
-              ?.filter(
-                (cohort: Cohort) =>
-                  cohort.type === "BLOCK" &&
-                  cohort?.cohortMemberStatus !== "archived"
-              ) // Filter out cohorts with type 'block'
-              .map((cohort: Cohort) => cohort.cohortMembershipId);
-            //  const cohortMembershipId=response?.result?.cohortData?.cohortMembershipId;
-            console.log(blockMembershipIdList);
-            console.log(centerMembershipIdList);
-
+            
             let finalArray;
             if (cohortNames?.length >= 1) {
-              // finalArray = capitalizeFirstLetterOfEachWordInArray(cohortNames);
               finalArray = cohortNames;
             }
-            //   const finalArray=capitalizeFirstLetterOfEachWordInArray(cohortNames)
-            // console.log(finalArray)
             return {
               ...user,
               centerMembershipIdList: centerMembershipIdList,
-              blockMembershipIdList: blockMembershipIdList,
-
-              // centers: finalArray ? finalArray?.join(" , ") : "-",
               centers: finalArray,
             };
           })
@@ -1009,7 +1005,7 @@ const UserTable: React.FC<UserTableProps> = ({
     </Box>
   );
   const userProps = {
-    userType: userType,
+    title: userType,
     searchPlaceHolder: searchPlaceholder,
     selectedState: selectedState,
     selectedDistrict: selectedDistrict,
@@ -1035,8 +1031,10 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   return (
-    <HeaderComponent {...userProps}>
-      {loading ? (
+    <>
+    <HeaderComponent {...userProps}></HeaderComponent>
+      {
+        loading ? (
         <Box
           width={"100%"}
           id="check"
@@ -1085,26 +1083,6 @@ const UserTable: React.FC<UserTableProps> = ({
               {t("COMMON.NO_USER_FOUND")}
             </Typography>
           </Box>
-
-          // <KaTableComponent
-          //   columns={
-          //     role === Role.TEAM_LEADER
-          //       ? getTLTableColumns(t, isMobile)
-          //       : getUserTableColumns(t, isMobile)
-          //   }
-          //   data={data}
-          //   limit={pageLimit}
-          //   offset={pageOffset}
-          //   PagesSelector={PagesSelector}
-          //   PageSizeSelector={PageSizeSelectorFunction}
-          //   pageSizes={pageSizeArray}
-          //   extraActions={extraActions}
-          //   showIcons={true}
-          //   onEdit={handleEdit}
-          //   onDelete={handleDelete}
-          //   pagination={false}
-          //   noDataMessage={data.length === 0 ? noUserFoundJSX : ""}
-          // />
         )
       )}
 
@@ -1149,7 +1127,7 @@ const UserTable: React.FC<UserTableProps> = ({
               : FormContextType.TEAM_LEADER
         }
       />
-    </HeaderComponent>
+    </>
   );
 };
 

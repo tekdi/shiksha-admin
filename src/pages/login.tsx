@@ -35,6 +35,9 @@ import { getUserDetailsInfo } from "@/services/UserList";
 import { Storage } from "@/utils/app.constant";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import { Role } from "@/utils/app.constant";
+import { AcademicYear } from "@/utils/Interfaces";
+import { getAcademicYear } from "@/services/AcademicYearService";
+import useStore from "@/store/store";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -48,7 +51,9 @@ const LoginPage = () => {
   const [lang, setLang] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState(lang);
   const [language, setLanguage] = useState(selectedLanguage);
-
+  const setIsActiveYearSelected = useStore(
+    (state: { setIsActiveYearSelected: any }) => state.setIsActiveYearSelected
+  );
   const theme = useTheme<any>();
   const router = useRouter();
   const { setUserId } = useUserIdStore();
@@ -134,7 +139,6 @@ const LoginPage = () => {
       }
       const fieldValue = true;
       if (userId) {
-        console.log("true");
         const response = await getUserDetailsInfo(userId, fieldValue);
 
         const userInfo = response?.userData;
@@ -144,18 +148,35 @@ const LoginPage = () => {
         }
         if(userInfo.role!==Role.ADMIN)
         {
-          const errorMessage = t("LOGIN_PAGE.USERNAME_PASSWORD_NOT_CORRECT");
+          const errorMessage = t("LOGIN_PAGE.YOU_DONT_HAVE_APPROPRIATE_PRIVILEGES_TO_ACCESS");
           showToastMessage(errorMessage, "error");
           localStorage.removeItem("token");
-
-  
         }
         else
         {
           setAdminInformation(userInfo);
-
-          router.push("/centers");
-
+          const getAcademicYearList = async () => {
+            const academicYearList: AcademicYear[] = await getAcademicYear();
+            if (academicYearList) {
+              localStorage.setItem(
+                "academicYearList",
+                JSON.stringify(academicYearList)
+              );
+              const extractedAcademicYears = academicYearList?.map(
+                ({ id, session, isActive }) => ({ id, session, isActive })
+              );
+              const activeSession = extractedAcademicYears?.find(
+                (item) => item.isActive
+              );
+              const activeSessionId = activeSession ? activeSession.id : "";
+              localStorage.setItem("academicYearId", activeSessionId);
+              if (activeSessionId) {
+                setIsActiveYearSelected(true);
+                router.push("/centers");
+              }
+            }
+          };
+          getAcademicYearList();
         }
 
       }

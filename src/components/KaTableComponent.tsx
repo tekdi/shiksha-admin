@@ -64,6 +64,7 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
   pagination = true,
   reassignType,
   onActivate,
+  extraActions = []
 }) => {
   const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
   const { t } = useTranslation();
@@ -133,6 +134,8 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
               content: (props) => {
                 if (props.column.key === DataKey.ACTIONS) {
                   return (
+                  <Box display="flex" gap={1}>
+
                     <ActionIcon
                       rowData={props.rowData}
                       onEdit={onEdit}
@@ -143,13 +146,45 @@ const KaTableComponent: React.FC<KaTableComponentProps> = ({
                       reassignType={reassignType}
                       onActivate={handleActivateClick}
                     />
+                      {extraActions?.map((action, idx) => (
+                        <Tooltip title={action.name} key={action.name + idx}>
+                          <Box
+                            onClick={() => action.onClick(props.rowData)}
+                            sx={{
+                              width: 14,
+                              height: 14,
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              cursor: "pointer",
+                              // color: disable ? theme?.palette?.secondary.contrastText : "",
+                              color: "",
+                              backgroundColor: "#F8EFE7",
+                              p: "5px",
+                              gap: "2px"
+                            }}
+                          >
+                            <action.icon fontSize="small" />
+                          </Box>
+                        </Tooltip>
+                      ))}
+                    </Box>
                   );
+
                 }
+                else if (props.column.key === DataKey.USER_PROFILE_DETAILS) {
+                  return (
+                    <Typography>
+                      {props.rowData?.name}
+                      <br />
+                      {props.rowData?.mobile}
+                    </Typography>
+                  );
+                } 
                 if (
                   props.column.key === DataKey?.UPDATED_AT &&
                   props.rowData?.updatedAt
                 ) {
-                  console.log(props.rowData?.updatedAt);
                   return format(
                     props.rowData?.updatedAt,
                     DateFormat.YYYY_MM_DD

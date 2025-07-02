@@ -3,6 +3,12 @@ export interface State {
   label: string;
 }
 
+export interface AcademicYear {
+  id: string;
+  session: string;
+  isActive: string;
+}
+
 export interface FieldOption {
   label: string;
   value: string;

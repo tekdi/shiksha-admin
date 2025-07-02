@@ -6,12 +6,15 @@ import HeaderComponent from "@/components/HeaderComponent";
 import { useTranslation } from "next-i18next";
 import Pagination from "@mui/material/Pagination";
 import { SelectChangeEvent } from "@mui/material/Select";
-import PageSizeSelector from "@/components/PageSelector";
+import PageSizeSelector from "@/components/PageSelector"; 
+import AddMembersModal from "../components/AddMembersModal";
 import {
   createCohort,
   fetchCohortMemberList,
   getCohortList,
   updateCohortUpdate,
+  getSchoolNames,
+  getClusterNames
 } from "@/services/CohortService/cohortService";
 import {
   CohortTypes,
@@ -22,9 +25,10 @@ import {
   Status,
   Storage,
   Role,
+  RoleId
 } from "@/utils/app.constant";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import CustomModal from "@/components/CustomModal";
 import {
@@ -70,6 +74,7 @@ type cohortFilterDetails = {
   name?: string;
   activeMembers?: string;
   archivedMembers?: string;
+  parentId?: string;
 };
 
 interface centerData {
@@ -106,13 +111,12 @@ const Center: React.FC = () => {
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state.adminInformation
   );
-  const state = adminInformation?.customFields?.find(
-    (item: any) => item?.label === "STATES"
-  );
-  const getUserStateName = state ? state.value : null;
-  const stateCode = state ? state?.code : null;
+  const [addMembersModalOpen, setAddMembersModalOpen] = useState(false);
+  const [currentCohortId, setCurrentCohortId] = useState<string | null>(null);
+  const [roleId, setRoleId] = useState<string | null>(null);
+
   // handle states
-  const [selectedState, setSelectedState] = React.useState<string[]>([]);
+  const [selectedSchool, setSelectedSchool] = React.useState<string>();
   const [selectedDistrict, setSelectedDistrict] = React.useState<string[]>([]);
   const [selectedBlock, setSelectedBlock] = React.useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("Sort");
@@ -143,9 +147,6 @@ const Center: React.FC = () => {
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [pagination, setPagination] = useState(true);
   const [sortBy, setSortBy] = useState(["createdAt", "asc"]);
-  const [selectedStateCode, setSelectedStateCode] = useState("");
-  const [selectedDistrictCode, setSelectedDistrictCode] = useState("");
-  const [selectedBlockCode, setSelectedBlockCode] = useState("");
   const [formdata, setFormData] = useState<any>();
   const [totalCount, setTotalCound] = useState<number>(0);
   const [editFormData, setEditFormData] = useState<any>([]);
@@ -177,23 +178,7 @@ const Center: React.FC = () => {
       if (admin) {
         const stateField: any = JSON.parse(admin).customFields.find(
           (field: any) => field.label === "STATES"
-        );
-        console.log(stateField?.value, stateField?.code);
-        const object = [
-          {
-            value: stateField?.code,
-            label: stateField?.value,
-          },
-        ];
-
-        setStatesInformation(object);
-        setSelectedStateCode(object[0]?.value);
-
-        setFilters({
-          type: "COHORT",
-          states: object[0]?.value,
-          status: filters.status,
-        });
+        )
       }
     }
   };
@@ -204,14 +189,14 @@ const Center: React.FC = () => {
       const userId = localStorage.getItem(Storage.USER_ID) || "";
       setUserId(userId);
     }
-
+    setSelectedSchool(""); // <-- Reset school selection on page load
     // get form data for center create
     getAddCenterFormData();
     // getCohortMemberlistData();
     getAdminInformation();
   }, []);
 
-  const fetchUserList = async () => {
+  const fetchCohortList = async () => {
     setLoading(true);
     try {
       const limit = pageLimit;
@@ -231,36 +216,40 @@ const Center: React.FC = () => {
 
         const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
-        // Fetch member counts for each cohort
-        const memberCounts = await Promise.all(
-          cohortIds?.map(async (cohortId: string) => {
-            return await getCohortMemberlistData(cohortId);
-          })
-        );
-
+          // Retrieve and parse schoolNames from localStorage
+        const schools = await getSchoolNames();
+    
         result?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.map((field: any) =>
               firstLetterInUpperCase(field?.value)
             ) ?? "-";
-
-          const counts = memberCounts[index] || {
-            totalActiveMembers: 0,
-            totalArchivedMembers: 0,
-          };
-
-          console.log("cohortType", cohortType);
+          const school = schools[item.parentId];
+          const className = `${(school as { name?: string })?.name || "-"}, ${item.name}`; // School, Class format 
+      
           const requiredData = {
-            className: item?.name,
+            className,
+            cluster: (school && typeof school === "object" && "clusterName" in school) ? (school as any).clusterName : "-",
+            teacher: item?.teacherName
+              ? (
+                  <>
+                    {item.teacherName}
+                    <br />
+                    <span style={{ color: "#888", fontSize: "12px" }}>
+                      {item.teacherSlot || "-"}
+                    </span>
+                  </>
+                )
+              : "-",            slot: item?.teacherSlot || "-",
             status: item?.status,
             updatedBy: item?.updatedBy,
-            createdBy: item?.createdBy,
+            //createdBy: item?.createdBy,
             createdAt: item?.createdAt,
             updatedAt: item?.updatedAt,
             cohortId: item?.cohortId,
             customFieldValues: cohortType[0] ? cohortType : "-",
-            totalActiveMembers: counts?.totalActiveMembers,
-            totalArchivedMembers: counts?.totalArchivedMembers,
+            totalActiveMembers: item?.activeStudentsCount,
+            totalArchivedMembers: item?.archivedStudentsCount,
           };
           resultData?.push(requiredData);
         });
@@ -342,15 +331,22 @@ const Center: React.FC = () => {
       );
       const totalArchivedMembers = getArchivedMembers?.length || 0;
 
+      const teacher = userDetails?.find(
+        (member: any) =>
+          member?.status === Status.ACTIVE && member?.role === Role.TEACHER
+      );
+      
       return {
         totalActiveMembers,
         totalArchivedMembers,
+        teacher
       };
     }
 
     return {
       totalActiveMembers: 0,
       totalArchivedMembers: 0,
+      teacher: null,
     };
   };
 
@@ -398,7 +394,7 @@ const Center: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUserList();
+    fetchCohortList();
     getFormData();
   }, [pageOffset, pageLimit, sortBy, filters, filters.status]);
 
@@ -440,98 +436,20 @@ const Center: React.FC = () => {
     </Box>
   );
 
-  const handleStateChange = async (selected: string[], code: string[]) => {
-    setSelectedDistrict([]);
-    setSelectedBlock([]);
-    setSelectedState(selected);
-
-    if (selected[0] === "") {
+  const handleSchoolChange = async (event: SelectChangeEvent) => {
+    const schoolCohortId = event.target.value
+    if (!schoolCohortId) {
       if (filters.status)
         setFilters({ type: "COHORT", status: filters.status });
-      // else setFilters({ role: role });
+      else 
+        setFilters({ type: "COHORT" });
     } else {
-      const stateCodes = code?.join(",");
-      console.log("stateCodes", stateCodes);
-      setSelectedStateCode(stateCodes);
       if (filters.status)
-        setFilters({
-          type: "COHORT",
-          states: stateCodes,
-          status: filters.status,
-        });
-      else setFilters({ type: "COHORT", states: stateCodes });
+        setFilters({ type: "COHORT", parentId: schoolCohortId, status: filters.status});
+      else 
+        setFilters({ type: "COHORT", parentId: schoolCohortId });
     }
-
-    console.log("Selected categories:", typeof code[0]);
-  };
-
-  const handleDistrictChange = (selected: string[], code: string[]) => {
-    setSelectedBlock([]);
-    setSelectedDistrict(selected);
-
-    if (selected[0] === "") {
-      if (filters.status) {
-        setFilters({
-          states: selectedStateCode,
-          status: filters.status,
-        });
-      } else {
-        setFilters({
-          states: selectedStateCode,
-        });
-      }
-    } else {
-      const districts = code?.join(",");
-      setSelectedDistrictCode(districts);
-      if (filters.status) {
-        setFilters({
-          states: selectedStateCode,
-          districts: districts,
-          status: filters.status,
-        });
-      } else {
-        setFilters({
-          states: selectedStateCode,
-          districts: districts,
-        });
-      }
-    }
-    console.log("Selected categories:", selected);
-  };
-  const handleBlockChange = (selected: string[], code: string[]) => {
-    setSelectedBlock(selected);
-    if (selected[0] === "") {
-      if (filters.status) {
-        setFilters({
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          status: filters.status,
-        });
-      } else {
-        setFilters({
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-        });
-      }
-    } else {
-      const blocks = code?.join(",");
-      setSelectedBlockCode(blocks);
-      if (filters.status) {
-        setFilters({
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          blocks: blocks,
-          status: filters.status,
-        });
-      } else {
-        setFilters({
-          states: selectedStateCode,
-          districts: selectedDistrictCode,
-          blocks: blocks,
-        });
-      }
-    }
-    console.log("Selected categories:", selected);
+    setSelectedSchool(event.target.value);
   };
 
   const handleCloseModal = () => {
@@ -562,7 +480,7 @@ const Center: React.FC = () => {
       console.log("No Cohort Selected");
       setSelectedCohortId("");
     }
-    fetchUserList();
+    fetchCohortList();
   };
 
   const handleActionForActivate = async (rowData: any) => {
@@ -590,7 +508,7 @@ const Center: React.FC = () => {
       console.log("No Cohort Selected");
       setSelectedCohortId("");
     }
-    fetchUserList();
+    fetchCohortList();
   };
 
   const handleSortChange = async (event: SelectChangeEvent) => {
@@ -705,14 +623,29 @@ const Center: React.FC = () => {
     }
   };
 
-  const handleAddFacilitator = () => {
-    console.log("handleAddFacilitator clicked");
-  };
+
+const onAfterUsersAdd = async (teacherIds: string[]) => {
+  // Call your API to add teachers to the cohort
+  // await addTeachersToCohort(currentCohortId, teacherIds);
+  fetchCohortList();
+};
+
+const handleAddTeachers = async (rowData) => {
+  setCurrentCohortId(rowData?.cohortId);
+  setRoleId(RoleId.TEACHER);
+  setAddMembersModalOpen(true);
+}
+
+const handleAddStudents = async (rowData) => {
+  setCurrentCohortId(rowData?.cohortId);
+  setRoleId(RoleId.STUDENT);
+  setAddMembersModalOpen(true);
+}
 
   // add  extra buttons
   const extraActions: any = [
-    { name: t("COMMON.EDIT"), onClick: handleEdit, icon: EditIcon },
-    { name: t("COMMON.DELETE"), onClick: handleDelete, icon: DeleteIcon },
+    { name: t("COMMON.ADD_TEACHERS"), onClick: handleAddTeachers, icon: PersonAddIcon },
+    { name: t("COMMON.ADD_STUDENTS"), onClick: handleAddStudents, icon: GroupAddIcon },
     //{ name: t("COMMON.ADDFACILITATOR"), onClick: handleAddFacilitator, icon: EditIcon },
   ];
 
@@ -735,91 +668,6 @@ const Center: React.FC = () => {
     console.log("error");
   };
 
-  // const handleUpdateAction = async (
-  //   data: IChangeEvent<any, RJSFSchema, any>,
-  //   event: React.FormEvent<any>
-  // ) => {
-  //   setLoading(true);
-  //   const formData = data?.formData;
-  //   console.log("formData", formData);
-  //   const schemaProperties = schema.properties;
-
-  //   let apiBody: any = {
-  //     customFields: [],
-  //   };
-  //   Object.entries(formData).forEach(([fieldKey, fieldValue]) => {
-  //     const fieldSchema = schemaProperties[fieldKey];
-  //     const fieldId = fieldSchema?.fieldId;
-
-  //     console.log(
-  //       `FieldID: ${fieldId}, FieldValue: ${JSON.stringify(fieldSchema)}, type: ${typeof fieldValue}`
-  //     );
-
-  //     if (fieldId === null || fieldId === "null") {
-  //       if (typeof fieldValue !== "object") {
-  //         apiBody[fieldKey] = fieldValue;
-  //       }
-  //     } else {
-  //       if (
-  //         fieldSchema?.hasOwnProperty("isDropdown") ||
-  //         fieldSchema?.hasOwnProperty("isCheckbox") ||
-  //         fieldSchema?.type === "radio"
-  //       ) {
-  //         apiBody.customFields.push({
-  //           fieldId: fieldId,
-  //           value: Array.isArray(fieldValue) ? fieldValue : [fieldValue],
-  //         });
-  //       } else {
-  //         if (fieldSchema?.checkbox && fieldSchema.type === "array") {
-  //           if (String(fieldValue).length != 0) {
-  //             apiBody.customFields.push({
-  //               fieldId: fieldId,
-  //               value: String(fieldValue).split(","),
-  //             });
-  //           }
-  //         } else {
-  //           if (fieldId) {
-  //             apiBody.customFields.push({
-  //               fieldId: fieldId,
-  //               value: String(fieldValue),
-  //             });
-  //           }
-  //         }
-  //       }
-  //     }
-  //   });
-
-  //   const customFields = apiBody?.customFields;
-  //   try {
-  //     setLoading(true);
-  //     setConfirmButtonDisable(true);
-  //     if (!selectedCohortId) {
-  //       console.log("No cohort Id Selected");
-  //       showToastMessage(t("CENTERS.NO_COHORT_ID_SELECTED"), "error");
-  //       return;
-  //     }
-  //     let cohortDetails = {
-  //       name: formData?.name,
-  //       customFields: customFields,
-  //     };
-  //     const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
-  //     if (resp?.responseCode === 200 || resp?.responseCode === 201) {
-  //       showToastMessage(t("CENTERS.CENTER_UPDATE_SUCCESSFULLY"), "success");
-  //       setLoading(false);
-  //     } else {
-  //       showToastMessage(t("CENTERS.CLASS_UPDATE_FAILED"), "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating cohort:", error);
-  //     showToastMessage(t("CENTERS.CLASS_UPDATE_FAILED"), "error");
-  //   } finally {
-  //     setLoading(false);
-  //     setConfirmButtonDisable(false);
-  //     onCloseEditMOdel();
-  //     fetchUserList();
-  //     setIsEditForm(false);
-  //   }
-  // };
 
   const handleUpdateAction = async (
     data: IChangeEvent<any, RJSFSchema, any>,
@@ -947,7 +795,7 @@ const Center: React.FC = () => {
       }
       const resp = await updateCohortUpdate(selectedCohortId, cohortDetails);
       if (resp?.responseCode === 200 || resp?.responseCode === 201) {
-        fetchUserList();
+        fetchCohortList();
         showToastMessage(t("CENTERS.CLASS_UPDATE_SUCCESSFULLY"), "success");
       } else {
         showToastMessage(t("CENTERS.CLASS_UPDATE_FAILED"), "error");
@@ -959,7 +807,7 @@ const Center: React.FC = () => {
       setLoading(false);
       setConfirmButtonDisable(false);
       onCloseEditMOdel();
-      fetchUserList();
+      fetchCohortList();
       setIsEditForm(false);
     }
   };
@@ -968,78 +816,7 @@ const Center: React.FC = () => {
     setOpenAddNewCohort(true);
     // setIsEditForm(true);
   };
-
-  useEffect(() => {
-    const fetchData = () => {
-      try {
-        const object = {
-          // "limit": 20,
-          // "offset": 0,
-          fieldName: "states",
-        };
-        // const response = await getStateBlockDistrictList(object);
-        // const result = response?.result?.values;
-        if (typeof window !== "undefined" && window.localStorage) {
-          const admin = localStorage.getItem("adminInfo");
-          if (admin) {
-            const stateField = JSON.parse(admin).customFields.find(
-              (field: any) => field.label === "STATES"
-            );
-            console.log(stateField.value, stateField.code);
-            if (!stateField.value.includes(",")) {
-              setSelectedState([stateField.value]);
-              setSelectedStateCode(stateField.code);
-            }
-
-            const object = [
-              {
-                value: stateField.code,
-                label: stateField.value,
-              },
-            ];
-            // setStates(object);
-          }
-        }
-        //  setStates(result);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // // for new changes
-  // useEffect(() => {
-  //   const getAddLearnerFormData = async () => {
-  //     const admin = localStorage.getItem("adminInfo");
-  //     if (admin) {
-  //       const stateField = JSON.parse(admin)?.customFields?.find(
-  //         (field: any) => field.label === "STATES"
-  //       );
-  //       if (!stateField?.value.includes(",")) {
-  //         setStateDefaultValueForCenter(stateField?.value);
-  //       } else {
-  //         setStateDefaultValueForCenter(t("COMMON.ALL_STATES"));
-  //       }
-  //     }
-  //     try {
-  //       const response = await getFormRead("cohorts", "cohort");
-  //       console.log("sortedFields", response);
-
-  //       if (response) {
-  //         const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
-  //         console.log("schema", schema);
-  //         console.log("uiSchema", uiSchema);
-  //         setSchemaCreate(schema);
-  //         setUiSchemaCreate(uiSchema);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching form data:", error);
-  //     }
-  //   };
-  //   getAddLearnerFormData();
-  // }, []);
+  
 
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
@@ -1188,7 +965,7 @@ const Center: React.FC = () => {
       showToastMessage(t("CENTER.NOT_ABLE_CREATE_CENTER"), "error");
       setOpenAddNewCohort(false);
     }
-    fetchUserList();
+    fetchCohortList();
   };
 
   const convertTo24HourFormat = (time12h: any) => {
@@ -1232,19 +1009,20 @@ const Center: React.FC = () => {
     };
   };
 
+  const handleCloseAddMembersModal = () => {
+    setAddMembersModalOpen(false);
+    fetchCohortList(); // This will reload the data and keep the current page
+  };
   // props to send in header
-  const userProps = {
-    userType: t("SIDEBAR.CENTERS"),
+  const pageProps = {
+    title: t("SIDEBAR.CENTERS"),
     searchPlaceHolder: t("CENTERS.SEARCHBAR_PLACEHOLDER"),
-    selectedState: selectedState,
-    selectedStateCode: selectedStateCode,
+    selectedSchool: selectedSchool,
     selectedDistrict: selectedDistrict,
     selectedBlock: selectedBlock,
     selectedSort: selectedSort,
     selectedFilter: selectedFilter,
-    handleStateChange: handleStateChange,
-    handleDistrictChange: handleDistrictChange,
-    handleBlockChange: handleBlockChange,
+    handleSchoolChange: handleSchoolChange,
     handleSortChange: handleSortChange,
     handleFilterChange: handleFilterChange,
     handleSearch: handleSearch,
@@ -1254,10 +1032,20 @@ const Center: React.FC = () => {
     setStatusValue: setStatusValue,
     showSort: cohortData?.length > 0,
     showStateDropdown: showFilters,
+    showSchoolFilter: true
   };
 
   return (
     <>
+    <AddMembersModal
+      open={addMembersModalOpen}
+      onClose={handleCloseAddMembersModal}
+      onAdd={onAfterUsersAdd}
+      cohortId={currentCohortId}
+      roleId={roleId}
+      title={roleId === RoleId.TEACHER ? t("COMMON.ADD_TEACHERS") : t("COMMON.ADD_STUDENTS")}
+      showCohortFilters={roleId === RoleId.TEACHER ? false : true }
+    />
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
@@ -1288,9 +1076,10 @@ const Center: React.FC = () => {
         modalOpen={confirmationModalOpen}
       />
 
-      <HeaderComponent {...userProps}>
-        {/* {console.log("cohortData",cohortData)} */}
-        {loading ? (
+      <HeaderComponent {...pageProps}> </HeaderComponent>
+
+        {
+        loading ? (
           <Box
             width={"100%"}
             id="check"
@@ -1477,15 +1266,7 @@ const Center: React.FC = () => {
               </Box>
             </DynamicForm>
           )}
-          {/* {!selectedBlockCohortId && selectedBlockCohortId !== "" && (
-            <Box mt={3} textAlign={"center"}>
-              <Typography color={"error"}>
-                {t("COMMON.SOMETHING_WENT_WRONG")}
-              </Typography>
-            </Box>
-          )} */}
         </SimpleModal>
-      </HeaderComponent>
     </>
   );
 };

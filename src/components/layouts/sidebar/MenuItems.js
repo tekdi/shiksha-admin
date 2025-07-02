@@ -2,7 +2,7 @@ import masterIcon from '../../../../public/images/database.svg';
 import centerIcon from '../../../../public/images/centers.svg';
 import dashboardIcon from '../../../../public/images/dashboard.svg';
 import userIcon from '../../../../public/images/group.svg';
-import { TeamLeaders, classes, coursePlanner, masters, showClasses, showCoursePlanner, showLearners, showManageUsers, showMasters, showTeamLeaders, showfaciliator } from '../../../../app.config';
+import { TeamLeaders, classes, coursePlanner, masters, showClasses, showCoursePlanner, showLearners, showManageUsers, showMasters, showTeamLeaders, showfacilitator } from '../../../../app.config';
 
 
 
@@ -29,9 +29,9 @@ const Menuitems = [
         title: "SIDEBAR.TEAM_LEADERS",
         href: "/teamLeader",
       },
-      showfaciliator && {
+      showfacilitator && {
         title: "SIDEBAR.TEACHERS",
-        href: "/faciliator",
+        href: "/facilitator",
       },
       showLearners && {
         title: "SIDEBAR.STUDENTS",

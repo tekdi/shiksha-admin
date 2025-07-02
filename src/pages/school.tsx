@@ -80,7 +80,7 @@ const Block: React.FC = () => {
     useState<StateDetail | null>(null);
   const [schoolFieldId, setSchoolsFieldId] = useState<string>("");
   const [clusterFieldId, setClusterFieldId] = useState<string>("");
-  const [sortBy, setSortBy] = useState<[string, string]>(["name", "asc"]);
+  const [sortBy, setSortBy] = useState<[string, string]>(["school_name", "asc"]);
   const [paginationCount, setPaginationCount] = useState<number>(0);
   const [pageSizeArray, setPageSizeArray] = useState<number[]>([5, 10, 20, 50]);
   const [stateCode, setStateCode] = useState<any>([]);
@@ -526,7 +526,7 @@ const Block: React.FC = () => {
   const userProps = {
     selectedFilter,
     showStateDropdown: false,
-    userType: t("MASTER.SCHOOLS"),
+    title: t("MASTER.SCHOOLS"),
     searchPlaceHolder: t("MASTER.SEARCHBAR_PLACEHOLDER_SCHOOL"),
     showFilter: false,
     showSort: true,
@@ -684,7 +684,8 @@ const Block: React.FC = () => {
         selectedSort={selectedSort}
         handleSortChange={handleSortChange}
         showSort={true}
-      >
+      >      </HeaderComponent>
+
         {loading ? (
           <Box
             display="flex"
@@ -792,7 +793,6 @@ const Block: React.FC = () => {
             </Box>
           </>
         )}
-      </HeaderComponent>
     </React.Fragment>
   );
 };
