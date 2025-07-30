@@ -56,6 +56,8 @@ export const getSchoolNames = async (): Promise<Record<string, {}>> => {
        const schoolMap: Record<string, {code:string; name: string; clusterName: string }> = {};
        const schools = schoolRes?.results?.cohortDetails || [];
        const clusters = clusterRes?.results?.cohortDetails || [];
+      if (!schools.length || !clusters.length) return schoolMap;
+
        schools.forEach((school: any) => {
           const cluster = clusters.find((c: any) => c.cohortId === school.parentId);
           schoolMap[school.cohortId] = { code: school.cohortId, name: school.name, clusterName: cluster.name };

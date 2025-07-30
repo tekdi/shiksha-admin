@@ -613,7 +613,6 @@ const UserTable: React.FC<UserTableProps> = ({
       let offset = pageOffset * limit;
       // const filters = { role: role , status:"active"};
       const sort = sortBy;
-      console.log("filters", filters);
       // if (filters.name) {
       //   offset = 0;
       // }
@@ -660,6 +659,8 @@ const UserTable: React.FC<UserTableProps> = ({
 
       setPageCount(Math.ceil(resp?.totalCount / pageLimit));
       let finalResult;
+      console.log("1111111")
+
       if (enableCenterFilter) {
         finalResult = result?.map((user: any) => {
           const ageField = user?.customField?.find(
@@ -699,9 +700,7 @@ const UserTable: React.FC<UserTableProps> = ({
             state: stateField ? stateField?.fieldvalues : "-",
             blocks: blockField ? blockField?.fieldvalues : "-",
             gender: genderField
-              ? genderField.fieldvalues?.charAt(0)?.toUpperCase() +
-                genderField.fieldvalues.slice(1).toLowerCase()
-              : "-",
+              ? genderField.selectedValues : '-',
             //  createdAt: user?.createdAt,
             //  updatedAt: user?.updatedAt,
             createdBy: user?.createdBy,
@@ -754,10 +753,7 @@ const UserTable: React.FC<UserTableProps> = ({
               : "-",
             state: stateField ? stateField.value : "-",
             blocks: blockField ? blockField.value : "-",
-            gender: genderField
-              ? genderField.value?.charAt(0)?.toUpperCase() +
-                genderField.value.slice(1).toLowerCase()
-              : "-",
+            gender: genderField?.value || genderField?.selectedValues || "-",
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
             createdBy: user.createdBy,
@@ -772,8 +768,7 @@ const UserTable: React.FC<UserTableProps> = ({
           };
         });
       }
-      console.log(finalResult);
-
+console.log("2222222")
       if (filters?.name) {
         const prioritizedResult = finalResult.sort((a: any, b: any) => {
           const aStartsWith = a.name.toLowerCase().startsWith(filters?.name);
@@ -869,50 +864,6 @@ const UserTable: React.FC<UserTableProps> = ({
     fetchData();
   }, [data, cohortsFetched]);
 
-  useEffect(() => {
-    const fetchData = () => {
-      try {
-        const object = {
-          // "limit": 20,
-          // "offset": 0,
-          fieldName: "states",
-        };
-        // const response = await getStateBlockDistrictList(object);
-        // const result = response?.result?.values;
-        if (typeof window !== "undefined" && window.localStorage) {
-          const admin = localStorage.getItem("adminInfo");
-          if (admin) {
-            const stateField = JSON.parse(admin).customFields.find(
-              (field: any) => field.label === "STATES"
-            );
-            console.log(stateField.value, stateField.code);
-            if (!stateField.value.includes(",")) {
-              setSelectedState([stateField.value]);
-              setSelectedStateCode(stateField.code);
-              setFilters({
-                states: stateField.code,
-                role: role,
-                status: [statusValue],
-              });
-            }
-
-            const object = [
-              {
-                value: stateField.code,
-                label: stateField.value,
-              },
-            ];
-            // setStates(object);
-          }
-        }
-        //  setStates(result);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleCloseDeleteModal = () => {
     setSelectedReason("");
