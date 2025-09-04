@@ -1621,6 +1621,7 @@ const UserTable: React.FC<UserTableProps> = ({
   };
   const handleCloseReassignModal = () => {
     // setSelectedReason("");
+    fetchUserList();
     // setOtherReason("");
     setIsReassignCohortModalOpen(false);
     setSelectedUserId("");
