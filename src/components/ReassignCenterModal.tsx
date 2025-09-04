@@ -6,6 +6,11 @@ import {
   TextField,
   Typography,
   FormControlLabel,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
@@ -24,7 +29,10 @@ import { transformArray, transformBatchArray } from "../utils/Helper";
 import { firstLetterInUpperCase } from "./../utils/Helper";
 import useSubmittedButtonStore from "@/utils/useSharedState";
 import useNotification from "@/hooks/useNotification";
-import { getUserCohortList } from "@/services/CohortService/cohortService";
+import {
+  getUserCohortList,
+  getCohortList,
+} from "@/services/CohortService/cohortService";
 
 interface ReassignCohortModalProps {
   open: boolean;
@@ -144,6 +152,15 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   const [selectedBlockCohortIdForTL, setSelectedBlockCohortIdForTL] =
     useState("");
   const [selectedTLUserID, setSelectedTLUserID] = useState(userId);
+  const [selectedCohort, setSelectedCohort] = useState<string>("");
+  const [cohortList, setCohortList] = useState<any[]>([]);
+  const [filteredBatchList, setFilteredBatchList] = useState<any[]>([]);
+  const [isLoadingCohorts, setIsLoadingCohorts] = useState(false);
+  const [isLoadingBatches, setIsLoadingBatches] = useState(false);
+  const [selectedCenterForBatches, setSelectedCenterForBatches] =
+    useState<string>("");
+  const [centerList, setCenterList] = useState<any[]>([]);
+  const [isLoadingCenters, setIsLoadingCenters] = useState(false);
 
   // const [reassignOpen, setReassignOpen] = useState(false);
 
@@ -158,8 +175,97 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
     setSearchInput(event.target.value.toLowerCase());
   };
 
+  const handleCohortChange = async (cohortId: string) => {
+    setSelectedCohort(cohortId);
+    if (cohortId) {
+      setIsLoadingBatches(true);
+      try {
+        const response = await getUserCohortList(cohortId);
+        const extractBatchCohorts = (data: any[]): any[] => {
+          let cohorts: any[] = [];
+          data.forEach((item) => {
+            if (item.type === "COHORT") {
+              cohorts.push(item);
+            }
+            if (item.childData && item.childData.length > 0) {
+              const activeChildren = item.childData.filter(
+                (child: any) => child.status === "active"
+              );
+              if (activeChildren.length > 0) {
+                cohorts = cohorts.concat(extractBatchCohorts(activeChildren));
+              }
+            }
+          });
+          return cohorts;
+        };
+
+        const batchData = extractBatchCohorts(response);
+        setFilteredBatchList(batchData);
+        setCohorts(batchData);
+      } catch (error) {
+        console.error("Error fetching batches for cohort:", error);
+        setFilteredBatchList([]);
+        setCohorts([]);
+      } finally {
+        setIsLoadingBatches(false);
+      }
+    } else {
+      setFilteredBatchList([]);
+      setCohorts([]);
+    }
+  };
+
+  const handleCenterChange = async (centerId: string) => {
+    setSelectedCenterForBatches(centerId);
+    if (centerId) {
+      setIsLoadingBatches(true);
+      try {
+        // Call the API with selected center ID as parentId to get batches
+        const reqParams = {
+          filters: {
+            type: "COHORT",
+            status: ["active"],
+            parentId: [centerId],
+          },
+          limit: 0,
+          offset: 0,
+        };
+        const response = await getCohortList(reqParams);
+
+        if (response?.results?.cohortDetails) {
+          // These are the batches for the selected center
+          const batches = response.results.cohortDetails.filter(
+            (batch: any) => batch.status === "active"
+          );
+          setCohorts(batches);
+          setFilteredBatchList(batches);
+        } else {
+          setCohorts([]);
+          setFilteredBatchList([]);
+        }
+      } catch (error) {
+        console.error("Error fetching batches for center:", error);
+        setCohorts([]);
+        setFilteredBatchList([]);
+      } finally {
+        setIsLoadingBatches(false);
+      }
+    } else {
+      setCohorts([]);
+      setFilteredBatchList([]);
+    }
+  };
+
   const handleClose = () => {
     setCheckedCenters([]);
+    setSelectedCohort("");
+    setFilteredBatchList([]);
+    setCohorts([]);
+    setIsLoadingCohorts(false);
+    setIsLoadingBatches(false);
+    setSelectedCenterForBatches("");
+    setCenterList([]);
+    setIsLoadingCenters(false);
     onClose();
   };
 
@@ -176,14 +282,16 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
+    if (open && typeof window !== "undefined" && window.localStorage) {
       const adminInfo = JSON.parse(localStorage?.getItem("adminInfo") || "{}");
-      setIsCenterAdmin(adminInfo?.role === "Center Admin");
+      const isAdmin = adminInfo?.role === "Center Admin";
+      setIsCenterAdmin(isAdmin);
     }
-  }, []);
+  }, [open]); // Changed dependency from [] to [open]
 
   useEffect(() => {
-    if (isCenterAdmin) {
+    if (isCenterAdmin && open) {
+      // Only fetch when modal is open
       if (typeof window !== "undefined" && window.localStorage) {
         const userId = localStorage.getItem("userId");
         if (userId) {
@@ -217,8 +325,59 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
           getMyCohortList();
         }
       }
+    } else if (open) {
+      // Only fetch centers when modal is open
+      // Fetch centers when not center admin
+      const fetchCenters = async () => {
+        setIsLoadingCenters(true);
+        try {
+          const reqParams = {
+            limit: 100,
+            offset: 0,
+            filters: {
+              status: ["active"],
+              type: "CENTER",
+            },
+          };
+          const response = await getCohortList(reqParams);
+
+          if (response?.results?.cohortDetails) {
+            // Filter for active centers only
+            const activeCenters = response.results.cohortDetails.filter(
+              (center: any) => center.status === "active"
+            );
+
+            setCenterList(activeCenters);
+          } else {
+            setCenterList([]);
+          }
+        } catch (error) {
+          console.error("Error fetching centers:", error);
+          setCenterList([]);
+        } finally {
+          setIsLoadingCenters(false);
+        }
+      };
+
+      // Add a small delay to ensure component is fully mounted
+      const timeoutId = setTimeout(() => {
+        fetchCenters();
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
-  }, [isCenterAdmin]);
+  }, [isCenterAdmin, open]); // Added 'open' as dependency
+
+  // Reset center list when modal closes
+  useEffect(() => {
+    if (!open) {
+      setCenterList([]);
+      setSelectedCenterForBatches("");
+      setIsLoadingCenters(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (blockName) {
@@ -252,9 +411,10 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         unSelectedData = cohorts
           .filter(
             (center: any) =>
-              center?.label && !checkedCenters.includes(center.label)
+              center?.name &&
+              !checkedCenters.includes(center.name?.toLowerCase())
           )
-          .map((center: any) => center!.value);
+          .map((center: any) => center.cohortId);
       } else {
         selectedData = blocks
           .filter(
@@ -519,14 +679,6 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
       }
     } catch (error) {
       console.log(error);
-      showToastMessage(
-        t(
-          userType === Role.TEAM_LEADERS
-            ? "COMMON.BLOCKS_REASSIGN_FAILED"
-            : "COMMON.CENTERS_REASSIGN_FAILED"
-        ),
-        "error"
-      );
     }
 
     // getNotification(userId, "TL_BLOCK_REASSIGNMENT");
@@ -535,9 +687,13 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
   if (isCenterAdmin) {
     filteredCohorts = batchList;
   } else {
-    filteredCohorts = cohorts?.filter((cohort: any) =>
-      cohort?.label?.toLowerCase().includes(searchInput)
-    );
+    if (selectedCenterForBatches) {
+      filteredCohorts = cohorts?.filter((cohort: any) =>
+        cohort?.name?.toLowerCase().includes(searchInput)
+      );
+    } else {
+      filteredCohorts = [];
+    }
   }
 
   const formattedCohorts = filteredCohorts?.map((location: any) => ({
@@ -702,7 +858,10 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         }
         primaryBtnText={t("Reassign")}
         primaryBtnClick={handleReassign}
-        primaryBtnDisabled={checkedCenters.length === 0}
+        primaryBtnDisabled={
+          checkedCenters.length === 0 ||
+          (!isCenterAdmin && !selectedCenterForBatches)
+        }
       >
         {/* <AreaSelection
           country={transformArray(country)}
@@ -732,6 +891,84 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
         {userType === Role.STUDENT && (
           <>
             {" "}
+            {!isCenterAdmin && (
+              <Box sx={{ p: 3, borderBottom: "1px solid #e0e0e0" }}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  {t("COMMON.SELECT_CENTER")}
+                </Typography>
+                <FormControl fullWidth disabled={isLoadingCenters}>
+                  {centerList && centerList.length > 0 ? (
+                    <Select
+                      // labelId="center-select-label"
+                      value={selectedCenterForBatches}
+                      // label="Select Center"
+                      onChange={(e) => handleCenterChange(e.target.value)}
+                      displayEmpty
+                      key={`center-select-${centerList.length}-${isLoadingCenters}`}
+                      sx={{
+                        borderRadius: 2,
+                      }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 300,
+                          },
+                        },
+                      }}
+                    >
+                      {centerList.map((center: any) => (
+                        <MenuItem key={center.cohortId} value={center.cohortId}>
+                          {center.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Select
+                      value=""
+                      // label="Select Center"
+                      disabled
+                      sx={{
+                        borderRadius: 2,
+                      }}
+                    >
+                      <MenuItem disabled>
+                        {isLoadingCenters
+                          ? t("COMMON.LOADING")
+                          : t("COMMON.NO_CENTERS_AVAILABLE")}
+                      </MenuItem>
+                    </Select>
+                  )}
+                </FormControl>
+                {!isLoadingCenters && centerList.length === 0 && (
+                  <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                    {t("COMMON.NO_CENTERS_AVAILABLE")}
+                  </Typography>
+                )}
+              </Box>
+            )}
+            {!isCenterAdmin && selectedCenterForBatches && (
+              <Box sx={{ p: 1 }}>
+                <TextField
+                  sx={{
+                    backgroundColor: theme.palette.warning["A700"],
+                    borderRadius: 8,
+                    "& .MuiOutlinedInput-root fieldset": { border: "none" },
+                    "& .MuiOutlinedInput-input": { borderRadius: 8 },
+                  }}
+                  placeholder={t("CENTERS.SEARCHBAR_PLACEHOLDER")}
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
+            )}
             {/* <Box sx={{ p: 1 }}>
               <TextField
                 sx={{
@@ -755,7 +992,11 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
             </Box> */}
             <Box sx={{ p: 3, maxHeight: "300px", overflowY: "auto" }}>
               {userType === Role.STUDENT ? (
-                formattedCohorts && formattedCohorts.length > 0 ? (
+                isLoadingBatches ? (
+                  <Box sx={{ textAlign: "center", color: "gray" }}>
+                    {t("COMMON.LOADING")}
+                  </Box>
+                ) : formattedCohorts && formattedCohorts.length > 0 ? (
                   formattedCohorts.map((center: any) => (
                     <Box key={center.value}>
                       <Box
@@ -794,7 +1035,9 @@ const ReassignCenterModal: React.FC<ReassignCohortModalProps> = ({
                 ) : (
                   <Box sx={{ textAlign: "center", color: "gray" }}>
                     {" "}
-                    {t("COMMON.NO_CENTER_AVAILABLE")}
+                    {!isCenterAdmin && !selectedCenterForBatches
+                      ? t("COMMON.PLEASE_SELECT_CENTER")
+                      : t("COMMON.NO_CENTER_AVAILABLE")}
                   </Box>
                 )
               ) : formattedBlocks && formattedBlocks.length > 0 ? (
