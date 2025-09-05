@@ -3,7 +3,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { appWithTranslation } from "next-i18next";
-import { initGA, logPageView } from '../utils/googleAnalytics';
+import { initGA, logPageView } from "../utils/googleAnalytics";
 
 import { useEffect, useState } from "react";
 import { AuthProvider } from "../context/AuthContext";
@@ -14,11 +14,10 @@ import FullLayout from "@/components/layouts/FullLayout";
 import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
 import customTheme from "../styles/customTheme";
 import "./../styles/style.css";
-import Head from 'next/head';
+import Head from "next/head";
 
-
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from "next/router";
@@ -32,80 +31,76 @@ function App({ Component, pageProps }: AppProps) {
     (state: any) => state.setIsArchived
   );
   useEffect(() => {
-    telemetryFactory.init();
+    // Telemetry disabled
+    // telemetryFactory.init();
   }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-  if (!token && (router.pathname !== "/login")) {
-      if((router.pathname !== "/logout"))
-      router.push("/logout");
+    if (!token && router.pathname !== "/login") {
+      if (router.pathname !== "/logout") router.push("/logout");
     }
-    setIsArchived(false)
-
-   
+    setIsArchived(false);
   }, [router]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.localStorage) return; // Exit early if not in browser
-  
+
     const adminInfo = localStorage.getItem("adminInfo");
-  
-    if (!adminInfo || adminInfo === "undefined") return; 
-  
+
+    if (!adminInfo || adminInfo === "undefined") return;
+
     const userInfo = JSON.parse(adminInfo);
-  
+
     const restrictedRoles = [
       Role.ADMIN,
       Role.CENTRAL_ADMIN,
       Role.SCTA,
-      Role.CCTA
+      Role.CCTA,
     ];
 
-    console.log(userInfo?.role,"userInfo?.role");
-    
-  
+    console.log(userInfo?.role, "userInfo?.role");
+
     const restrictedPaths = ["/unauthorized", "/login", "/logout"];
     const isRestrictedRole = !restrictedRoles.includes(userInfo?.role);
-    console.log(isRestrictedRole,"isRestrictedRole");
-    
+    console.log(isRestrictedRole, "isRestrictedRole");
+
     const isRestrictedPath = !restrictedPaths.includes(router.pathname);
-    console.log(isRestrictedPath,"isRestrictedPath");
-    
-  
+    console.log(isRestrictedPath, "isRestrictedPath");
+
     if (isRestrictedRole && isRestrictedPath) {
       router.push({
-        pathname: '/unauthorized',
+        pathname: "/unauthorized",
         query: { role: userInfo?.role },
       });
     }
   }, [router]);
-  
- 
+
   useEffect(() => {
     // Initialize GA only once
     if (!window.GA_INITIALIZED) {
-      initGA(`${process.env.NEXT_PUBLIC_MEASUREMENT_ID}`)
-            window.GA_INITIALIZED = true;
+      initGA(`${process.env.NEXT_PUBLIC_MEASUREMENT_ID}`);
+      window.GA_INITIALIZED = true;
     }
 
     const handleRouteChange = (url: string) => {
       const windowUrl = url;
-      const cleanedUrl = windowUrl.replace(/^\//, '');
+      const cleanedUrl = windowUrl.replace(/^\//, "");
 
-      const telemetryImpression = {
-        context: {
-          env: cleanedUrl,
-          cdata: [],
-        },
-        edata: {
-          type: TelemetryEventType.VIEW,
-          subtype: '',
-          pageid: cleanedUrl,
-          uri: '',
-        },
-      };
-      telemetryFactory.impression(telemetryImpression);
+      // Telemetry disabled
+      // const telemetryImpression = {
+      //   context: {
+      //     env: cleanedUrl,
+      //     cdata: [],
+      //   },
+      //   edata: {
+      //     type: TelemetryEventType.VIEW,
+      //     subtype: '',
+      //     pageid: cleanedUrl,
+      //     uri: '',
+      //   },
+      // };
+      // telemetryFactory.impression(telemetryImpression);
 
       logPageView(url);
     };
@@ -113,11 +108,11 @@ function App({ Component, pageProps }: AppProps) {
     // Log initial page load
     handleRouteChange(window.location.pathname);
     // Subscribe to route changes and log page views
-    router.events.on('routeChangeComplete', handleRouteChange);
+    router.events.on("routeChangeComplete", handleRouteChange);
 
     // Clean up the subscription on unmount
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
+      router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
 
@@ -133,42 +128,37 @@ function App({ Component, pageProps }: AppProps) {
     }
   };
 
-  const [client] = useState(new QueryClient(
-    {
+  const [client] = useState(
+    new QueryClient({
       defaultOptions: {
         queries: {
           gcTime: 1000 * 60 * 60 * 24, // 24 hours
           staleTime: 1000 * 60 * 60 * 24, // 24 hours
         },
       },
-    }
-  ));
+    })
+  );
 
   return (
     <>
-    <Head>
+      <Head>
         <title>{metaTags?.title}</title>
-      
       </Head>
       <QueryClientProvider client={client}>
+        <AuthProvider>
+          <CssVarsProvider theme={customTheme}>
+            <RouteGuard>{renderComponent()}</RouteGuard>
 
-<AuthProvider>
-    <CssVarsProvider theme={customTheme}>
-
-    <RouteGuard>{renderComponent()}</RouteGuard>
-
-      <ToastContainer
-        position="bottom-left"
-        autoClose={3000}
-        stacked={false}
-      />
-    </CssVarsProvider>
-  </AuthProvider>
-  <ReactQueryDevtools initialIsOpen={false} />
-
-</QueryClientProvider>
+            <ToastContainer
+              position="bottom-left"
+              autoClose={3000}
+              stacked={false}
+            />
+          </CssVarsProvider>
+        </AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
     </>
-   
   );
 }
 

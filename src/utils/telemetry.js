@@ -1,5 +1,5 @@
 import { generateUUID, getDeviceId } from "./Helper";
-const hostURL = process.env.NEXT_PUBLIC_TELEMETRY_URL; 
+const hostURL = process.env.NEXT_PUBLIC_TELEMETRY_URL;
 let CsTelemetryModule;
 let EkTelemetry;
 let jQuery;
@@ -45,111 +45,45 @@ if (typeof window !== "undefined") {
 
 export const telemetryFactory = {
   init: () => {
-    if (typeof window !== "undefined") { 
-      if (!CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.init({});
-        CsTelemetryModule.instance.telemetryService.initTelemetry({
-          config: telemetryConfig,
-          userOrgDetails: {},
-        });
-      }
-    }
+    // Telemetry disabled - no initialization
+    console.log("Telemetry is disabled");
   },
 
   interact: (interactEventInput) => {
-    if (typeof window !== "undefined") {
-      const eventData = getEventData(interactEventInput);
-      if (CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.telemetryService.raiseInteractTelemetry({
-          options: eventData.options,
-          edata: eventData.edata,
-        });
-      }
-    }
+    // Telemetry disabled - no interaction events sent
+    console.log("Telemetry interact event disabled:", interactEventInput);
   },
 
   impression: (impressionEventInput) => {
-    if (typeof window !== "undefined") {
-      const eventData = getEventData(impressionEventInput);
-      if (CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.telemetryService.raiseImpressionTelemetry({
-          options: eventData.options,
-          edata: eventData.edata,
-        });
-      }
-    }
+    // Telemetry disabled - no impression events sent
+    console.log("Telemetry impression event disabled:", impressionEventInput);
   },
 
   assess: (assessEventInput) => {
-    if (typeof window !== "undefined") {
-      const eventData = getEventData(assessEventInput);
-      if (CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.telemetryService.raiseAssesTelemetry({
-          options: eventData.options,
-          edata: eventData.edata,
-        });
-      }
-    }
+    // Telemetry disabled - no assessment events sent
+    console.log("Telemetry assess event disabled:", assessEventInput);
   },
 
   response: (responseEventInput) => {
-    if (typeof window !== "undefined") {
-      const eventData = getEventData(responseEventInput);
-      if (CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.telemetryService.raiseResponseTelemetry({
-          options: eventData.options,
-          edata: eventData.edata,
-        });
-      }
-    }
+    // Telemetry disabled - no response events sent
+    console.log("Telemetry response event disabled:", responseEventInput);
   },
 
-  interrupt: (interactEventInput) => {
-    if (typeof window !== "undefined") {
-      const eventData = getEventData(interactEventInput);
-      if (CsTelemetryModule.instance.isInitialised) {
-        CsTelemetryModule.instance.telemetryService.raiseInterruptTelemetry({
-          options: eventData.options,
-          edata: eventData.edata,
-        });
-      }
-    }
+  interrupt: (interruptEventInput) => {
+    // Telemetry disabled - no interrupt events sent
+    console.log("Telemetry interrupt event disabled:", interruptEventInput);
   },
 
   start: ({ appName, ...edata }) => {
-    if (typeof window !== "undefined") {
-      return {
-        type: edata?.type,
-        eid: generateUUID(),
-        $set: { id: localStorage.getItem("id") || "Anonymous" },
-        actor: {
-          id: localStorage.getItem("id") || "Anonymous",
-          type: "Teacher",
-        },
-        context: {
-          type: appName ? appName : "Standalone",
-        },
-        edata,
-      };
-    }
+    // Telemetry disabled - return empty object
+    console.log("Telemetry start event disabled:", { appName, ...edata });
+    return {};
   },
 
   end: ({ appName, ...edata }) => {
-    if (typeof window !== "undefined") {
-      return {
-        type: edata?.type,
-        eid: generateUUID(),
-        $set: { id: localStorage.getItem("id") || "Anonymous" },
-        actor: {
-          id: localStorage.getItem("id") || "Anonymous",
-          type: "Teacher",
-        },
-        context: {
-          type: appName ? appName : "Standalone",
-        },
-        edata,
-      };
-    }
+    // Telemetry disabled - return empty object
+    console.log("Telemetry end event disabled:", { appName, ...edata });
+    return {};
   },
 };
 
