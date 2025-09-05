@@ -231,3 +231,19 @@ export async function updateOrganisation(requestbody: any, id: string) {
     body: JSON.stringify(requestbody),
   });
 }
+
+export async function getOpportunityApplicationsReport(
+  limit?: number,
+  offset?: number
+) {
+  const params = new URLSearchParams();
+  if (limit !== undefined) params.append("limit", limit.toString());
+  if (offset !== undefined) params.append("offset", offset.toString());
+
+  const queryString = params.toString();
+  const url = queryString
+    ? `/opportunity-service/opportunity-applications/report?${queryString}`
+    : "/opportunity-service/opportunity-applications/report";
+
+  return fetchApi<any>(url);
+}

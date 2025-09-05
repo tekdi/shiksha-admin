@@ -35,6 +35,7 @@ import {
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
+  getOpportunityApplicationsReport,
 } from "@/lib/api";
 import { Switch, FormControlLabel } from "@mui/material";
 import { useTranslation } from "next-i18next";
@@ -73,6 +74,7 @@ export default function OpportunitiesPage() {
     currentPage: 1,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   useEffect(() => {
     loadOpportunities();
@@ -209,6 +211,105 @@ export default function OpportunitiesPage() {
     saveAs(blob, "opportunities.csv");
   }
 
+  async function handleExportUserOpportunityDetails() {
+    try {
+      setIsExporting(true);
+
+      // First, get the total count by fetching the first batch
+      const firstResponse = await getOpportunityApplicationsReport(20, 0);
+
+      if (firstResponse.responseCode !== 200 || !firstResponse.result?.data) {
+        showToastMessage("No data available to export", "error");
+        return;
+      }
+
+      const totalRecords = firstResponse.result.total || 0;
+      const batchSize = 50;
+      const totalBatches = Math.ceil(totalRecords / batchSize);
+
+      // Start with the first batch data
+      let allData = [...firstResponse.result.data];
+
+      // Fetch remaining batches
+      for (let batch = 1; batch < totalBatches; batch++) {
+        const offset = batch * batchSize;
+        const batchResponse = await getOpportunityApplicationsReport(
+          batchSize,
+          offset
+        );
+
+        if (batchResponse.responseCode === 200 && batchResponse.result?.data) {
+          allData = [...allData, ...batchResponse.result.data];
+        }
+      }
+
+      if (allData.length > 0) {
+        const csvData = allData.map((item: any) => ({
+          "First Name": item.firstName || "-",
+          "Middle Name": item.middleName || "-",
+          "Last Name": item.lastName || "-",
+          Country: item.country || "-",
+          County: item.county || "-",
+          "Sub-County": item.subCounty || "-",
+          "Email ID": item.emailId || "-",
+          "Phone Number": item.phoneNumber || "-",
+          AGE: item.age || "-",
+          Gender: item.gender || "-",
+          "Highest Education Qualification":
+            item.highestEducationQualification || "-",
+          "Center Name": item.centerName || "-",
+          "Tvets Enrollment Number": item.tvetsEnrollmentNumber || "-",
+          Courses: Array.isArray(item.courses) ? item.courses.join(", ") : "-",
+          "Pass Year": item.passYear || "-",
+          "Company Name": item.companyName || "-",
+          Title: item.title || "-",
+          Description: item.description || "-",
+          "Opportunity Type": item.opportunityType || "-",
+          "Experience Level": item.experienceLevel || "-",
+          Salary: item.salary || "-",
+          "Industry Name": item.industryName || "-",
+          "Industry Location": item.industryLocation || "-",
+          Status: item.status || "-",
+          "DOJ (for job)": item.doj ? formatDate(item.doj) : "-",
+          "Start date for attachment": item.startDateForAttachment
+            ? formatDate(item.startDateForAttachment)
+            : "-",
+          "End date for attachment": item.endDateForAttachment
+            ? formatDate(item.endDateForAttachment)
+            : "-",
+          Benefits: Array.isArray(item.benefits)
+            ? item.benefits.join(", ")
+            : "-",
+          "Other Benefits": item.otherBenefits || "-",
+          "Work Mode": item.workMode || "-",
+          "Offer Letter Provided": item.offerLetterProvided || "-",
+          "Rejection Reason": item.rejectionReason || "-",
+          "Match Score": item.matchScore || "-",
+          Feedback: item.feedback || "-",
+          "Youth Feedback": item.youthFeedback || "-",
+          "Applied Skills": Array.isArray(item.appliedSkills)
+            ? item.appliedSkills.join(", ")
+            : "-",
+        }));
+
+        const csv = Papa.unparse(csvData);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "user-opportunity-details.csv");
+        showToastMessage(
+          `User-opportunity details exported successfully (${allData.length} records)`,
+          "success"
+        );
+      } else {
+        showToastMessage("No data available to export", "error");
+      }
+    } catch (error) {
+      console.error("Error exporting user-opportunity details:", error);
+      showToastMessage("Failed to export user-opportunity details", "error");
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   return (
     <>
       {/* <Header /> */}
@@ -254,24 +355,45 @@ export default function OpportunitiesPage() {
               <Tab label={t("OPPORTUNITY.NEW_REQUEST")} value="newRequest" />
             </Tabs>
 
-            {/* Export CSV Button */}
-            <button
-              onClick={handleExportCSV}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 16px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                backgroundColor: "#f5f5f5",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}
-            >
-              <DownloadIcon />
-              {"Export CSV"}
-            </button>
+            {/* Export Buttons */}
+            <Box sx={{ display: "flex", gap: 1, marginRight: "10px" }}>
+              <button
+                onClick={handleExportCSV}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 16px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  backgroundColor: "#f5f5f5",
+                  cursor: "pointer",
+                }}
+              >
+                <DownloadIcon />
+                {"Export CSV"}
+              </button>
+              <button
+                onClick={handleExportUserOpportunityDetails}
+                disabled={isExporting}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 16px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  backgroundColor: isExporting ? "#e0e0e0" : "#f5f5f5",
+                  cursor: isExporting ? "not-allowed" : "pointer",
+                  opacity: isExporting ? 0.6 : 1,
+                }}
+              >
+                <DownloadIcon />
+                {isExporting
+                  ? "Exporting..."
+                  : "Export User-Opportunity Details"}
+              </button>
+            </Box>
           </Box>
 
           <Box>
