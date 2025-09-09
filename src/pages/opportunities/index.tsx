@@ -216,7 +216,7 @@ export default function OpportunitiesPage() {
       setIsExporting(true);
 
       // First, get the total count by fetching the first batch
-      const firstResponse = await getOpportunityApplicationsReport(20, 0);
+      const firstResponse = await getOpportunityApplicationsReport(50, 0);
 
       if (firstResponse.responseCode !== 200 || !firstResponse.result?.data) {
         showToastMessage("No data available to export", "error");
