@@ -32,6 +32,7 @@ import type {
 } from "@/types/opportunity";
 import {
   getOpportunities,
+  getOpportunitiesForExport,
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
@@ -180,35 +181,107 @@ export default function OpportunitiesPage() {
     return date.toISOString().split("T")[0]; // Extract only the date part
   };
 
-  function handleExportCSV() {
-    if (opportunities.items.length === 0) {
-      showToastMessage(t("OPPORTUNITY.NO_DATA_TO_EXPORT"), "error");
-      return;
+  async function handleExportCSV() {
+    try {
+      setIsExporting(true);
+
+      // First, get the total count by fetching the first batch
+      let created_by = undefined;
+      let finalStatus = status as string;
+
+      if (selectedTab === "createdByMe") {
+        created_by = localStorage.getItem("userId") || undefined;
+        finalStatus = status as string;
+      } else if (selectedTab === "newRequest") {
+        finalStatus = "pending";
+      }
+
+      const firstResponse = await getOpportunitiesForExport(
+        search as string,
+        1,
+        50,
+        {
+          category: category as string,
+          skills: skills as string,
+          status: finalStatus,
+          location: location as string,
+          created_by,
+        }
+      );
+
+      if (!firstResponse || firstResponse.items.length === 0) {
+        showToastMessage(t("OPPORTUNITY.NO_DATA_TO_EXPORT"), "error");
+        return;
+      }
+
+      const totalRecords = firstResponse.total || 0;
+      console.log(totalRecords, "totalRecords");
+
+      const batchSize = 50; // Adjust batch size as needed
+      const totalBatches = Math.ceil(totalRecords / batchSize);
+
+      // Start with the first batch data
+      let allData = [...firstResponse.items];
+
+      // Fetch remaining batches
+      for (let batch = 2; batch <= totalBatches; batch++) {
+        const batchResponse = await getOpportunitiesForExport(
+          search as string,
+          batch,
+          50,
+          {
+            category: category as string,
+            skills: skills as string,
+            status: finalStatus,
+            location: location as string,
+            created_by,
+          }
+        );
+
+        if (batchResponse && batchResponse.items) {
+          allData = [...allData, ...batchResponse.items];
+        }
+      }
+
+      if (allData.length > 0) {
+        const csvData = allData.map((item) => ({
+          Title: item?.title ? item?.title : "-",
+          Description: item?.description ? item?.description : "-",
+          WorkType: item?.work_nature ? item?.work_nature : "-",
+          OpportunityType: item?.opportunity_type
+            ? item?.opportunity_type
+            : "-",
+          Category: item?.category?.name ? item?.category?.name : "-",
+          Organisation: item?.company?.name ? item?.company?.name : "-",
+          Status: item?.status,
+          Location:
+            item?.location?.city +
+            ", " +
+            item?.location?.state +
+            ", " +
+            item?.location?.country,
+          Vacancies: item?.no_of_candidates ? item?.no_of_candidates : "-",
+          Mapped_Youth: item?.stats?.mapped ? item?.stats?.mapped : "-",
+          Hired_Youth: item?.stats?.hired ? item?.stats?.hired : "-",
+          CreatedAt: item?.created_at ? formatDate(item?.created_at) : "-",
+        }));
+
+        const csv = Papa.unparse(csvData);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        saveAs(blob, "opportunities.csv");
+        showToastMessage(
+          `Opportunities exported successfully (${allData.length} records)`,
+          "success"
+        );
+      } else {
+        showToastMessage(t("OPPORTUNITY.NO_DATA_TO_EXPORT"), "error");
+      }
+    } catch (error) {
+      console.error("Error exporting opportunities:", error);
+      showToastMessage("Failed to export opportunities", "error");
+    } finally {
+      setIsExporting(false);
     }
-
-    const csvData = opportunities.items.map((item) => ({
-      Title: item.title ? item.title : "-",
-      Description: item.description ? item.description : "-",
-      WorkType: item.work_nature ? item.work_nature : "-",
-      OpportunityType: item.opportunity_type ? item.opportunity_type : "-",
-      Category: item.category.name ? item.category.name : "-",
-      Organisation: item.company.name ? item.company.name : "-",
-      Status: item.status,
-      Location:
-        item.location.city +
-        ", " +
-        item.location.state +
-        ", " +
-        item.location.country,
-      Vacancies: item.no_of_candidates ? item.no_of_candidates : "-",
-      Mapped_Youth: item.stats.mapped ? item.stats.mapped : "-",
-      Hired_Youth: item.stats.hired ? item.stats.hired : "-",
-      CreatedAt: item.created_at ? formatDate(item.created_at) : "-",
-    }));
-
-    const csv = Papa.unparse(csvData);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "opportunities.csv");
   }
 
   async function handleExportUserOpportunityDetails() {
@@ -359,6 +432,7 @@ export default function OpportunitiesPage() {
             <Box sx={{ display: "flex", gap: 1, marginRight: "10px" }}>
               <button
                 onClick={handleExportCSV}
+                disabled={isExporting}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -366,12 +440,13 @@ export default function OpportunitiesPage() {
                   padding: "8px 16px",
                   border: "1px solid #ccc",
                   borderRadius: "4px",
-                  backgroundColor: "#f5f5f5",
-                  cursor: "pointer",
+                  backgroundColor: isExporting ? "#e0e0e0" : "#f5f5f5",
+                  cursor: isExporting ? "not-allowed" : "pointer",
+                  opacity: isExporting ? 0.6 : 1,
                 }}
               >
                 <DownloadIcon />
-                {"Export CSV"}
+                {isExporting ? "Exporting..." : "Export CSV"}
               </button>
               <button
                 onClick={handleExportUserOpportunityDetails}
