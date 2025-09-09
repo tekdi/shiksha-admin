@@ -93,6 +93,35 @@ export async function getOpportunities(
   };
 }
 
+export async function getOpportunitiesForExport(
+  search = "",
+  page = 1,
+  limit = 50,
+  filters: OpportunityFilters = {}
+) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    orderBy: "created_at",
+    order: "DESC",
+    limit: limit.toString(),
+    ...(search && { search }),
+    ...Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v !== undefined)
+    ),
+  });
+
+  const response = await fetchApi<PaginatedResponse<any>>(
+    `/opportunity-service/opportunities?${params}`
+  );
+
+  return {
+    items: response.result.data,
+    total: response.result?.total,
+    totalPages: Math.ceil(response.result?.total / limit),
+    currentPage: page,
+  };
+}
+
 export async function getOpportunity(id: string | any) {
   return fetchApi<any>(`/opportunity-service/opportunities/${id}`);
 }
