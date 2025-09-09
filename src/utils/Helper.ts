@@ -173,7 +173,13 @@ export const firstLetterInUpperCase = (label: string): string => {
 
   return label
     ?.split(" ")
-    ?.map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+    ?.map((word) => {
+      // Check if the word contains 'vtc' substring and convert it to uppercase
+      if (word.toLowerCase().includes("vtc")) {
+        return word.toLowerCase().replace("vtc", "VTC");
+      }
+      return word?.charAt(0).toUpperCase() + word?.slice(1);
+    })
     ?.join(" ");
 };
 export const capitalizeFirstLetterOfEachWordInArray = (
