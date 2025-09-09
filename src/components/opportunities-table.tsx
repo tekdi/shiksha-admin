@@ -425,12 +425,6 @@ export function OpportunitiesList({
                   >
                     KES{" "}
                     {Math.floor(
-                      opportunity.min_salary
-                        ? opportunity.min_salary
-                        : opportunity.opportunity_min_salary
-                    )}{" "}
-                    -{" "}
-                    {Math.floor(
                       opportunity.max_salary
                         ? opportunity.max_salary
                         : opportunity.opportunity_max_salary
