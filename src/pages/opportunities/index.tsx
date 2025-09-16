@@ -388,6 +388,7 @@ export default function OpportunitiesPage() {
               ? item.appliedSkills.join(", ")
               : "-",
             "Created By": createdByName,
+            "Created At": item?.createdAt ? formatDate(item?.createdAt) : "-",
           };
         });
 
