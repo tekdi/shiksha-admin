@@ -127,7 +127,9 @@ const CommonUserModal: React.FC<UserModalProps> = ({
     React.useState<boolean>(false);
   const roleType = userType;
   const { t } = useTranslation();
-  const [formValue, setFormValue] = useState<any>();
+  const [formValue, setFormValue] = useState<any>(
+    isEditModal ? formData : undefined
+  );
   const adminInformation = useSubmittedButtonStore(
     (state: any) => state?.adminInformation
   );
@@ -816,6 +818,13 @@ const CommonUserModal: React.FC<UserModalProps> = ({
       if (admin) setAdminInfo(JSON.parse(admin));
     }
   }, []);
+
+  // Update formValue when formData changes in edit mode
+  useEffect(() => {
+    if (isEditModal && formData) {
+      setFormValue(formData);
+    }
+  }, [isEditModal, formData]);
   return (
     <>
       <SimpleModal
@@ -928,7 +937,7 @@ const CommonUserModal: React.FC<UserModalProps> = ({
                 // widgets={{}}
                 showErrorList={true}
                 customFields={customFields}
-                formData={isEditModal ? formData : customFormData}
+                formData={isEditModal ? formValue || formData : customFormData}
               >
                 {/* <CustomSubmitButton onClose={primaryActionHandler} /> */}
               </DynamicForm>
