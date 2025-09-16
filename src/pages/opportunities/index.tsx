@@ -38,6 +38,7 @@ import {
   deleteOpportunity,
   getOpportunityApplicationsReport,
 } from "@/lib/api";
+import { getUserDetailsInfo } from "@/services/UserList";
 import { Switch, FormControlLabel } from "@mui/material";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -181,6 +182,21 @@ export default function OpportunitiesPage() {
     return date.toISOString().split("T")[0]; // Extract only the date part
   };
 
+  const getCreatedByName = async (userId: string): Promise<string> => {
+    try {
+      const userDetails = await getUserDetailsInfo(userId);
+      if (userDetails?.userData) {
+        const { firstName, lastName } = userDetails.userData;
+        const fullName = [firstName, lastName].filter(Boolean).join(" ");
+        return fullName || "-";
+      }
+      return "-";
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      return "-";
+    }
+  };
+
   async function handleExportCSV() {
     try {
       setIsExporting(true);
@@ -317,53 +333,66 @@ export default function OpportunitiesPage() {
       }
 
       if (allData.length > 0) {
-        const csvData = allData.map((item: any) => ({
-          "First Name": item.firstName || "-",
-          "Middle Name": item.middleName || "-",
-          "Last Name": item.lastName || "-",
-          Country: item.country || "-",
-          County: item.county || "-",
-          "Sub-County": item.subCounty || "-",
-          "Email ID": item.emailId || "-",
-          "Phone Number": item.phoneNumber || "-",
-          AGE: item.age || "-",
-          Gender: item.gender || "-",
-          "Highest Education Qualification":
-            item.highestEducationQualification || "-",
-          "Center Name": item.centerName || "-",
-          "Tvets Enrollment Number": item.tvetsEnrollmentNumber || "-",
-          Courses: Array.isArray(item.courses) ? item.courses.join(", ") : "-",
-          "Pass Year": item.passYear || "-",
-          "Company Name": item.companyName || "-",
-          Title: item.title || "-",
-          Description: item.description || "-",
-          "Opportunity Type": item.opportunityType || "-",
-          "Experience Level": item.experienceLevel || "-",
-          Salary: item.salary || "-",
-          "Industry Name": item.industryName || "-",
-          "Industry Location": item.industryLocation || "-",
-          Status: item.status || "-",
-          "DOJ (for job)": item.doj ? formatDate(item.doj) : "-",
-          "Start date for attachment": item.startDateForAttachment
-            ? formatDate(item.startDateForAttachment)
-            : "-",
-          "End date for attachment": item.endDateForAttachment
-            ? formatDate(item.endDateForAttachment)
-            : "-",
-          Benefits: Array.isArray(item.benefits)
-            ? item.benefits.join(", ")
-            : "-",
-          "Other Benefits": item.otherBenefits || "-",
-          "Work Mode": item.workMode || "-",
-          "Offer Letter Provided": item.offerLetterProvided || "-",
-          "Rejection Reason": item.rejectionReason || "-",
-          "Match Score": item.matchScore || "-",
-          Feedback: item.feedback || "-",
-          "Youth Feedback": item.youthFeedback || "-",
-          "Applied Skills": Array.isArray(item.appliedSkills)
-            ? item.appliedSkills.join(", ")
-            : "-",
-        }));
+        // Fetch created by names for all items
+        const csvDataPromises = allData.map(async (item: any) => {
+          const createdByName = item?.createdBy
+            ? await getCreatedByName(item.createdBy)
+            : "-";
+
+          return {
+            "First Name": item.firstName || "-",
+            "Middle Name": item.middleName || "-",
+            "Last Name": item.lastName || "-",
+            Country: item.country || "-",
+            County: item.county || "-",
+            "Sub-County": item.subCounty || "-",
+            "Email ID": item.emailId || "-",
+            "Phone Number": item.phoneNumber || "-",
+            AGE: item.age || "-",
+            Gender: item.gender || "-",
+            "Highest Education Qualification":
+              item.highestEducationQualification || "-",
+            "Center Name": item.centerName || "-",
+            "Tvets Enrollment Number": item.tvetsEnrollmentNumber || "-",
+            Courses: Array.isArray(item.courses)
+              ? item.courses.join(", ")
+              : "-",
+            "Pass Year": item.passYear || "-",
+            "Company Name": item.companyName || "-",
+            Title: item.title || "-",
+            Description: item.description || "-",
+            "Opportunity Type": item.opportunityType || "-",
+            "Experience Level": item.experienceLevel || "-",
+            Salary: item.salary || "-",
+            "Industry Name": item.industryName || "-",
+            "Industry Location": item.industryLocation || "-",
+            Status: item.status || "-",
+            "DOJ (for job)": item.doj ? formatDate(item.doj) : "-",
+            "Start date for attachment": item.startDateForAttachment
+              ? formatDate(item.startDateForAttachment)
+              : "-",
+            "End date for attachment": item.endDateForAttachment
+              ? formatDate(item.endDateForAttachment)
+              : "-",
+            Benefits: Array.isArray(item.benefits)
+              ? item.benefits.join(", ")
+              : "-",
+            "Other Benefits": item.otherBenefits || "-",
+            "Work Mode": item.workMode || "-",
+            "Offer Letter Provided": item.offerLetterProvided || "-",
+            "Rejection Reason": item.rejectionReason || "-",
+            "Match Score": item.matchScore || "-",
+            Feedback: item.feedback || "-",
+            "Youth Feedback": item.youthFeedback || "-",
+            "Applied Skills": Array.isArray(item.appliedSkills)
+              ? item.appliedSkills.join(", ")
+              : "-",
+            "Created By": createdByName,
+          };
+        });
+
+        // Wait for all user details to be fetched
+        const csvData = await Promise.all(csvDataPromises);
 
         const csv = Papa.unparse(csvData);
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
