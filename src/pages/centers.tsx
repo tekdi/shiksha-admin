@@ -8,6 +8,7 @@ import Pagination from "@mui/material/Pagination";
 import { SelectChangeEvent } from "@mui/material/Select";
 import PageSizeSelector from "@/components/PageSelector"; 
 import AddMembersModal from "../components/AddMembersModal";
+import AddTeacherModal from "../components/AddTeacherModal";
 import {
   createCohort,
   fetchCohortMemberList,
@@ -27,7 +28,7 @@ import {
   Role,
   RoleId
 } from "@/utils/app.constant";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import EditIcon from "@mui/icons-material/Edit";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import CustomModal from "@/components/CustomModal";
@@ -112,7 +113,10 @@ const Center: React.FC = () => {
     (state: any) => state.adminInformation
   );
   const [addMembersModalOpen, setAddMembersModalOpen] = useState(false);
+  const [addTeacherModalOpen, setAddTeacherModalOpen] = useState(false);
+  const [currentCohort, setCurrentCohort] = useState<any | null>(null);
   const [currentCohortId, setCurrentCohortId] = useState<string | null>(null);
+
   const [roleId, setRoleId] = useState<string | null>(null);
 
   // handle states
@@ -122,6 +126,7 @@ const Center: React.FC = () => {
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [selectedFilter, setSelectedFilter] = useState("Active");
   const [cohortData, setCohortData] = useState<cohortFilterDetails[]>([]);
+  const [originalCohorts, setOriginalCohorts] = useState<[]>([]);
   const [pageSize, setPageSize] = React.useState<string | number>(10);
   const [confirmationModalOpen, setConfirmationModalOpen] =
     React.useState<boolean>(false);
@@ -146,7 +151,7 @@ const Center: React.FC = () => {
   const [pageLimit, setPageLimit] = useState(Numbers.TEN);
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [pagination, setPagination] = useState(true);
-  const [sortBy, setSortBy] = useState(["createdAt", "asc"]);
+  const [sortBy, setSortBy] = useState(["createdAt", "desc"]);
   const [formdata, setFormData] = useState<any>();
   const [totalCount, setTotalCound] = useState<number>(0);
   const [editFormData, setEditFormData] = useState<any>([]);
@@ -212,8 +217,9 @@ const Center: React.FC = () => {
       const resp = await getCohortList(data);
       if (resp) {
         const result = await resp?.results?.cohortDetails;
+        setOriginalCohorts(result);
         const resultData: centerData[] = [];
-
+        
         const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
           // Retrieve and parse schoolNames from localStorage
@@ -256,8 +262,6 @@ const Center: React.FC = () => {
         if (resultData) {
           setCohortData(resultData);
         }
-
-        console.log("resultData", resultData);
         const totalCount = resp?.count;
         setTotalCound(totalCount);
 
@@ -353,31 +357,14 @@ const Center: React.FC = () => {
   const getAddCenterFormData = async () => {
     try {
       const response = await getFormRead("cohorts", "cohort");
-
-      const reqParams = {
-        limit: Numbers.ZERO,
-        offset: 0,
-        filters: {
-          type: CohortTypes.SCHOOL,
-          status: [Status.ACTIVE],
-        },
-        sort: ["name", "asc"],
-      };
-
-      const Schoolresponse = await getCohortList(reqParams);
-
-      const options: Option[] = response?.fields[0]?.options || [];
-      const cohortDetails: CohortDetail[] =
-        Schoolresponse?.results?.cohortDetails || [];
-
-      const filteredOptions: Option[] = options.filter((option: Option) =>
-        cohortDetails.some(
-          (cohort: CohortDetail) => cohort.name === option.label
-        )
-      );
-
+      const schools = localStorage.getItem("schoolClusterNames");
+      
       if (response) {
-        response.fields[0].options = filteredOptions;
+        // Transform schools object into label-value array format
+        response.fields.find((field: any) => field.fieldId === 'd4567b23-1394-48a9-afc5-7589873365ae').options = schools ? Object.entries(JSON.parse(schools)).map(([id, school]) => ({
+          label: (school as any).name + " (" + (school as any).clusterName + ") ",
+          value: id
+        })) : [];
 
         const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
 
@@ -631,20 +618,22 @@ const onAfterUsersAdd = async (teacherIds: string[]) => {
 };
 
 const handleAddTeachers = async (rowData:any) => {
-  setCurrentCohortId(rowData?.cohortId);
+  setCurrentCohort(originalCohorts.find((item: any) => item.cohortId === rowData.cohortId));
   setRoleId(RoleId.TEACHER);
-  setAddMembersModalOpen(true);
+  setAddTeacherModalOpen(true);
 }
 
 const handleAddStudents = async (rowData:any) => {
   setCurrentCohortId(rowData?.cohortId);
+  setCurrentCohort(originalCohorts.find((item: any) => item.cohortId === rowData.cohortId));
+
   setRoleId(RoleId.STUDENT);
   setAddMembersModalOpen(true);
 }
 
   // add  extra buttons
   const extraActions: any = [
-    { name: t("COMMON.ADD_TEACHERS"), onClick: handleAddTeachers, icon: PersonAddIcon },
+    { name: t("COMMON.EDIT"), onClick: handleAddTeachers, icon: EditIcon },
     { name: t("COMMON.ADD_STUDENTS"), onClick: handleAddStudents, icon: GroupAddIcon },
     //{ name: t("COMMON.ADDFACILITATOR"), onClick: handleAddFacilitator, icon: EditIcon },
   ];
@@ -813,8 +802,8 @@ const handleAddStudents = async (rowData:any) => {
   };
 
   const handleAddUserClick = () => {
-    setOpenAddNewCohort(true);
-    // setIsEditForm(true);
+    setCurrentCohort({})
+    setAddTeacherModalOpen(true);
   };
   
 
@@ -823,147 +812,52 @@ const handleAddStudents = async (rowData:any) => {
     event: React.FormEvent<any>
   ) => {
     const formData = data?.formData;
+    const schoolCohortId = formData.nondependantschools
+    const className = formData.class;
 
-    console.log("formDataOf", formData);
-    console.log("centerFormData", centerFormData);
+    // const classField = classFieldOptions.options.find(
+    //   (item: any) => item.value === formData.classes
+    // );
 
-    const schoolFieldOptions = centerFormData.fields.find(
-      (item: any) => item.name === "nondependantschools"
-    );
-    const schoolField = schoolFieldOptions.options.find(
-      (item: any) => item.value === formData.nondependantschools
-    );
+    // const slotFieldOptions = centerFormData?.fields.find(
+    //   (item: any) => item.name === "slots"
+    // );
 
-    const classFieldOptions = centerFormData.fields.find(
-      (item: any) => item.name === "classes"
-    );
-    const classField = classFieldOptions.options.find(
-      (item: any) => item.value === formData.classes
-    );
+    // const toTime = centerFormData?.fields.find(
+    //   (item: any) => item.name === formData.to_time
+    // );
+    // const slotField = slotFieldOptions?.options.find(
+    //   (item: any) => item.value === formData?.slots
+    // );
+    // console.log("fromTime", formData.from_time);
+    // console.log("toTime", formData.to_time);
 
-    const slotFieldOptions = centerFormData?.fields.find(
-      (item: any) => item.name === "slots"
-    );
+    // const originalTime = formData.from_time;
+    // const timeBefore = adjustTime(originalTime, -5); // 5 minutes before
+    // const timeAfter = adjustTime(originalTime, 5); // 5 minutes after
 
-    const toTime = centerFormData?.fields.find(
-      (item: any) => item.name === formData.to_time
-    );
-    const slotField = slotFieldOptions?.options.find(
-      (item: any) => item.value === formData?.slots
-    );
-    console.log("fromTime", formData.from_time);
-    console.log("toTime", formData.to_time);
+    // const fromTimeOption = centerFormData.fields.find(
+    //   (item: any) => item.name === "from_time"
+    // );
 
-    const originalTime = formData.from_time;
-    const timeBefore = adjustTime(originalTime, -5); // 5 minutes before
-    const timeAfter = adjustTime(originalTime, 5); // 5 minutes after
-
-    const fromTimeOption = centerFormData.fields.find(
-      (item: any) => item.name === "from_time"
-    );
-
-    const schoolOption = centerFormData.fields.find(
-      (item: any) => item.name === "nondependantschools"
-    );
-    const classOption = centerFormData.fields.find(
-      (item: any) => item.name === "classes"
-    );
-    const toTimeOption = centerFormData.fields.find(
-      (item: any) => item.name === "to_time"
-    );
-
-    console.log("fromTimeOption", fromTimeOption);
-
-    // Extract the field IDs dynamically
-    const fromTimeFieldId = fromTimeOption?.fieldId || "";
-    const toTimeFieldId = toTimeOption?.fieldId || "";
-    const schoolFieldId = schoolOption?.fieldId || "";
-    const classFieldId = classOption?.fieldId || "";
-
-    console.log(
-      "cohortName",
-      schoolField.label,
-      classField.label
-      // slotField.label
-    );
-
-    const reqParams = {
-      limit: 1,
-      offset: 0,
-      filters: {
-        name: schoolField.label,
-        type: "SCHOOL",
-      },
-    };
-
-    const response = await getCohortList(reqParams);
-    const parentCohort = response?.results?.cohortDetails[0];
-    const getFromTime = convertTo12HourFormat(formData?.from_time);
-    const getToTime = convertTo12HourFormat(formData?.to_time);
+    // const getFromTime = convertTo12HourFormat(formData?.from_time);
+    // const getToTime = convertTo12HourFormat(formData?.to_time);
     // const { timePlus5, timeMinus5 } = getModifiedTimes(slotField?.label);
 
     const newClassCohort = {
-      name:
-        schoolField.label +
-        ", " +
-        classField.label +
-        ", " +
-        getFromTime +
-        " - " +
-        getToTime,
+      name: className,
       type: "COHORT",
-      parentId: parentCohort.cohortId,
-      params: {
-        self: {
-          allowed: 1,
-          allow_late_marking: 1,
-          restrict_attendance_timings: 1,
-          attendance_starts_at: timeBefore,
-          attendance_ends_at: timeAfter,
-          back_dated_attendance: 0,
-          back_dated_attendance_allowed_days: 0,
-          can_be_updated: 0,
-          capture_geoLocation: 1,
-        },
-        student: {
-          allowed: 1,
-          allow_late_marking: 1,
-          restrict_attendance_timings: 0,
-          back_dated_attendance: 1,
-          back_dated_attendance_allowed_days: 7,
-          can_be_updated: 1,
-          capture_geoLocation: 0,
-        },
-      },
-      customFields: [
-        {
-          fieldId: fromTimeFieldId,
-          value: formData.from_time,
-        },
-        {
-          fieldId: toTimeFieldId,
-          value: formData.to_time,
-        },
-        {
-          fieldId: schoolFieldId,
-          value: [schoolField.value],
-        },
-        {
-          fieldId: classFieldId,
-          value: [classField.value],
-        },
-      ],
+      parentId: schoolCohortId,
     };
 
-    const cohortData = await createCohort(newClassCohort);
-
-    if (cohortData) {
+    const response = await createCohort(newClassCohort);
+    if (response?.cohortId) {
       showToastMessage(t("CENTERS.CENTER_CREATED_SUCCESSFULLY"), "success");
       setOpenAddNewCohort(false);
       // onClose();
-    } else {
-      showToastMessage(t("CENTER.NOT_ABLE_CREATE_CENTER"), "error");
-      setOpenAddNewCohort(false);
+    } else if (response?.response?.data?.responseCode) {
+      showToastMessage(response?.response?.data?.params?.errmsg, "error");
+      setOpenAddNewCohort(true);
     }
     fetchCohortList();
   };
@@ -1037,13 +931,20 @@ const handleAddStudents = async (rowData:any) => {
 
   return (
     <>
+    <AddTeacherModal 
+      open={addTeacherModalOpen}
+      onClose={() => setAddTeacherModalOpen(false)}
+      currentCohort={currentCohort}
+      onAdd={onAfterUsersAdd}
+      roleId={RoleId.TEACHER}
+    />
     <AddMembersModal
       open={addMembersModalOpen}
       onClose={handleCloseAddMembersModal}
       onAdd={onAfterUsersAdd}
-      cohortId={currentCohortId}
+      cohortId={'currentCohort}'}
       roleId={roleId}
-      title={roleId === RoleId.TEACHER ? t("COMMON.ADD_TEACHERS") : t("COMMON.ADD_STUDENTS")}
+      title={t("COMMON.ADD_STUDENTS")}
       showCohortFilters={roleId === RoleId.TEACHER ? false : true }
     />
       <ConfirmationModal
@@ -1102,7 +1003,6 @@ const handleAddStudents = async (rowData:any) => {
             pageSizes={pageSizeArray}
             extraActions={extraActions}
             showIcons={true}
-            onEdit={handleEdit}
             onDelete={handleDelete}
             onActivate={handleActivateCohort}
           />
@@ -1120,153 +1020,6 @@ const handleAddStudents = async (rowData:any) => {
             </Box>
           )
         )}
-
-        <AddNewCenters
-          open={openAddNewCohort}
-          onClose={handleCloseAddLearnerModal}
-          formData={formdata}
-          isEditModal={true}
-          userId={userId}
-        />
-
-        <SimpleModal
-          open={isEditForm}
-          onClose={onCloseEditForm}
-          showFooter={false}
-          modalTitle={t("COMMON.UPDATE_CLASSES")}
-        >
-          {schema && uiSchema && (
-            <DynamicForm
-              schema={schema}
-              uiSchema={uiSchema}
-              onSubmit={handleUpdateAction}
-              onChange={handleChangeForm}
-              onError={handleError}
-              widgets={{}}
-              showErrorList={true}
-              customFields={customFields}
-              formData={editFormData ? editFormData : ""}
-              id="update-center-form"
-            >
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "right", // Centers the button horizontally
-                  marginTop: "20px", // Adjust margin as needed
-                }}
-                gap={2}
-              >
-                <Button
-                  variant="outlined"
-                  type="submit"
-                  form="update-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={onCloseEditForm}
-                >
-                  {t("COMMON.CANCEL")}
-                </Button>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  form="update-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={() => {
-                    setSubmittedButtonStatus(true);
-                    console.log("update button was clicked");
-                  }}
-                >
-                  {t("COMMON.UPDATE")}
-                </Button>
-              </Box>
-            </DynamicForm>
-          )}
-        </SimpleModal>
-
-        <SimpleModal
-          open={openAddNewCohort}
-          onClose={handleCloseAddLearnerModal}
-          showFooter={false}
-          modalTitle={t("CENTERS.NEW_CLASS")}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-              marginTop: "10px",
-            }}
-          ></Box>
-          {schema && uiSchema && (
-            <DynamicForm
-              schema={schema}
-              uiSchema={uiSchema}
-              onSubmit={handleSubmit}
-              // onChange={handleChangeFormCreate}
-              // onError={handleErrorCreate}
-              widgets={{}}
-              showErrorList={true}
-              customFields={customFields}
-              id="new-center-form"
-              onChange={handleChangeForm}
-              onError={handleError}
-            >
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "right", // Centers the button horizontally
-                  marginTop: "20px", // Adjust margin as needed
-                }}
-                gap={2}
-              >
-                <Button
-                  variant="outlined"
-                  type="submit"
-                  form="new-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={handleCloseAddLearnerModal}
-                >
-                  {t("COMMON.CANCEL")}
-                </Button>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  form="new-center-form" // Add this line
-                  sx={{
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    width: "auto",
-                    height: "40px",
-                    marginLeft: "10px",
-                  }}
-                  onClick={() => {
-                    setSubmittedButtonStatus(true);
-                    console.log("Submit button was clicked");
-                  }}
-                >
-                  {t("COMMON.CREATE")}
-                </Button>
-              </Box>
-            </DynamicForm>
-          )}
-        </SimpleModal>
     </>
   );
 };

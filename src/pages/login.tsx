@@ -213,7 +213,7 @@ const LoginPage = () => {
             // Update Zustand store
             setUserId(userResponse?.userId || "");
 
-            localStorage.setItem("name", userResponse?.name);
+            localStorage.setItem("name", userResponse?.name ||  userResponse?.firstName + " " + userResponse?.lastName || "");
             const tenantId = userResponse?.tenantData?.[0]?.tenantId;
             localStorage.setItem("tenantId", tenantId);
           }

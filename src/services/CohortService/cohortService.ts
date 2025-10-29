@@ -152,9 +152,10 @@ export const createCohort = async (userData: any): Promise<any> => {
   const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohort/create`;
   try {
     const response = await post(apiUrl, userData);
-    return response?.data ? response?.data :response;
+    return response?.data?.result;
   } catch (error) {
-    console.error("error in getting cohort list", error);
+    console.error("Error in creating Cohort", error);
+    return error;
     // throw error;
   }
 };
@@ -212,6 +213,37 @@ export const bulkCreateCohortMembers = async (payload: any): Promise<any>  => {
   } catch (error) {
     console.error("Error in bulk creating cohort members", error);
     throw error;
+  }
+};
+
+export const addCohortMember = async ({
+  cohortId,
+  userId
+}:any): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohortmember/create`;
+  try {
+    const response = await put(apiUrl, {
+      cohortId,
+      userId,
+    });
+    return response?.data;
+  } catch (error) {
+    console.error("error in attendance report api ", error);
+    // throw error;
+  }
+};
+
+export const updateCohortMember = async ({
+  membershipId,
+  payload,
+}: UpdateCohortMemberStatusParams): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/cohortmember/update/${membershipId}`;
+  try {
+    const response = await put(apiUrl, payload);
+    return response?.data;
+  } catch (error) {
+    console.error("error in attendance report api ", error);
+    // throw error;
   }
 };
 
