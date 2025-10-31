@@ -277,12 +277,6 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
     ) {
       return;
     }
-    console.log(selectedSchool, "selectedSchool");
-    console.log(className, "className");
-    console.log(selectedUser, "selectedUser");
-    console.log(fromTime, "fromTime");
-    console.log(toTime, "toTime");
-    console.log(currentCohort);
 
     let cohortId = currentCohort?.cohortId || null;
     const schoolChanged = originalSchoolId !== selectedSchool.value;
