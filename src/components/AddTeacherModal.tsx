@@ -563,7 +563,9 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={() => setSnackbarOpen(false)} severity="success">
-          Teacher added successfully!
+          {currentCohortId
+            ? t("COMMON.CLASS_UPDATED_SUCCESS")
+            : t("COMMON.CLASS_ADDED_SUCCESS")}
         </Alert>
       </Snackbar>
     </>
