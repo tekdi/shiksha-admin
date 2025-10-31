@@ -6,7 +6,7 @@ import HeaderComponent from "@/components/HeaderComponent";
 import { useTranslation } from "next-i18next";
 import Pagination from "@mui/material/Pagination";
 import { SelectChangeEvent } from "@mui/material/Select";
-import PageSizeSelector from "@/components/PageSelector"; 
+import PageSizeSelector from "@/components/PageSelector";
 import AddMembersModal from "../components/AddMembersModal";
 import AddTeacherModal from "../components/AddTeacherModal";
 import {
@@ -15,7 +15,7 @@ import {
   getCohortList,
   updateCohortUpdate,
   getSchoolNames,
-  getClusterNames
+  getClusterNames,
 } from "@/services/CohortService/cohortService";
 import {
   CohortTypes,
@@ -26,7 +26,7 @@ import {
   Status,
   Storage,
   Role,
-  RoleId
+  RoleId,
 } from "@/utils/app.constant";
 import EditIcon from "@mui/icons-material/Edit";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
@@ -183,7 +183,7 @@ const Center: React.FC = () => {
       if (admin) {
         const stateField: any = JSON.parse(admin).customFields.find(
           (field: any) => field.label === "STATES"
-        )
+        );
       }
     }
   };
@@ -219,34 +219,38 @@ const Center: React.FC = () => {
         const result = await resp?.results?.cohortDetails;
         setOriginalCohorts(result);
         const resultData: centerData[] = [];
-        
+
         const cohortIds = result?.map((item: any) => item.cohortId); // Extract cohort IDs
 
-          // Retrieve and parse schoolNames from localStorage
+        // Retrieve and parse schoolNames from localStorage
         const schools = await getSchoolNames();
-    
+
         result?.forEach((item: any, index: number) => {
           const cohortType =
             item?.customFields?.map((field: any) =>
               firstLetterInUpperCase(field?.value)
             ) ?? "-";
           const school = schools[item.parentId];
-          const className = `${(school as { name?: string })?.name || "-"}, ${item.name}`; // School, Class format 
-      
+          const className = `${(school as { name?: string })?.name || "-"}, ${item.name}`; // School, Class format
+
           const requiredData = {
             className,
-            cluster: (school && typeof school === "object" && "clusterName" in school) ? (school as any).clusterName : "-",
-            teacher: item?.teacherName
-              ? (
-                  <>
-                    {item.teacherName}
-                    <br />
-                    <span style={{ color: "#888", fontSize: "12px" }}>
-                      {item.teacherSlot || "-"}
-                    </span>
-                  </>
-                )
-              : "-",            slot: item?.teacherSlot || "-",
+            cluster:
+              school && typeof school === "object" && "clusterName" in school
+                ? (school as any).clusterName
+                : "-",
+            teacher: item?.teacherName ? (
+              <>
+                {item.teacherName}
+                <br />
+                <span style={{ color: "#888", fontSize: "12px" }}>
+                  {item.teacherSlot || "-"}
+                </span>
+              </>
+            ) : (
+              "-"
+            ),
+            slot: item?.teacherSlot || "-",
             status: item?.status,
             updatedBy: item?.updatedBy,
             //createdBy: item?.createdBy,
@@ -339,11 +343,11 @@ const Center: React.FC = () => {
         (member: any) =>
           member?.status === Status.ACTIVE && member?.role === Role.TEACHER
       );
-      
+
       return {
         totalActiveMembers,
         totalArchivedMembers,
-        teacher
+        teacher,
       };
     }
 
@@ -358,13 +362,22 @@ const Center: React.FC = () => {
     try {
       const response = await getFormRead("cohorts", "cohort");
       const schools = localStorage.getItem("schoolClusterNames");
-      
+
       if (response) {
         // Transform schools object into label-value array format
-        response.fields.find((field: any) => field.fieldId === 'd4567b23-1394-48a9-afc5-7589873365ae').options = schools ? Object.entries(JSON.parse(schools)).map(([id, school]) => ({
-          label: (school as any).name + " (" + (school as any).clusterName + ") ",
-          value: id
-        })) : [];
+        response.fields.find(
+          (field: any) =>
+            field.fieldId === "d4567b23-1394-48a9-afc5-7589873365ae"
+        ).options = schools
+          ? Object.entries(JSON.parse(schools)).map(([id, school]) => ({
+              label:
+                (school as any).name +
+                " (" +
+                (school as any).clusterName +
+                ") ",
+              value: id,
+            }))
+          : [];
 
         const { schema, uiSchema } = GenerateSchemaAndUiSchema(response, t);
 
@@ -424,17 +437,19 @@ const Center: React.FC = () => {
   );
 
   const handleSchoolChange = async (event: SelectChangeEvent) => {
-    const schoolCohortId = event.target.value
+    const schoolCohortId = event.target.value;
     if (!schoolCohortId) {
       if (filters.status)
         setFilters({ type: "COHORT", status: filters.status });
-      else 
-        setFilters({ type: "COHORT" });
+      else setFilters({ type: "COHORT" });
     } else {
       if (filters.status)
-        setFilters({ type: "COHORT", parentId: schoolCohortId, status: filters.status});
-      else 
-        setFilters({ type: "COHORT", parentId: schoolCohortId });
+        setFilters({
+          type: "COHORT",
+          parentId: schoolCohortId,
+          status: filters.status,
+        });
+      else setFilters({ type: "COHORT", parentId: schoolCohortId });
     }
     setSelectedSchool(event.target.value);
   };
@@ -610,31 +625,40 @@ const Center: React.FC = () => {
     }
   };
 
+  const onAfterUsersAdd = async (teacherIds: string[]) => {
+    console.log("teacher Added successfully");
 
-const onAfterUsersAdd = async (teacherIds: string[]) => {
-  // Call your API to add teachers to the cohort
-  // await addTeachersToCohort(currentCohortId, teacherIds);
-  fetchCohortList();
-};
+    // Call your API to add teachers to the cohort
+    // await addTeachersToCohort(currentCohortId, teacherIds);
+    fetchCohortList();
+  };
 
-const handleAddTeachers = async (rowData:any) => {
-  setCurrentCohort(originalCohorts.find((item: any) => item.cohortId === rowData.cohortId));
-  setRoleId(RoleId.TEACHER);
-  setAddTeacherModalOpen(true);
-}
+  const handleAddTeachers = async (rowData: any) => {
+    setCurrentCohort(
+      originalCohorts.find((item: any) => item.cohortId === rowData.cohortId)
+    );
+    setRoleId(RoleId.TEACHER);
+    setAddTeacherModalOpen(true);
+  };
 
-const handleAddStudents = async (rowData:any) => {
-  setCurrentCohortId(rowData?.cohortId);
-  setCurrentCohort(originalCohorts.find((item: any) => item.cohortId === rowData.cohortId));
+  const handleAddStudents = async (rowData: any) => {
+    setCurrentCohortId(rowData?.cohortId);
+    setCurrentCohort(
+      originalCohorts.find((item: any) => item.cohortId === rowData.cohortId)
+    );
 
-  setRoleId(RoleId.STUDENT);
-  setAddMembersModalOpen(true);
-}
+    setRoleId(RoleId.STUDENT);
+    setAddMembersModalOpen(true);
+  };
 
   // add  extra buttons
   const extraActions: any = [
     { name: t("COMMON.EDIT"), onClick: handleAddTeachers, icon: EditIcon },
-    { name: t("COMMON.ADD_STUDENTS"), onClick: handleAddStudents, icon: GroupAddIcon },
+    {
+      name: t("COMMON.ADD_STUDENTS"),
+      onClick: handleAddStudents,
+      icon: GroupAddIcon,
+    },
     //{ name: t("COMMON.ADDFACILITATOR"), onClick: handleAddFacilitator, icon: EditIcon },
   ];
 
@@ -656,7 +680,6 @@ const handleAddStudents = async (rowData:any) => {
   const handleError = () => {
     console.log("error");
   };
-
 
   const handleUpdateAction = async (
     data: IChangeEvent<any, RJSFSchema, any>,
@@ -802,17 +825,16 @@ const handleAddStudents = async (rowData:any) => {
   };
 
   const handleAddUserClick = () => {
-    setCurrentCohort({})
+    setCurrentCohort({});
     setAddTeacherModalOpen(true);
   };
-  
 
   const handleSubmit = async (
     data: IChangeEvent<any, RJSFSchema, any>,
     event: React.FormEvent<any>
   ) => {
     const formData = data?.formData;
-    const schoolCohortId = formData.nondependantschools
+    const schoolCohortId = formData.nondependantschools;
     const className = formData.class;
 
     // const classField = classFieldOptions.options.find(
@@ -926,27 +948,27 @@ const handleAddStudents = async (rowData:any) => {
     setStatusValue: setStatusValue,
     showSort: cohortData?.length > 0,
     showStateDropdown: showFilters,
-    showSchoolFilter: true
+    showSchoolFilter: true,
   };
 
   return (
     <>
-    <AddTeacherModal 
-      open={addTeacherModalOpen}
-      onClose={() => setAddTeacherModalOpen(false)}
-      currentCohort={currentCohort}
-      onAdd={onAfterUsersAdd}
-      roleId={RoleId.TEACHER}
-    />
-    <AddMembersModal
-      open={addMembersModalOpen}
-      onClose={handleCloseAddMembersModal}
-      onAdd={onAfterUsersAdd}
-      cohortId={'currentCohort}'}
-      roleId={roleId}
-      title={t("COMMON.ADD_STUDENTS")}
-      showCohortFilters={roleId === RoleId.TEACHER ? false : true }
-    />
+      <AddTeacherModal
+        open={addTeacherModalOpen}
+        onClose={() => setAddTeacherModalOpen(false)}
+        currentCohort={currentCohort}
+        onAdd={onAfterUsersAdd}
+        roleId={RoleId.TEACHER}
+      />
+      <AddMembersModal
+        open={addMembersModalOpen}
+        onClose={handleCloseAddMembersModal}
+        onAdd={onAfterUsersAdd}
+        cohortId={"currentCohort}"}
+        roleId={roleId}
+        title={t("COMMON.ADD_STUDENTS")}
+        showCohortFilters={roleId === RoleId.TEACHER ? false : true}
+      />
       <ConfirmationModal
         message={
           selectedRowData?.totalActiveMembers > 0
@@ -979,47 +1001,46 @@ const handleAddStudents = async (rowData:any) => {
 
       <HeaderComponent {...pageProps}> </HeaderComponent>
 
-        {
-        loading ? (
+      {loading ? (
+        <Box
+          width={"100%"}
+          id="check"
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+        >
+          <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+        </Box>
+      ) : cohortData?.length > 0 ? (
+        <KaTableComponent
+          columns={getCenterTableData(t, isMobile)}
+          data={cohortData}
+          limit={pageLimit}
+          offset={pageOffset}
+          paginationEnable={totalCount > Numbers.TEN}
+          PagesSelector={PagesSelector}
+          pagination={pagination}
+          PageSizeSelector={PageSizeSelectorFunction}
+          pageSizes={pageSizeArray}
+          extraActions={extraActions}
+          showIcons={true}
+          onDelete={handleDelete}
+          onActivate={handleActivateCohort}
+        />
+      ) : (
+        !loading && (
           <Box
-            width={"100%"}
-            id="check"
-            display={"flex"}
-            flexDirection={"column"}
-            alignItems={"center"}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="20vh"
           >
-            <Loader showBackdrop={false} loadingText={t("COMMON.LOADING")} />
+            <Typography marginTop="10px" textAlign={"center"}>
+              {t("COMMON.NO_CLASSES_FOUND")}
+            </Typography>
           </Box>
-        ) : cohortData?.length > 0 ? (
-          <KaTableComponent
-            columns={getCenterTableData(t, isMobile)}
-            data={cohortData}
-            limit={pageLimit}
-            offset={pageOffset}
-            paginationEnable={totalCount > Numbers.TEN}
-            PagesSelector={PagesSelector}
-            pagination={pagination}
-            PageSizeSelector={PageSizeSelectorFunction}
-            pageSizes={pageSizeArray}
-            extraActions={extraActions}
-            showIcons={true}
-            onDelete={handleDelete}
-            onActivate={handleActivateCohort}
-          />
-        ) : (
-          !loading && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              height="20vh"
-            >
-              <Typography marginTop="10px" textAlign={"center"}>
-                {t("COMMON.NO_CLASSES_FOUND")}
-              </Typography>
-            </Box>
-          )
-        )}
+        )
+      )}
     </>
   );
 };
