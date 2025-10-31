@@ -151,7 +151,7 @@ const Center: React.FC = () => {
   const [pageLimit, setPageLimit] = useState(Numbers.TEN);
   const [pageSizeArray, setPageSizeArray] = React.useState<number[]>([]);
   const [pagination, setPagination] = useState(true);
-  const [sortBy, setSortBy] = useState(["createdAt", "desc"]);
+  const [sortBy, setSortBy] = useState(["createdAt", "asc"]);
   const [formdata, setFormData] = useState<any>();
   const [totalCount, setTotalCound] = useState<number>(0);
   const [editFormData, setEditFormData] = useState<any>([]);

@@ -78,6 +78,15 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   const cohortClass = currentCohort?.name || "";
   const techerId = currentCohort?.teacherId || null;
   const slot = currentCohort?.teacherSlot || null;
+
+  // Determine modal title based on whether we're creating or updating
+  // Use provided title prop if it's not the default, otherwise compute dynamically
+  const modalTitle =
+    title && title !== "Create / Update Class"
+      ? title
+      : currentCohortId
+        ? "Update Class"
+        : "Create Class";
   useEffect(() => {
     if (open) {
       setLoading(true);
@@ -154,20 +163,6 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
             } as any,
           });
 
-          // Fetch archived teachers
-          const archivedMemberResp = await cohortMemberList({
-            limit: 0,
-            offset: 0,
-            filters: {
-              cohortId: currentCohortId,
-              role: "Teacher",
-              status: ["archived"],
-            } as any,
-          });
-
-          const archivedDetails = archivedMemberResp?.userDetails || [];
-          setArchivedTeachers(archivedDetails);
-
           const userDetails = cohortMemberResp?.userDetails || [];
           if (userDetails.length > 0) {
             // Get the first teacher member
@@ -224,7 +219,10 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
             setToTime(null);
           }
         } catch (cohortMemberError) {
-          console.error("Error fetching cohort members:", cohortMemberError);
+          console.error(
+            "Error fetching active cohort members:",
+            cohortMemberError
+          );
           // Fallback to old method if cohort member fetch fails
           if (techerId && fetchedUsers.length > 0) {
             const foundTeacher = fetchedUsers.find(
@@ -242,6 +240,28 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
           } else {
             setOriginalTimeSlot(null);
           }
+        }
+
+        // Fetch archived teachers separately - don't let failure break active teacher selection
+        try {
+          const archivedMemberResp = await cohortMemberList({
+            limit: 0,
+            offset: 0,
+            filters: {
+              cohortId: currentCohortId,
+              role: "Teacher",
+              status: ["archived"],
+            } as any,
+          });
+          const archivedDetails = archivedMemberResp?.userDetails || [];
+          setArchivedTeachers(archivedDetails);
+        } catch (archivedError) {
+          console.error(
+            "Error fetching archived cohort members:",
+            archivedError
+          );
+          // If archived fetch fails, just set empty array - don't break the flow
+          setArchivedTeachers([]);
         }
       } else {
         // Not editing mode, reset selections
@@ -285,13 +305,9 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
 
     // Format time slot from fromTime and toTime
     const timeSlot = formatTimeSlot(fromTime, toTime);
-    const timeSlotChanged = originalTimeSlot !== timeSlot;
 
-    // Step 1: Update cohort only if school, class name, or time slot changed
-    if (
-      currentCohort?.cohortId &&
-      (schoolChanged || classNameChanged || timeSlotChanged)
-    ) {
+    // Step 1: Update cohort only if school or class name changed
+    if (currentCohort?.cohortId && (schoolChanged || classNameChanged)) {
       try {
         const cohortPayload = {
           name: className,
@@ -421,7 +437,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
           sx: { minHeight: 300 },
         }}
       >
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{modalTitle}</DialogTitle>
         <DialogContent>
           {loading ? (
             <Box
