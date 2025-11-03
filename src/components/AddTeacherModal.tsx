@@ -12,15 +12,20 @@ import {
   Alert,
   Autocomplete,
 } from "@mui/material";
-import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs';
-import { userList } from "@/services/UserList";
-import { addCohortMember, createCohort, updateCohortUpdate, updateCohortMember } from "@/services/CohortService/cohortService";
+import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { cohortMemberList, userList } from "@/services/UserList";
+import {
+  bulkCreateCohortMembers,
+  createCohort,
+  updateCohortUpdate,
+  updateCohortMemberStatus,
+  updateCohortMember,
+} from "@/services/CohortService/cohortService";
 import Loader from "@/components/Loader";
 import { useTranslation } from "next-i18next";
-import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 interface User {
   userId: string;
@@ -43,7 +48,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   onAdd,
   currentCohort,
   roleId,
-  title = "Create / Update Class"
+  title = "Create / Update Class",
 }) => {
   const { t } = useTranslation();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -57,31 +62,60 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   const [toTime, setToTime] = useState<dayjs.Dayjs | null>(null);
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
   const [hasChanges, setHasChanges] = useState(false);
+  const [originalTeacherId, setOriginalTeacherId] = useState<string | null>(
+    null
+  );
+  const [originalMembershipId, setOriginalMembershipId] = useState<
+    string | null
+  >(null);
+  const [originalSchoolId, setOriginalSchoolId] = useState<string | null>(null);
+  const [originalClassName, setOriginalClassName] = useState<string>("");
+  const [originalTimeSlot, setOriginalTimeSlot] = useState<string | null>(null);
+  const [archivedTeachers, setArchivedTeachers] = useState<any[]>([]);
 
   const currentCohortId = currentCohort?.cohortId || null;
   const schoolCohortId = currentCohort?.parentId || null;
   const cohortClass = currentCohort?.name || "";
   const techerId = currentCohort?.teacherId || null;
   const slot = currentCohort?.teacherSlot || null;
+
+  // Determine modal title based on whether we're creating or updating
+  // Use provided title prop if it's not the default, otherwise compute dynamically
+  const modalTitle =
+    title && title !== "Create / Update Class"
+      ? title
+      : currentCohortId
+        ? "Update Class"
+        : "Create Class";
   useEffect(() => {
     if (open) {
       setLoading(true);
       const ls = localStorage.getItem("schoolClusterNames");
-      const schools = ls ? Object.entries(JSON.parse(ls)).map(([id, school]) => ({
-          label: (school as any).name + " (" + (school as any).clusterName + ") ",
-          value: id,
-          raw: school
-        })) : [];
+      const schools = ls
+        ? Object.entries(JSON.parse(ls)).map(([id, school]) => ({
+            label:
+              (school as any).name + " (" + (school as any).clusterName + ") ",
+            value: id,
+            raw: school,
+          }))
+        : [];
       setSchools(schools || []);
       // Pre-populate fields if props are provided
       if (schoolCohortId) {
-        const foundSchool = schools.find((s: any) => s.value === schoolCohortId);
+        const foundSchool = schools.find(
+          (s: any) => s.value === schoolCohortId
+        );
         setSelectedSchool(foundSchool || null);
       } else {
         setSelectedSchool(null);
       }
       setClassName(cohortClass || "");
       setCreatedCohortId(null);
+
+      // Store original values for comparison
+      setOriginalSchoolId(schoolCohortId);
+      setOriginalClassName(cohortClass || "");
+      setOriginalTimeSlot(slot || null);
 
       fetchUsers();
     } else {
@@ -93,39 +127,148 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
       setClassName("");
       setSelectedSchool(null);
       setHasChanges(false);
+      setOriginalTeacherId(null);
+      setOriginalMembershipId(null);
+      setOriginalSchoolId(null);
+      setOriginalClassName("");
+      setOriginalTimeSlot(null);
+      setArchivedTeachers([]);
     }
   }, [open]);
-  
+
   const fetchUsers = async () => {
     try {
       const resp = await userList({
         limit: 0, // Get all users
         offset: 0,
-       filters : {
-          role: 'Teacher',
-          status: 'active'
-        }
+        filters: {
+          role: "Teacher",
+          status: "active",
+        },
       });
-      setUsers(resp?.getUserDetails || []);
-      setLoading(false);
+      const fetchedUsers = resp?.getUserDetails || [];
+      setUsers(fetchedUsers);
 
-      if (techerId && users.length > 0) {
-        const foundTeacher = users.find((u: any) => u.userId === techerId);
-        setSelectedUser(foundTeacher || null);
+      // When editing, fetch the teacher from cohort members
+      if (currentCohortId) {
+        try {
+          // Fetch active teachers
+          const cohortMemberResp = await cohortMemberList({
+            limit: 0,
+            offset: 0,
+            filters: {
+              cohortId: currentCohortId,
+              role: "Teacher",
+              status: ["active"],
+            } as any,
+          });
+
+          const userDetails = cohortMemberResp?.userDetails || [];
+          if (userDetails.length > 0) {
+            // Get the first teacher member
+            const teacherMember = userDetails.find(
+              (member: any) =>
+                member?.role === "Teacher" && member?.status === "active"
+            );
+
+            if (teacherMember) {
+              const teacherUserId = teacherMember?.userId;
+              const membershipId = teacherMember?.cohortMembershipId;
+
+              // Store original teacher info
+              setOriginalTeacherId(teacherUserId);
+              setOriginalMembershipId(membershipId);
+
+              // timeSlot might not be in userDetails, fallback to currentCohort.teacherSlot
+              const timeSlot =
+                teacherMember?.timeSlot || currentCohort?.teacherSlot || slot;
+
+              // Find and pre-select the teacher from fetched users
+              if (teacherUserId && fetchedUsers.length > 0) {
+                const foundTeacher = fetchedUsers.find(
+                  (u: any) => u.userId === teacherUserId
+                );
+                if (foundTeacher) {
+                  setSelectedUser(foundTeacher);
+                }
+              }
+
+              // Set time slot if available
+              if (timeSlot) {
+                // slot format: '09:00 AM - 12:30 PM'
+                const [from, to] = timeSlot.split(" - ");
+                setFromTime(from ? dayjs(from, "hh:mm A") : null);
+                setToTime(to ? dayjs(to, "hh:mm A") : null);
+                // Store original time slot
+                setOriginalTimeSlot(timeSlot);
+              } else {
+                setFromTime(null);
+                setToTime(null);
+                setOriginalTimeSlot(null);
+              }
+            } else {
+              // No teacher found in cohort members
+              setSelectedUser(null);
+              setFromTime(null);
+              setToTime(null);
+            }
+          } else {
+            // No members found
+            setSelectedUser(null);
+            setFromTime(null);
+            setToTime(null);
+          }
+        } catch (cohortMemberError) {
+          console.error(
+            "Error fetching active cohort members:",
+            cohortMemberError
+          );
+          // Fallback to old method if cohort member fetch fails
+          if (techerId && fetchedUsers.length > 0) {
+            const foundTeacher = fetchedUsers.find(
+              (u: any) => u.userId === techerId
+            );
+            if (foundTeacher) {
+              setSelectedUser(foundTeacher);
+            }
+          }
+          if (slot) {
+            const [from, to] = slot.split(" - ");
+            setFromTime(from ? dayjs(from, "hh:mm A") : null);
+            setToTime(to ? dayjs(to, "hh:mm A") : null);
+            setOriginalTimeSlot(slot);
+          } else {
+            setOriginalTimeSlot(null);
+          }
+        }
+
+        // Fetch archived teachers separately - don't let failure break active teacher selection
+        try {
+          const archivedMemberResp = await cohortMemberList({
+            limit: 0,
+            offset: 0,
+            filters: {
+              cohortId: currentCohortId,
+              role: "Teacher",
+              status: ["archived"],
+            } as any,
+          });
+          const archivedDetails = archivedMemberResp?.userDetails || [];
+          setArchivedTeachers(archivedDetails);
+        } catch (archivedError) {
+          console.error(
+            "Error fetching archived cohort members:",
+            archivedError
+          );
+          // If archived fetch fails, just set empty array - don't break the flow
+          setArchivedTeachers([]);
+        }
       } else {
+        // Not editing mode, reset selections
         setSelectedUser(null);
-      }
-    
-      if (slot) {
-        // slot format: '09:00 AM - 12:30 PM'
-        const [from, to] = slot.split(' - ');
-        setFromTime(from ? dayjs(from, 'hh:mm A') : null);
-        setToTime(to ? dayjs(to, 'hh:mm A') : null);
-      } else {
         setFromTime(null);
         setToTime(null);
       }
-
     } catch (error) {
       setLoading(false);
       console.error("Error fetching users:", error);
@@ -134,93 +277,167 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
     }
   };
 
-  const formatTimeSlot = (fromDate: dayjs.Dayjs | null, toDate: dayjs.Dayjs | null): string | null => {
+  const formatTimeSlot = (
+    fromDate: dayjs.Dayjs | null,
+    toDate: dayjs.Dayjs | null
+  ): string | null => {
     if (!fromDate || !toDate) return null;
-    return `${fromDate.format('hh:mm A')} - ${toDate.format('hh:mm A')}`;
+    return `${fromDate.format("hh:mm A")} - ${toDate.format("hh:mm A")}`;
   };
 
-  // Step 1: Create class (cohort)
-  // Step 2: Add teacher to created class
+  // Step 1: Create/Update class (cohort) - only if school or class name changed
+  // Step 2: Handle teacher changes - archive old teacher if changed, then add new teacher
   const handleClassSubmit = async () => {
-    if (!selectedSchool || !className || !selectedUser || !fromTime || !toTime) {
+    if (
+      !selectedSchool ||
+      !className ||
+      !selectedUser ||
+      !fromTime ||
+      !toTime
+    ) {
       return;
     }
-    console.log(currentCohort);
-    return;
-    let resp, cohortId;
-    let msg = "Cohort created successfully";
 
-    try {
-      const cohortPayload = {
-        name: className,
-        type: "COHORT",
-        parentId: selectedSchool.value,
-      };
-       if (currentCohort?.cohortId){
-          resp = await updateCohortUpdate(currentCohort?.cohortId, cohortPayload);
-          if (resp?.responseCode === 200) {
-            msg  = "Cohort updated successfully";
-            cohortId = currentCohort?.cohortId
-          }
-       }
-       else {
-          resp = await createCohort(cohortPayload);
-          if (resp && resp.cohortId) {
-            cohortId = resp.cohortId;
-          }
-       }
-      if (cohortId) {
-        setSnackbarOpen(true);
-      }
-    } catch (error) {
-      console.error("Failed to create class:", error);
-    }
-  
-    try {
-      if (!cohortId) {
-        console.error("Failed to create class. Cannot add teacher.");
+    let cohortId = currentCohort?.cohortId || null;
+    const schoolChanged = originalSchoolId !== selectedSchool.value;
+    const classNameChanged = originalClassName !== className;
+    const teacherChanged = originalTeacherId !== selectedUser.userId;
+
+    // Format time slot from fromTime and toTime
+    const timeSlot = formatTimeSlot(fromTime, toTime);
+
+    // Step 1: Update cohort only if school or class name changed
+    if (currentCohort?.cohortId && (schoolChanged || classNameChanged)) {
+      try {
+        const cohortPayload = {
+          name: className,
+          type: "COHORT",
+          parentId: selectedSchool.value,
+        };
+        const resp = await updateCohortUpdate(
+          currentCohort?.cohortId,
+          cohortPayload
+        );
+        if (resp?.responseCode !== 200) {
+          console.error("Failed to update cohort");
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to update cohort:", error);
         return;
       }
-      if (currentCohort?.teacherMemberId) {
-        await updateCohortMember({
-          membershipId: currentCohort?.teacherMemberId,
-          payload: {
-            userIds: [selectedUser.userId],
-            timeSlot: formatTimeSlot(fromTime, toTime)
+    } else if (!currentCohort?.cohortId) {
+      // Create new cohort
+      try {
+        const cohortPayload = {
+          name: className,
+          type: "COHORT",
+          parentId: selectedSchool.value,
+        };
+        const resp = await createCohort(cohortPayload);
+        if (resp && resp.cohortId) {
+          cohortId = resp.cohortId;
+        } else {
+          console.error("Failed to create cohort");
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to create cohort:", error);
+        return;
+      }
+    }
+
+    // Step 2: Handle teacher changes
+    try {
+      if (!cohortId) {
+        console.error(
+          "Cohort ID is missing. Cannot proceed with teacher operations."
+        );
+        return;
+      }
+
+      // Check if selected teacher exists in archived teachers
+      const archivedTeacher = archivedTeachers.find(
+        (teacher: any) => teacher.userId === selectedUser.userId
+      );
+
+      if (archivedTeacher) {
+        // Teacher exists in archived state - reactivate it
+        try {
+          // First, archive the currently active teacher if teacher changed
+          if (teacherChanged && originalMembershipId) {
+            try {
+              await updateCohortMemberStatus({
+                membershipId: originalMembershipId,
+                memberStatus: "archived",
+                statusReason: "teacher change",
+              });
+            } catch (error) {
+              console.error("Failed to archive old teacher:", error);
+            }
           }
+
+          // Reactivate the archived teacher
+          await updateCohortMember({
+            membershipId: archivedTeacher.cohortMembershipId,
+            payload: {
+              status: "active",
+              statusReason: null,
+              params: {
+                slot: timeSlot,
+              },
+            },
+          } as any);
+        } catch (error) {
+          console.error("Failed to reactivate archived teacher:", error);
+          throw error;
+        }
+      } else {
+        // Teacher doesn't exist in archived state - proceed with normal flow
+        // If teacher changed and we have the original membership ID, archive the old teacher
+        if (teacherChanged && originalMembershipId) {
+          try {
+            await updateCohortMemberStatus({
+              membershipId: originalMembershipId,
+              memberStatus: "archived",
+              statusReason: "teacher change",
+            });
+          } catch (error) {
+            console.error("Failed to archive old teacher:", error);
+            // Continue with adding new teacher even if archiving fails
+          }
+        }
+
+        // Add new teacher (or update if teacher didn't change but time slot might have)
+        await bulkCreateCohortMembers({
+          userId: [selectedUser.userId],
+          cohortId: [cohortId],
+          params: {
+            slot: timeSlot,
+          },
         });
       }
-      const timeSlot = formatTimeSlot(fromTime, toTime);
-      const payload = {
-        selectAll: false,
-        userIds: [selectedUser.userId],
-        cohortId: cohortId,
-        timeSlot
-      };
-      await addCohortMember(payload);
+
       setSnackbarOpen(true);
-      if (onAdd) {
-        onAdd(payload);
-      }
+      if (onAdd) onAdd({ userId: selectedUser.userId, cohortId: cohortId });
       onClose();
     } catch (error) {
-      console.error("Failed to add teacher:", error);
+      console.error("Failed to add/update teacher:", error);
     }
   };
-
 
   return (
     <>
-      <Dialog 
-        open={open} 
-        onClose={onClose} 
-        maxWidth="sm" 
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="sm"
         fullWidth
         PaperProps={{
-          sx: { minHeight: 300 }
+          sx: { minHeight: 300 },
         }}
       >
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{modalTitle}</DialogTitle>
         <DialogContent>
           {loading ? (
             <Box
@@ -235,13 +452,18 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               <Loader showBackdrop={false} loadingText={"Loading..."} />
             </Box>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 2 }}>          
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 2 }}
+            >
               {/* Step 1: School and class name */}
               <Autocomplete
                 options={schools}
                 getOptionLabel={(option: any) => `${option.label}`}
                 value={selectedSchool}
-                onChange={(_event: React.SyntheticEvent, newValue: any | null) => {
+                onChange={(
+                  _event: React.SyntheticEvent,
+                  newValue: any | null
+                ) => {
                   setSelectedSchool(newValue);
                   setHasChanges(true);
                 }}
@@ -258,19 +480,24 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
               <TextField
                 label="Class Name"
                 value={className}
-                onChange={e => {
+                onChange={(e) => {
                   setClassName(e.target.value);
                   setHasChanges(true);
                 }}
                 variant="outlined"
               />
-              
+
               {/* Step 2: Teacher and time slot, only after class is created */}
               <Autocomplete
                 options={users}
-                getOptionLabel={(option: User) => `${option.name} (${option.email})`}
+                getOptionLabel={(option: User) =>
+                  `${option.name} (${option.email})`
+                }
                 value={selectedUser}
-                onChange={(_event: React.SyntheticEvent, newValue: User | null) => {
+                onChange={(
+                  _event: React.SyntheticEvent,
+                  newValue: User | null
+                ) => {
                   setSelectedUser(newValue);
                   setHasChanges(true);
                 }}
@@ -285,7 +512,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                 loadingText="Loading teachers..."
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ display: "flex", gap: 2 }}>
                   <FormControl fullWidth>
                     <DesktopTimePicker
                       label="From Time"
@@ -294,7 +521,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                         setFromTime(newValue);
                         setHasChanges(true);
                       }}
-                      views={['hours', 'minutes']}
+                      views={["hours", "minutes"]}
                       format="hh:mm A"
                     />
                   </FormControl>
@@ -307,7 +534,7 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
                         setHasChanges(true);
                       }}
                       minTime={fromTime || undefined}
-                      views={['hours', 'minutes']}
+                      views={["hours", "minutes"]}
                       format="hh:mm A"
                     />
                   </FormControl>
@@ -324,10 +551,8 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
             color="primary"
             disabled={!hasChanges || !selectedUser || !fromTime || !toTime}
           >
-            {
-            (currentCohortId ? t("COMMON.UPDATE") : t("COMMON.ADD")) 
-            }
-            </Button>
+            {currentCohortId ? t("COMMON.UPDATE") : t("COMMON.ADD")}
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -338,7 +563,9 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={() => setSnackbarOpen(false)} severity="success">
-          Teacher added successfully!
+          {currentCohortId
+            ? t("COMMON.CLASS_UPDATED_SUCCESS")
+            : t("COMMON.CLASS_ADDED_SUCCESS")}
         </Alert>
       </Snackbar>
     </>
