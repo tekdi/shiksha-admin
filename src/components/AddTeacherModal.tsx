@@ -21,6 +21,7 @@ import {
   bulkCreateCohortMembers,
   createCohort,
   updateCohortUpdate,
+  assignTeacherToCohort,
   updateCohortMemberStatus,
   updateCohortMember,
 } from "@/services/CohortService/cohortService";
@@ -57,21 +58,21 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<any | null>(null);
   const [className, setClassName] = useState<string>("22");
-  const [createdCohortId, setCreatedCohortId] = useState<string | null>(null);
+  //const [createdCohortId, setCreatedCohortId] = useState<string | null>(null);
   const [fromTime, setFromTime] = useState<dayjs.Dayjs | null>(null);
   const [toTime, setToTime] = useState<dayjs.Dayjs | null>(null);
   const [loading, setLoading] = useState<boolean | undefined>(undefined);
   const [hasChanges, setHasChanges] = useState(false);
-  const [originalTeacherId, setOriginalTeacherId] = useState<string | null>(
-    null
-  );
-  const [originalMembershipId, setOriginalMembershipId] = useState<
-    string | null
-  >(null);
-  const [originalSchoolId, setOriginalSchoolId] = useState<string | null>(null);
-  const [originalClassName, setOriginalClassName] = useState<string>("");
-  const [originalTimeSlot, setOriginalTimeSlot] = useState<string | null>(null);
-  const [archivedTeachers, setArchivedTeachers] = useState<any[]>([]);
+  // const [originalTeacherId, setOriginalTeacherId] = useState<string | null>(
+  //   null
+  // );
+  // const [originalMembershipId, setOriginalMembershipId] = useState<
+  //   string | null
+  // >(null);
+  //const [originalSchoolId, setOriginalSchoolId] = useState<string | null>(null);
+  //const [originalClassName, setOriginalClassName] = useState<string>("");
+  //const [originalTimeSlot, setOriginalTimeSlot] = useState<string | null>(null);
+  //const [archivedTeachers, setArchivedTeachers] = useState<any[]>([]);
 
   const currentCohortId = currentCohort?.cohortId || null;
   const schoolCohortId = currentCohort?.parentId || null;
@@ -110,12 +111,12 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
         setSelectedSchool(null);
       }
       setClassName(cohortClass || "");
-      setCreatedCohortId(null);
+      //setCreatedCohortId(null);
 
       // Store original values for comparison
-      setOriginalSchoolId(schoolCohortId);
-      setOriginalClassName(cohortClass || "");
-      setOriginalTimeSlot(slot || null);
+      //setOriginalSchoolId(schoolCohortId);
+      //setOriginalClassName(cohortClass || "");
+      //setOriginalTimeSlot(slot || null);
 
       fetchUsers();
     } else {
@@ -123,16 +124,16 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
       setSelectedUser(null);
       setFromTime(null);
       setToTime(null);
-      setCreatedCohortId(null);
+      //setCreatedCohortId(null);
       setClassName("");
       setSelectedSchool(null);
       setHasChanges(false);
-      setOriginalTeacherId(null);
-      setOriginalMembershipId(null);
-      setOriginalSchoolId(null);
-      setOriginalClassName("");
-      setOriginalTimeSlot(null);
-      setArchivedTeachers([]);
+      // setOriginalTeacherId(null);
+      // setOriginalMembershipId(null);
+      // setOriginalSchoolId(null);
+      // setOriginalClassName("");
+      // setOriginalTimeSlot(null);
+      // setArchivedTeachers([]);
     }
   }, [open]);
 
@@ -149,125 +150,23 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
       const fetchedUsers = resp?.getUserDetails || [];
       setUsers(fetchedUsers);
 
-      // When editing, fetch the teacher from cohort members
-      if (currentCohortId) {
-        try {
-          // Fetch active teachers
-          const cohortMemberResp = await cohortMemberList({
-            limit: 0,
-            offset: 0,
-            filters: {
-              cohortId: currentCohortId,
-              role: "Teacher",
-              status: ["active"],
-            } as any,
-          });
+      if (techerId && users.length > 0) {
+        const foundTeacher = users.find((u: any) => u.userId === techerId);
+        setSelectedUser(foundTeacher || null);
 
-          const userDetails = cohortMemberResp?.userDetails || [];
-          if (userDetails.length > 0) {
-            // Get the first teacher member
-            const teacherMember = userDetails.find(
-              (member: any) =>
-                member?.role === "Teacher" && member?.status === "active"
-            );
-
-            if (teacherMember) {
-              const teacherUserId = teacherMember?.userId;
-              const membershipId = teacherMember?.cohortMembershipId;
-
-              // Store original teacher info
-              setOriginalTeacherId(teacherUserId);
-              setOriginalMembershipId(membershipId);
-
-              // timeSlot might not be in userDetails, fallback to currentCohort.teacherSlot
-              const timeSlot =
-                teacherMember?.timeSlot || currentCohort?.teacherSlot || slot;
-
-              // Find and pre-select the teacher from fetched users
-              if (teacherUserId && fetchedUsers.length > 0) {
-                const foundTeacher = fetchedUsers.find(
-                  (u: any) => u.userId === teacherUserId
-                );
-                if (foundTeacher) {
-                  setSelectedUser(foundTeacher);
-                }
-              }
-
-              // Set time slot if available
-              if (timeSlot) {
-                // slot format: '09:00 AM - 12:30 PM'
-                const [from, to] = timeSlot.split(" - ");
-                setFromTime(from ? dayjs(from, "hh:mm A") : null);
-                setToTime(to ? dayjs(to, "hh:mm A") : null);
-                // Store original time slot
-                setOriginalTimeSlot(timeSlot);
-              } else {
-                setFromTime(null);
-                setToTime(null);
-                setOriginalTimeSlot(null);
-              }
-            } else {
-              // No teacher found in cohort members
-              setSelectedUser(null);
-              setFromTime(null);
-              setToTime(null);
-            }
-          } else {
-            // No members found
-            setSelectedUser(null);
-            setFromTime(null);
-            setToTime(null);
-          }
-        } catch (cohortMemberError) {
-          console.error(
-            "Error fetching active cohort members:",
-            cohortMemberError
-          );
-          // Fallback to old method if cohort member fetch fails
-          if (techerId && fetchedUsers.length > 0) {
-            const foundTeacher = fetchedUsers.find(
-              (u: any) => u.userId === techerId
-            );
-            if (foundTeacher) {
-              setSelectedUser(foundTeacher);
-            }
-          }
-          if (slot) {
-            const [from, to] = slot.split(" - ");
-            setFromTime(from ? dayjs(from, "hh:mm A") : null);
-            setToTime(to ? dayjs(to, "hh:mm A") : null);
-            setOriginalTimeSlot(slot);
-          } else {
-            setOriginalTimeSlot(null);
-          }
+        // Set time slot if available
+        if (slot) {
+          // slot format: '09:00 AM - 12:30 PM'
+          const [from, to] = slot.split(" - ");
+          setFromTime(from ? dayjs(from, "hh:mm A") : null);
+          setToTime(to ? dayjs(to, "hh:mm A") : null);
+          // Store original time slot
+          // setOriginalTimeSlot(timeSlot);
+        } else {
+          setFromTime(null);
+          setToTime(null);
+          // setOriginalTimeSlot(null);
         }
-
-        // Fetch archived teachers separately - don't let failure break active teacher selection
-        try {
-          const archivedMemberResp = await cohortMemberList({
-            limit: 0,
-            offset: 0,
-            filters: {
-              cohortId: currentCohortId,
-              role: "Teacher",
-              status: ["archived"],
-            } as any,
-          });
-          const archivedDetails = archivedMemberResp?.userDetails || [];
-          setArchivedTeachers(archivedDetails);
-        } catch (archivedError) {
-          console.error(
-            "Error fetching archived cohort members:",
-            archivedError
-          );
-          // If archived fetch fails, just set empty array - don't break the flow
-          setArchivedTeachers([]);
-        }
-      } else {
-        // Not editing mode, reset selections
-        setSelectedUser(null);
-        setFromTime(null);
-        setToTime(null);
       }
     } catch (error) {
       setLoading(false);
@@ -299,15 +198,12 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
     }
 
     let cohortId = currentCohort?.cohortId || null;
-    const schoolChanged = originalSchoolId !== selectedSchool.value;
-    const classNameChanged = originalClassName !== className;
-    const teacherChanged = originalTeacherId !== selectedUser.userId;
 
     // Format time slot from fromTime and toTime
     const timeSlot = formatTimeSlot(fromTime, toTime);
 
     // Step 1: Update cohort only if school or class name changed
-    if (currentCohort?.cohortId && (schoolChanged || classNameChanged)) {
+    if (currentCohort?.cohortId) {
       try {
         const cohortPayload = {
           name: className,
@@ -349,75 +245,14 @@ const AddTeacherModal: React.FC<AddTeacherModalProps> = ({
 
     // Step 2: Handle teacher changes
     try {
-      if (!cohortId) {
-        console.error(
-          "Cohort ID is missing. Cannot proceed with teacher operations."
-        );
-        return;
-      }
-
-      // Check if selected teacher exists in archived teachers
-      const archivedTeacher = archivedTeachers.find(
-        (teacher: any) => teacher.userId === selectedUser.userId
-      );
-
-      if (archivedTeacher) {
-        // Teacher exists in archived state - reactivate it
-        try {
-          // First, archive the currently active teacher if teacher changed
-          if (teacherChanged && originalMembershipId) {
-            try {
-              await updateCohortMemberStatus({
-                membershipId: originalMembershipId,
-                memberStatus: "archived",
-                statusReason: "teacher change",
-              });
-            } catch (error) {
-              console.error("Failed to archive old teacher:", error);
-            }
-          }
-
-          // Reactivate the archived teacher
-          await updateCohortMember({
-            membershipId: archivedTeacher.cohortMembershipId,
-            payload: {
-              status: "active",
-              statusReason: null,
-              params: {
-                slot: timeSlot,
-              },
-            },
-          } as any);
-        } catch (error) {
-          console.error("Failed to reactivate archived teacher:", error);
-          throw error;
-        }
-      } else {
-        // Teacher doesn't exist in archived state - proceed with normal flow
-        // If teacher changed and we have the original membership ID, archive the old teacher
-        if (teacherChanged && originalMembershipId) {
-          try {
-            await updateCohortMemberStatus({
-              membershipId: originalMembershipId,
-              memberStatus: "archived",
-              statusReason: "teacher change",
-            });
-          } catch (error) {
-            console.error("Failed to archive old teacher:", error);
-            // Continue with adding new teacher even if archiving fails
-          }
-        }
-
-        // Add new teacher (or update if teacher didn't change but time slot might have)
-        await bulkCreateCohortMembers({
-          userId: [selectedUser.userId],
-          cohortId: [cohortId],
+       // Add new teacher (or update if teacher didn't change but time slot might have)
+        await assignTeacherToCohort({
+          userId: selectedUser.userId,
+          cohortId: cohortId,
           params: {
             slot: timeSlot,
-          },
+          }
         });
-      }
-
       setSnackbarOpen(true);
       if (onAdd) onAdd({ userId: selectedUser.userId, cohortId: cohortId });
       onClose();
