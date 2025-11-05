@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 function Logout() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   useEffect(() => {
     const userLogout = async () => {
       try {
@@ -31,7 +31,7 @@ function Logout() {
     router.replace("/login");
   }, []);
 
-  return <Loader showBackdrop={true} loadingText={t("COMMON.LOADING")} />;
+  return <Loader showBackdrop={true} loadingText={ready ? t("COMMON.LOADING") : "Loading"} />;
 }
 
 export async function getStaticProps({ locale }: any) {

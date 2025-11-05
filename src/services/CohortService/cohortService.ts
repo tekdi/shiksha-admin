@@ -276,3 +276,14 @@ export const updateCohortMemberStatus = async ({
     // throw error;
   }
 };
+
+export const assignTeacherToCohort = async (payload: any): Promise<any> => {
+  const apiUrl: string = `${process.env.NEXT_PUBLIC_BASE_URL}/assignteacher`;
+  try {
+    const response = await post(apiUrl, payload);
+    return response?.data;
+  } catch (error) {
+    console.error('error in attendance report api ', error);
+    // throw error;
+  }
+};

@@ -121,8 +121,6 @@ const Center: React.FC = () => {
 
   // handle states
   const [selectedSchool, setSelectedSchool] = React.useState<string>();
-  const [selectedDistrict, setSelectedDistrict] = React.useState<string[]>([]);
-  const [selectedBlock, setSelectedBlock] = React.useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("Sort");
   const [selectedFilter, setSelectedFilter] = useState("Active");
   const [cohortData, setCohortData] = useState<cohortFilterDetails[]>([]);
@@ -194,7 +192,7 @@ const Center: React.FC = () => {
       const userId = localStorage.getItem(Storage.USER_ID) || "";
       setUserId(userId);
     }
-    setSelectedSchool(""); // <-- Reset school selection on page load
+    //setSelectedSchool(""); // <-- Reset school selection on page load
     // get form data for center create
     getAddCenterFormData();
     // getCohortMemberlistData();
@@ -436,6 +434,7 @@ const Center: React.FC = () => {
     </Box>
   );
 
+ 
   const handleSchoolChange = async (event: SelectChangeEvent) => {
     const schoolCohortId = event.target.value;
     if (!schoolCohortId) {
@@ -934,8 +933,6 @@ const Center: React.FC = () => {
     title: t("SIDEBAR.CENTERS"),
     searchPlaceHolder: t("CENTERS.SEARCHBAR_PLACEHOLDER"),
     selectedSchool: selectedSchool,
-    selectedDistrict: selectedDistrict,
-    selectedBlock: selectedBlock,
     selectedSort: selectedSort,
     selectedFilter: selectedFilter,
     handleSchoolChange: handleSchoolChange,
@@ -964,7 +961,7 @@ const Center: React.FC = () => {
         open={addMembersModalOpen}
         onClose={handleCloseAddMembersModal}
         onAdd={onAfterUsersAdd}
-        cohortId={"currentCohort}"}
+        cohortId={currentCohortId}
         roleId={roleId}
         title={t("COMMON.ADD_STUDENTS")}
         showCohortFilters={roleId === RoleId.TEACHER ? false : true}

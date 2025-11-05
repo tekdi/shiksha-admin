@@ -8,6 +8,8 @@ import {
   Typography,
   useMediaQuery,
   Divider,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import { useTheme } from "@mui/material/styles";
@@ -23,7 +25,7 @@ import AreaSelection from "./AreaSelection";
 import { transformArray } from "../utils/Helper";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import { getSchoolNames } from "../services/CohortService/cohortService";
+import { getCohortList } from "../services/CohortService/cohortService";
 
 interface School {
   code: string;
@@ -71,130 +73,67 @@ const HeaderComponent = ({
   handleCenterChange,
   statusValue,
   setStatusValue,
-  showSchoolFilter
+  showSchoolFilter,
+  showClusterFilter = true,
 }: any) => {
   const { t } = useTranslation();
   const theme = useTheme<any>();
   const isMobile = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(max-width:986px)");
   const [schools, setSchools] = useState<any>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [stateDefaultValue, setStateDefaultValue] = useState<string>("");
-  const [allCenters, setAllCenters] = useState<CenterProp[]>([]);
+  const [clusters, setClusters] = useState([]);
 
-  const [blocks, setBlocks] = useState<Block[]>([]);
-
-  const handleStateChangeWrapper = async (
-    selectedNames: string[],
-    selectedCodes: string[]
-  ) => {
-    if (selectedNames[0] === "") {
-      // if(districts.length!==0)
-      // {
-      //   handleDistrictChange([], []);
-      //   handleBlockChange([], []);
-      // }
-    }
-    try {
-      const object = {
-        controllingfieldfk: selectedCodes[0],
-
-        fieldName: "districts",
-      };
-      console.log(object);
-      const response = await getStateBlockDistrictList(object);
-      const result = response?.result?.values;
-      setDistricts(result);
-    } catch (error) {
-      console.log(error);
-    }
-    handleStateChange(selectedNames, selectedCodes);
-  };
-
-  const handleDistrictChangeWrapper = async (
-    selected: string[],
-    selectedCodes: string[]
-  ) => {
-    setBlocks([]);
-    if (selected[0] === "") {
-      handleBlockChange([], []);
-    }
-    try {
-      const object = {
-        controllingfieldfk: selectedCodes[0],
-
-        fieldName: "blocks",
-      };
-      const response = await getStateBlockDistrictList(object);
-      const result = response?.result?.values;
-      setBlocks(result);
-    } catch (error) {
-      console.log(error);
-    }
-    handleDistrictChange(selected, selectedCodes);
-  };
-
-  const handleBlockChangeWrapper = async (
-    selected: string[],
-    selectedCodes: string[]
-  ) => {
-    const getCentersObject = {
-      limit: 0,
-      offset: 0,
-      filters: {
-        // "type":"COHORT",
-        status: ["active"],
-        states: selectedStateCode,
-        districts: selectedDistrictCode,
-        blocks: selectedCodes[0],
-        // "name": selected[0]
-      },
-    };
-    const response = await getCenterList(getCentersObject);
-    console.log(response?.result?.results?.cohortDetails[0].cohortId);
-    // setSelectedBlockCohortId(
-    //   response?.result?.results?.cohortDetails[0].cohortId
-    // );
-    //   const result = response?.result?.cohortDetails;
-    const dataArray = response?.result?.results?.cohortDetails;
-
-    const cohortInfo = dataArray
-      ?.filter((cohort: any) => cohort.type !== "BLOCK")
-      .map((item: any) => ({
-        cohortId: item?.cohortId,
-        name: item?.name,
-      }));
-    console.log(dataArray);
-    setAllCenters(cohortInfo);
-    handleBlockChange(selected, selectedCodes);
-  };
-  const handleCenterChangeWrapper = (
-    selected: string[],
-    selectedCodes: string[]
-  ) => {
-    handleCenterChange(selected, selectedCodes);
-  };
+  const [selectedCluster, setSelectedCluster] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean | undefined>(undefined);
+    
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchClusters = async () => {
       try {
-        const schoolsData = await getSchoolNames();
-        // const schoolsArray: any = Object.entries(schoolsData).map(([key, value]: [string, any]) => ({
-        //   code: key,
-        //   label: value.name
-        // }));
-        setSchools(schoolsData);
+        setLoading(true);
+        const clusterFilters = {
+          limit: 0,
+          offset: 0,
+          filters: { type: "CLUSTER", status: ["active"] },
+        };
+        const resp = await getCohortList(clusterFilters);
+        setClusters(resp?.results?.cohortDetails || []);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchClusters();
   }, []);
-  const handleChange = (event: React.SyntheticEvent, newValue: any) => {
-    console.log(newValue);
-    setStatusValue(newValue);
-  };
+
+  // fetch schools whenever selectedCluster changes
+  useEffect(() => {
+    const fetchSchools = async (parentId: string | null) => {
+      try {
+        setLoading(true);
+        
+        const schoolFilters:any = {
+          limit: 0,
+          offset: 0,
+          filters: { type: "SCHOOL", status: ["active"],  },
+        };
+        if (parentId) {
+          schoolFilters.filters["parentId"] = parentId;
+        }
+        const resp = await getCohortList(schoolFilters);
+        setSchools(resp?.results?.cohortDetails || []);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const parentId = selectedCluster?.cohortId || selectedCluster?.id || null;
+    fetchSchools(parentId);
+  }, [selectedCluster]);
 
   return (
     <Box
@@ -323,18 +262,12 @@ const HeaderComponent = ({
                 }}
             >
                   {showSort && (
-                    <FormControl sx={{ minWidth: "120px" }}>
+                    <FormControl sx={{ minWidth: "220px" }}>
                       <Select
                       value={selectedSort}
                       onChange={handleSortChange}
                       displayEmpty
-                      style={{
-                          borderRadius: "8px",
-                          height: "40px",
-                          marginLeft: "5px",
-                          fontSize: "14px",
-                          backgroundColor: theme.palette.secondary["100"],
-                      }}
+                      size="small"
                       >
                       <MenuItem value="Sort">{t("COMMON.SORT")}</MenuItem>
                       {Sort?.map((state, index) => (
@@ -345,28 +278,65 @@ const HeaderComponent = ({
                       </Select>
                     </FormControl>
                   )}
+                  {showClusterFilter && (
+                    <FormControl sx={{ minWidth: "220px" }}>
+                     <Autocomplete
+                          options={clusters || []}
+                          getOptionLabel={(option: any) =>
+                            // cluster objects come from the API and use `name` and `cohortId`
+                            // fall back to `label` or empty string to avoid NPEs
+                            (option && (option.name || option.label)) || ""
+                          }
+                          value={selectedCluster}
+                          onChange={(
+                            _event: React.SyntheticEvent,
+                            newValue: any | null
+                          ) => {
+                            setSelectedCluster(newValue);
+                          }}
+                          isOptionEqualToValue={(option: any, value: any) =>
+                            // compare by unique id when possible
+                            (option && value && (option.cohortId || option.id)) ===
+                            (value && (value.cohortId || value.id))
+                          }
+                          renderInput={(params: any) => (
+                            <TextField
+                              {...params}
+                              label={t("MASTER.SEARCHBAR_PLACEHOLDER_CLUSTER") || "Select Cluster"}
+                              variant="outlined"
+                              size="small"
+                            />
+                          )}
+                          loading={loading}
+                          loadingText="Loading clusters..."
+                        />
+                    </FormControl>
+                  )}
                   {showSchoolFilter && (
-                    <FormControl sx={{ minWidth: "120px" }}>
-                      <Select
-                        name="selectedSchool"             
-                        value={selectedSchool ?? ""}
-                        onChange={handleSchoolChange}
-                        displayEmpty
-                        style={{
-                            borderRadius: "8px",
-                            height: "40px",
-                            marginLeft: "5px",
-                            fontSize: "14px",
-                            backgroundColor: theme.palette.secondary["100"],
+                    <FormControl sx={{ minWidth: "220px" }}>
+                      {/* Autocomplete expects an array of options; keep parent API by dispatching a synthetic event to handleSchoolChange */}
+                      <Autocomplete
+                        options={(schools || []).map((school: any) => ({ code: school.cohortId || school.id, label: school.name }))}
+                        getOptionLabel={(option: any) => option.label || ""}
+                        value={(() => {
+                          const opts = (schools || []).map((school: any) => ({ code: school.cohortId || school.id, label: school.name }));
+                          return opts.find((o: any) => o.code === (selectedSchool ?? "")) || null;
+                        })()}
+                        onChange={(_event: any, newValue: any) => {
+                          const value = newValue ? newValue.code : "";
+                          // keep existing handler signature
+                          handleSchoolChange({ target: { value } } as any);
                         }}
-                        >
-                        <MenuItem value="">{t("MASTER.SCHOOL")}</MenuItem>
-                        {Object.entries(schools).map(([code, school]: [string, any]) => (
-                          <MenuItem value={code} key={code}>
-                            {school.name} ({school.clusterName})
-                          </MenuItem>
-                        ))}
-                      </Select>
+                        isOptionEqualToValue={(option: any, value: any) => (option && value) ? option.code === value.code : false}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={t("MASTER.SCHOOL")}
+                            variant="outlined"
+                            size="small"
+                          />
+                        )}
+                      />
                     </FormControl>
                   )}
             </Box>
